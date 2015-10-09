@@ -1,0 +1,17 @@
+<div class="navbar-header">
+  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+  <a class="navbar-brand" href="#">Gohan WebUI</a>
+</div>
+<div class="navbar-collapse collapse navbar-responsive-collapse">
+  <ul class="nav navbar-nav navbar-right">
+    <% if (auth_token) { %>
+      <li><a href="#" class="noa"><%= username %></a></li>
+      <li><a href="#" id="logout">Logout</a></li>
+    <% } %>
+  </ul>
+</div>

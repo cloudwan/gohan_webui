@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JSON Form Playground</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <style>
+      @import url("../../deps/opt/spectrum.css");
+      @import url("../../deps/opt/jquery.ui.custom.css");
+      @import url("../../deps/opt/jquery.ui.theme.css");
+      @import url("../../deps/opt/bootstrap-tagsinput.css");
+
+      h2 { font-weight: 200; }
+      .navbar-inner {
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+      }
+      .row: { margin: 0.5em; }
+      .tagline {
+        padding: 10px;
+        font-weight: 200;
+        margin-top: -1em;
+      }
+      .tagline p { font-size: 16px; }
+
+      .navbar .factory a {
+        display: block;
+        padding: 10px 20px 10px;
+        background: url(http://factory.joshfire.com/css/images/topbar-beta-logo.png) 22px -3px no-repeat;
+        text-indent: -9999px;
+        width: 178px;
+      }
+
+      .footer {
+        margin-top: 40px;
+        padding: 10px 0.5em;
+        border-top: 1px solid #E5E5E5;
+      }
+      .footer p { margin-bottom: 0; }
+
+      #form .add-on {
+        border: none;
+        background-color: inherit;
+      }
+      .control-label + .help-block {
+        margin-top: 0px;
+        margin-bottom: 5px;
+      }
+
+      .expandable > legend:before {
+        content: '\25B8';
+        padding-right: 5px;
+      }
+      .expanded > legend:before {
+        content: '\25BE';
+      }
+
+      .tab-content>.tab-pane {
+        margin-top: 10px;
+      }
+
+      ._jsonform-array-buttons {
+        margin-left: 25px;
+      }
+
+      .jsonform-required > label:after {
+        content: ' *';
+        color: red;
+      }
+
+      form.jsonform-hasrequired:after {
+        content: '* Required field';
+        display: block;
+        color: red;
+        padding-top: 1em;
+      }
+      .inline-other-field > .other-field-content,
+      .inline-other-field > label > .other-field-content {
+        display: inline-block;
+        margin: 0;
+      }
+      .inline-other-field.checkbox > label {
+        width: 100%;
+      }
+      .inline-other-field.checkbox > label > .other-field-content {
+        width: 80%;
+      }
+      .inline-other-field > input[type=checkbox],
+      .inline-other-field > label > input[type=checkbox] {
+        margin-top: 11px;
+      }
+      .other-field-content > .form-group {
+        margin: 0;
+      }
+      .radio-inline, .checkbox-inline {
+        margin-left: 10px;
+      }
+      .indent {
+        margin-left: 20px;
+      }
+      .has-error > a.tab {
+        border: #b94a48 solid 1px;
+      }
+
+    </style>
+  </head>
+  
+  <body>
+    <nav class="navbar navbar-inverse" role="navigation">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">JSON Form Playground</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="http://github.com/joshfire/jsonform/wiki">Documentation</a></li>
+            <li><a href="http://github.com/joshfire/jsonform">Project on github</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="factory"><a href="http://factory.joshfire.com">Joshfire Factory</a>
+          </ul>
+        </div><!-- /.navbar-collapse -->
+      </div><!-- /.container-fluid -->
+    </nav>
+
+    <div class="tagline">
+      <p>Choose a JSON Form example below and check the generated form. Refer to the <a href="http://github.com/joshfire/jsonform/wiki">documentation</a> for details and directions to extend the form.</p>
+    </div>
+
+    <div class="row">
+      <div class="col-md-5">
+        <form id="form"></form>
+      </div>
+      <div class="col-md-7">
+        <h2>Generated form</h2>
+        <div id="result" class="well">(please wait)</div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Manufactured on the assembly line by <a href="http://factory.joshfire.com">Joshfire Factory</a> workers.</p>
+      <p><a href="http://github.com/joshfire/jsonform" title="JSON Form library code">Code</a> available on github, licensed under the <a href="https://raw.github.com/joshfire/jsonform/master/LICENSE">MIT License</a>.</p>
+      <p>See <a href="https://github.com/joshfire/jsonform/wiki#wiki-deps">dependencies</a> for the list of libraries and licenses used by JSON Form.</p>
+    </footer>
+    <script src="../../deps/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="../../deps/underscore-min.js"></script>
+    <script src="../../deps/opt/ZSchema-browser.js"></script>
+    <!--script src="../../deps/opt/jquery.ui.core.js"></script>
+    <script src="../../deps/opt/jquery.ui.widget.js"></script>
+    <script src="../../deps/opt/jquery.ui.mouse.js"></script>
+    <script src="../../deps/opt/jquery.ui.sortable.js"></script-->
+    <script src="../../deps/opt/jquery.ui.custom.js"></script>
+    <script src="../../deps/opt/bootstrap3-typeahead.min.js"></script>
+    <script src="../../deps/opt/bootstrap-tagsinput.js"></script>
+    <script src="../../deps/opt/spectrum.js"></script>
+    <script src="../../deps/opt/ace/ace.js"></script>
+    <script src="../../deps/opt/ace/mode-json.js"></script>
+    <script src="../../deps/opt/ace/mode-html.js"></script>
+    <script src="../../deps/opt/ace/mode-css.js"></script>
+    <script src="../../deps/opt/ace/mode-javascript.js"></script>
+    <script src="../../deps/opt/ace/mode-less.js"></script>
+    <script src="../../deps/opt/ace/mode-markdown.js"></script>
+    <script src="../../deps/opt/jquery.transloadit2.js"></script>
+
+    <script src="../../lib/jsonform.js"></script>
+
+    <script src="../playground.js"></script>
+  </body>
+</html>

@@ -1,0 +1,210 @@
+.header-panel {
+  height: 70px;
+  position: relative;
+  z-index: 100;
+}
+
+.header-panel div {
+  position: relative;
+  height: 100%;
+}
+
+.header-panel h1 {
+  color: #FFF;
+  font-size: 20px;
+  font-weight: 400;
+  position: absolute;
+  padding-left: 35px;
+}
+
+.menu {
+  overflow: auto;
+  padding: 0;
+}
+
+.menu, .menu * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+.menu ul {
+  padding: 0;
+  margin: 7px 0;
+}
+
+.menu ul li {
+  list-style: none;
+  padding: 20px 0 20px 50px;
+  font-size: 15px;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.menu ul li.active {
+  background-color: #dedede;
+  position: relative;
+}
+
+.menu ul li a {
+  color: #333333;
+  text-decoration: none;
+}
+
+.pages {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 4;
+  padding: 0;
+  overflow: auto;
+}
+
+.pages > div {
+  padding: 0 5px;
+  padding-top: 64px;
+}
+
+.pages .header {
+  font-size: 24px;
+  font-weight: normal;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  letter-spacing: 1.20000004768372px;
+}
+
+.page {
+  transform: translateY(1080px);
+  transition: transform 0 linear;
+  display: none;
+  opacity: 0;
+  font-size: 16px;
+}
+
+.page.active {
+  transform: translateY(0px);
+  transition: all 0.3s ease-out;
+  display: block;
+  opacity: 1;
+}
+
+.bread_crumb {
+  position: relative;
+  top: 5px;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  line-height: 34px;
+}
+.bread_crumb > li {
+  float: left;
+  font-weight: bold;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-right: 10px;
+}
+.bread_crumb > li:not(:first-child):before {
+  content: ">";
+  margin-right: 10px;
+  color: #999;
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transform: translate(0, 0);
+}
+.bread_crumb > li:last-child a {
+  pointer-events: none;
+  color: #333;
+  display: inline-block;
+}
+.bread_crumb > li span.fa-angle-right {
+  margin-right: 10px;
+  color: #999;
+}
+
+.detail_info_container {
+  margin-bottom: 20px;
+}
+
+button.gohan_create, a.gohan_create {
+  float: right;
+  min-width: 100px;
+}
+
+#create_form .form-group, #update_form .form-group {
+  margin-top: 5px;
+  overflow: hidden;
+}
+#create_form .form-group label.control-label, #update_form .form-group label.control-label {
+  width: 13em;
+  float: left;
+  line-height: 34px;
+  text-align: right;
+}
+#create_form .form-group .controls, #update_form .form-group .controls {
+  margin-left: 14em;
+}
+#create_form .form-actions, #update_form .form-actions {
+  text-align: right;
+}
+
+.modal-body {
+  max-height: 500px;
+  overflow-y: scroll;
+}
+
+.gohan-table.table > thead > tr > th {
+  border-bottom-width: 1px;
+}
+.gohan-table td {
+  vertical-align: middle !important;
+  word-break: break-all;
+  white-space: normal !important;
+  font-size: 13px;
+}
+.gohan-table td pre {
+  margin: 0;
+  padding: 5px;
+}
+.gohan-table td .btn-group {
+  white-space: nowrap;
+}
+.gohan-table td .btn-group > .btn {
+  float: none;
+}
+
+div.table-responsive {
+  overflow: visible;
+}
+
+#alerts {
+  padding: 15px 15px 0;
+}
+
+.jsonform-required > label:after {
+  content: ' *';
+  color: red;
+}
+
+form.jsonform-hasrequired:after {
+  content: '* Required field';
+  display: block;
+  float: right;
+  color: red;
+  padding-top: 1em;
+}
+
+.bootstrap-dialog-title {
+  font-family: RobotoDraft,Roboto,Helvetica Neue,Helvetica,Arial,sans-serif;
+  font-weight: 300;
+}
+
+.login-background {
+  height: 100%;
+  width: 100%;
+}
