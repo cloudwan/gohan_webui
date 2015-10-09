@@ -1,0 +1,41 @@
+<!-- <h1 class="header" id="bread_crumb">
+</h1> -->
+
+<div class="detail_info_container card">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-6 resource_name"><h2><%- schema.title %></h2></div>
+      <div class="col-xs-6 func"><a href="#" class="edit">Edit</a></div>
+    </div>
+   
+    <% _.each(schema.schema.propertiesOrder, function(key){
+     var property = schema.schema.properties[key];
+     var view = property['view'];
+     if(view){
+       if(view.indexOf("detail") < 0){
+         return
+       }
+     }
+    %>
+    <div class="row_property">
+      <div class="property_title"><%- property.title %></div>
+      <div class="property_detail"><%= data[key] %></div>
+    </div>
+    <% }); %>
+  </div>
+</div>
+
+
+<% if ( children.length > 0 ) { %>
+<div class="container-fluid">
+  <div class="row">
+    <% _.each(children, function(child){  %>
+    <div class="child_resource">
+      <div id="<%- child.id %>_table"></div>
+    </div>
+    <% }); %>
+  </div>
+</div>
+<% } %>
+
+<div id="ex_container"></div>

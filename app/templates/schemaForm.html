@@ -1,0 +1,11 @@
+<table class="table table-striped" id="properties_table">
+<thead>
+<tr><th></th><th>ID</th><%
+_.each(propertyColumns, function(column){%>
+    <th><%= column.id %></th>
+<%
+ });
+%>
+<th></th></tr></thead>
+<tbody></tbody></table>
+

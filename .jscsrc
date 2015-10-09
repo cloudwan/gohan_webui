@@ -1,0 +1,74 @@
+{
+	"maxErrors": 500,
+	"disallowAnonymousFunctions": true,
+	"disallowDanglingUnderscores": true,
+	"disallowEmptyBlocks": true,
+	"disallowFunctionDeclarations": true,
+	"disallowIdenticalDestructuringNames": false,
+	"disallowKeywordsOnNewLine": [
+		"else"
+	],
+	"disallowTabs": true,
+	"disallowMultiLineTernary": true,
+	"disallowMultipleLineBreaks": true,
+	"disallowMultipleLineStrings": true,
+	"disallowMultipleSpaces": true,
+	"disallowMultipleVarDecl": {
+		"strict": true
+	},
+	"disallowNestedTernaries": true,
+	"disallowNewlineBeforeBlockStatements": true,
+	"disallowOperatorBeforeLineBreak": true,
+	"disallowPaddingNewlinesInBlocks": true,
+	"disallowQuotedKeysInObjects": true,
+	"disallowTrailingComma": true,
+	"disallowTrailingWhitespace": true,
+	"disallowUnusedParams": true,
+	"disallowYodaConditions": true,
+	"maximumLineLength": 120,
+	"requireAlignedMultilineParams": true,
+	"requireBlocksOnNewline": true,
+	"requireCamelCaseOrUpperCaseIdentifiers": true,
+	"requireCapitalizedComments": true,
+	"requireCommaBeforeLineBreak": true,
+	"requireCurlyBraces": true,
+	"requireDollarBeforejQueryAssignment": true,
+	"requireDotNotation": true,
+	"requireLineBreakAfterVariableAssignment": true,
+	"requireLineFeedAtFileEnd": true,
+	"requireObjectKeysOnNewLine": true,
+	"requirePaddingNewLineAfterVariableDeclaration": true,
+	"requirePaddingNewLinesAfterUseStrict": true,
+	"requirePaddingNewLinesBeforeExport": true,
+	"requirePaddingNewlinesBeforeKeywords": [
+		"do",
+		"for",
+		"if"
+	],
+	"requireSpaceBeforeKeywords": [
+		"else",
+		"while",
+		"catch"
+	],
+	"requireSpaceAfterComma": true,
+	"requireSpaceAfterKeywords": true,
+	"requireSemicolons": true,
+	"requireSpaceBeforeBinaryOperators": true,
+	"requireSpaceBeforeBlockStatements": 1,
+	"requireSpaceBetweenArguments": true,
+	"requireSpacesInForStatement": true,
+	"requireSpacesInFunctionDeclaration": {
+		"beforeOpeningCurlyBrace": true
+	},
+	"safeContextKeyword": ["that", "self"],
+	"validateQuoteMarks": "'",
+	"excludeFiles": [
+        "node_modules/**",
+        "bower_components/**",
+        "test/**",
+        "karma.conf.js",
+        "webpack.config.js",
+        "webpack.test.config.js",
+		"libs/**"
+	]
+}

@@ -1,0 +1,33 @@
+{
+    "authUrl": "http://__HOST__:9443/v2.0",
+    "gohan": {
+        "schema": "/gohan/v0.1/schemas",
+        "url": "http://__HOST__:9443"
+    },
+    "sidebar": [
+        {
+            "path": "#/",
+            "title": "Top",
+            "class": "top",
+            "name": "sample",
+            "viewClass": "sampleview"
+        },
+        {
+            "path": "#/v2.0/networks",
+            "title": "Networks",
+            "class": "networks"
+        },
+        {
+            "path": "#/v2.0/servers",
+            "title": "Server",
+            "class": "server"
+        }
+    ],
+    "routes": [
+        {
+            "path": "#/",
+            "viewClass": "sampleview",
+            "name": "sample"
+        }
+    ]
+}

@@ -1,0 +1,105 @@
+
+<div class="container-fluid table_search">
+  <div class="row">
+    <div class="col-xs-6 resource_name">
+      <h2><%- schema.title %></h2>
+    </div>
+    <div class="col-xs-6 func">
+      <form class="form-inline">
+        <div class="form-group">
+          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery %>">
+        </div>
+      </form><a class="btn btn-primary gohan_create"><strong>+</strong> New</a>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <table class="table table-hover gohan-table">
+    <thead>
+      <tr>
+       <% _.each(schema.schema.propertiesOrder, function(key){
+           var property = schema.schema.properties[key];
+           var view = property['view']
+           if(view){
+             if(view.indexOf("list") < 0){
+               return
+             }
+           }
+           if(key === parentProperty){
+             return
+           }
+        %>
+        <th>
+            <a href="#<%= schema.url.substring(1) %>" data-id="<%= key %>" class="title"><%= property.title %>
+                <% if(sort.by === key) {
+                    if(sort.reverse) {%>
+                        <div class="glyphicon glyphicon-sort-by-alphabet-alt"></div>
+                    <% } else { %>
+                        <div class="glyphicon glyphicon-sort-by-alphabet"></div>
+                    <% }
+                } %>
+            </a>
+        </th>
+       <% }); %>
+       <th></th>
+      </tr>
+    </thead>
+    <% _.each(data, function(page, key){ %>
+    <tbody id="page<%= key + 1 %>" <% if (key !== activePage) { %> class="hidden" <% }%> >
+      <% _.each(page, function(d){ %>
+      <tr>
+       <% _.each(schema.schema.propertiesOrder, function(key){
+           var property = schema.schema.properties[key];
+           var view = property['view']
+           if(view){
+             if(view.indexOf("list") < 0){
+               return
+             }
+           }
+           if(key === parentProperty){
+             return
+           }
+           %>
+        <td><%= d[key] %></td>
+       <% }); %>
+       <td class="action_column">
+         <div class="btn-group ">
+          <a class="btn btn-default btn-sm gohan_update btn-raised btn-material-blue-600" data-id="<%- d['id']%>">Edit</a>
+             <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+               data-toggle="dropdown" aria-expanded="true" data-container="body">
+             <span class="caret"></span>
+             <span class="sr-only">Toggle Dropdown</span>
+           </button>
+           <ul class="dropdown-menu pull-right" role="menu" >
+             <li><a class="gohan_delete" data-id="<%- d['id']%>" >Delete</a></li>
+           </ul>
+         </div>
+       </td>
+      </tr>
+      <% }); %>
+   </tbody>
+    <% }); %>
+  </table>
+</div>
+
+<% if (data.length > 1) { %>
+<nav>
+    <ul class="pagination pagination-sm">
+        <li <% if (activePage === 0) { %> class="disabled" <% }%>>
+            <a data-id="prev" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <% _.each(data, function(d, key){ %>
+        <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key + 1 %>"><%= key + 1 %></a></li>
+        <% }); %>
+        <li <% if (activePage === data.length - 1) { %> class="disabled" <% }%>>
+            <a data-id="next" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+<% } %>
+
+

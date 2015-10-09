@@ -1,0 +1,20 @@
+<div class="title">
+  <a href="/#"><h2>Gohan</h2></a>
+</div>
+<% if (authToken) { %>
+<div class="dropdown">
+  <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+    <span class="fa fa-user"></span>
+    <%= username %>
+    <span class="caret"></span>
+  </a>
+  <ul id="menu1" class="dropdown-menu" aria-labelledby="dLabel">
+    <li>
+      <a href="#"  id="logout">Log Out</a>
+    </li>
+  </ul>
+</div>
+<% } %>
+
+
+
