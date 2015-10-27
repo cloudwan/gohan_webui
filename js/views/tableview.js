@@ -133,7 +133,7 @@ Gohan.TableView = Backbone.View.extend({
     var target = $(evt.target);
     var id = target.data("id");
     var model = this.collection.get(id);
-    model.destroy({"wait": "true"});
+    model.destroy({"wait": "true", "error": Gohan.error});
   },
   renderProperty: function(data, key) {
     var content;
