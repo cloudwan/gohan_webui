@@ -21,6 +21,9 @@ deploy:
           rm -rf .gitignore
           ls dist
           rm -rf node_modules
+          cp ${WERCKER_SOURCE_DIR}/css/dashboard.css ${WERCKER_OUTPUT_DIR}
+          cp ${WERCKER_SOURCE_DIR}/dist/gohan.js ${WERCKER_OUTPUT_DIR}
+          cp ${WERCKER_SOURCE_DIR}/jst/template.js ${WERCKER_OUTPUT_DIR}
           zip -r ${WERCKER_OUTPUT_DIR}/chazuke.zip .
     - tcnksm/ghr:
         token: $GITHUB_TOKEN
