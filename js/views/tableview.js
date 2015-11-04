@@ -2,9 +2,9 @@ Gohan.TableView = Backbone.View.extend({
   tagName: 'div',
   className: 'tableview',
   events: {
-    "click .gohan_create": "createModel",
-    "click .gohan_delete": "deleteModel",
-    "click .gohan_update": "updateModel"
+    'click .gohan_create': 'createModel',
+    'click .gohan_delete': 'deleteModel',
+    'click .gohan_update': 'updateModel'
   },
   initialize: function(options) {
     this.app = options.app;
@@ -12,7 +12,7 @@ Gohan.TableView = Backbone.View.extend({
     this.fragment = options.fragment;
     this.childview = options.childview;
     if( this.childview ) {
-      this.parent_property = this.schema.get('parent') + "_id";
+      this.parent_property = this.schema.get('parent') + '_id';
     }
     this.listenTo(this.collection, 'update', this.render);
     this.collection.fetch({
@@ -21,7 +21,7 @@ Gohan.TableView = Backbone.View.extend({
   },
   dialogForm: function(action, form_title, data, onsubmit) {
     var self = this;
-    var form = $("<form></form>", self.$el);
+    var form = $('<form></form>', self.$el);
     form.jsonForm({
       schema: self.schema.filterByAction(action, self.parent_property),
       value: data,
@@ -36,7 +36,7 @@ Gohan.TableView = Backbone.View.extend({
         onsubmit(values);
       }
     });
-    form.prepend("<div id='alerts_form'></div>");
+    form.prepend('<div id="alerts_form"></div>');
     self.dialog = BootstrapDialog.show({
       size: BootstrapDialog.SIZE_WIDE,
       type: BootstrapDialog.TYPE_DEFAULT,
@@ -46,7 +46,7 @@ Gohan.TableView = Backbone.View.extend({
       spinicon: 'glyphicon glyphicon-refresh',
       onshown: function() {
         $('.modal-body').css({
-          "max-height": $(window).height() - 200 + 'px'
+          'max-height': $(window).height() - 200 + 'px'
         });
       },
       buttons: [{
@@ -71,11 +71,11 @@ Gohan.TableView = Backbone.View.extend({
   createModel: function (){
     var self = this;
     var data = self.toLocal({});
-    var form_title = '<h4>Create ' + self.schema.get("title") + '</h4>';
-    var action = "create";
+    var form_title = '<h4>Create ' + self.schema.get('title') + '</h4>';
+    var action = 'create';
     var onsubmit = function (values) {
       values = self.toServer(values);
-      values["_is_new"] = true;
+      values['_is_new'] = true;
       self.collection.create(values, {
         wait: true,
         success: function() {
@@ -103,14 +103,14 @@ Gohan.TableView = Backbone.View.extend({
     var model = this.collection.get(id);
     var data = self.toLocal(model.toJSON());
     var action = 'update';
-    var form_title = '<h4>Update ' + self.schema.get("title") + '</h4>';
+    var form_title = '<h4>Update ' + self.schema.get('title') + '</h4>';
     var onsubmit = function(values){
       var values = self.toServer(values);
       model.save(values, {
         patch: true,
         wait: true,
         success: function(){
-          self.collection.trigger("update");
+          self.collection.trigger('update');
           self.dialog.close();
           self.collection.fetch({
              success: function(){
@@ -131,19 +131,19 @@ Gohan.TableView = Backbone.View.extend({
   },
   deleteModel: function (evt){
     var target = $(evt.target);
-    var id = target.data("id");
+    var id = target.data('id');
     var model = this.collection.get(id);
-    model.destroy({"wait": "true", "error": Gohan.error});
+    model.destroy({'wait': 'true'});
   },
   renderProperty: function(data, key) {
     var content;
-    var property = this.schema.get("schema").properties[key];
+    var property = this.schema.get('schema').properties[key];
     var value = data[key];
     if (_.isUndefined(property)) {
-      return "";
+      return '';
     }
     if (_.isUndefined(value)) {
-      return "";
+      return '';
     }
     var related_object = data[property.relation_property];
     if (!_.isUndefined(related_object)) {
@@ -151,21 +151,21 @@ Gohan.TableView = Backbone.View.extend({
           return related_object.name
         }
     }
-    if (property.type == "object") {
-      content = $("<pre style='width:500px;'></pre>").text(
-        "<pre>" + jsyaml.safeDump(value) + "</pre>").html();
-      content = content.replace("'", "&#39;");
+    if (property.type == 'object') {
+      content = $('<pre style="width:500px;"></pre>').text(
+        '<pre>' + jsyaml.safeDump(value) + '</pre>').html();
+      content = content.replace('\'', '&#34;');
       return JST['data_popup.html']({
         content: content
       });
     }
-    if (property.type == "array") {
-      return "<pre>" + jsyaml.safeDump(value) + "</pre>";
+    if (property.type == 'array') {
+      return '<pre>' + jsyaml.safeDump(value) + '</pre>';
     }
     var title = property.title.toLowerCase();
-    if (title == "name" || title == "title")
+    if (title == 'name' || title == 'title')
     {
-      return "<a href='#" + this.fragment + "/" + data.id + "'>" + _.escape(value) + "</a>";
+      return '<a href="#' + this.fragment + '/' + data.id + '">' + _.escape(value) + '</a>';
     }
     return value;
   },
@@ -184,7 +184,7 @@ Gohan.TableView = Backbone.View.extend({
       'schema': this.schema.toJSON(),
       'parent_property': this.parent_property,
     }));
-    this.$("button[data-toggle=hover]").popover();
+    this.$('button[data-toggle=hover]').popover();
     return this;
   }
 });

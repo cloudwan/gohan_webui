@@ -9,7 +9,7 @@ Gohan.HeaderView = Backbone.View.extend({
     this.listenTo(this.model, 'change:auth_data', this.render);
   },
   logout: function() {
-    console.log("click!");
+    console.log('click!');
     this.model.unsetAuthData();
     window.location.reload();
   },

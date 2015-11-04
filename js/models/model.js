@@ -21,7 +21,7 @@ Gohan.SchemaModel = Backbone.Model.extend({
     return this.collection.get(parent_id);
   },
   parentProperty: function(){
-    return this.get('parent') + "_id";
+    return this.get('parent') + '_id';
   },
   hasParent: function(){
     return !_.isUndefined(this.get('parent')) && this.get('parent') != '';
@@ -39,29 +39,29 @@ Gohan.SchemaModel = Backbone.Model.extend({
         this.url = this.base_url;
       },
       isNew: function() {
-        return this.get("_is_new");
+        return this.get('_is_new');
       },
       parse: function(resp) {
-        if(_.isUndefined(resp["id"])){
+        if(_.isUndefined(resp['id'])){
            return resp[self.get('singular')];
         }
         return resp;
       },
       sync: function(method, model, options){
         if (!this.isNew()) {
-            this.url = this.base_url + "/" + this.id;
+            this.url = this.base_url + '/' + this.id;
         }
-        if(method === "patch"){
-          method = "update";
+        if(method === 'patch'){
+          method = 'update';
         }
         if(_.isUndefined(options)){
           options = {};
         }
-        options["headers"] = {
+        options['headers'] = {
           'X-Auth-Token': userModel.authToken(),
           'Content-Type':'application/json'
         };
-        this.unset("_is_new");
+        this.unset('_is_new');
         var data = {};
         var modelJSON= {}
         var schemaForAction = self.filterByAction(method)
@@ -99,7 +99,7 @@ Gohan.SchemaModel = Backbone.Model.extend({
         if(_.isUndefined(self.parent_id())){
           return
         }
-        var parent_model = new parent_model_class({"id": self.parent_id()});
+        var parent_model = new parent_model_class({'id': self.parent_id()});
         parent_model.fetch({
           success: function(){
             ancestors.push(parent_model);
@@ -132,7 +132,7 @@ Gohan.SchemaModel = Backbone.Model.extend({
         if(_.isUndefined(options)){
           options = {};
         }
-        options["headers"] = {
+        options['headers'] = {
           'X-Auth-Token': userModel.authToken(),
           'Content-Type':'application/json'
         };
@@ -178,11 +178,11 @@ Gohan.SchemaModel = Backbone.Model.extend({
       return schema;
     }
     var result = $.extend(true, {}, schema);
-    if (schema.type == "array") {
+    if (schema.type == 'array') {
       result.items = self.toLocalSchema(result.items);
       return result;
     };
-    if (schema.type != "object") {
+    if (schema.type != 'object') {
       return schema;
     }
     if (!_.isUndefined(schema.properties)) {
@@ -190,31 +190,31 @@ Gohan.SchemaModel = Backbone.Model.extend({
         result.properties[key] = self.toLocalSchema(property);
       });
     } else if (!_.isUndefined(schema.items)) {
-      result.type = "array";
+      result.type = 'array';
       var items = self.toLocalSchema(result.items);
       if (_.isUndefined(items.title)) {
-        items.title = "value";
+        items.title = 'value';
       }
       result.items = {
-        "type": "object",
-        "required": schema.required,
-        "properties": {
-          "id": {
-            "title": "key",
-            "type": "string"
+        'type': 'object',
+        'required': schema.required,
+        'properties': {
+          'id': {
+            'title': 'key',
+            'type': 'string'
           },
-          "value": items
+          'value': items
         }
       };
     } else {
-      result.type = "string";
-      result.format = "yaml";
+      result.type = 'string';
+      result.format = 'yaml';
     }
     return result;
   },
   defaultValue: function(schema) {
     var self = this;
-    if (schema.type == "object") {
+    if (schema.type == 'object') {
       if (_.isUndefined(schema.default)) {
         var result = {};
         _.each(schema.properties, function(property, key) {
@@ -233,14 +233,14 @@ Gohan.SchemaModel = Backbone.Model.extend({
   },
   toLocalData: function(schema, data) {
     var self = this;
-    if (schema.type != "object") {
+    if (schema.type != 'object') {
       return data;
     }
     if (_.isUndefined(data)) {
       return undefined;
     }
 
-    if (schema.format == "jsonschema") {
+    if (schema.format == 'jsonschema') {
       return jsyaml.safeDump(data);
     } else if (!_.isUndefined(schema.properties)) {
       $.each(schema.properties, function(key, property) {
@@ -251,16 +251,16 @@ Gohan.SchemaModel = Backbone.Model.extend({
       if (_.isUndefined(schema.items.propertiesOrder)) {
         _.each(data, function(value, key) {
           result.push({
-            "id": key,
-            "value": self.toLocalData(schema.items, value)
+            'id': key,
+            'value': self.toLocalData(schema.items, value)
           });
         });
       } else {
         _.each(schema.items.propertiesOrder, function(key) {
           var value = data[key];
           result.push({
-            "id": key,
-            "value": self.toLocalData(schema.items, value)
+            'id': key,
+            'value': self.toLocalData(schema.items, value)
           });
         });
       }
@@ -275,7 +275,7 @@ Gohan.SchemaModel = Backbone.Model.extend({
   },
   toServerData: function(schema, data) {
     var self = this;
-    if (schema.type != "object") {
+    if (schema.type != 'object') {
       return data;
     }
     if (_.isUndefined(data)) {
@@ -301,7 +301,7 @@ Gohan.SchemaModel = Backbone.Model.extend({
     var schema = this.toJSON();
     var local_schema = this.toLocalSchema(schema.schema);
     $.each(local_schema.properties, function(key, property) {
-      if (key == "id" && property.format == "uuid") {
+      if (key == 'id' && property.format == 'uuid') {
         return;
       }
       if (key == parent_property) {
@@ -324,10 +324,10 @@ Gohan.SchemaModel = Backbone.Model.extend({
       return result.hasOwnProperty(property);
     });
     return {
-      "type": "object",
-      "properties": result,
-      "propertiesOrder": schema.schema.propertiesOrder,
-      "required": required
+      'type': 'object',
+      'properties': result,
+      'propertiesOrder': schema.schema.propertiesOrder,
+      'required': required
     };
   },
   children: function() {
@@ -346,7 +346,7 @@ Gohan.SchemaCollection = Backbone.Collection.extend({
     this.userModel = options.userModel;
   },
   parse: function(resp) {
-    return resp["schemas"];
+    return resp['schemas'];
   },
   unsetAuthData: function() {
     this.userModel.unsetAuthData();
@@ -355,7 +355,7 @@ Gohan.SchemaCollection = Backbone.Collection.extend({
     if(_.isUndefined(options)){
       options = {};
     }
-    options["headers"] = {
+    options['headers'] = {
       'X-Auth-Token': this.userModel.authToken(),
       'Content-Type':'application/json'
     };

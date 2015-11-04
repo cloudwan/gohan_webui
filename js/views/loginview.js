@@ -21,7 +21,7 @@ Gohan.LoginView = Backbone.View.extend({
     var id = this.$('#id').val();
     var password = this.$('#password').val();
     var tenant = this.$('#tenant').val();
-    $("#alerts").empty();
+    $('#alerts').empty();
     this.model.saveAuth(id, password, tenant);
   }
 });

@@ -14,13 +14,13 @@ Gohan.DetailView = Backbone.View.extend({
   },
   renderProperty: function(data, key) {
     var content;
-    var property = this.schema.get("schema").properties[key];
+    var property = this.schema.get('schema').properties[key];
     var value = data[key];
     if (_.isUndefined(value)) {
-      return "";
+      return '';
     }
     if (_.isUndefined(property)) {
-      return "";
+      return '';
     }
     var related_object = data[property.relation_property];
     if (!_.isUndefined(related_object)) {
@@ -28,12 +28,12 @@ Gohan.DetailView = Backbone.View.extend({
           return related_object.name
         }
     }
-    if (property.type == "object") {
-      content = $("<pre style='width:500px;'></pre>").text(jsyaml.safeDump(value)).html();
-      return "<pre>" + _.escape(content) + "</pre>";
+    if (property.type == 'object') {
+      content = $('<pre style="width:500px;"></pre>').text(jsyaml.safeDump(value)).html();
+      return '<pre>' + _.escape(content) + '</pre>';
     }
-    if (property.type == "array") {
-      return "<pre>" + jsyaml.safeDump(value) + "</pre>";
+    if (property.type == 'array') {
+      return '<pre>' + jsyaml.safeDump(value) + '</pre>';
     }
     return _.escape(value);
   },
@@ -64,15 +64,15 @@ Gohan.DetailView = Backbone.View.extend({
       var fragment = self.fragment;
       var parents = ancestors.map(function(ancestor){
           var model_fragment = fragment;
-          fragment = fragment.replace(/\/[^\/]+$/, "");
+          fragment = fragment.replace(/\/[^\/]+$/, '');
           var schema_fragment = fragment;
-          fragment = fragment.replace(/\/[^\/]+$/, "");
+          fragment = fragment.replace(/\/[^\/]+$/, '');
           if(ancestor.schema.hasParent() && self.childview){
             var schema_fragment = fragment;
           }
           return {
-            title: ancestor.get("name"),
-            schema_title: ancestor.schema.get("title"),
+            title: ancestor.get('name'),
+            schema_title: ancestor.schema.get('title'),
             fragment: model_fragment,
             schema_fragment: schema_fragment
           }
@@ -98,7 +98,7 @@ Gohan.DetailView = Backbone.View.extend({
         fragment: fragment,
         app: this.app,
       });
-      $("div#" + child.id + "_table", self.$el).html(tableView.render().el);
+      $('div#' + child.id + '_table', self.$el).html(tableView.render().el);
       return {
         title: child.get('title'),
         href: fragment,
@@ -106,7 +106,7 @@ Gohan.DetailView = Backbone.View.extend({
       };
     });
 
-    this.$("button[data-toggle=hover]").popover();
+    this.$('button[data-toggle=hover]').popover();
     return this;
   }
 });

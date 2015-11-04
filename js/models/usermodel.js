@@ -12,7 +12,7 @@ Gohan.UserModel = Backbone.Model.extend({
     if(_.isUndefined(options)){
       options = {};
     }
-    options["headers"] = {
+    options['headers'] = {
       'Content-Type':'application/json'
     };
     Backbone.sync(method, model, options);

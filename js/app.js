@@ -2,34 +2,34 @@
 (function() {
   var app = {
     error: function(collection, response) {
-      var message = "Unknown Error";
+      var message = 'Unknown Error';
       message = response.statusText;
       switch (response.status) {
         case 0:
-          message = "Server Connection failed";
+          message = 'Server Connection failed';
           collection.unsetAuthData();
           break;
         case 400:
-          message = "Invalid input error:" + response.responseJSON.error.message;
+          message = 'Invalid input error:' + response.responseJSON.error.message;
           break;
         case 401:
-          message = "Unauthorized Error: please retry login";
+          message = 'Unauthorized Error: please retry login';
           collection.unsetAuthData();
           break;
         case 404:
-          message = "Data Not Found";
+          message = 'Data Not Found';
           break;
         case 500:
-          message = "Server Side Error";
+          message = 'Server Side Error';
           break;
       }
       var html = JST['error.html']({
         message: message
       });
-      if ($("#alerts_form").length > 0) {
-        $("#alerts_form").html(html);
+      if ($('#alerts_form').length > 0) {
+        $('#alerts_form').html(html);
       } else {
-        $("#alerts").html(html);
+        $('#alerts').html(html);
       }
     },
     AppView: Backbone.View.extend({
@@ -42,20 +42,20 @@
         self.config = config;
         self.viewClass = options.viewClass || {};
 
-        if (config.auth_url.indexOf("__HOST__") > 0) {
+        if (config.auth_url.indexOf('__HOST__') > 0) {
           config.auth_url = config.auth_url.replace(
-            "__HOST__", window.location.host);
+            '__HOST__', window.location.hostname);
         }
-        if (config.gohan.url.indexOf("__HOST__") > 0) {
+        if (config.gohan.url.indexOf('__HOST__') > 0) {
           config.gohan.url = config.gohan.url.replace(
-            "__HOST__", window.location.host);
+            '__HOST__', window.location.hostname);
         }
 
         self.userModel = options.userModel;
 
         if(_.isUndefined(self.userModel)){
           self.userModel = new Gohan.UserModel({
-            url: self.config.auth_url + "/tokens"
+            url: self.config.auth_url + '/tokens'
           });
         }
 
@@ -97,7 +97,7 @@
       get_param_from_query: function(){
         var params = {};
         var query_strings = document.location.search.substr(1)
-        if(query_strings === ""){
+        if (query_strings === '') {
             return params;
         }
         _.each(query_strings.split('&'), function(query){
@@ -109,9 +109,9 @@
       },
       autoBuildUIForSchema: function (schema){
         var self = this;
-        var metadata = schema.get("metadata");
+        var metadata = schema.get('metadata');
         var params = self.get_param_from_query()
-        var type = params["type"] || "tenant"
+        var type = params['type'] || 'tenant'
         if(metadata && metadata.type != type){
             return
         }
@@ -122,11 +122,11 @@
         _.extend(viewClass, self.viewClass[schema.id]);
         var collection =  schema.makeCollection();
         if(schema.hasParent()){
-          var full_route = schema.url();
+          var full_route = schema.prefix();
           full_route = full_route.substr(1);
 
           var child_table_view = function(){
-            $("#alerts").empty();
+            $('#alerts').empty();
             var endpoint = schema.apiEndpointBase() + '/' + Backbone.history.fragment;
             var collection = schema.makeCollection(endpoint);
             var tableView = new viewClass.table({
@@ -137,16 +137,16 @@
               app: self
             });
             self.$('#main_body').html(tableView.render().el);
-            self.$('#main').addClass("active");
+            self.$('#main').addClass('active');
           };
 
           var child_detail_view = function() {
-            $("#alerts").empty();
+            $('#alerts').empty();
             var id = arguments[arguments.length - 2];
             var model = collection.get(id);
 
             if(_.isUndefined(model)){
-              model = new collection.model({"id": id});
+              model = new collection.model({'id': id});
             }
             var detailView = new viewClass.detail({
               schema: schema,
@@ -156,19 +156,19 @@
               app: self
             });
             self.$('#main_body').html(detailView.render().el);
-            self.$('#main').addClass("active");
+            self.$('#main').addClass('active');
           };
-          self.router.route(full_route, "child_table_view", child_table_view);
-          self.router.route(full_route + '/:id', "detail_view", child_detail_view);
+          self.router.route(full_route, 'child_table_view', child_table_view);
+          self.router.route(full_route + '/:id', 'detail_view', child_detail_view);
         }else{
-          var route = schema.get('url');
+          var route = schema.get('prefix');
           route = route.substr(1);
           var sidebar_menu = self.sidebar_view.collection.push({
-            path: "#" + route,
+            path: '#' + route,
             title: schema.get('title'),
           });
           var table_view = function(id) {
-            $("#alerts").empty();
+            $('#alerts').empty();
             var tableView = new viewClass.table({
               schema: schema,
               collection: collection,
@@ -176,15 +176,15 @@
               app: self
             });
             self.$('#main_body').html(tableView.render().el);
-            self.$('#main').addClass("active");
+            self.$('#main').addClass('active');
             self.sidebar_view.select(sidebar_menu);
           };
 
           var detail_view = function(id) {
-            $("#alerts").empty();
+            $('#alerts').empty();
             var model = collection.get(id);
             if(_.isUndefined(model)){
-              model = new collection.model({"id": id});
+              model = new collection.model({'id': id});
             }
             var detailView = new viewClass.detail({
               schema: schema,
@@ -193,12 +193,12 @@
               app: self
             });
             self.$('#main_body').html(detailView.render().el);
-            self.$('#main').addClass("active");
+            self.$('#main').addClass('active');
             self.sidebar_view.select(sidebar_menu);
           };
 
-          self.router.route(route, "table_view", table_view);
-          self.router.route(route + '/:id', "detail_view", detail_view);
+          self.router.route(route, 'table_view', table_view);
+          self.router.route(route + '/:id', 'detail_view', detail_view);
 
         }
       },

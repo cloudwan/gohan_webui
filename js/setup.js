@@ -1,13 +1,13 @@
 //Set up
 $(function() {
   $.material.init();
-  $.get("config.json").then(
+  $.get('config.json').then(
     function(config) {
       var router = new Backbone.Router;
       var root_view = new Gohan.AppView({
         router: router,
         config: config,
-        viewClass: {"schema": {
+        viewClass: {'schema': {
           table: Gohan.SchemaView
         }}
       });
