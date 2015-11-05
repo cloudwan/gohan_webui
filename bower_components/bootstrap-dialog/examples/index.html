@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="assets/jquery/jquery-1.10.2.min.js"></script>
-<link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-<script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/prettify/run_prettify.js"></script>
-<link href="assets/bootstrap-dialog/css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
-<script src="assets/bootstrap-dialog/js/bootstrap-dialog.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.5/css/bootstrap-dialog.min.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.5/js/bootstrap-dialog.min.js"></script>
 <meta charset="utf-8" />
 <title>BootstrapDialog examples</title>
 <style>
@@ -480,6 +480,12 @@
                     dialog.setSize(BootstrapDialog.SIZE_NORMAL);
                 }
             }, {
+                label: 'Small',
+                action: function(dialog){
+                    dialog.setTitle('Small');
+                    dialog.setSize(BootstrapDialog.SIZE_SMALL);
+                }
+            }, {
                 label: 'Wide',
                 action: function(dialog){
                     dialog.setTitle('Wide');
@@ -823,7 +829,8 @@
             title: 'WARNING',
             message: 'Warning! No Banana!',
             type: BootstrapDialog.TYPE_WARNING, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
-            closable: true, // <-- Default value is true
+            closable: true, // <-- Default value is false
+            draggable: true, // <-- Default value is false
             buttonLabel: 'Roar! Why!', // <-- Default value is 'OK',
             callback: function(result) {
                 // result will be true if button was click, while it will be false if users close the dialog directly.
@@ -852,68 +859,46 @@
         });
         -->
     </div>
+
+    <a name="advanced-confirm-window"></a>
+    <h3>Just like what we have done in alert, we can control confirm dialog more.</h3>
+    <div class="source-code runnable">
+        <!--
+        BootstrapDialog.confirm({
+            title: 'WARNING',
+            message: 'Warning! Drop your banana?',
+            type: BootstrapDialog.TYPE_WARNING, // <-- Default value is BootstrapDialog.TYPE_PRIMARY
+            closable: true, // <-- Default value is false
+            draggable: true, // <-- Default value is false
+            btnCancelLabel: 'Do not drop it!', // <-- Default value is 'Cancel',
+            btnOKLabel: 'Drop it!', // <-- Default value is 'OK',
+            btnOKClass: 'btn-warning', // <-- If you didn't specify it, dialog type will be used,
+            callback: function(result) {
+                // result will be true if button was click, while it will be false if users close the dialog directly.
+                if(result) {
+                    alert('Yup.');
+                }else {
+                    alert('Nope.');
+                }
+            }
+        });
+        -->
+    </div>
     
-    <h3>Source code of the shortcut methods above</h3>
-    <p>
-        I mean you can write your own handy stuff :)
-    </p>
+    <a name="i18n-message"></a>
+    <h3>I18N</h3>
+    <p>To provide local messages for you needed, reset those messages below before using BootstrapDialog.</p>
     <div class="source-code">
         <!--
-        /**
-         * Alert window
-         * 
-         * @param {type} message
-         * @param {type} callback
-         * @returns {undefined}
-         */
-        BootstrapDialog.alert = function(message, callback) {
-            new BootstrapDialog({
-                message: message,
-                data: {
-                    'callback': callback
-                },
-                closable: false,
-                buttons: [{
-                        label: 'OK',
-                        action: function(dialog) {
-                            typeof dialog.getData('callback') === 'function' && dialog.getData('callback')(true);
-                            dialog.close();
-                        }
-                    }]
-            }).open();
-        };
-
-        /**
-         * Confirm window
-         * 
-         * @param {type} message
-         * @param {type} callback
-         * @returns {undefined}
-         */
-        BootstrapDialog.confirm = function(message, callback) {
-            new BootstrapDialog({
-                title: 'Confirmation',
-                message: message,
-                closable: false,
-                data: {
-                    'callback': callback
-                },
-                buttons: [{
-                        label: 'Cancel',
-                        action: function(dialog) {
-                            typeof dialog.getData('callback') === 'function' && dialog.getData('callback')(false);
-                            dialog.close();
-                        }
-                    }, {
-                        label: 'OK',
-                        cssClass: 'btn-primary',
-                        action: function(dialog) {
-                            typeof dialog.getData('callback') === 'function' && dialog.getData('callback')(true);
-                            dialog.close();
-                        }
-                    }]
-            }).open();
-        };
+        BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_DEFAULT] = 'Information';
+        BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_INFO] = 'Information';
+        BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_PRIMARY] = 'Information';
+        BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_SUCCESS] = 'Success';
+        BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_WARNING] = 'Warning';
+        BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_DANGER] = 'Danger';
+        BootstrapDialog.DEFAULT_TEXTS['OK'] = 'OK';
+        BootstrapDialog.DEFAULT_TEXTS['CANCEL'] = 'Cancel';
+        BootstrapDialog.DEFAULT_TEXTS['CONFIRM'] = 'Confirmation';
         -->
     </div>
     

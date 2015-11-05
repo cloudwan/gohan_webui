@@ -17,11 +17,11 @@
 
     // CommonJS module is defined
     if (typeof module !== 'undefined' && module.exports) {
-        module.exports = factory(require('jquery')(root));
+        module.exports = factory(require('jquery'), require('bootstrap'));
     }
     // AMD module is defined
     else if (typeof define === "function" && define.amd) {
-        define("bootstrap-dialog", ["jquery"], function($) {
+        define("bootstrap-dialog", ["jquery", "bootstrap"], function($) {
             return factory($);
         });
     } else {
@@ -48,13 +48,15 @@
             version = 'v3.1';
         } else if (/3\.2\.\d+/.test($.fn.modal.Constructor.VERSION)) {
             version = 'v3.2';
+        } else if (/3\.3\.[1,2]/.test($.fn.modal.Constructor.VERSION)) {
+            version = 'v3.3';  // v3.3.1, v3.3.2
         } else {
-            version = 'v3.3';  // v3.3+
+            version = 'v3.3.4';
         }
 
         return version;
     };
-    BootstrapDialogModal.ORIGINAL_BODY_PADDING = $('body').css('padding-right') || 0;
+    BootstrapDialogModal.ORIGINAL_BODY_PADDING = parseInt(($('body').css('padding-right') || 0), 10);
     BootstrapDialogModal.METHODS_TO_OVERRIDE = {};
     BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.1'] = {};
     BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.2'] = {
@@ -136,6 +138,7 @@
             }, this));
         }
     };
+    BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.3.4'] = $.extend({}, BootstrapDialogModal.METHODS_TO_OVERRIDE['v3.3']);
     BootstrapDialogModal.prototype = {
         constructor: BootstrapDialogModal,
         /**
@@ -183,18 +186,18 @@
         this.holdThisInstance();
     };
 
+    BootstrapDialog.BootstrapDialogModal = BootstrapDialogModal;
+
     /**
      *  Some constants.
      */
     BootstrapDialog.NAMESPACE = 'bootstrap-dialog';
-
     BootstrapDialog.TYPE_DEFAULT = 'type-default';
     BootstrapDialog.TYPE_INFO = 'type-info';
     BootstrapDialog.TYPE_PRIMARY = 'type-primary';
     BootstrapDialog.TYPE_SUCCESS = 'type-success';
     BootstrapDialog.TYPE_WARNING = 'type-warning';
     BootstrapDialog.TYPE_DANGER = 'type-danger';
-
     BootstrapDialog.DEFAULT_TEXTS = {};
     BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_DEFAULT] = 'Information';
     BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_INFO] = 'Information';
@@ -204,16 +207,16 @@
     BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_DANGER] = 'Danger';
     BootstrapDialog.DEFAULT_TEXTS['OK'] = 'OK';
     BootstrapDialog.DEFAULT_TEXTS['CANCEL'] = 'Cancel';
-
+    BootstrapDialog.DEFAULT_TEXTS['CONFIRM'] = 'Confirmation';
     BootstrapDialog.SIZE_NORMAL = 'size-normal';
+    BootstrapDialog.SIZE_SMALL = 'size-small';
     BootstrapDialog.SIZE_WIDE = 'size-wide';    // size-wide is equal to modal-lg
     BootstrapDialog.SIZE_LARGE = 'size-large';
-
     BootstrapDialog.BUTTON_SIZES = {};
     BootstrapDialog.BUTTON_SIZES[BootstrapDialog.SIZE_NORMAL] = '';
+    BootstrapDialog.BUTTON_SIZES[BootstrapDialog.SIZE_SMALL] = '';
     BootstrapDialog.BUTTON_SIZES[BootstrapDialog.SIZE_WIDE] = '';
     BootstrapDialog.BUTTON_SIZES[BootstrapDialog.SIZE_LARGE] = 'btn-lg';
-
     BootstrapDialog.ICON_SPINNER = 'glyphicon glyphicon-asterisk';
 
     /**
@@ -233,7 +236,8 @@
         autodestroy: true,
         draggable: false,
         animate: true,
-        description: ''
+        description: '',
+        tabindex: -1
     };
 
     /**
@@ -303,7 +307,6 @@
             !this.isRealized() && this.realize();
             this.getModal().modal('show');
             this.updateZIndex();
-            this.setOpened(true);
 
             return this;
         }
@@ -314,6 +317,7 @@
         open: BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']['open']
     };
     BootstrapDialog.METHODS_TO_OVERRIDE['v3.3'] = {};
+    BootstrapDialog.METHODS_TO_OVERRIDE['v3.3.4'] = $.extend({}, BootstrapDialog.METHODS_TO_OVERRIDE['v3.1']);
     BootstrapDialog.prototype = {
         constructor: BootstrapDialog,
         initOptions: function(options) {
@@ -344,8 +348,9 @@
             return this;
         },
         createModal: function() {
-            var $modal = $('<div class="modal" tabindex="-1" role="dialog" aria-hidden="true"></div>');
-            $modal.prop('id', this.getId()).attr('aria-labelledby', this.getId() + '_title');
+            var $modal = $('<div class="modal" role="dialog" aria-hidden="true"></div>');
+            $modal.prop('id', this.getId());
+            $modal.attr('aria-labelledby', this.getId() + '_title');
 
             return $modal;
         },
@@ -486,9 +491,16 @@
 
                 // Dialog size
                 this.getModal().removeClass(BootstrapDialog.SIZE_NORMAL)
+                .removeClass(BootstrapDialog.SIZE_SMALL)
                 .removeClass(BootstrapDialog.SIZE_WIDE)
                 .removeClass(BootstrapDialog.SIZE_LARGE);
                 this.getModal().addClass(this.getSize());
+
+                // Smaller dialog.
+                this.getModalDialog().removeClass('modal-sm');
+                if (this.getSize() === BootstrapDialog.SIZE_SMALL) {
+                    this.getModalDialog().addClass('modal-sm');
+                }
 
                 // Wider dialog.
                 this.getModalDialog().removeClass('modal-lg');
@@ -657,7 +669,7 @@
                 if (this.getButtons().length === 0) {
                     this.getModalFooter().hide();
                 } else {
-                    this.getModalFooter().find('.' + this.getNamespace('footer')).html('').append(this.createFooterButtons());
+                    this.getModalFooter().show().find('.' + this.getNamespace('footer')).html('').append(this.createFooterButtons());
                 }
             }
 
@@ -674,6 +686,21 @@
         },
         setDescription: function(description) {
             this.options.description = description;
+
+            return this;
+        },
+        setTabindex: function(tabindex) {
+            this.options.tabindex = tabindex;
+
+            return this;
+        },
+        getTabindex: function() {
+            return this.options.tabindex;
+        },
+        updateTabindex: function() {
+            if (this.isRealized()) {
+                this.getModal().attr('tabindex', this.getTabindex());
+            }
 
             return this;
         },
@@ -752,6 +779,7 @@
         createButton: function(button) {
             var $button = $('<button class="btn"></button>');
             $button.prop('id', button.id);
+            $button.data('button', button);
 
             // Icon
             if (typeof button.icon !== 'undefined' && $.trim(button.icon) !== '') {
@@ -779,9 +807,9 @@
             $button.on('click', {dialog: this, $button: $button, button: button}, function(event) {
                 var dialog = event.data.dialog;
                 var $button = event.data.$button;
-                var button = event.data.button;
+                var button = $button.data('button');
                 if (typeof button.action === 'function') {
-                    button.action.call($button, dialog);
+                    button.action.call($button, dialog, event);
                 }
 
                 if (button.autospin) {
@@ -949,8 +977,14 @@
         handleModalEvents: function() {
             this.getModal().on('show.bs.modal', {dialog: this}, function(event) {
                 var dialog = event.data.dialog;
+                dialog.setOpened(true);
                 if (dialog.isModalEvent(event) && typeof dialog.options.onshow === 'function') {
-                    return dialog.options.onshow(dialog);
+                    var openIt = dialog.options.onshow(dialog);
+                    if (openIt === false) {
+                        dialog.setOpened(false);
+                    }
+
+                    return openIt;
                 }
             });
             this.getModal().on('shown.bs.modal', {dialog: this}, function(event) {
@@ -959,14 +993,23 @@
             });
             this.getModal().on('hide.bs.modal', {dialog: this}, function(event) {
                 var dialog = event.data.dialog;
+                dialog.setOpened(false);
                 if (dialog.isModalEvent(event) && typeof dialog.options.onhide === 'function') {
-                    return dialog.options.onhide(dialog);
+                    var hideIt = dialog.options.onhide(dialog);
+                    if (hideIt === false) {
+                        dialog.setOpened(true);
+                    }
+
+                    return hideIt;
                 }
             });
             this.getModal().on('hidden.bs.modal', {dialog: this}, function(event) {
                 var dialog = event.data.dialog;
                 dialog.isModalEvent(event) && typeof dialog.options.onhidden === 'function' && dialog.options.onhidden(dialog);
-                dialog.isAutodestroy() && $(this).remove();
+                if (dialog.isAutodestroy()) {
+                    delete BootstrapDialog.dialogs[dialog.getId()];
+                    $(this).remove();
+                }
                 BootstrapDialog.moveFocus();
             });
 
@@ -1053,22 +1096,18 @@
             this.updateClosable();
             this.updateAnimate();
             this.updateSize();
+            this.updateTabindex();
 
             return this;
         },
         open: function() {
             !this.isRealized() && this.realize();
             this.getModal().modal('show');
-            this.setOpened(true);
 
             return this;
         },
         close: function() {
             this.getModal().modal('hide');
-            if (this.isAutodestroy()) {
-                delete BootstrapDialog.dialogs[this.getId()];
-            }
-            this.setOpened(false);
 
             return this;
         }
@@ -1116,7 +1155,8 @@
             type: BootstrapDialog.TYPE_PRIMARY,
             title: null,
             message: null,
-            closable: true,
+            closable: false,
+            draggable: false,
             buttonLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
             callback: null
         };
@@ -1126,8 +1166,6 @@
         } else {
             options = $.extend(true, defaultOptions, {
                 message: arguments[0],
-                closable: false,
-                buttonLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
                 callback: typeof arguments[1] !== 'undefined' ? arguments[1] : null
             });
         }
@@ -1137,6 +1175,7 @@
             title: options.title,
             message: options.message,
             closable: options.closable,
+            draggable: options.draggable,
             data: {
                 callback: options.callback
             },
@@ -1157,27 +1196,53 @@
     /**
      * Confirm window
      *
-     * @param {type} message
-     * @param {type} callback
      * @returns the created dialog instance
      */
-    BootstrapDialog.confirm = function(message, callback) {
-        return new BootstrapDialog({
-            title: 'Confirmation',
-            message: message,
+    BootstrapDialog.confirm = function() {
+        var options = {};
+        var defaultOptions = {
+            type: BootstrapDialog.TYPE_PRIMARY,
+            title: null,
+            message: null,
             closable: false,
+            draggable: false,
+            btnCancelLabel: BootstrapDialog.DEFAULT_TEXTS.CANCEL,
+            btnOKLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
+            btnOKClass: null,
+            callback: null
+        };
+        if (typeof arguments[0] === 'object' && arguments[0].constructor === {}.constructor) {
+            options = $.extend(true, defaultOptions, arguments[0]);
+        } else {
+            options = $.extend(true, defaultOptions, {
+                message: arguments[0],
+                closable: false,
+                buttonLabel: BootstrapDialog.DEFAULT_TEXTS.OK,
+                callback: typeof arguments[1] !== 'undefined' ? arguments[1] : null
+            });
+        }
+        if (options.btnOKClass === null) {
+            options.btnOKClass = ['btn', options.type.split('-')[1]].join('-');
+        }
+
+        return new BootstrapDialog({
+            type: options.type,
+            title: options.title,
+            message: options.message,
+            closable: options.closable,
+            draggable: options.draggable,
             data: {
-                'callback': callback
+                callback: options.callback
             },
             buttons: [{
-                    label: BootstrapDialog.DEFAULT_TEXTS.CANCEL,
+                    label: options.btnCancelLabel,
                     action: function(dialog) {
                         typeof dialog.getData('callback') === 'function' && dialog.getData('callback')(false);
                         dialog.close();
                     }
                 }, {
-                    label: BootstrapDialog.DEFAULT_TEXTS.OK,
-                    cssClass: 'btn-primary',
+                    label: options.btnOKLabel,
+                    cssClass: options.btnOKClass,
                     action: function(dialog) {
                         typeof dialog.getData('callback') === 'function' && dialog.getData('callback')(true);
                         dialog.close();
