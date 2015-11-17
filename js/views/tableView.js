@@ -1,4 +1,11 @@
-Gohan.TableView = Backbone.View.extend({
+require('./../../bower_components/jsonform/lib/jsonform');
+
+var Bootstrap = require('bootstrap');
+var BootstrapDialog = require('bootstrap-dialog');
+
+require('./../../jst/templates');
+
+var TableView = Backbone.View.extend({
   tagName: 'div',
   className: 'tableview',
   events: {
@@ -31,7 +38,7 @@ Gohan.TableView = Backbone.View.extend({
           self.dialog.getButton('submit').stopSpin();
           self.dialog.enableButtons(true);
           self.dialog.setClosable(true);
-          return
+          return;
         }
         onsubmit(values);
       }
@@ -182,9 +189,11 @@ Gohan.TableView = Backbone.View.extend({
     this.$el.html(JST['table.html']({
       'data': list,
       'schema': this.schema.toJSON(),
-      'parent_property': this.parent_property,
+      'parent_property': this.parent_property
     }));
     this.$('button[data-toggle=hover]').popover();
     return this;
   }
 });
+
+module.exports = TableView;

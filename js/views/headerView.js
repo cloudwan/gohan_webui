@@ -1,4 +1,6 @@
-Gohan.HeaderView = Backbone.View.extend({
+require('./../../jst/templates');
+
+var HeaderView = Backbone.View.extend({
   tagName: 'div',
   events: {
     'click #logout': 'logout',
@@ -26,3 +28,5 @@ Gohan.HeaderView = Backbone.View.extend({
     e.preventDefault();
   }
 });
+
+module.exports = HeaderView;

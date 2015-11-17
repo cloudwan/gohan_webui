@@ -1,4 +1,6 @@
-Gohan.LoginView = Backbone.View.extend({
+require('./../../jst/templates');
+
+var LoginView = Backbone.View.extend({
   tagName: 'div',
   events: {
     'click input.btn': 'login'
@@ -25,3 +27,5 @@ Gohan.LoginView = Backbone.View.extend({
     this.model.saveAuth(id, password, tenant);
   }
 });
+
+module.exports = LoginView;

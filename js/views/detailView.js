@@ -1,4 +1,8 @@
-Gohan.DetailView = Backbone.View.extend({
+var jsyaml = require('js-yaml');
+
+require('./../../jst/templates');
+
+var DetailView = Backbone.View.extend({
   tagName: 'div',
   className: 'detailview',
   initialize: function(options) {
@@ -110,3 +114,5 @@ Gohan.DetailView = Backbone.View.extend({
     return this;
   }
 });
+
+module.exports = DetailView;

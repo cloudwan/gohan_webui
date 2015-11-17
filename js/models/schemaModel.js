@@ -1,4 +1,6 @@
-Gohan.SchemaModel = Backbone.Model.extend({
+var jsyaml = require('js-yaml');
+
+var SchemaModel = Backbone.Model.extend({
   collections: [],
   apiEndpoint: function(){
     return this.apiEndpointBase() + this.get('url');
@@ -92,12 +94,12 @@ Gohan.SchemaModel = Backbone.Model.extend({
         }
         if(!self.schema.hasParent()){
           callback(ancestors);
-          return
+          return;
         }
         var parent_schema = self.schema.parent();
         var parent_model_class = parent_schema.makeModel();
         if(_.isUndefined(self.parent_id())){
-          return
+          return;
         }
         var parent_model = new parent_model_class({'id': self.parent_id()});
         parent_model.fetch({
@@ -338,27 +340,4 @@ Gohan.SchemaModel = Backbone.Model.extend({
   }
 });
 
-Gohan.SchemaCollection = Backbone.Collection.extend({
-  model: Gohan.SchemaModel,
-  initialize: function(options) {
-    this.base_url = options.base_url;
-    this.url = options.url;
-    this.userModel = options.userModel;
-  },
-  parse: function(resp) {
-    return resp['schemas'];
-  },
-  unsetAuthData: function() {
-    this.userModel.unsetAuthData();
-  },
-  sync: function(method, collection, options){
-    if(_.isUndefined(options)){
-      options = {};
-    }
-    options['headers'] = {
-      'X-Auth-Token': this.userModel.authToken(),
-      'Content-Type':'application/json'
-    };
-    Backbone.sync(method, collection, options);
-  }
-});
+module.exports = SchemaModel;

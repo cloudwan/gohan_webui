@@ -1,28 +1,8 @@
-Gohan.SidebaritemView = Backbone.View.extend({
-  tagName: 'li',
-  events: {
-    'click a': function(e) {
-      e.preventDefault();
-      Backbone.history.navigate(this.model.get('path'), true);
-    }
-  },
-  initialize: function() {
-    this.listenTo(this.model, 'change', this.render);
-    this.listenTo(this.model, 'remove', this.remove);
-    this.$el.addClass('withripple');
-    this.$el.addClass(this.model.get('class'));
-  },
-  // View methods
-  // ------------
-  render: function() {
-    this.$el.html(JST['sideview_item.html']({
-      source: this.model.toJSON()
-    }));
-    return this;
-  }
-});
+var SidebarItemView = require('./sidebarItemView');
 
-Gohan.SidebarView = Backbone.View.extend({
+require('./../../jst/templates');
+
+var SidebarView = Backbone.View.extend({
   tagName: 'ul',
   className: 'document-row',
   initialize: function(options) {
@@ -38,7 +18,7 @@ Gohan.SidebarView = Backbone.View.extend({
     return this;
   },
   append: function(model) {
-    var item_view = (new Gohan.SidebaritemView({
+    var item_view = (new SidebarItemView({
       model: model
     })).render();
     var index = this.collection.indexOf(model);
@@ -56,3 +36,5 @@ Gohan.SidebarView = Backbone.View.extend({
     }
   }
 });
+
+module.exports = SidebarView;

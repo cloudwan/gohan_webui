@@ -1,4 +1,6 @@
-Gohan.UserModel = Backbone.Model.extend({
+require('jquery.cookie');
+
+var UserModel = Backbone.Model.extend({
   defaults: {
     'auth_data': undefined
   },
@@ -65,3 +67,5 @@ Gohan.UserModel = Backbone.Model.extend({
     this.setAuthData(undefined);
   }
 });
+
+module.exports = UserModel;
