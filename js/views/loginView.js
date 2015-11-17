@@ -1,4 +1,5 @@
 require('./../../jst/templates');
+var ErrorView = require('./errorView');
 
 var LoginView = Backbone.View.extend({
   tagName: 'div',
@@ -7,6 +8,7 @@ var LoginView = Backbone.View.extend({
   },
   initialize: function(options) {
     this.model = options.model;
+    this.errorView = new ErrorView();
     this.listenTo(this.model, 'change:auth_data', this.reload);
   },
   reload: function(e) {
@@ -24,7 +26,7 @@ var LoginView = Backbone.View.extend({
     var password = this.$('#password').val();
     var tenant = this.$('#tenant').val();
     $('#alerts').empty();
-    this.model.saveAuth(id, password, tenant);
+    this.model.saveAuth(id, password, tenant, this.errorView.render);
   }
 });
 

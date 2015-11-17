@@ -19,7 +19,7 @@ var UserModel = Backbone.Model.extend({
     };
     Backbone.sync(method, model, options);
   },
-  saveAuth: function(id, password, tenant) {
+  saveAuth: function(id, password, tenant, errorCB) {
     var auth_data = {
       'auth': {
         'passwordCredentials': {
@@ -32,7 +32,7 @@ var UserModel = Backbone.Model.extend({
     this.save(auth_data, {
        wait: true,
        data: JSON.stringify(auth_data),
-       error: Gohan.error
+       error: errorCB
     });
   },
   setAuthData: function(data) {

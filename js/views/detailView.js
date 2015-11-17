@@ -1,4 +1,5 @@
 var jsyaml = require('js-yaml');
+var ErrorView = require('./errorView');
 
 require('./../../jst/templates');
 
@@ -6,6 +7,7 @@ var DetailView = Backbone.View.extend({
   tagName: 'div',
   className: 'detailview',
   initialize: function(options) {
+    this.errorView = new ErrorView();
     this.app = options.app;
     this.schema = options.schema;
     this.childview = options.childview;
@@ -13,7 +15,7 @@ var DetailView = Backbone.View.extend({
     this.fragment = options.fragment;
     this.listenTo(this.model, 'sync', this.render);
     this.model.fetch({
-      error: Gohan.error
+      error: this.errorView.render
     });
   },
   renderProperty: function(data, key) {

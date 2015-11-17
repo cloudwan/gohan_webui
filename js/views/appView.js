@@ -7,12 +7,14 @@ var HeaderView = require('./headerView');
 var TableView = require('./tableView');
 var DetailView = require('./detailView');
 var LoginView = require('./loginView');
+var ErrorView = require('./errorView');
 
 var AppView = Backbone.View.extend({
   mainview: null,
   className: 'appview',
   initialize: function(options) {
     var self = this;
+    self.errorView = new ErrorView();
     self.router = options.router;
     var config = options.config;
     self.config = config;
@@ -51,7 +53,7 @@ var AppView = Backbone.View.extend({
 
     if(self.userModel.authToken()){
       self.schemas.fetch({
-        'error': Gohan.error
+        'error': self.errorView.render
       });
     }else{
       self.listenTo(self.userModel, 'change:auth_data', function () {

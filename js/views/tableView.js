@@ -2,6 +2,7 @@ require('./../../bower_components/jsonform/lib/jsonform');
 
 var Bootstrap = require('bootstrap');
 var BootstrapDialog = require('bootstrap-dialog');
+var ErrorView = require('./errorView');
 
 require('./../../jst/templates');
 
@@ -14,6 +15,7 @@ var TableView = Backbone.View.extend({
     'click .gohan_update': 'updateModel'
   },
   initialize: function(options) {
+    this.errorView = new ErrorView();
     this.app = options.app;
     this.schema = options.schema;
     this.fragment = options.fragment;
@@ -23,7 +25,7 @@ var TableView = Backbone.View.extend({
     }
     this.listenTo(this.collection, 'update', this.render);
     this.collection.fetch({
-       error: Gohan.error
+       error: this.errorView.render
     });
   },
   dialogForm: function(action, form_title, data, onsubmit) {
@@ -91,11 +93,11 @@ var TableView = Backbone.View.extend({
              success: function(){
                self.render()
              },
-             error: Gohan.error
+             error: self.errorView.render
           });
         },
         error: function(collection, response){
-          Gohan.error(collection, response);
+          self.errorView.render(collection, response);
           self.dialog.getButton('submit').stopSpin();
           self.dialog.enableButtons(true);
           self.dialog.setClosable(true);
@@ -123,11 +125,11 @@ var TableView = Backbone.View.extend({
              success: function(){
                self.render()
              },
-             error: Gohan.error
+             error: self.errorView.render
           });
         },
         error: function(collection, response){
-          Gohan.error(collection, response);
+          self.errorView.render(collection, response);
           self.dialog.getButton('submit').stopSpin();
           self.dialog.enableButtons(true);
           self.dialog.setClosable(true);
