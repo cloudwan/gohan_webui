@@ -118,7 +118,7 @@ var AppView = Backbone.View.extend({
       self.router.route(full_route, 'child_table_view', child_table_view);
       self.router.route(full_route + '/:id', 'detail_view', child_detail_view);
     }else{
-      var route = schema.get('prefix');
+      var route = schema.get('url');
       route = route.substr(1);
       var sidebar_menu = self.sidebar_view.collection.push({
         path: '#' + route,
