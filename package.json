@@ -20,6 +20,7 @@
     "gulp": "^3.4.0",
     "gulp-compass": "^2.1.0",
     "gulp-concat": "^2.5.2",
+    "gulp-jscs": "^3.0.2",
     "gulp-jst": "^0.1.1",
     "gulp-minify-css": "^0.4.5",
     "gulp-template-compile": "^1.0.0",

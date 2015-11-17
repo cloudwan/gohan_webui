@@ -1,221 +1,251 @@
 var Backbone = require('backbone');
 var $ = require('jquery');
+var jsyaml = require('js-yaml');
+
 require('./../../bower_components/jsonform/lib/jsonform');
 require('./../../jst/templates');
 
 var TableView = require('./tableView');
 
 var SchemaView = TableView.extend({
-  toLocal: function(data){
+  toLocal: function toLocal(data) {
     return data;
   },
-  toServer: function(data){
+  toServer: function toServer(data) {
     return data;
   },
-  dialogForm: function(action, form_title, data, onsubmit) {
+  dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     var self = this;
-    var form = $("<form></form>", self.$el);
-    var schema = self.schema.filterByAction(action, self.parent_property);
-    schema.propertiesOrder = ["id",
-      "singular",
-      "plural",
-      "title",
-      "description",
-      "parent",
-      "namespace",
-      "prefix"]
-    schema.required = []
+    var $form = $('<form></form>', self.$el);
+    var schema = self.schema.filterByAction(action, self.parentProperty);
+
+    schema.propertiesOrder = [
+      'id',
+      'singular',
+      'plural',
+      'title',
+      'description',
+      'parent',
+      'namespace',
+      'prefix'
+    ];
+    schema.required = [];
 
     var propertyColumns = [
       {
-        id: "title",
-        type: "string",
+        id: 'title',
+        type: 'string'
       },
       {
-        id: "type",
-        type: "string",
+        id: 'type',
+        type: 'string',
         enum: [
-          "string",
-          "boolean",
-          "integer",
-          "number",
-          "array",
-          "object",
+          'string',
+          'boolean',
+          'integer',
+          'number',
+          'array',
+          'object'
         ]
       },
       {
-        id: "description",
-        type: "string",
+        id: 'description',
+        type: 'string'
       },
       {
-        id: "required",
-        type: "checkbox",
+        id: 'required',
+        type: 'checkbox'
       }
     ];
     var properties = [];
 
-    form.jsonForm({
+    $form.jsonForm({
       schema: schema,
       value: data,
       form: ['*'],
-      onSubmit: function(errors, values) {
+      onSubmit: function onSubmit(errors, values) {
         var propertiesOrder = [];
         var required = [];
         var properties = {};
-        $("#properties_table tbody tr").each(function(){
-          var property = $(this).data("property");
+
+        $('#properties_table tbody tr').each(function iterator() {
+          var property = $(this).data('property');
           var id = property.id;
-          if(_.isUndefined(id)){
+
+          if (_.isUndefined(id)) {
             return;
           }
-          if(properties[id]){
+
+          if (properties[id]) {
             return;
           }
+
           propertiesOrder.push(property.id);
-          if(property.required){
+
+          if (property.required) {
             required.push(id);
           }
+
           delete property.id;
           delete property.required;
           properties[id] = property;
         });
+
         var schema = {
-          type: "object",
+          type: 'object',
           propertiesOrder: propertiesOrder,
           required: required,
           properties: properties
         };
+
         values.schema = schema;
+
         if (errors) {
           self.dialog.getButton('submit').stopSpin();
           self.dialog.enableButtons(true);
           self.dialog.setClosable(true);
-          return
+          return;
         }
-        console.log(values);
+
         onsubmit(values);
       }
     });
-    form.append($(JST["schema_form.html"]({
+    $form.append($(JST['schema_form.html']({
       JST: JST,
-      propertyColumns: propertyColumns,
+      propertyColumns: propertyColumns
     })));
-    var data_schema = data.schema || {}
-    _.each(data_schema.propertiesOrder, function(id){
-      var property = _.extend({}, data_schema.properties[id]);
-      if(_.isUndefined(property)){
-        return
+    var dataSchema = data.schema || {};
+
+    _.each(dataSchema.propertiesOrder, function iterator(id) {
+      var property = _.extend({}, dataSchema.properties[id]);
+
+      if (_.isUndefined(property)) {
+        return;
       }
+
       var required = false;
-      if(data_schema.required && data_schema.required.indexOf(id) >= 0){
+
+      if (dataSchema.required && dataSchema.required.indexOf(id) >= 0) {
         required = true;
       }
+
       property.id = id;
       property.required = required;
       properties.push(property);
     });
-    var defaultProperty = {type: "string"}
+
+    var defaultProperty = {type: 'string'};
+
     properties.push(_.extend({}, defaultProperty));
 
-    var addNewRow = function(property){
-      var newRow = $(JST["property_form.html"]({
+    var addNewRow = function addNewRow(property) {
+      var $newRow = $(JST['property_form.html']({
         propertyColumns: propertyColumns,
         property: property
       }));
-      $(".id_form", newRow).change(ensureNewRow);
-      $("#properties_table tbody", form).append(newRow);
-      $("#id", newRow).change(function(){
-        property["id"] = $(this).val();
+
+      $('.id_form', $newRow).change(ensureNewRow);
+      $('#properties_table tbody', $form).append($newRow);
+      $('#id', $newRow).change(function onChange() {
+        property.id = $(this).val();
       });
-      newRow.data("property", property);
-      _.each(propertyColumns, function(column){
-        $("#" + column.id, newRow).change(function(){
-          if(column.type == "checkbox") {
+      $newRow.data('property', property);
+      _.each(propertyColumns, function iterator(column) {
+        $('#' + column.id, $newRow).change(function onChange() {
+          if (column.type == 'checkbox') {
             property[column.id] = $(this).is(':checked');
-          }else{
+          } else {
             property[column.id] = $(this).val();
           }
-          console.log(property);
         });
       });
-      $("button#detail", newRow).click(function(){
-        var detailPane = $("<div style='width:500px;height:200px;'></div>")
+      $('button#detail', $newRow).click(function onClick() {
+        var $detailPane = $('<div style="width:500px;height:200px;"></div>');
         var ace = window.ace;
-        var editor = ace.edit(detailPane.get(0));
+        var editor = ace.edit($detailPane.get(0));
+
         editor.getSession().setNewLineMode('unix');
-        editor.setTheme("ace/theme/monokai");
-        editor.getSession().setMode("ace/mode/yaml");
+        editor.setTheme('ace/theme/monokai');
+        editor.getSession().setMode('ace/mode/yaml');
         editor.getSession().setTabSize(2);
-        editor.$blockScrolling = "Infinity";
-        var yaml = jsyaml.safeDump(property)
+        editor.$blockScrolling = 'Infinity';
+
+        var yaml = jsyaml.safeDump(property);
+
         editor.getSession().setValue(yaml);
         var dialog = BootstrapDialog.show({
-          title: "Property Detail",
+          title: 'Property Detail',
           closeByKeyboard: false,
-          message: detailPane,
+          message: $detailPane,
           spinicon: 'glyphicon glyphicon-refresh',
-          onshown: function() {
+          onshown: function onshown() {
             $('.modal-body').css({
-              "max-height": $(window).height() - 200 + 'px'
+              'max-height': $(window).height() - 200 + 'px'
             });
           },
           buttons: [{
             id: 'submit',
             label: 'Submit',
             cssClass: 'btn-primary btn-raised btn-material-blue-600',
-            action: function(dialog) {
-              var yaml = editor.getSession().getValue()
+            action: function action(dialog) {
+              var yaml = editor.getSession().getValue();
               var data = jsyaml.safeLoad(yaml);
-              _.each(property, function(value, key){
+
+              _.each(property, function iterator(value, key) {
                 delete property[key];
               });
-              _.each(data, function(value, key){
+
+              _.each(data, function iterator(value, key) {
                 property[key] = value;
               });
+
               dialog.close();
             }
           }]
         });
       });
     };
-    var ensureNewRow = function(){
+    var ensureNewRow = function ensureNewRow() {
       var requireRow = true;
-      $(".id_form", form).each(function(){
-        if($(this).val() == ""){
+
+      $('.id_form', $form).each(function iterator() {
+        if ($(this).val() == '\'\'') {
           requireRow = false;
         }
       });
-      if(requireRow){
+
+      if (requireRow) {
         addNewRow(_.extend({}, defaultProperty));
       }
     };
-    _.each(properties, function(property){
+
+    _.each(properties, function iterator(property) {
       addNewRow(property);
     });
 
-    $("#properties_table tbody", form).sortable();
-    form.prepend("<div id='alerts_form'></div>");
+    $('#properties_table tbody', $form).sortable();
+    $form.prepend('<div id="alerts_form"></div>');
     self.dialog = BootstrapDialog.show({
       size: BootstrapDialog.SIZE_WIDE,
       type: BootstrapDialog.TYPE_DEFAULT,
-      title: form_title,
+      title: formTitle,
       closeByKeyboard: false,
-      message: form,
+      message: $form,
       spinicon: 'glyphicon glyphicon-refresh',
-      onshown: function() {
+      onshown: function onshown() {
         $('.modal-body').css({
-          "max-height": $(window).height() - 200 + 'px'
+          'max-height': $(window).height() - 200 + 'px'
         });
       },
       buttons: [{
         id: 'submit',
         label: 'Submit',
         cssClass: 'btn-primary btn-raised btn-material-blue-600',
-        action: function(dialog) {
+        action: function action() {
           self.dialog.enableButtons(false);
           self.dialog.setClosable(false);
           this.spin();
-          form.submit();
+          $form.submit();
         }
       }]
     });

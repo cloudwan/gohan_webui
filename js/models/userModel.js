@@ -2,47 +2,51 @@ require('jquery.cookie');
 
 var UserModel = Backbone.Model.extend({
   defaults: {
-    'auth_data': undefined
+    authData: undefined
   },
-  initialize: function(options) {
+  initialize: function initialize(options) {
     this.url = options.url;
   },
-  parse: function(data) {
+  parse: function parse(data) {
     this.setAuthData(data);
   },
-  sync: function(method, model, options){
-    if(_.isUndefined(options)){
+  sync: function sync(method, model, options) {
+    if (_.isUndefined(options)) {
       options = {};
     }
-    options['headers'] = {
+
+    options.headers = {
       'Content-Type':'application/json'
     };
     Backbone.sync(method, model, options);
   },
-  saveAuth: function(id, password, tenant, errorCB) {
-    var auth_data = {
-      'auth': {
-        'passwordCredentials': {
-          'username': id,
-          'password': password
+  saveAuth: function saveAuth(id, password, tenant, errorCB) {
+    var authData = {
+      auth: {
+        passwordCredentials: {
+          username: id,
+          password: password
         },
-        'tenantName': tenant
+        tenantName: tenant
       }
     };
-    this.save(auth_data, {
+
+    this.save(authData, {
        wait: true,
-       data: JSON.stringify(auth_data),
+       data: JSON.stringify(authData),
        error: errorCB
     });
   },
-  setAuthData: function(data) {
+  setAuthData: function setAuthData(data) {
     var MAX_COOKIE_LENGTH = 2000;
+
     if (!_.isUndefined(data)) {
       var token = data.access.token.id;
-      var tenant_name = data.access.token.tenant.name;
-      var user_name = data.access.user.name;
-      $.cookie('tenant_name', tenant_name);
-      $.cookie('user_name', user_name);
+      var tenantName = data.access.token.tenant.name;
+      var userName = data.access.user.name;
+
+      $.cookie('tenant_name', tenantName);
+      $.cookie('user_name', userName);
       $.cookie('auth_data1', token.slice(0, MAX_COOKIE_LENGTH));
       $.cookie('auth_data2', token.slice(MAX_COOKIE_LENGTH));
       this.set('auth_data', data);
@@ -51,19 +55,19 @@ var UserModel = Backbone.Model.extend({
       $.removeCookie('auth_data2');
     }
   },
-  authToken: function() {
-    if(_.isUndefined($.cookie('auth_data1'))){
+  authToken: function authToken() {
+    if (_.isUndefined($.cookie('auth_data1'))) {
       return false;
     }
     return $.cookie('auth_data1') + $.cookie('auth_data2');
   },
-  tenantName: function() {
+  tenantName: function tenantName() {
     return $.cookie('tenant_name');
   },
-  userName: function() {
+  userName: function userName() {
     return $.cookie('user_name');
   },
-  unsetAuthData: function() {
+  unsetAuthData: function unsetAuthData() {
     this.setAuthData(undefined);
   }
 });

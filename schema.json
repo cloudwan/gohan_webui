@@ -1,0 +1,222 @@
+{
+  "schemas": [
+    {
+      "description": "Network",
+      "id": "network",
+      "plural": "networks",
+      "prefix": "/v2.0",
+      "schema": {
+        "properties": {
+          "description": {
+            "default": "",
+            "description": "Description",
+            "permission": [
+              "create",
+              "update"
+            ],
+            "title": "Description",
+            "type": "string",
+            "unique": false
+          },
+          "id": {
+            "description": "ID",
+            "permission": [
+              "create"
+            ],
+            "title": "ID",
+            "type": "string",
+            "unique": false
+          },
+          "name": {
+            "description": "Name",
+            "permission": [
+              "create",
+              "update"
+            ],
+            "title": "Name",
+            "type": "string",
+            "unique": false
+          },
+          "tenant_id": {
+            "description": "Tenant ID",
+            "permission": [
+              "create"
+            ],
+            "title": "Tenant",
+            "type": "string",
+            "unique": false
+          }
+        },
+        "propertiesOrder": [
+          "id",
+          "name",
+          "description",
+          "tenant_id"
+        ],
+        "required": null,
+        "type": "object"
+      },
+      "singular": "network",
+      "title": "Network",
+      "url": "/v2.0/networks"
+    },
+    {
+      "description": "Subnet",
+      "id": "subnet",
+      "parent": "network",
+      "plural": "subnets",
+      "prefix": "/v2.0",
+      "schema": {
+        "properties": {
+          "cidr": {
+            "description": "CIDR",
+            "permission": [
+              "create"
+            ],
+            "title": "Cidr",
+            "type": "string",
+            "unique": false
+          },
+          "description": {
+            "default": "",
+            "description": "Description",
+            "permission": [
+              "create",
+              "update"
+            ],
+            "title": "Description",
+            "type": "string",
+            "unique": false
+          },
+          "id": {
+            "description": "ID",
+            "permission": [
+              "create"
+            ],
+            "title": "ID",
+            "type": "string",
+            "unique": false
+          },
+          "name": {
+            "default": "",
+            "description": "Name",
+            "permission": [
+              "create",
+              "update"
+            ],
+            "title": "Name",
+            "type": [
+              "string",
+              "null"
+            ],
+            "unique": false
+          },
+          "network_id": {
+            "description": "parent object",
+            "permission": [
+              "create"
+            ],
+            "relation": "network",
+            "title": "network",
+            "type": "string",
+            "unique": false
+          },
+          "tenant_id": {
+            "description": "Tenant ID",
+            "permission": [
+              "create"
+            ],
+            "title": "TenantID",
+            "type": "string",
+            "unique": false
+          }
+        },
+        "propertiesOrder": [
+          "id",
+          "name",
+          "tenant_id",
+          "cidr",
+          "description",
+          "network_id"
+        ],
+        "required": [
+          "cidr",
+          "network_id"
+        ],
+        "type": "object"
+      },
+      "singular": "subnet",
+      "title": "subnet",
+      "url": "/v2.0/subnets"
+    },
+    {
+      "description": "server",
+      "id": "server",
+      "plural": "servers",
+      "prefix": "/v2.0",
+      "schema": {
+        "properties": {
+          "id": {
+            "description": "ID",
+            "format": "uuid",
+            "permission": [
+              "create"
+            ],
+            "title": "ID",
+            "type": "string",
+            "unique": true
+          },
+          "name": {
+            "description": "Name",
+            "permission": [
+              "create",
+              "update"
+            ],
+            "title": "Name",
+            "type": "string",
+            "unique": false
+          },
+          "network_id": {
+            "description": "Network ID",
+            "permission": [
+              "create"
+            ],
+            "relation": "network",
+            "relation_property": "network",
+            "title": "network id",
+            "type": "string",
+            "unique": false
+          },
+          "status": {
+            "description": "status",
+            "permission": [],
+            "title": "Status",
+            "type": "string",
+            "unique": false
+          },
+          "tenant_id": {
+            "description": "TenantID",
+            "permission": [
+              "create"
+            ],
+            "title": "TenantID",
+            "type": "string",
+            "unique": false
+          }
+        },
+        "propertiesOrder": [
+          "id",
+          "name",
+          "network_id",
+          "status",
+          "tenant_id"
+        ],
+        "required": null,
+        "type": "object"
+      },
+      "singular": "server",
+      "title": "Server",
+      "url": "/v2.0/servers"
+    }
+  ]
+}

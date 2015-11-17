@@ -1,12 +1,13 @@
 var jsyaml = require('js-yaml');
 var ErrorView = require('./errorView');
+var TableView = require('./tableView');
 
 require('./../../jst/templates');
 
 var DetailView = Backbone.View.extend({
   tagName: 'div',
   className: 'detailview',
-  initialize: function(options) {
+  initialize: function initialize(options) {
     this.errorView = new ErrorView();
     this.app = options.app;
     this.schema = options.schema;
@@ -18,92 +19,108 @@ var DetailView = Backbone.View.extend({
       error: this.errorView.render
     });
   },
-  renderProperty: function(data, key) {
+  renderProperty: function renderProperty(data, key) {
     var content;
     var property = this.schema.get('schema').properties[key];
     var value = data[key];
+
     if (_.isUndefined(value)) {
       return '';
     }
+
     if (_.isUndefined(property)) {
       return '';
     }
-    var related_object = data[property.relation_property];
-    if (!_.isUndefined(related_object)) {
-        if (!_.isUndefined(related_object.name)) {
-          return related_object.name
+
+    var relatedObject = data[property.relation_property]; // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+
+    if (!_.isUndefined(relatedObject)) {
+        if (!_.isUndefined(relatedObject.name)) {
+          return relatedObject.name;
         }
     }
+
     if (property.type == 'object') {
       content = $('<pre style="width:500px;"></pre>').text(jsyaml.safeDump(value)).html();
       return '<pre>' + _.escape(content) + '</pre>';
     }
+
     if (property.type == 'array') {
       return '<pre>' + jsyaml.safeDump(value) + '</pre>';
     }
+
     return _.escape(value);
   },
   // View methods
   // ------------
-  render: function() {
+  render: function render() {
     var self = this;
     var data = self.model.toJSON();
     var result = _.extend({}, data);
-    _.each(data, function(value, key) {
+
+    _.each(data, function iterator(value, key) {
       result[key] = self.renderProperty(data, key);
     });
-    var children = self.schema.children().map(function (child){
+    var children = self.schema.children().map(function iterator(child) {
       var fragment = self.fragment + '/' + child.get('plural');
+
       return {
         id: child.id,
         title: child.get('title'),
-        href: fragment,
+        href: fragment
       };
     });
+
     self.$el.html(JST['detail.html']({
-      'data': result,
-      'schema': self.schema.toJSON(),
-      'children': children
+      data: result,
+      schema: self.schema.toJSON(),
+      children: children
     }));
-    var make_breadcrumb = function (ancestors){
+    var makeBreadcrumb = function makeBreadcrumb(ancestors) {
       ancestors.unshift(self.model);
       var fragment = self.fragment;
-      var parents = ancestors.map(function(ancestor){
-          var model_fragment = fragment;
+      var parents = ancestors.map(function iterator(ancestor) {
+          var modelFragment = fragment;
+
           fragment = fragment.replace(/\/[^\/]+$/, '');
-          var schema_fragment = fragment;
+          var schemaFragment = fragment;
+
           fragment = fragment.replace(/\/[^\/]+$/, '');
-          if(ancestor.schema.hasParent() && self.childview){
-            var schema_fragment = fragment;
+
+          if (ancestor.schema.hasParent() && self.childview) {
+            schemaFragment = fragment;
           }
           return {
             title: ancestor.get('name'),
-            schema_title: ancestor.schema.get('title'),
-            fragment: model_fragment,
-            schema_fragment: schema_fragment
-          }
+            schemaTitle: ancestor.schema.get('title'),
+            fragment: modelFragment,
+            schemaFragment: schemaFragment
+          };
       });
+
       parents.reverse();
       $('#bread_crumb', self.$el).html(JST['breadcrumb.html']({
         parents: parents
       }));
     };
-    if(self.childview){
-      self.model.getAncestors(make_breadcrumb);
-    }else{
-      make_breadcrumb([]);
+
+    if (self.childview) {
+      self.model.getAncestors(makeBreadcrumb);
+    } else {
+      makeBreadcrumb([]);
     }
-    self.schema.children().forEach(function (child){
+    self.schema.children().forEach(function iterator(child) {
       var fragment = self.fragment + '/' + child.get('plural');
       var endpoint = self.schema.apiEndpointBase() + '/' + fragment;
       var collection = child.makeCollection(endpoint);
-      var tableView = new Gohan.TableView({
+      var tableView = new TableView({
         schema: child,
         collection: collection,
         childview: true,
         fragment: fragment,
-        app: this.app,
+        app: this.app
       });
+
       $('div#' + child.id + '_table', self.$el).html(tableView.render().el);
       return {
         title: child.get('title'),

@@ -2,212 +2,242 @@ var jsyaml = require('js-yaml');
 
 var SchemaModel = Backbone.Model.extend({
   collections: [],
-  apiEndpoint: function(){
+  apiEndpoint: function apiEndpoint() {
     return this.apiEndpointBase() + this.get('url');
   },
-  apiEndpointBase: function() {
-    return this.collection.base_url;
+  apiEndpointBase: function apiEndpointBase() {
+    return this.collection.baseUrl;
   },
-  detailPath: function(id){
-    return this.get('url') + '/' + id;
+  detailPath: function detailPath(id) {
+    return this.get('prefix') + '/' + id;
   },
-  url: function() {
-    if(!this.hasParent()){
-      return this.get('url');
+  prefix: function prefix() {
+    if (!this.hasParent()) {
+      return this.get('prefix');
     }
-    var parent_schema = this.parent();
-    return parent_schema.url() + '/:' + parent_schema.get('singular') + '/' + this.get('plural');
+
+    var parentSchema = this.parent();
+
+    return parentSchema.prefix() + '/:' + parentSchema.get('singular') + '/' + this.get('plural');
   },
-  parent: function(){
-    var parent_id = this.get('parent');
-    return this.collection.get(parent_id);
+  parent: function parent() {
+    var parentId = this.get('parent');
+
+    return this.collection.get(parentId);
   },
-  parentProperty: function(){
+  parentProperty: function parentProperty() {
     return this.get('parent') + '_id';
   },
-  hasParent: function(){
+  hasParent: function hasParent() {
     return !_.isUndefined(this.get('parent')) && this.get('parent') != '';
   },
-  makeModel: function(base_url) {
+  makeModel: function makeModel(baseUrl) {
     var self = this;
-    if(_.isUndefined(base_url)){
-      base_url = self.apiEndpoint();
-    }
     var userModel = self.collection.userModel;
+
+    if (_.isUndefined(baseUrl)) {
+      baseUrl = self.apiEndpoint();
+    }
+
     return Backbone.Model.extend({
       schema: self,
-      initialize: function() {
-        this.base_url = base_url;
-        this.url = this.base_url;
+      initialize: function initialize() {
+        this.baseUrl = baseUrl;
+        this.url = this.baseUrl;
       },
-      isNew: function() {
-        return this.get('_is_new');
+      isNew: function isNew() {
+        return this.get('isNew'); //TODO fix this to isNew
       },
-      parse: function(resp) {
-        if(_.isUndefined(resp['id'])){
+      parse: function parse(resp) {
+        if (_.isUndefined(resp.id)) {
            return resp[self.get('singular')];
         }
         return resp;
       },
-      sync: function(method, model, options){
+      sync: function sync(method, model, options) {
+        var data = {};
+
         if (!this.isNew()) {
-            this.url = this.base_url + '/' + this.id;
+            this.url = this.baseUrl + '/' + this.id;
         }
-        if(method === 'patch'){
+
+        if (method === 'patch') {
           method = 'update';
         }
-        if(_.isUndefined(options)){
+
+        if (_.isUndefined(options)) {
           options = {};
         }
-        options['headers'] = {
+        options.headers = {
           'X-Auth-Token': userModel.authToken(),
           'Content-Type':'application/json'
         };
-        this.unset('_is_new');
-        var data = {};
-        var modelJSON= {}
-        var schemaForAction = self.filterByAction(method)
-        console.log(schemaForAction)
-        _.each(schemaForAction.properties, function(value, key){
-          modelJSON[key] = model.get(key)
-        })
-        console.log(modelJSON)
-        data[this.schema.get('singular')] = modelJSON
+        this.unset('isNew'); // TODO fix this to isNew
+
+        data[this.schema.get('singular')] = model.toJSON();
         options.data = JSON.stringify(data);
         Backbone.sync(method, model, options);
       },
-      parent_id: function(){
-        if(this.schema.hasParent()){
-          var parent_property = this.schema.parentProperty();
-          return this.get(parent_property);
+      parentId: function parentId() {
+        if (this.schema.hasParent()) {
+          var parentProperty = this.schema.parentProperty();
+
+          return this.get(parentProperty);
         }
         return undefined;
       },
-      fragment: function() {
+      fragment: function fragment() {
         var path = this.schema.detailPath(this.id);
+
         return path.substr(1);
       },
-      getAncestors: function(callback, ancestors) {
+      getAncestors: function getAncestors(callback, ancestors) {
         var self = this;
-        if(_.isUndefined(ancestors)){
+
+        if (_.isUndefined(ancestors)) {
           ancestors = [];
         }
-        if(!self.schema.hasParent()){
+
+        if (!self.schema.hasParent()) {
           callback(ancestors);
           return;
         }
-        var parent_schema = self.schema.parent();
-        var parent_model_class = parent_schema.makeModel();
-        if(_.isUndefined(self.parent_id())){
+
+        var parentSchema = self.schema.parent();
+        var parentModelClass = parentSchema.makeModel();
+
+        if (_.isUndefined(self.parentId())) {
           return;
         }
-        var parent_model = new parent_model_class({'id': self.parent_id()});
-        parent_model.fetch({
-          success: function(){
-            ancestors.push(parent_model);
-            parent_model.getAncestors(callback, ancestors);
+
+        var parentModel = new parentModelClass({id: self.parentId()});
+
+        parentModel.fetch({
+          success: function success() {
+            ancestors.push(parentModel);
+            parentModel.getAncestors(callback, ancestors);
           }});
       }
     });
   },
-  makeCollection: function(url) {
+  makeCollection: function makeCollection(url) {
     var self = this;
-    if(_.isUndefined(url)){
+
+    if (_.isUndefined(url)) {
       url = self.apiEndpoint();
     }
-    if(self.collections[url]){
+
+    if (self.collections[url]) {
       return self.collections[url];
     }
+
     var model = self.makeModel(url);
     var userModel = self.collection.userModel;
     var additionalForms = self.collection.additionalForms;
-    self.additionalForm = additionalForms[self.id] || ['*'];
-    var collection_class = Backbone.Collection.extend({
+
+    if (!_.isUndefined(additionalForms) && !_.isUndefined(additionalForms[self.id])) {
+      self.additionalForm = additionalForms[self.id];
+    } else {
+      self.additionalForm = ['*'];
+    }
+
+    var collectionClass = Backbone.Collection.extend({
       url: url,
       model: model,
       schema: self,
-      parse: function(resp) {
+      parse: function parse(resp) {
         return resp[self.get('plural')];
       },
-      unsetAuthData: function() {
+      unsetAuthData: function unsetAuthData() {
         this.userModel.unsetAuthData();
       },
-      sync: function(method, collection, options){
-        if(_.isUndefined(options)){
+      sync: function sync(method, collection, options) {
+        if (_.isUndefined(options)) {
           options = {};
         }
-        options['headers'] = {
+        options.headers = {
           'X-Auth-Token': userModel.authToken(),
           'Content-Type':'application/json'
         };
         Backbone.sync(method, collection, options);
       }
     });
-    var collection = new collection_class({});
+    var collection = new collectionClass({});
+
     self.collections[url] = collection;
     return collection;
   },
-  toLocalSchema: function(schema) {
-    //convert dict in schema to array for form generation
-    //In json schema, we can't type dict element, so gohan
-    //extend json schema using items property for object.
-    //If object type has items property, items is considered to
-    //schema for object of dict.
-    //We will transform schema here for jsonform lib.
+  toLocalSchema: function toLocalSchema(schema) {
+    // Convert dict in schema to array for form generation
+    // In json schema, we can't type dict element, so gohan
+    // extend json schema using items property for object.
+    // If object type has items property, items is considered to
+    // schema for object of dict.
+    // We will transform schema here for jsonform lib.
     var self = this;
+
     if (_.isArray(schema.type)) {
       schema.type = schema.type[0];
     }
+
     if (!_.isUndefined(schema.relation)) {
-      var enum_values = [];
+      var enumValues = [];
       var options = {};
       var headers = {};
+
       headers['X-Auth-Token'] = self.collection.userModel.authToken();
       var relatedSchema = self.collection.get(schema.relation);
+
       $.ajax({
         url: relatedSchema.apiEndpoint(),
         headers: headers,
-        //need revisit
-        async: false,
-      }).then(function(data) {
-        _.each(data, function(values, key) {
-          _.each(values, function(value) {
-            enum_values.push(value.id);
+        // Need revisit
+        async: false
+      }).then(function success(data) {
+        _.each(data, function iterator(values) {
+          _.each(values, function iterator(value) {
+            enumValues.push(value.id);
             options[value.id] = value.name;
           });
         });
       });
-      schema.enum = enum_values;
+
+      schema.enum = enumValues;
       schema.options = options;
       return schema;
     }
     var result = $.extend(true, {}, schema);
+
     if (schema.type == 'array') {
       result.items = self.toLocalSchema(result.items);
       return result;
-    };
+    }
+
     if (schema.type != 'object') {
       return schema;
     }
+
     if (!_.isUndefined(schema.properties)) {
-      $.each(schema.properties, function(key, property) {
+      $.each(schema.properties, function iterator(key, property) {
         result.properties[key] = self.toLocalSchema(property);
       });
     } else if (!_.isUndefined(schema.items)) {
       result.type = 'array';
       var items = self.toLocalSchema(result.items);
+
       if (_.isUndefined(items.title)) {
         items.title = 'value';
       }
+
       result.items = {
-        'type': 'object',
-        'required': schema.required,
-        'properties': {
-          'id': {
-            'title': 'key',
-            'type': 'string'
-          },
-          'value': items
+        type: 'object',
+        required: schema.required,
+        properties: {
+          id: {
+            title: 'key',
+            type: 'string'
+        },
+          value: items
         }
       };
     } else {
@@ -216,12 +246,14 @@ var SchemaModel = Backbone.Model.extend({
     }
     return result;
   },
-  defaultValue: function(schema) {
+  defaultValue: function defaultValue(schema) {
     var self = this;
+
     if (schema.type == 'object') {
       if (_.isUndefined(schema.default)) {
         var result = {};
-        _.each(schema.properties, function(property, key) {
+
+        _.each(schema.properties, function iterator(property, key) {
           result[key] = self.defaultValue(property);
         });
         return result;
@@ -229,17 +261,19 @@ var SchemaModel = Backbone.Model.extend({
     }
     return schema.default;
   },
-  toLocal: function(data) {
-    var default_value = {};
+  toLocal: function toLocal(data) {
     var schema = this.get('schema');
+
     data = _.extend(this.defaultValue(schema), data);
     return this.toLocalData(schema, data);
   },
-  toLocalData: function(schema, data) {
+  toLocalData: function toLocalData(schema, data) {
     var self = this;
+
     if (schema.type != 'object') {
       return data;
     }
+
     if (_.isUndefined(data)) {
       return undefined;
     }
@@ -247,24 +281,26 @@ var SchemaModel = Backbone.Model.extend({
     if (schema.format == 'jsonschema') {
       return jsyaml.safeDump(data);
     } else if (!_.isUndefined(schema.properties)) {
-      $.each(schema.properties, function(key, property) {
+      $.each(schema.properties, function iterator(key, property) {
         data[key] = self.toLocalData(property, data[key]);
       });
     } else if (!_.isUndefined(schema.items)) {
       var result = [];
+
       if (_.isUndefined(schema.items.propertiesOrder)) {
-        _.each(data, function(value, key) {
+        _.each(data, function iterator(value, key) {
           result.push({
-            'id': key,
-            'value': self.toLocalData(schema.items, value)
+            id: key,
+            value: self.toLocalData(schema.items, value)
           });
         });
       } else {
-        _.each(schema.items.propertiesOrder, function(key) {
+        _.each(schema.items.propertiesOrder, function iterator(key) {
           var value = data[key];
+
           result.push({
-            'id': key,
-            'value': self.toLocalData(schema.items, value)
+            id: key,
+            value: self.toLocalData(schema.items, value)
           });
         });
       }
@@ -274,24 +310,28 @@ var SchemaModel = Backbone.Model.extend({
     }
     return data;
   },
-  toServer: function(data) {
+  toServer: function toServer(data) {
     return this.toServerData(this.get('schema'), data);
   },
-  toServerData: function(schema, data) {
+  toServerData: function toServerData(schema, data) {
     var self = this;
+
     if (schema.type != 'object') {
       return data;
     }
+
     if (_.isUndefined(data)) {
       return undefined;
     }
+
     if (!_.isUndefined(schema.properties)) {
-      $.each(schema.properties, function(key, property) {
+      $.each(schema.properties, function iterator(key, property) {
         data[key] = self.toServerData(property, data[key]);
       });
     } else if (!_.isUndefined(schema.items)) {
       var result = {};
-      _.each(data, function(d) {
+
+      _.each(data, function iterator(d) {
         result[d.id] = self.toServerData(schema.items, d.value);
       });
       return result;
@@ -300,43 +340,51 @@ var SchemaModel = Backbone.Model.extend({
     }
     return data;
   },
-  filterByAction: function(action, parent_property) {
+  filterByAction: function filterByAction(action, parentProperty) {
     var result = {};
     var schema = this.toJSON();
-    var local_schema = this.toLocalSchema(schema.schema);
-    $.each(local_schema.properties, function(key, property) {
+    var localSchema = this.toLocalSchema(schema.schema);
+
+    $.each(localSchema.properties, function iterator(key, property) {
       if (key == 'id' && property.format == 'uuid') {
         return;
       }
-      if (key == parent_property) {
+
+      if (key == parentProperty) {
         return;
       }
+
       if (_.isNull(property.permission) || _.isUndefined(property.permission)) {
         return;
       }
-      var view = property['view']
-      if(view){
-        if(view.indexOf(action) < 0){
-          return
+
+      var view = property.view;
+
+      if (view) {
+        if (view.indexOf(action) < 0) {
+          return;
         }
       }
+
       if (property.permission.indexOf(action) >= 0) {
         result[key] = property;
       }
     });
-    var required = _.filter(schema.schema.required, function(property) {
+    var required = _.filter(schema.schema.required, function iterator(property) {
       return result.hasOwnProperty(property);
     });
+
     return {
-      'type': 'object',
-      'properties': result,
-      'propertiesOrder': schema.schema.propertiesOrder,
-      'required': required
+      type: 'object',
+      properties: result,
+      propertiesOrder: schema.schema.propertiesOrder,
+      required: required
     };
   },
-  children: function() {
+  children: function children() {
     var self = this;
-    return this.collection.filter(function (schema) {
+
+    return this.collection.filter(function iterator(schema) {
       return schema.get('parent') === self.id;
     });
   }

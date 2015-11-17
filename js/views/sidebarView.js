@@ -5,33 +5,36 @@ require('./../../jst/templates');
 var SidebarView = Backbone.View.extend({
   tagName: 'ul',
   className: 'document-row',
-  initialize: function(options) {
+  initialize: function initialize(options) {
     this.schemas = options.schemas;
     this.listenTo(this.collection, 'add', this.append);
   },
   // View methods
   // ------------
-  render: function() {
-    this.collection.each(function(model) {
+  render: function render() {
+    this.collection.each(function iterator(model) {
       this.append(model);
     }, this);
     return this;
   },
-  append: function(model) {
-    var item_view = (new SidebarItemView({
+  append: function append(model) {
+    var itemView = (new SidebarItemView({
       model: model
     })).render();
     var index = this.collection.indexOf(model);
+
     if (index === 0) {
-      this.$el.prepend(item_view.el);
+      this.$el.prepend(itemView.el);
     } else {
-      item_view.$el.insertAfter(this.$el.children()[index - 1]);
+      itemView.$el.insertAfter(this.$el.children()[index - 1]);
     }
   },
-  select: function(model) {
+  select: function select(model) {
     this.$('.active').removeClass('active');
+
     if (model) {
       var index = this.collection.indexOf(model);
+
       $(this.$el.children()[index]).addClass('active');
     }
   }

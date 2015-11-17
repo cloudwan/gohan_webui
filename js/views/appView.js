@@ -10,20 +10,24 @@ var LoginView = require('./loginView');
 var ErrorView = require('./errorView');
 
 var AppView = Backbone.View.extend({
-  mainview: null,
+  mainView: null,
   className: 'appview',
-  initialize: function(options) {
+  initialize: function initialize(options) {
     var self = this;
+
     self.errorView = new ErrorView();
     self.router = options.router;
+
     var config = options.config;
+
     self.config = config;
     self.viewClass = options.viewClass || {};
 
-    if (config.auth_url.indexOf('__HOST__') > 0) {
-      config.auth_url = config.auth_url.replace(
+    if (config.authUrl.indexOf('__HOST__') > 0) {
+      config.authUrl = config.authUrl.replace(
         '__HOST__', window.location.hostname);
     }
+
     if (config.gohan.url.indexOf('__HOST__') > 0) {
       config.gohan.url = config.gohan.url.replace(
         '__HOST__', window.location.hostname);
@@ -31,9 +35,9 @@ var AppView = Backbone.View.extend({
 
     self.userModel = options.userModel;
 
-    if(_.isUndefined(self.userModel)){
+    if (_.isUndefined(self.userModel)) {
       self.userModel = new UserModel({
-        url: self.config.auth_url + '/tokens'
+        url: self.config.authUrl + '/tokens'
       });
     }
 
@@ -41,9 +45,9 @@ var AppView = Backbone.View.extend({
 
     self.schemas = options.scheams;
 
-    if(_.isUndefined(self.schemas)){
+    if (_.isUndefined(self.schemas)) {
       self.schemas = new SchemaCollection({
-        base_url: self.config.gohan.url,
+        baseUrl: self.config.gohan.url,
         userModel: self.userModel,
         url: self.config.gohan.url + self.config.gohan.schema,
         additionalForms: self.config.additionalForms
@@ -52,40 +56,43 @@ var AppView = Backbone.View.extend({
 
     self.listenTo(self.schemas, 'update', self.autoBuildUI);
 
-    if(self.userModel.authToken()){
+    if (self.userModel.authToken()) {
       self.schemas.fetch({
-        'error': self.errorView.render
+        error: self.errorView.render
       });
-    }else{
-      self.listenTo(self.userModel, 'change:auth_data', function () {
+    } else {
+      self.listenTo(self.userModel, 'change:auth_data', function onChangeAuthData() {
         self.$('#main_body').empty();
         self.schemas.fetch();
         self.render();
       });
     }
   },
-  buildView: function(){
-    this.sidebar_view = new SidebarView({
+  buildView: function buildView() {
+    this.sidebarView = new SidebarView({
       collection: new Backbone.Collection()
     });
-    this.header_view = new HeaderView({
+    this.headerView = new HeaderView({
       config: this.config,
       model: this.userModel
     });
   },
-  autoBuildUIForSchema: function (schema){
+  autoBuildUIForSchema: function autoBuildUIForSchema(schema) {
     var self = this;
     var viewClass = {
       table: TableView,
       detail: DetailView
     };
-    _.extend(viewClass, self.viewClass[schema.id]);
-    var collection =  schema.makeCollection();
-    if(schema.hasParent()){
-      var full_route = schema.prefix();
-      full_route = full_route.substr(1);
 
-      var child_table_view = function(){
+    _.extend(viewClass, self.viewClass[schema.id]);
+    var collection = schema.makeCollection();
+
+    if (schema.hasParent()) {
+      var fullRoute = schema.prefix();
+
+      fullRoute = fullRoute.substr(1);
+
+      var childTableView = function childTableView() {
         $('#alerts').empty();
         var endpoint = schema.apiEndpointBase() + '/' + Backbone.history.fragment;
         var collection = schema.makeCollection(endpoint);
@@ -96,17 +103,18 @@ var AppView = Backbone.View.extend({
           fragment: Backbone.history.fragment,
           app: self
         });
+
         self.$('#main_body').html(tableView.render().el);
         self.$('#main').addClass('active');
       };
 
-      var child_detail_view = function() {
+      var childDetailView = function childDetailView() {
         $('#alerts').empty();
         var id = arguments[arguments.length - 2];
         var model = collection.get(id);
 
-        if(_.isUndefined(model)){
-          model = new collection.model({'id': id});
+        if (_.isUndefined(model)) {
+          model = new collection.model({id: id});
         }
         var detailView = new viewClass.detail({
           schema: schema,
@@ -115,19 +123,23 @@ var AppView = Backbone.View.extend({
           fragment: Backbone.history.fragment,
           app: self
         });
+
         self.$('#main_body').html(detailView.render().el);
         self.$('#main').addClass('active');
       };
-      self.router.route(full_route, 'child_table_view', child_table_view);
-      self.router.route(full_route + '/:id', 'detail_view', child_detail_view);
-    }else{
+
+      self.router.route(fullRoute, 'child_table_view', childTableView);
+      self.router.route(fullRoute + '/:id', 'detail_view', childDetailView);
+    } else {
       var route = schema.get('url');
+
       route = route.substr(1);
-      var sidebar_menu = self.sidebar_view.collection.push({
+      var sidebarMenu = self.sidebarView.collection.push({
         path: '#' + route,
-        title: schema.get('title'),
+        title: schema.get('title')
       });
-      var table_view = function(id) {
+
+      var tableView = function tableView() {
         $('#alerts').empty();
         var tableView = new viewClass.table({
           schema: schema,
@@ -135,55 +147,61 @@ var AppView = Backbone.View.extend({
           fragment: Backbone.history.fragment,
           app: self
         });
+
         self.$('#main_body').html(tableView.render().el);
         self.$('#main').addClass('active');
-        self.sidebar_view.select(sidebar_menu);
+        self.sidebarView.select(sidebarMenu);
       };
 
-      var detail_view = function(id) {
+      var detailView = function detailView(id) {
         $('#alerts').empty();
         var model = collection.get(id);
-        if(_.isUndefined(model)){
-          model = new collection.model({'id': id});
+
+        if (_.isUndefined(model)) {
+          model = new collection.model({id: id});
         }
+
         var detailView = new viewClass.detail({
           schema: schema,
           model: model,
           fragment: Backbone.history.fragment,
           app: self
         });
+
         self.$('#main_body').html(detailView.render().el);
         self.$('#main').addClass('active');
-        self.sidebar_view.select(sidebar_menu);
+        self.sidebarView.select(sidebarMenu);
       };
 
-      self.router.route(route, 'table_view', table_view);
-      self.router.route(route + '/:id', 'detail_view', detail_view);
-
+      self.router.route(route, 'table_view', tableView);
+      self.router.route(route + '/:id', 'detail_view', detailView);
     }
   },
-  autoBuildUI: function() {
+  autoBuildUI: function autoBuildUI() {
     var self = this;
-    self.schemas.each(function(schema){
-      self.autoBuildUIForSchema(schema)
+
+    self.schemas.each(function iterator(schema) {
+      self.autoBuildUIForSchema(schema);
     });
     Backbone.history.loadUrl(Backbone.history.fragment);
   },
-  login: function(){
+  login: function login() {
     var loginView = new LoginView({
       model: this.userModel
     });
+
     this.$el.html(loginView.render().el);
   },
-  render: function() {
-    if(!this.userModel.authToken()){
+  render: function render() {
+    if (!this.userModel.authToken()) {
       this.login();
-    }else{
+    } else {
       this.$el.html(JST['app.html']());
-      this.$('#header').append(this.header_view.render().el);
-      this.$('#sidebar').append(this.sidebar_view.render().el);
+      this.$('#header').append(this.headerView.render().el);
+      this.$('#sidebar').append(this.sidebarView.render().el);
     }
     return this;
   }
 });
+
 module.exports = AppView;

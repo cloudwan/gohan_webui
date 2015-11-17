@@ -6,21 +6,23 @@ var AppView = require('./views/appView');
 var SchemaView = require('./views/schemaView');
 
 //Set up
-(function() {
+(function strict() {
   $.material.init();
   $.get('config.json').then(
-    function(config) {
+    function onSuccess(config) {
       var router = new Backbone.Router;
-      var root_view = new AppView({
+      var rootView = new AppView({
         router: router,
         config: config,
-        viewClass: {'schema': {
+        viewClass: {
+          schema: {
           table: SchemaView
         }}
       });
-      $('body').append(root_view.render().el);
+
+      $('body').append(rootView.render().el);
       Backbone.history.start();
-    }).fail(function() {
+    }).fail(function onFail() {
     $('body').append('Failed to load config.json');
   });
 })();
