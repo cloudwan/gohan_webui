@@ -3,7 +3,7 @@ var gutil = require('gulp-util');
 var compass = require('gulp-compass');
 var path = require('path');
 var jst = require('gulp-jst');
-var template = require('gulp-template-compile');
+var template = require('gulp-underscore-template');
 var concat = require('gulp-concat');
 var jscs = require('gulp-jscs');
 
@@ -57,7 +57,7 @@ var webpackConfig = {
   ]
 };
 
-gulp.task('webpack', function(callback) {
+gulp.task('webpack', ['compass_gohan', 'jst', 'jscs'], function(callback) {
   webpack(webpackConfig, function(err, stats) {
     if (err) {
       throw new gutil.PluginError('webpack', err);
@@ -68,7 +68,7 @@ gulp.task('webpack', function(callback) {
   });
 });
 
-gulp.task('webpack-dev-server', function(callback) {
+gulp.task('webpack-dev-server', ['compass_gohan', 'jst', 'jscs'], function(callback) {
   // Start a webpack-dev-server
   var compiler = webpack(webpackConfig);
 
@@ -109,4 +109,4 @@ gulp.task('compass_gohan', function() {
     .pipe(gulp.dest('./dist/css'));
 });
 
-gulp.task('default', ['compass_gohan', 'jst', 'jscs', 'webpack']);
+gulp.task('default', ['webpack']);

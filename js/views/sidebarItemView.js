@@ -1,4 +1,4 @@
-require('./../../jst/templates');
+var templates = require('./../../jst/templates');
 
 var SidebarItemView = Backbone.View.extend({
   tagName: 'li',
@@ -17,7 +17,7 @@ var SidebarItemView = Backbone.View.extend({
   // View methods
   // ------------
   render: function render() {
-    this.$el.html(JST['sideview_item.html']({
+    this.$el.html(templates.sideviewItem({
       source: this.model.toJSON()
     }));
     return this;

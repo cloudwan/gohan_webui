@@ -3,8 +3,7 @@ var $ = require('jquery');
 var jsyaml = require('js-yaml');
 
 require('./../../bower_components/jsonform/lib/jsonform');
-require('./../../jst/templates');
-
+var templates = require('./../../jst/templates');
 var TableView = require('./tableView');
 
 var SchemaView = TableView.extend({
@@ -110,8 +109,8 @@ var SchemaView = TableView.extend({
         onsubmit(values);
       }
     });
-    $form.append($(JST['schema_form.html']({
-      JST: JST,
+    $form.append($(templates.schemaForm({
+      JST: templates,
       propertyColumns: propertyColumns
     })));
     var dataSchema = data.schema || {};
@@ -139,7 +138,7 @@ var SchemaView = TableView.extend({
     properties.push(_.extend({}, defaultProperty));
 
     var addNewRow = function addNewRow(property) {
-      var $newRow = $(JST['property_form.html']({
+      var $newRow = $(templates.propertyForm({
         propertyColumns: propertyColumns,
         property: property
       }));

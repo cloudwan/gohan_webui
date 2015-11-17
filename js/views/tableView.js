@@ -4,8 +4,7 @@ var Bootstrap = require('bootstrap');
 var BootstrapDialog = require('bootstrap-dialog');
 var ErrorView = require('./errorView');
 var jsyaml = require('js-yaml');
-
-require('./../../jst/templates');
+var templates = require('./../../jst/templates');
 
 var TableView = Backbone.View.extend({
   tagName: 'div',
@@ -222,7 +221,7 @@ var TableView = Backbone.View.extend({
       content = $('<pre style="width:500px;"></pre>').text(
         '<pre>' + jsyaml.safeDump(value) + '</pre>').html();
       content = content.replace('\'', '&#34;');
-      return JST['data_popup.html']({
+      return templates.dataPopup({
         content: content
       });
     }
@@ -250,7 +249,7 @@ var TableView = Backbone.View.extend({
       return result;
     });
 
-    this.$el.html(JST['table.html']({
+    this.$el.html(templates.table({
       data: list,
       schema: this.schema.toJSON(),
       parentProperty: this.parentProperty
