@@ -120,6 +120,8 @@ var SchemaModel = Backbone.Model.extend({
     }
     var model = self.makeModel(url);
     var userModel = self.collection.userModel;
+    var additionalForms = self.collection.additionalForms;
+    self.additionalForm = additionalForms[self.id] || ['*'];
     var collection_class = Backbone.Collection.extend({
       url: url,
       model: model,

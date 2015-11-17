@@ -30,46 +30,83 @@ var TableView = Backbone.View.extend({
   },
   dialogForm: function(action, form_title, data, onsubmit) {
     var self = this;
+    var result = {};
     var form = $('<form></form>', self.$el);
-    form.jsonForm({
-      schema: self.schema.filterByAction(action, self.parent_property),
-      value: data,
-      form: ['*'],
-      onSubmit: function(errors, values) {
-        if (errors) {
+    var additionalForm = self.schema.additionalForm;
+    var concatResult = function(value) {
+      result = _.extend(result, value);
+    };
+    var createForm = function(step) {
+      var currentForm = additionalForm;
+      if (!_.isUndefined(step)) {
+        currentForm = additionalForm[step];
+        if (step >= additionalForm.length) {
+          onsubmit(result);
+          return;
+        }
+      }
+      form.html('');
+      form.jsonForm({
+        schema: self.schema.filterByAction(action, self.parent_property),
+        value: data,
+        form: currentForm,
+        onSubmit: function (errors, values) {
           self.dialog.getButton('submit').stopSpin();
           self.dialog.enableButtons(true);
           self.dialog.setClosable(true);
-          return;
+          if (errors) {
+            return;
+          }
+          if (step === additionalForm.length - 2) {
+            self.dialog.getButton('submit').text('Submit');
+          }
+          if (_.isUndefined(step)) {
+            onsubmit(values);
+          } else {
+            concatResult(values);
+            createForm(step + 1);
+          }
         }
-        onsubmit(values);
-      }
-    });
-    form.prepend('<div id="alerts_form"></div>');
-    self.dialog = BootstrapDialog.show({
-      size: BootstrapDialog.SIZE_WIDE,
-      type: BootstrapDialog.TYPE_DEFAULT,
-      title: form_title,
-      closeByKeyboard: false,
-      message: form,
-      spinicon: 'glyphicon glyphicon-refresh',
-      onshown: function() {
-        $('.modal-body').css({
-          'max-height': $(window).height() - 200 + 'px'
+      });
+      form.prepend('<div id="alerts_form"></div>');
+      if (_.isUndefined(self.dialog)) {
+        self.dialog = BootstrapDialog.show({
+          size: BootstrapDialog.SIZE_WIDE,
+          type: BootstrapDialog.TYPE_DEFAULT,
+          title: form_title,
+          closeByKeyboard: false,
+          message: form,
+          spinicon: 'glyphicon glyphicon-refresh',
+          onshown: function () {
+            $('.modal-body').css({
+              'max-height': $(window).height() - 200 + 'px'
+            });
+          },
+          onhide: function () {
+            delete self.dialog;
+          },
+          buttons: [{
+            id: 'submit',
+            label: _.isUndefined(step) ? 'Submit' : 'Next',
+            cssClass: 'btn-primary btn-raised btn-material-blue-600',
+            action: function () {
+              self.dialog.enableButtons(false);
+              self.dialog.setClosable(false);
+              this.spin();
+              form.submit();
+            }
+          }]
         });
-      },
-      buttons: [{
-        id: 'submit',
-        label: 'Submit',
-        cssClass: 'btn-primary btn-raised btn-material-blue-600',
-        action: function(dialog) {
-          self.dialog.enableButtons(false);
-          self.dialog.setClosable(false);
-          this.spin();
-          form.submit();
-        }
-      }]
-    });
+      }
+    };
+    if (_.isArray(additionalForm[0]) && action === 'create') {
+      createForm(0);
+    } else {
+      if (action === 'update') {
+        additionalForm = ['*'];
+      }
+      createForm();
+    }
   },
   toLocal: function(data) {
     return this.schema.toLocal(data);

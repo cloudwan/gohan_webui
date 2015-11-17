@@ -7,6 +7,7 @@ var SchemaCollection = Backbone.Collection.extend({
       this.base_url = options.base_url;
       this.url = options.url;
       this.userModel = options.userModel;
+      this.additionalForms = options.additionalForms;
   },
   parse: function(resp) {
     return resp['schemas'];

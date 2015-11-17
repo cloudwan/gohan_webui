@@ -46,6 +46,7 @@ var AppView = Backbone.View.extend({
         base_url: self.config.gohan.url,
         userModel: self.userModel,
         url: self.config.gohan.url + self.config.gohan.schema,
+        additionalForms: self.config.additionalForms
       });
     }
 
