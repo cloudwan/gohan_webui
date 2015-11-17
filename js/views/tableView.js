@@ -194,7 +194,10 @@ var TableView = Backbone.View.extend({
     var id = $target.data('id');
     var model = this.collection.get(id);
 
-    model.destroy({wait: 'true'});
+    model.destroy({
+      wait: 'true',
+      error: this.errorView.render
+    });
   },
   renderProperty: function renderProperty(data, key) {
     var content;
