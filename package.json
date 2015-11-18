@@ -16,6 +16,7 @@
     "bower-webpack-plugin": "^0.1.9",
     "browser-sync": "^2.0.1",
     "css-loader": "^0.22.0",
+    "del": "^2.1.0",
     "file-loader": "^0.8.4",
     "gulp": "^3.4.0",
     "gulp-compass": "^2.1.0",

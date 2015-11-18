@@ -40,9 +40,13 @@ Setup development environment
 ```
 - Start dev server with auto refresh
 ```
-    $ gulp webpack-dev-server
+    $ gulp dev-server
 ```
  Server starts on 
 ```
     http://localhost:8080/webpack-dev-server/index.html
+```
+- Build application for production
+```
+    $ gulp build-prod
 ```
