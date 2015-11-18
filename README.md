@@ -44,7 +44,7 @@ Setup development environment
 ```
  Server starts on 
 ```
-    http://localhost:8080/webpack-dev-server/index.html
+    http://localhost:8080/webpack-dev-server/app/index.html
 ```
 - Build application for production
 ```

@@ -15,6 +15,7 @@
   "devDependencies": {
     "bower-webpack-plugin": "^0.1.9",
     "browser-sync": "^2.0.1",
+    "copy-webpack-plugin": "^0.2.0",
     "css-loader": "^0.22.0",
     "del": "^2.1.0",
     "file-loader": "^0.8.4",

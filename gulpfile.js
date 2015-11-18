@@ -11,10 +11,11 @@ var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var BowerWebpackPlugin = require('bower-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 var webpackConfig = {
   context: __dirname,
-  entry: './js/app',
+  entry: './app/js/app',
   output: {
     path: __dirname + '/dist',
     filename: 'bundle.js',
@@ -52,9 +53,13 @@ var webpackConfig = {
       Backbone: 'backbone'
     }),
     new HtmlWebpackPlugin({
-      template: 'index.html',
+      template: './app/index.html',
       inject: 'body'
-    })
+    }),
+    new CopyWebpackPlugin([
+      { from: 'app/config.json.sample', to: '/config.json' },
+      { from: 'app/schema.json.sample', to: '/schema.json' }
+    ])
   ],
   devtool: 'source-map'
 };
@@ -64,15 +69,7 @@ gulp.task('clean', function (callback) {
   callback();
 });
 
-gulp.task('copy-config-files', ['clean'], function(callback) {
-  gulp.src('./config.json')
-    .pipe(gulp.dest('./dist'));
-  gulp.src('./schema.json')
-    .pipe(gulp.dest('./dist'));
-  callback();
-});
-
-gulp.task('build-dev', ['copy-config-files', 'compass_gohan', 'jst', 'jscs'], function(callback) {
+gulp.task('build-dev', ['clean', 'compass_gohan', 'jst', 'jscs'], function(callback) {
   webpack(webpackConfig, function(err, stats) {
     if (err) {
       throw new gutil.PluginError('webpack', err);
@@ -83,7 +80,7 @@ gulp.task('build-dev', ['copy-config-files', 'compass_gohan', 'jst', 'jscs'], fu
   });
 });
 
-gulp.task('build-prod', ['copy-config-files', 'compass_gohan', 'jst', 'jscs'], function(callback) {
+gulp.task('build-prod', ['clean', 'compass_gohan', 'jst', 'jscs'], function(callback) {
   delete webpackConfig.devtool;
   webpackConfig.output.filename = 'bundle.min.js';
   webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
@@ -97,11 +94,12 @@ gulp.task('build-prod', ['copy-config-files', 'compass_gohan', 'jst', 'jscs'], f
   });
 });
 
-gulp.task('dev-server', ['copy-config-files', 'compass_gohan', 'jst', 'jscs'], function(callback) {
+gulp.task('dev-server', ['clean', 'compass_gohan', 'jst', 'jscs'], function(callback) {
   // Start a webpack-dev-server
   var compiler = webpack(webpackConfig);
 
   new WebpackDevServer(compiler, {
+    publicPath: '/app/'
   }).listen(8080, 'localhost', function(err) {
     if (err) {
       throw new gutil.PluginError('webpack-dev-server', err);
@@ -111,14 +109,14 @@ gulp.task('dev-server', ['copy-config-files', 'compass_gohan', 'jst', 'jscs'], f
 });
 
 gulp.task('jst', function() {
-  gulp.src('./templates/*.html')
+  gulp.src('./app/templates/*.html')
     .pipe(template())
     .pipe(concat('templates.js'))
-    .pipe(gulp.dest('./jst'));
+    .pipe(gulp.dest('./app/jst'));
 });
 
 gulp.task('jscs', function() {
-  return gulp.src('js/**/*.js')
+  return gulp.src('./app/js/**/*.js')
     .pipe(jscs({
       configPath: './.jscsrc',
       fix: false
@@ -128,11 +126,11 @@ gulp.task('jscs', function() {
 });
 
 gulp.task('compass_gohan', function() {
-  gulp.src('./css/sass/*.scss')
+  gulp.src('./app/css/sass/*.scss')
     .pipe(compass({
-      css: './css',
-      sass: './css/sass',
-      image: './img'
+      css: './app/css',
+      sass: './app/css/sass',
+      image: './app/img'
     }))
     //.pipe(minifyCSS())
     .pipe(gulp.dest('./dist/css'));
