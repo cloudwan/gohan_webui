@@ -5,6 +5,12 @@
         "url": "http://__HOST__:9443"
     },
     "additionalForms": {
-        "server": [["name"], ["network_id"], ["tenant_id"]]
+        "server": {
+            "create": [
+                ["name"],
+                ["network_id"],
+                ["tenant_id"]
+            ]
+        }
     }
 }

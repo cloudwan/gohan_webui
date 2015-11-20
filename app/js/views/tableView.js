@@ -1,7 +1,5 @@
-require('./../../bower_components/jsonform/lib/jsonform');
-
 var Bootstrap = require('bootstrap');
-var BootstrapDialog = require('bootstrap-dialog');
+var DialogView = require('./dialogView');
 var ErrorView = require('./errorView');
 var jsyaml = require('js-yaml');
 var templates = require('./../../jst/templates');
@@ -14,6 +12,7 @@ var TableView = Backbone.View.extend({
     'click .gohan_delete': 'deleteModel',
     'click .gohan_update': 'updateModel'
   },
+
   initialize: function initialize(options) {
     this.errorView = new ErrorView();
     this.app = options.app;
@@ -31,93 +30,15 @@ var TableView = Backbone.View.extend({
     });
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
-    var self = this;
-    var result = {};
-    var $form = $('<form></form>', self.$el);
-    var additionalForm = self.schema.additionalForm;
-    var concatResult = function concatResult(value) {
-      result = _.extend(result, value);
-    };
-    var createForm = function createForm(step) {
-      var currentForm = additionalForm;
+    this.dialog = new DialogView({
+      action: action,
+      formTitle: formTitle,
+      data: data,
+      onsubmit: onsubmit,
+      schema: this.schema
+    });
 
-      if (!_.isUndefined(step)) {
-        currentForm = additionalForm[step];
-
-        if (step >= additionalForm.length) {
-          onsubmit(result);
-          return;
-        }
-      }
-
-      $form.html('');
-      $form.jsonForm({
-        schema: self.schema.filterByAction(action, self.parentProperty),
-        value: data,
-        form: currentForm,
-        onSubmit: function onSubmit(errors, values) {
-          self.dialog.getButton('submit').stopSpin();
-          self.dialog.enableButtons(true);
-          self.dialog.setClosable(true);
-
-          if (errors) {
-            return;
-          }
-
-          if (step === additionalForm.length - 2) {
-            self.dialog.getButton('submit').text('Submit');
-          }
-
-          if (_.isUndefined(step)) {
-            onsubmit(values);
-          } else {
-            concatResult(values);
-            createForm(step + 1);
-          }
-        }
-      });
-
-      $form.prepend('<div id="alerts_form"></div>');
-
-      if (_.isUndefined(self.dialog)) {
-        self.dialog = BootstrapDialog.show({
-          size: BootstrapDialog.SIZE_WIDE,
-          type: BootstrapDialog.TYPE_DEFAULT,
-          title: formTitle,
-          closeByKeyboard: false,
-          message: $form,
-          spinicon: 'glyphicon glyphicon-refresh',
-          onshown: function onshown() {
-            $('.modal-body').css({
-              'max-height': $(window).height() - 200 + 'px'
-            });
-          },
-          onhide: function onhide() {
-            delete self.dialog;
-          },
-          buttons: [{
-            id: 'submit',
-            label: _.isUndefined(step) ? 'Submit' : 'Next',
-            cssClass: 'btn-primary btn-raised btn-material-blue-600',
-            action: function action() {
-              self.dialog.enableButtons(false);
-              self.dialog.setClosable(false);
-              this.spin();
-              $form.submit();
-            }
-          }]
-        });
-      }
-    };
-
-    if (_.isArray(additionalForm[0]) && action === 'create') {
-      createForm(0);
-    } else {
-      if (action === 'update') {
-        additionalForm = ['*'];
-      }
-      createForm();
-    }
+    this.dialog.render();
   },
   toLocal: function toLocal(data) {
     return this.schema.toLocal(data);
@@ -136,9 +57,9 @@ var TableView = Backbone.View.extend({
       self.collection.create(values, {
         wait: true,
         success: function success() {
-          self.dialog.close();
           self.collection.fetch({
              success: function success() {
+               self.dialog.close();
                self.render();
              },
              error: self.errorView.render
@@ -146,9 +67,7 @@ var TableView = Backbone.View.extend({
         },
         error: function error(collection, response) {
           self.errorView.render(collection, response);
-          self.dialog.getButton('submit').stopSpin();
-          self.dialog.enableButtons(true);
-          self.dialog.setClosable(true);
+          self.dialog.stopSpin();
       }});
     };
 
@@ -170,7 +89,6 @@ var TableView = Backbone.View.extend({
         wait: true,
         success: function success() {
           self.collection.trigger('update');
-          self.dialog.close();
           self.collection.fetch({
              success: function success() {
                self.render();
@@ -180,9 +98,7 @@ var TableView = Backbone.View.extend({
         },
         error: function error(collection, response) {
           self.errorView.render(collection, response);
-          self.dialog.getButton('submit').stopSpin();
-          self.dialog.enableButtons(true);
-          self.dialog.setClosable(true);
+          self.dialog.stopSpin();
         }
       });
     };
