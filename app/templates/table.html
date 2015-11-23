@@ -1,0 +1,64 @@
+<div id="alerts"></div>
+<h1 class="header" id="bread_crumb">
+  <ul class="bread_crumb"><li><%- schema.title %></li></ul>
+</h1>
+<a class="btn btn-primary gohan_create btn-raised btn-material-blue-600"><strong>+</strong> New</a>
+
+<div class="table-responsive">
+  <table class="table table-striped gohan-table">
+    <thead>
+      <tr>
+       <% _.each(schema.schema.propertiesOrder, function(key){
+           var property = schema.schema.properties[key];
+           var view = property['view']
+           if(view){
+             if(view.indexOf("list") < 0){
+               return
+             }
+           }
+           if(key === parentProperty){
+             return
+           }
+        %>
+        <th><%= property.title %></th>
+       <% }); %>
+       <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% _.each(data, function(d){ %>
+      <tr>
+       <% _.each(schema.schema.propertiesOrder, function(key){
+           var property = schema.schema.properties[key];
+           var view = property['view']
+           if(view){
+             if(view.indexOf("list") < 0){
+               return
+             }
+           }
+           if(key === parentProperty){
+             return
+           }
+           %>
+        <td><%= d[key] %></td>
+       <% }); %>
+       <td class="action_column">
+         <div class="btn-group ">
+          <a class="btn btn-default btn-sm gohan_update btn-raised btn-material-blue-600" data-id="<%- d['id']%>">Edit</a>
+             <button type="button" class="btn btn-default btn-sm dropdown-toggle"
+               data-toggle="dropdown" aria-expanded="true" data-container="body">
+             <span class="caret"></span>
+             <span class="sr-only">Toggle Dropdown</span>
+           </button>
+           <ul class="dropdown-menu pull-right" role="menu" >
+             <li><a class="gohan_delete btn-danger" data-id="<%- d['id']%>" >Delete</a></li>
+           </ul>
+         </div>
+       </td>
+      </tr>
+      <% }); %>
+   </tbody>
+  </table>
+</div>
+
+

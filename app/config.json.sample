@@ -1,0 +1,16 @@
+{
+    "authUrl": "http://__HOST__:9443/v2.0",
+    "gohan": {
+        "schema": "/gohan/v0.1/schemas",
+        "url": "http://__HOST__:9443"
+    },
+    "additionalForms": {
+        "server": {
+            "create": [
+                ["name"],
+                ["network_id"],
+                ["tenant_id"]
+            ]
+        }
+    }
+}

@@ -18,18 +18,35 @@ Setup development environment
 
 - Run gohan
 - Install compass
+```
+    $ gem install compass
+```
 - Install gulp
-
 ```
-    npm install -g gulp
-    npm install gulp
-    npm install gulp-compass
-    npm install browser-sync
-    npm install gulp-jst
-    npm install gulp-concat
-    npm install gulp-template-compile
-    npm install gulp-minify-css
+    $ npm install gulp
 ```
-
-- cp config.json.sample config.json
-- gulp
+- Install all npm dependencies
+```
+    $ npm install
+``` 
+- Copy configurations files
+```
+    $ cp config.json.sample config.json
+    $ cp schema.json.sample schema.json
+```
+- Build application
+```
+    $ gulp
+```
+- Start dev server with auto refresh
+```
+    $ gulp dev-server
+```
+ Server starts on 
+```
+    http://localhost:8080/webpack-dev-server/app/index.html
+```
+- Build application for production
+```
+    $ gulp build-prod
+```
