@@ -57,8 +57,7 @@ var webpackConfig = {
       inject: 'body'
     }),
     new CopyWebpackPlugin([
-      { from: 'app/config.json.sample', to: '/config.json' },
-      { from: 'app/schema.json.sample', to: '/schema.json' }
+      { from: 'app/config.json.sample', to: '/config.json' }
     ])
   ],
   devtool: 'source-map'
@@ -94,7 +93,7 @@ gulp.task('build-prod', ['clean', 'compass_gohan', 'jst', 'jscs'], function(call
   });
 });
 
-gulp.task('dev-server', ['clean', 'compass_gohan', 'jst', 'jscs'], function(callback) {
+gulp.task('dev-server', ['clean', 'compass_gohan', 'jst'], function(callback) {
   // Start a webpack-dev-server
   var compiler = webpack(webpackConfig);
 

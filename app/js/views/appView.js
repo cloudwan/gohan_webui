@@ -131,12 +131,26 @@ var AppView = Backbone.View.extend({
       self.router.route(fullRoute + '/:id', 'detail_view', childDetailView);
     } else {
       var route = schema.get('url');
+      var path = '#' + route;
 
       route = route.substr(1);
-      var sidebarMenu = self.sidebarView.collection.push({
-        path: '#' + route,
-        title: schema.get('title')
-      });
+      var sidebarMenu = {};
+
+      if (this.config.sidebar) {
+        _.each(this.config.sidebar, function iterator(value) {
+          if (value.path === path) {
+            sidebarMenu = self.sidebarView.collection.push({
+              path: path,
+              title: value.title
+            });
+          }
+        });
+      } else {
+        sidebarMenu = self.sidebarView.collection.push({
+          path: '#' + route,
+          title: schema.get('title')
+        });
+      }
 
       var tableView = function tableView() {
         $('#alerts').empty();
