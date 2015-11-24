@@ -152,42 +152,65 @@ var AppView = Backbone.View.extend({
         });
       }
 
-      var tableView = function tableView() {
-        $('#alerts').empty();
-        var tableView = new viewClass.table({
-          schema: schema,
-          collection: collection,
-          fragment: Backbone.history.fragment,
-          app: self
+      if (!_.isUndefined(this.config.routes)
+        && _.contains(_.pluck(self.config.routes, 'path'), route)) {
+        _.each(this.config.routes, function iterator(value) {
+          if (value.path === route) {
+            var customView = function customView() {
+              var custom = new viewClass[value.viewClass]({
+                arguments: arguments,
+                schema: schema,
+                collection: collection,
+                fragment: Backbone.history.fragment,
+                app: self
+              });
+
+              self.$('#main_body').html(custom.render().el);
+              self.$('#main').addClass('active');
+              self.sidebarView.select(sidebarMenu);
+            };
+
+            self.router.route(value.path, value.name, customView);
+          }
         });
+      } else {
+        var tableView = function tableView() {
+          $('#alerts').empty();
+          var tableView = new viewClass.table({
+            schema: schema,
+            collection: collection,
+            fragment: Backbone.history.fragment,
+            app: self
+          });
 
-        self.$('#main_body').html(tableView.render().el);
-        self.$('#main').addClass('active');
-        self.sidebarView.select(sidebarMenu);
-      };
+          self.$('#main_body').html(tableView.render().el);
+          self.$('#main').addClass('active');
+          self.sidebarView.select(sidebarMenu);
+        };
 
-      var detailView = function detailView(id) {
-        $('#alerts').empty();
-        var model = collection.get(id);
+        var detailView = function detailView(id) {
+          $('#alerts').empty();
+          var model = collection.get(id);
 
-        if (_.isUndefined(model)) {
-          model = new collection.model({id: id});
-        }
+          if (_.isUndefined(model)) {
+            model = new collection.model({id: id});
+          }
 
-        var detailView = new viewClass.detail({
-          schema: schema,
-          model: model,
-          fragment: Backbone.history.fragment,
-          app: self
-        });
+          var detailView = new viewClass.detail({
+            schema: schema,
+            model: model,
+            fragment: Backbone.history.fragment,
+            app: self
+          });
 
-        self.$('#main_body').html(detailView.render().el);
-        self.$('#main').addClass('active');
-        self.sidebarView.select(sidebarMenu);
-      };
+          self.$('#main_body').html(detailView.render().el);
+          self.$('#main').addClass('active');
+          self.sidebarView.select(sidebarMenu);
+        };
 
-      self.router.route(route, 'table_view', tableView);
-      self.router.route(route + '/:id', 'detail_view', detailView);
+        self.router.route(route, 'table_view', tableView);
+        self.router.route(route + '/:id', 'detail_view', detailView);
+      }
     }
   },
   autoBuildUI: function autoBuildUI() {

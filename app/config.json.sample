@@ -18,6 +18,18 @@
             "path": "#/v2.0/networks",
             "title": "Networks",
             "class": "networks"
+        },
+        {
+            "path": "#/v2.0/servers",
+            "title": "Server",
+            "class": "server"
+        }
+    ],
+    "routes": [
+        {
+            "path": "sample/path",
+            "viewClass": "sample_class",
+            "name": "sample_name"
         }
     ]
 }
