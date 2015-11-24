@@ -28,6 +28,7 @@ var TableView = Backbone.View.extend({
     this.collection.fetch({
        error: this.errorView.render
     });
+    this.collection.startLongPolling();
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     this.dialog = new DialogView({
@@ -175,6 +176,10 @@ var TableView = Backbone.View.extend({
     }));
     this.$('button[data-toggle=hover]').popover();
     return this;
+  },
+  close: function close() {
+    this.collection.stopLongPolling();
+    this.remove();
   }
 });
 

@@ -145,11 +145,36 @@ var SchemaModel = Backbone.Model.extend({
       url: url,
       model: model,
       schema: self,
+      longPolling: false,
+      timeOutId: -1,
+      intervalSeconds: 10,
       parse: function parse(resp) {
         return resp[self.get('plural')];
       },
       unsetAuthData: function unsetAuthData() {
         this.userModel.unsetAuthData();
+      },
+      startLongPolling: function startLongPolling(intervalSeconds) {
+        this.longPolling = true;
+
+        if (intervalSeconds) {
+          this.intervalSeconds = intervalSeconds;
+        }
+        this.executeLongPolling();
+      },
+      stopLongPolling: function stopLongPolling() {
+        this.longPolling = false;
+        clearTimeout(this.timeOutId);
+        this.timeOutId = -1;
+      },
+      executeLongPolling: function executeLongPulling() {
+        var fetchSuccess = function fetchSuccess() {
+          if (this.longPolling) {
+            this.timeOutId = setTimeout(this.executeLongPolling.bind(this), 1000 * this.intervalSeconds);
+          }
+        };
+
+        this.fetch({success: fetchSuccess.bind(this)});
       },
       sync: function sync(method, collection, options) {
         if (_.isUndefined(options)) {
