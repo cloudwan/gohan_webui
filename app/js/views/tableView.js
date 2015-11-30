@@ -11,7 +11,8 @@ var TableView = Backbone.View.extend({
     'click .gohan_create': 'createModel',
     'click .gohan_delete': 'deleteModel',
     'click .gohan_update': 'updateModel',
-    'click a.title': 'filter'
+    'click a.title': 'filter',
+    'keyup input.search': 'search'
   },
 
   initialize: function initialize(options) {
@@ -24,6 +25,7 @@ var TableView = Backbone.View.extend({
       by: '',
       reverse: false
     };
+    this.searchQuery = '';
 
     if ( this.childview ) {
       this.parentProperty = this.schema.get('parent') + '_id';
@@ -33,6 +35,12 @@ var TableView = Backbone.View.extend({
     this.collection.fetch({
        error: this.errorView.render
     });
+  },
+  search: function search(event) {
+    this.searchQuery = event.currentTarget.value;
+    this.render();
+
+    $('input.search', this.$el).focus().val('').val(this.searchQuery);
   },
   filter: function filter(event) {
     var id = event.currentTarget.dataset.id;
@@ -187,6 +195,19 @@ var TableView = Backbone.View.extend({
       return result;
     });
 
+    if (this.searchQuery !== '') {
+      list = _.filter(list, function iterator(value) {
+        var result = 0;
+
+        _.forEach(value, function iterator(val) {
+          if (_.isString(val) && val.indexOf(self.searchQuery) !== -1) {
+            result = 1;
+          }
+        });
+        return result;
+      });
+    }
+
     list = _.sortBy(list, function iterator(value) {
       if (self.activeFilter.by === '') {
         return value;
@@ -204,6 +225,7 @@ var TableView = Backbone.View.extend({
     this.$el.html(templates.table({
       data: list,
       schema: this.schema.toJSON(),
+      searchQuery: this.searchQuery,
       sort: {
         by: this.activeFilter.by,
         reverse: this.activeFilter.reverse
