@@ -228,7 +228,7 @@ var TableView = Backbone.View.extend({
         var result = 0;
 
         _.forEach(value, function iterator(val) {
-          if (_.isString(val) && val.indexOf(self.searchQuery) !== -1) {
+          if (val && val.toString().indexOf(self.searchQuery) !== -1) {
             result = 1;
           }
         });
