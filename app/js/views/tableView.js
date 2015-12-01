@@ -12,7 +12,8 @@ var TableView = Backbone.View.extend({
     'click .gohan_delete': 'deleteModel',
     'click .gohan_update': 'updateModel',
     'click a.title': 'filter',
-    'keyup input.search': 'search'
+    'keyup input.search': 'search',
+    'click nav li:not(.disabled) a': 'pagination'
   },
 
   initialize: function initialize(options) {
@@ -55,6 +56,33 @@ var TableView = Backbone.View.extend({
       this.activeFilter.reverse = false;
     }
     this.render();
+  },
+  pagination: function pagination(event) {
+    var newActivePage = event.currentTarget.dataset.id;
+
+    if (newActivePage === 'next') {
+      newActivePage = $('a', $('nav li.active', this.$el).next()).data('id');
+    } else if (newActivePage === 'prev') {
+      newActivePage = $('a', $('nav li.active', this.$el).prev()).data('id');
+    }
+
+    var activePage = $('nav li.active a', this.$el).data('id');
+    var newPageIndicator = $('[data-id=' + newActivePage + ']', this.$el).parent();
+    var activePageIndicator = $('[data-id=' + activePage + ']', this.$el).parent();
+
+    $('#' + activePage).hide();
+    $('#' + newActivePage).show();
+
+    activePageIndicator.removeClass('active');
+    newPageIndicator.addClass('active');
+
+    if (newPageIndicator.next().children().data('id') === 'next') {
+      $('.disabled', this.$el).removeClass('disabled');
+      newPageIndicator.next().addClass('disabled');
+    } else if (newPageIndicator.prev().children().data('id') === 'prev') {
+      $('.disabled', this.$el).removeClass('disabled');
+      newPageIndicator.prev().addClass('disabled');
+    }
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     this.dialog = new DialogView({
@@ -222,6 +250,15 @@ var TableView = Backbone.View.extend({
     if (this.activeFilter.reverse === true) {
       list = list.reverse();
     }
+    this.pageSize = 10;
+    var tmp = [];
+
+    for (var i = 0; i < list.length; i += this.pageSize) {
+      tmp.push(list.slice(i, i + this.pageSize));
+    }
+
+    list = tmp;
+
     this.$el.html(templates.table({
       data: list,
       schema: this.schema.toJSON(),

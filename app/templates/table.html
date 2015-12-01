@@ -36,8 +36,9 @@
        <th></th>
       </tr>
     </thead>
-    <tbody>
-      <% _.each(data, function(d){ %>
+    <% _.each(data, function(page, key){ %>
+    <tbody id="page<%= key + 1 %>" <% if (key !== 0) { %> style="display:none;" <% }%> >
+      <% _.each(page, function(d){ %>
       <tr>
        <% _.each(schema.schema.propertiesOrder, function(key){
            var property = schema.schema.properties[key];
@@ -69,7 +70,27 @@
       </tr>
       <% }); %>
    </tbody>
+    <% }); %>
   </table>
+    <% if (data.length > 1) { %>
+    <nav>
+        <ul class="pagination pagination-sm">
+            <li class="disabled">
+                <a data-id="prev" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <% _.each(data, function(d, key){ %>
+            <li <% if (key === 0) { %> class="active" <% }%>><a data-id="page<%= key + 1 %>"><%= key + 1 %></a></li>
+            <% }); %>
+            <li>
+                <a data-id="next" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <% } %>
 </div>
 
 
