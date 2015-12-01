@@ -20,7 +20,17 @@
              return
            }
         %>
-        <th><%= property.title %></th>
+        <th>
+            <a href="#<%= schema.url.substring(1) %>" data-id="<%= key %>" class="title"><%= property.title %>
+                <% if(sort.by === key) {
+                    if(sort.reverse) {%>
+                        <div class="glyphicon glyphicon-sort-by-alphabet-alt"></div>
+                    <% } else { %>
+                        <div class="glyphicon glyphicon-sort-by-alphabet"></div>
+                    <% }
+                } %>
+            </a>
+        </th>
        <% }); %>
        <th></th>
       </tr>

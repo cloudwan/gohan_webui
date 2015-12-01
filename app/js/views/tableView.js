@@ -10,7 +10,8 @@ var TableView = Backbone.View.extend({
   events: {
     'click .gohan_create': 'createModel',
     'click .gohan_delete': 'deleteModel',
-    'click .gohan_update': 'updateModel'
+    'click .gohan_update': 'updateModel',
+    'click a.title': 'filter'
   },
 
   initialize: function initialize(options) {
@@ -19,6 +20,10 @@ var TableView = Backbone.View.extend({
     this.schema = options.schema;
     this.fragment = options.fragment;
     this.childview = options.childview;
+    this.activeFilter = {
+      by: '',
+      reverse: false
+    };
 
     if ( this.childview ) {
       this.parentProperty = this.schema.get('parent') + '_id';
@@ -28,6 +33,20 @@ var TableView = Backbone.View.extend({
     this.collection.fetch({
        error: this.errorView.render
     });
+  },
+  filter: function filter(event) {
+    var id = event.currentTarget.dataset.id;
+
+    if (this.activeFilter.by !== id) {
+      this.activeFilter.by = id;
+      this.activeFilter.reverse = false;
+    } else if (this.activeFilter.by === id && !this.activeFilter.reverse) {
+      this.activeFilter.reverse = true;
+    } else {
+      this.activeFilter.by = '';
+      this.activeFilter.reverse = false;
+    }
+    this.render();
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     this.dialog = new DialogView({
@@ -152,7 +171,7 @@ var TableView = Backbone.View.extend({
     var title = property.title.toLowerCase();
 
     if (title == 'name' || title == 'title') {
-      return '<a href="#' + this.fragment + '/' + data.id + '">' + _.escape(value) + '</a>';
+      return '<a data-id="' + value + '"href="#' + this.fragment + '/' + data.id + '">' + _.escape(value) + '</a>';
     }
     return value;
   },
@@ -168,9 +187,27 @@ var TableView = Backbone.View.extend({
       return result;
     });
 
+    list = _.sortBy(list, function iterator(value) {
+      if (self.activeFilter.by === '') {
+        return value;
+      }
+
+      if (_.isString(value[self.activeFilter.by])) {
+        return value[self.activeFilter.by].toLowerCase();
+      }
+      return value[self.activeFilter.by];
+    });
+
+    if (this.activeFilter.reverse === true) {
+      list = list.reverse();
+    }
     this.$el.html(templates.table({
       data: list,
       schema: this.schema.toJSON(),
+      sort: {
+        by: this.activeFilter.by,
+        reverse: this.activeFilter.reverse
+      },
       parentProperty: this.parentProperty
     }));
     this.$('button[data-toggle=hover]').popover();
