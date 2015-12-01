@@ -22,6 +22,7 @@ var TableView = Backbone.View.extend({
     this.schema = options.schema;
     this.fragment = options.fragment;
     this.childview = options.childview;
+    this.activePage = Number(options.page) > 0 ? Number(options.page) - 1 : 0;
     this.activeFilter = {
       by: '',
       reverse: false
@@ -70,19 +71,21 @@ var TableView = Backbone.View.extend({
     var newPageIndicator = $('[data-id=' + newActivePage + ']', this.$el).parent();
     var activePageIndicator = $('[data-id=' + activePage + ']', this.$el).parent();
 
-    $('#' + activePage).hide();
-    $('#' + newActivePage).show();
+    $('#page' + activePage).hide();
+    $('#page' + newActivePage).show();
 
     activePageIndicator.removeClass('active');
     newPageIndicator.addClass('active');
 
+    $('li.disabled', this.$el).removeClass('disabled');
+
     if (newPageIndicator.next().children().data('id') === 'next') {
-      $('.disabled', this.$el).removeClass('disabled');
       newPageIndicator.next().addClass('disabled');
     } else if (newPageIndicator.prev().children().data('id') === 'prev') {
-      $('.disabled', this.$el).removeClass('disabled');
       newPageIndicator.prev().addClass('disabled');
     }
+
+    this.app.router.navigate(Backbone.history.getFragment().replace(/(\/page\/\w+)/, '') + '/page/' + newActivePage);
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     this.dialog = new DialogView({
@@ -261,6 +264,7 @@ var TableView = Backbone.View.extend({
 
     this.$el.html(templates.table({
       data: list,
+      activePage: this.activePage,
       schema: this.schema.toJSON(),
       searchQuery: this.searchQuery,
       sort: {
