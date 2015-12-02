@@ -12,5 +12,12 @@
                 ["tenant_id"]
             ]
         }
-    }
+    },
+    "sidebar": [
+        {
+            "path": "#/v2.0/networks",
+            "title": "Networks",
+            "class": "networks"
+        }
+    ]
 }
