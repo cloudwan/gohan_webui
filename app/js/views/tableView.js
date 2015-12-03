@@ -10,7 +10,10 @@ var TableView = Backbone.View.extend({
   events: {
     'click .gohan_create': 'createModel',
     'click .gohan_delete': 'deleteModel',
-    'click .gohan_update': 'updateModel'
+    'click .gohan_update': 'updateModel',
+    'click a.title': 'filter',
+    'keyup input.search': 'search',
+    'click nav li:not(.disabled) a': 'pagination'
   },
 
   initialize: function initialize(options) {
@@ -19,6 +22,12 @@ var TableView = Backbone.View.extend({
     this.schema = options.schema;
     this.fragment = options.fragment;
     this.childview = options.childview;
+    this.activePage = Number(options.page) > 0 ? Number(options.page) - 1 : 0;
+    this.activeFilter = {
+      by: '',
+      reverse: false
+    };
+    this.searchQuery = '';
 
     if ( this.childview ) {
       this.parentProperty = this.schema.get('parent') + '_id';
@@ -29,6 +38,55 @@ var TableView = Backbone.View.extend({
        error: this.errorView.render
     });
     this.collection.startLongPolling();
+  },
+  search: function search(event) {
+    this.searchQuery = event.currentTarget.value;
+    this.render();
+
+    $('input.search', this.$el).focus().val('').val(this.searchQuery);
+  },
+  filter: function filter(event) {
+    var id = event.currentTarget.dataset.id;
+
+    if (this.activeFilter.by !== id) {
+      this.activeFilter.by = id;
+      this.activeFilter.reverse = false;
+    } else if (this.activeFilter.by === id && !this.activeFilter.reverse) {
+      this.activeFilter.reverse = true;
+    } else {
+      this.activeFilter.by = '';
+      this.activeFilter.reverse = false;
+    }
+    this.render();
+  },
+  pagination: function pagination(event) {
+    var newActivePage = event.currentTarget.dataset.id;
+
+    if (newActivePage === 'next') {
+      newActivePage = $('a', $('nav li.active', this.$el).next()).data('id');
+    } else if (newActivePage === 'prev') {
+      newActivePage = $('a', $('nav li.active', this.$el).prev()).data('id');
+    }
+
+    var activePage = $('nav li.active a', this.$el).data('id');
+    var newPageIndicator = $('[data-id=' + newActivePage + ']', this.$el).parent();
+    var activePageIndicator = $('[data-id=' + activePage + ']', this.$el).parent();
+
+    $('#page' + activePage).hide();
+    $('#page' + newActivePage).show();
+
+    activePageIndicator.removeClass('active');
+    newPageIndicator.addClass('active');
+
+    $('li.disabled', this.$el).removeClass('disabled');
+
+    if (newPageIndicator.next().children().data('id') === 'next') {
+      newPageIndicator.next().addClass('disabled');
+    } else if (newPageIndicator.prev().children().data('id') === 'prev') {
+      newPageIndicator.prev().addClass('disabled');
+    }
+
+    this.app.router.navigate(Backbone.history.getFragment().replace(/(\/page\/\w+)/, '') + '/page/' + newActivePage);
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     this.dialog = new DialogView({
@@ -153,7 +211,7 @@ var TableView = Backbone.View.extend({
     var title = property.title.toLowerCase();
 
     if (title == 'name' || title == 'title') {
-      return '<a href="#' + this.fragment + '/' + data.id + '">' + _.escape(value) + '</a>';
+      return '<a data-id="' + value + '"href="#' + this.fragment + '/' + data.id + '">' + _.escape(value) + '</a>';
     }
     return value;
   },
@@ -169,9 +227,51 @@ var TableView = Backbone.View.extend({
       return result;
     });
 
+    if (this.searchQuery !== '') {
+      list = _.filter(list, function iterator(value) {
+        var result = 0;
+
+        _.forEach(value, function iterator(val) {
+          if (val && val.toString().indexOf(self.searchQuery) !== -1) {
+            result = 1;
+          }
+        });
+        return result;
+      });
+    }
+
+    list = _.sortBy(list, function iterator(value) {
+      if (self.activeFilter.by === '') {
+        return value;
+      }
+
+      if (_.isString(value[self.activeFilter.by])) {
+        return value[self.activeFilter.by].toLowerCase();
+      }
+      return value[self.activeFilter.by];
+    });
+
+    if (this.activeFilter.reverse === true) {
+      list = list.reverse();
+    }
+    this.pageSize = 10;
+    var tmp = [];
+
+    for (var i = 0; i < list.length; i += this.pageSize) {
+      tmp.push(list.slice(i, i + this.pageSize));
+    }
+
+    list = tmp;
+
     this.$el.html(templates.table({
       data: list,
+      activePage: this.activePage,
       schema: this.schema.toJSON(),
+      searchQuery: this.searchQuery,
+      sort: {
+        by: this.activeFilter.by,
+        reverse: this.activeFilter.reverse
+      },
       parentProperty: this.parentProperty
     }));
     this.$('button[data-toggle=hover]').popover();

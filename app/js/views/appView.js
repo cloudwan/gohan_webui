@@ -179,14 +179,15 @@ var AppView = Backbone.View.extend({
           }
         });
       } else {
-        var tableView = function tableView() {
+        var tableView = function tableView(page) {
           $('#alerts').empty();
           self.view && (self.view.close ? self.view.close() : self.view.remove());
           self.view = new viewClass.table({
             schema: schema,
             collection: collection,
             fragment: Backbone.history.fragment,
-            app: self
+            app: self,
+            page: page
           });
 
           self.$('#main_body').html(self.view.render().el);
@@ -216,6 +217,7 @@ var AppView = Backbone.View.extend({
         };
 
         self.router.route(route, 'table_view', tableView);
+        self.router.route(route + '/page/:id', 'table_view', tableView);
         self.router.route(route + '/:id', 'detail_view', detailView);
       }
     }

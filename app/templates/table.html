@@ -1,6 +1,7 @@
 <div id="alerts"></div>
 <h1 class="header" id="bread_crumb">
   <ul class="bread_crumb"><li><%- schema.title %></li></ul>
+  <ul class="bread_crumb"><li><input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery %>"></li></ul>
 </h1>
 <a class="btn btn-primary gohan_create btn-raised btn-material-blue-600"><strong>+</strong> New</a>
 
@@ -20,13 +21,24 @@
              return
            }
         %>
-        <th><%= property.title %></th>
+        <th>
+            <a href="#<%= schema.url.substring(1) %>" data-id="<%= key %>" class="title"><%= property.title %>
+                <% if(sort.by === key) {
+                    if(sort.reverse) {%>
+                        <div class="glyphicon glyphicon-sort-by-alphabet-alt"></div>
+                    <% } else { %>
+                        <div class="glyphicon glyphicon-sort-by-alphabet"></div>
+                    <% }
+                } %>
+            </a>
+        </th>
        <% }); %>
        <th></th>
       </tr>
     </thead>
-    <tbody>
-      <% _.each(data, function(d){ %>
+    <% _.each(data, function(page, key){ %>
+    <tbody id="page<%= key + 1 %>" <% if (key !== activePage) { %> style="display:none;" <% }%> >
+      <% _.each(page, function(d){ %>
       <tr>
        <% _.each(schema.schema.propertiesOrder, function(key){
            var property = schema.schema.properties[key];
@@ -58,7 +70,27 @@
       </tr>
       <% }); %>
    </tbody>
+    <% }); %>
   </table>
+    <% if (data.length > 1) { %>
+    <nav>
+        <ul class="pagination pagination-sm">
+            <li <% if (activePage === 0) { %> class="disabled" <% }%>>
+                <a data-id="prev" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <% _.each(data, function(d, key){ %>
+            <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key + 1 %>"><%= key + 1 %></a></li>
+            <% }); %>
+            <li <% if (activePage === data.length - 1) { %> class="disabled" <% }%>>
+                <a data-id="next" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <% } %>
 </div>
 
 

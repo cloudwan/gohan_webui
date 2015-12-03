@@ -4,3 +4,4 @@ schema.json
 node_modules
 dist/*
 .sass-cache
+jst/
