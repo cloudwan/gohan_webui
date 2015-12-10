@@ -7,6 +7,7 @@ var template = require('gulp-underscore-template');
 var concat = require('gulp-concat');
 var jscs = require('gulp-jscs');
 var del = require('del');
+var Server = require('karma').Server;
 var webpack = require('webpack');
 var WebpackDevServer = require('webpack-dev-server');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -63,12 +64,21 @@ var webpackConfig = {
   devtool: 'source-map'
 };
 
+gulp.task('test', ['jst'], function (done) {
+  new Server(
+    {
+      configFile: __dirname + '/karma.conf.js',
+      singleRun: true
+    },
+    done).start();
+});
+
 gulp.task('clean', function (callback) {
   del.sync(['./dist/']);
   callback();
 });
 
-gulp.task('build-dev', ['clean', 'compass_gohan', 'jst', 'jscs'], function(callback) {
+gulp.task('build-dev', ['clean', 'compass_gohan', 'jst', 'jscs', 'test'], function(callback) {
   webpack(webpackConfig, function(err, stats) {
     if (err) {
       throw new gutil.PluginError('webpack', err);
@@ -79,7 +89,7 @@ gulp.task('build-dev', ['clean', 'compass_gohan', 'jst', 'jscs'], function(callb
   });
 });
 
-gulp.task('build-prod', ['clean', 'compass_gohan', 'jst', 'jscs'], function(callback) {
+gulp.task('build-prod', ['clean', 'compass_gohan', 'jst', 'jscs', 'test'], function(callback) {
   delete webpackConfig.devtool;
   webpackConfig.output.filename = 'bundle.min.js';
   webpackConfig.plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
@@ -104,6 +114,23 @@ gulp.task('dev-server', ['clean', 'compass_gohan', 'jst'], function(callback) {
       throw new gutil.PluginError('webpack-dev-server', err);
     }
     gutil.log('[webpack-dev-server]', 'http://localhost:8080/webpack-dev-server/index.html');
+  });
+});
+
+gulp.task('test-dev-server', function () {
+  // Start a webpack-dev-server
+  var config = require('./webpack.test.config');
+
+  config.entry = 'mocha!./test/index.js';
+
+  var compiler = webpack(config);
+
+  new WebpackDevServer(compiler, {}
+  ).listen(8090, 'localhost', function(err) {
+    if (err) {
+      throw new gutil.PluginError('webpack-dev-server', err);
+    }
+    gutil.log('[webpack-dev-server]', 'http://localhost:8090/webpack-dev-server/test/test.html');
   });
 });
 

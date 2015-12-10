@@ -37,7 +37,7 @@
       </tr>
     </thead>
     <% _.each(data, function(page, key){ %>
-    <tbody id="page<%= key + 1 %>" <% if (key !== activePage) { %> style="display:none;" <% }%> >
+    <tbody id="page<%= key + 1 %>" <% if (key !== activePage) { %> class="hidden" <% }%> >
       <% _.each(page, function(d){ %>
       <tr>
        <% _.each(schema.schema.propertiesOrder, function(key){

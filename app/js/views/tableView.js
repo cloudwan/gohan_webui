@@ -72,8 +72,8 @@ var TableView = Backbone.View.extend({
     var newPageIndicator = $('[data-id=' + newActivePage + ']', this.$el).parent();
     var activePageIndicator = $('[data-id=' + activePage + ']', this.$el).parent();
 
-    $('#page' + activePage).hide();
-    $('#page' + newActivePage).show();
+    $('#page' + activePage, this.$el).addClass('hidden');
+    $('#page' + newActivePage, this.$el).removeClass('hidden');
 
     activePageIndicator.removeClass('active');
     newPageIndicator.addClass('active');
@@ -86,7 +86,7 @@ var TableView = Backbone.View.extend({
       newPageIndicator.prev().addClass('disabled');
     }
 
-    this.app.router.navigate(Backbone.history.getFragment().replace(/(\/page\/\w+)/, '') + '/page/' + newActivePage);
+    Backbone.history.navigate(Backbone.history.getFragment().replace(/(\/page\/\w+)/, '') + '/page/' + newActivePage);
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     this.dialog = new DialogView({
@@ -215,6 +215,49 @@ var TableView = Backbone.View.extend({
     }
     return value;
   },
+
+  /**
+   * Filters array and return new array.
+   * @param {Array} array
+   * @param {string} data
+   * @returns {Array}
+   */
+  filterArray: function filterArray(array, data) {
+    return _.filter(array, function iterator(value) {
+      var result = 0;
+
+      _.forEach(value, function iterator(val) {
+        if (val && val.toString().indexOf(data.toString()) !== -1) {
+          result = 1;
+        }
+      });
+      return result;
+    });
+  },
+  /**
+   * Sorts array by specified propery and return new array.
+   * @param {Array} array
+   * @param {string} by
+   * @param {boolean} reverse
+   * @returns {Array}
+   */
+  sortArray: function sortArray(array, by, reverse) {
+    var sortedArray = _.sortBy(array, function iterator(value) {
+      if (by === '') {
+        return value;
+      }
+
+      if (_.isString(value[by])) {
+        return value[by].toLowerCase();
+      }
+      return value[by];
+    });
+
+    if (reverse === true) {
+      return sortedArray.reverse();
+    }
+    return sortedArray;
+  },
   render: function render() {
     var self = this;
     var list = this.collection.map(function iterator(model) {
@@ -228,32 +271,11 @@ var TableView = Backbone.View.extend({
     });
 
     if (this.searchQuery !== '') {
-      list = _.filter(list, function iterator(value) {
-        var result = 0;
-
-        _.forEach(value, function iterator(val) {
-          if (val && val.toString().indexOf(self.searchQuery) !== -1) {
-            result = 1;
-          }
-        });
-        return result;
-      });
+      list = this.filterArray(list, this.searchQuery);
     }
 
-    list = _.sortBy(list, function iterator(value) {
-      if (self.activeFilter.by === '') {
-        return value;
-      }
+    list = this.sortArray(list, this.activeFilter.by, this.activeFilter.reverse);
 
-      if (_.isString(value[self.activeFilter.by])) {
-        return value[self.activeFilter.by].toLowerCase();
-      }
-      return value[self.activeFilter.by];
-    });
-
-    if (this.activeFilter.reverse === true) {
-      list = list.reverse();
-    }
     this.pageSize = 10;
     var tmp = [];
 
