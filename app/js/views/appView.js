@@ -1,4 +1,4 @@
-var templates = require('./../../jst/templates');
+var template = require('./../../templates/app.html');
 var UserModel = require('./../models/userModel');
 var SchemaCollection = require('./../models/schemaCollection');
 var SidebarView = require('./sidebarView');
@@ -241,7 +241,7 @@ var AppView = Backbone.View.extend({
     if (!this.userModel.authToken()) {
       this.login();
     } else {
-      this.$el.html(templates.app());
+      this.$el.html(template());
       this.$('#header').append(this.headerView.render().el);
       this.$('#sidebar').append(this.sidebarView.render().el);
     }

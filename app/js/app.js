@@ -1,6 +1,7 @@
 require('bootstrap');
 require('bootstrap-material-design');
 require('bootstrap-dialog');
+require('../css/sass/dashboard.scss');
 
 var AppView = require('./views/appView');
 var SchemaView = require('./views/schemaView');

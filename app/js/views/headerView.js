@@ -1,4 +1,4 @@
-var templates = require('./../../jst/templates');
+var template = require('./../../templates/header.html');
 
 var HeaderView = Backbone.View.extend({
   tagName: 'div',
@@ -16,7 +16,7 @@ var HeaderView = Backbone.View.extend({
     window.location.reload();
   },
   render: function render() {
-    this.$el.html(templates.header({
+    this.$el.html(template({
       config: this.config,
       username: this.model.userName(),
       authToken: this.model.authToken(),
