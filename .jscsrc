@@ -61,5 +61,13 @@
 		"beforeOpeningCurlyBrace": true
 	},
 	"safeContextKeyword": ["that", "self"],
-	"validateQuoteMarks": "'"
+	"validateQuoteMarks": "'",
+	"excludeFiles": [
+        "node_modules/**",
+        "bower_components/**",
+        "test/**",
+        "karma.conf.js",
+        "webpack.config.js",
+        "webpack.test.config.js"
+    ]
 }

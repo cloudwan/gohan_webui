@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# Check JavaScript code style
+RUN_JSCS=1
+TOTAL_ERRORS=0
+JSCS_PATH=`command -v jscs`
+
+JSFILES=$(git diff-index --name-status --cached HEAD | grep -v ^D | grep -oP '^((?!karma|test|node_modules|bower_components|webpack).)*$' | egrep '.js$' | cut -c3-)
+if [ -z "$JSFILES" ]; then
+    # No JavaScript file changed for this commit
+    RUN_JSCS=0
+elif [ -z "$JSCS_PATH" ]; then
+    echo "Warning: You can't check the JS coding style."
+    echo "You need to download and install jscs and set JSCS_PATH to its path."
+    RUN_JSCS=0
+fi
+
+# Ensuring proper coding style
+if [ $RUN_JSCS -ne 0 ]; then
+    echo -n "Checking JS style errors..."
+    echo $JSFILES
+    OUT=`$JSCS_PATH --config .jscsrc -r text $JSFILES`
+    CODE=$?
+    # Erase last output line
+    echo -ne '\r\033[K'
+    if [ $CODE -ne 0 ]; then
+        # Replace temp file name with real filename with color
+        # in sed we use commas as separators for clarity, and execute echo
+        # in the replacement part to get colors
+        # Probably cleaner ways exist but I don't know them at the moment
+        OUT=`echo -e "$OUT" | sed "s,/\([^ ]*\),\`echo -e \"\033[1;32m\1\033[0m\"\`,"`
+
+        # grab the number of errors for that file
+        # (keeps only numbers and takes the last line)
+        TOTAL_ERRORS=`echo -e "$OUT" | sed 's/[^0-9]//g' | tail -1`
+
+        # echo output minus last line
+        echo -e "\033[1;37mJavaScript style errors found:\033[0m"
+        echo -e "$OUT" | sed '$ d'
+
+        echo "$TOTAL_ERRORS code style errors found."
+        echo "Please fix and stage the files before commiting again."
+        exit $CODE
+    else
+        echo "No JS code style errors found."
+    fi
+fi
