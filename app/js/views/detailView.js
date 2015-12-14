@@ -1,7 +1,8 @@
 var jsyaml = require('js-yaml');
 var ErrorView = require('./errorView');
 var TableView = require('./tableView');
-var templates = require('./../../jst/templates');
+var detailTemplate = require('./../../templates/detail.html');
+var breadcrumbTemplate = require('./../../templates/breadcrumb.html');
 
 var DetailView = Backbone.View.extend({
   tagName: 'div',
@@ -70,7 +71,7 @@ var DetailView = Backbone.View.extend({
       };
     });
 
-    self.$el.html(templates.detail({
+    self.$el.html(detailTemplate({
       data: result,
       schema: self.schema.toJSON(),
       children: children
@@ -98,7 +99,7 @@ var DetailView = Backbone.View.extend({
       });
 
       parents.reverse();
-      $('#bread_crumb', self.$el).html(templates.breadcrumb({
+      $('#bread_crumb', self.$el).html(breadcrumbTemplate({
         parents: parents
       }));
     };

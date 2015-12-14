@@ -1,4 +1,4 @@
-var templates = require('./../../jst/templates');
+var template = require('./../../templates/login.html');
 var ErrorView = require('./errorView');
 
 var LoginView = Backbone.View.extend({
@@ -15,7 +15,7 @@ var LoginView = Backbone.View.extend({
     Backbone.history.loadUrl(Backbone.history.fragment);
   },
   render: function render() {
-    this.$el.html(templates.login({
+    this.$el.html(template({
       tenantName: $.cookie('tenant_name')
     }));
     return this;

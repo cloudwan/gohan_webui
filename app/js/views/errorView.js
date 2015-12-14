@@ -1,4 +1,4 @@
-var templates = require('./../../jst/templates');
+var template = require('./../../templates/error.html');
 
 var ErrorView = Backbone.View.extend({
   tagName: 'div',
@@ -33,7 +33,7 @@ var ErrorView = Backbone.View.extend({
         break;
       }
     }
-    var html = templates.error({
+    var html = template({
       message: this.message
     });
 

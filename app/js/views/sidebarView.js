@@ -1,5 +1,4 @@
 var SidebarItemView = require('./sidebarItemView');
-var templates = require('./../../jst/templates');
 
 var SidebarView = Backbone.View.extend({
   tagName: 'ul',

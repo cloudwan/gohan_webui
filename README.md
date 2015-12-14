@@ -21,9 +21,13 @@ Setup development environment
 ```
     $ gem install compass
 ```
-- Install gulp
+- Install karma
 ```
-    $ npm install gulp
+    $ npm install -g karma
+```
+- Install webpack
+```
+    $ npm install -g webpack webpack-dev-server
 ```
 - Install all npm dependencies
 ```
@@ -31,34 +35,33 @@ Setup development environment
 ``` 
 - Copy configurations files
 ```
-    $ cp config.json.sample config.json
-    $ cp schema.json.sample schema.json
+    $ cp app/config.json.sample app/config.json
 ```
-- Build application
+- Build application for development
 ```
-    $ gulp
+    $ npm run build-dev
 ```
 - Start dev server with auto refresh
 ```
-    $ gulp dev-server
+    $ npm run dev-server
 ```
  Server starts on 
 ```
-    http://localhost:8080/webpack-dev-server/app/index.html
+    http://localhost:8080/webpack-dev-server/
 ```
 - Start test dev server with auto refresh
 ```
-    $ gulp test-dev-server
+    $ npm run test-dev-server
 ```
  Server starts on 
 ```
-    http://localhost:8090/webpack-dev-server/test/index.html
+    http://localhost:8081/webpack-dev-server/
 ```
 - Start tests
 ```
-    $ gulp test
+    $ npm run test
 ```
 - Build application for production
 ```
-    $ gulp build-prod
+    $ gulp build
 ```

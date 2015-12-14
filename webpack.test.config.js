@@ -1,14 +1,17 @@
-var port = 8090;
+var port = 8081;
 var hostname = 'localhost';
+
 var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 var BowerWebpackPlugin = require('bower-webpack-plugin');
 
 module.exports = {
+  context: __dirname,
  output: {
     path: __dirname + '/test/',
     filename: 'test.build.js',
-    sourceMapFilename: '[file].map',
-    publicPath: 'http://' + hostname + ':' + port + '/test/index.html'
+    sourceMapFilename: '[file].map'
+
   },
   module: {
     loaders: [
@@ -22,6 +25,10 @@ module.exports = {
       {
         test: /(\.jpg|\.jpeg|\.png|\.gif|\.dtd|\.ttf|\.woff|\.eot|\.dtd|\.svg)$/,
         loader: 'null-loader'
+      },
+      {
+        test: /\.html$/,
+        loader: 'underscore-template-loader'
       }
     ],
     postLoaders: [
@@ -46,7 +53,11 @@ module.exports = {
       includes: /.*/,
       excludes: [],
       searchResolveModulesDirectories: true
-    })
+    }),
+    new HtmlWebpackPlugin({
+      template: './test/index.html',
+      inject: 'body'
+    }),
   ],
   devtool: 'inline-source-map',
   devServer: {
