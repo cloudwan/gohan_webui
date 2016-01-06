@@ -1,4 +1,4 @@
-Chazuke
+Gohan Web UI
 ============
 
 Web UI project for Gohan project
