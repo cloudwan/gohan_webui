@@ -67,5 +67,5 @@ Setup development environment
 ```
 - Build application for production
 ```
-    $ gulp build
+    $ npm run build
 ```
