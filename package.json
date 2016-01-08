@@ -8,7 +8,8 @@
     "test-dev-server": "webpack-dev-server 'mocha!./test/index' --config webpack.test.config.js -d --colors --progress",
     "build": "rm -rf ./dist/ && webpack -p --colors --progress",
     "build-dev": "rm -rf ./dist/ && webpack -d --colors --display-reasons --progress",
-    "dev-server": "rm -rf ./dist/ && webpack-dev-server --colors --progress"
+    "dev-server": "rm -rf ./dist/ && webpack-dev-server -d --colors --progress",
+    "dev-server-inline": "rm -rf ./dist/ && webpack-dev-server -d --inline --colors --progress"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
     "chai-backbone": "^0.9.4",
     "copy-webpack-plugin": "^0.2.0",
     "css-loader": "^0.22.0",
+    "debug": "git+https://github.com/stepek/debug.git",
     "extract-text-webpack-plugin": "^0.9.1",
     "file-loader": "^0.8.4",
     "html-webpack-plugin": "^2.0.4",

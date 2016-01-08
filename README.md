@@ -45,6 +45,10 @@ Setup development environment
 ```
     $ npm run dev-server
 ```
+- Start dev server with auto refresh and options
+```
+    $ npm run dev-server -- --host 172.16.114.196 --https
+```
  Server starts on 
 ```
     http://localhost:8080/webpack-dev-server/
