@@ -1,6 +1,7 @@
 require('bootstrap');
 require('bootstrap-dialog');
-require('../css/sass/dashboard.scss');
+require('../bower_components/font-awesome/css/font-awesome.css');
+require('../css/sass/main.scss');
 
 var AppView = require('./views/appView');
 var SchemaView = require('./views/schemaView');

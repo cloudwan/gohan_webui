@@ -20,7 +20,7 @@
     "tests"
   ],
   "dependencies": {
-    "fontawesome": "~4.3.0",
+    "fontawesome": "~4.5.0",
     "backbone": "~1.2.0",
     "jquery": "~2.1.4",
     "js-yaml": "~3.3.1",
