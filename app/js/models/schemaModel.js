@@ -18,7 +18,8 @@ var SchemaModel = Backbone.Model.extend({
 
     var parentSchema = this.parent();
 
-    return parentSchema.prefix() + '/:' + parentSchema.get('singular') + '/' + this.get('plural');
+    return parentSchema.prefix() + '/' + parentSchema.get('plural') + '/:' + parentSchema.get('singular')
+      + '/' + this.get('plural');
   },
   parent: function parent() {
     var parentId = this.get('parent');

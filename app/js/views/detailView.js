@@ -78,24 +78,22 @@ var DetailView = Backbone.View.extend({
     }));
     var makeBreadcrumb = function makeBreadcrumb(ancestors) {
       ancestors.unshift(self.model);
-      var fragment = self.fragment;
+
       var parents = ancestors.map(function iterator(ancestor) {
-          var modelFragment = fragment;
+        var fragment = ancestor.schema.get('url');
+        var modelFragment = ancestor.schema.get('url') + '/' + ancestor.get('id');
+        var schemaFragment = fragment;
 
-          fragment = fragment.replace(/\/[^\/]+$/, '');
-          var schemaFragment = fragment;
-
-          fragment = fragment.replace(/\/[^\/]+$/, '');
-
-          if (ancestor.schema.hasParent() && self.childview) {
-            schemaFragment = fragment;
-          }
-          return {
-            title: ancestor.get('name'),
-            schemaTitle: ancestor.schema.get('title'),
-            fragment: modelFragment,
-            schemaFragment: schemaFragment
-          };
+        if (ancestor.schema.hasParent() && self.childview) {
+          schemaFragment = ancestor.schema.parent().get('url') + '/' + ancestor.parentId()
+            + '/' + ancestor.schema.get('plural');
+        }
+        return {
+          title: ancestor.get('name'),
+          schemaTitle: ancestor.schema.get('title'),
+          fragment: modelFragment,
+          schemaFragment: schemaFragment
+        };
       });
 
       parents.reverse();
@@ -117,7 +115,7 @@ var DetailView = Backbone.View.extend({
         schema: child,
         collection: collection,
         childview: true,
-        fragment: fragment,
+        fragment: self.fragment + '/' + child.get('plural'),
         app: this.app
       });
 
