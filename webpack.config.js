@@ -24,15 +24,15 @@ module.exports = {
     loaders: [
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('css?sourceMap')
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap')
       },
       {
         test: /\.scss$/,
-        loaders: ['style', 'css?sourceMap', 'sass?sourceMap']
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap!sass?sourceMap')
       },
       {
         test: /\.less$/,
-        loader: ExtractTextPlugin.extract('css?sourceMap!less?sourceMap')
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap!less?sourceMap')
       },
       {
         test: /\.(woff|svg|ttf|eot)([\?]?.*)$/,
