@@ -16,7 +16,7 @@ var ErrorView = Backbone.View.extend({
         break;
       }
       case 400: {
-        this.message = 'Invalid input error:' + response.responseJSON.error.message;
+        this.message = 'Invalid input error:' + response.responseJSON.error;
         break;
       }
       case 401: {
