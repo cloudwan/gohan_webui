@@ -23,7 +23,7 @@ var DialogView = Backbone.View.extend({
     this.onsubmit = options.onsubmit;
     this.schema = options.schema;
     this.dialogSchema = {};
-    this.additionalForm = this.schema.additionalForm[this.action] || this.schema.additionalForm;
+    this.additionalForm = this.schema.additionalForm[this.action] || ['*'];
     this.currentStep = 0;
     this.multiStep = _.isArray(this.additionalForm) && _.isArray(this.additionalForm[0]) ? true : false;
     this.dialog = new BootstrapDialog({
@@ -83,7 +83,7 @@ var DialogView = Backbone.View.extend({
    */
   nextStep: function nextStep() {
     this.currentStep = this.currentStep + 1;
-    this.data = _.extend(this.data, this.$form.jsonFormValue());
+    this.data = _.extend(this.multiStep ? this.data : {}, this.$form.jsonFormValue());
 
     if (this.currentStep < this.additionalForm.length) {
       this.$form.html('');

@@ -152,6 +152,7 @@ var TableView = Backbone.View.extend({
           self.collection.fetch({
              success: function success() {
                self.render();
+               self.dialog.close();
              },
              error: self.errorView.render
           });

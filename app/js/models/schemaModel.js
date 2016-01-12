@@ -47,7 +47,7 @@ var SchemaModel = Backbone.Model.extend({
         this.url = this.baseUrl;
       },
       isNew: function isNew() {
-        return this.get('isNew'); //TODO fix this to isNew
+        return this.get('isNew');
       },
       parse: function parse(resp) {
         if (_.isUndefined(resp.id)) {
@@ -56,8 +56,6 @@ var SchemaModel = Backbone.Model.extend({
         return resp;
       },
       sync: function sync(method, model, options) {
-        var data = {};
-
         if (!this.isNew()) {
             this.url = this.baseUrl + '/' + this.id;
         }
@@ -73,9 +71,17 @@ var SchemaModel = Backbone.Model.extend({
           'X-Auth-Token': userModel.authToken(),
           'Content-Type':'application/json'
         };
-        this.unset('isNew'); // TODO fix this to isNew
+        this.unset('isNew');
 
-        data[this.schema.get('singular')] = model.toJSON();
+        var data = {};
+        var modelJSON = {};
+        var schemaForAction = self.filterByAction(method);
+
+        _.each(schemaForAction.properties, function iterator(value, key) {
+          modelJSON[key] = model.get(key);
+        });
+
+        data[this.schema.get('singular')] = modelJSON;
         options.data = JSON.stringify(data);
         Backbone.sync(method, model, options);
       },
