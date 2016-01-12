@@ -1,4 +1,5 @@
 var jsyaml = require('js-yaml');
+var DialogView = require('./dialogView');
 var ErrorView = require('./errorView');
 var TableView = require('./tableView');
 var detailTemplate = require('./../../templates/detail.html');
@@ -7,6 +8,9 @@ var breadcrumbTemplate = require('./../../templates/breadcrumb.html');
 var DetailView = Backbone.View.extend({
   tagName: 'div',
   className: 'detailview',
+  events: {
+    'click a.edit': 'update'
+  },
   initialize: function initialize(options) {
     this.errorView = new ErrorView();
     this.app = options.app;
@@ -18,6 +22,56 @@ var DetailView = Backbone.View.extend({
     this.model.fetch({
       error: this.errorView.render
     });
+  },
+  dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
+    this.dialog = new DialogView({
+      action: action,
+      formTitle: formTitle,
+      data: data,
+      onsubmit: onsubmit,
+      schema: this.schema
+    });
+
+    this.dialog.render();
+  },
+  toLocal: function toLocal(data) {
+    return this.schema.toLocal(data);
+  },
+  toServer: function toServer(data) {
+    return this.schema.toServer(data);
+  },
+  update: function update(event) {
+    var self = this;
+    var $target = $(event.target);
+    var id = $target.data('id');
+    var model = this.model;
+    var data = self.toLocal(model.toJSON());
+    var action = 'update';
+    var formTitle = '<h4>Update ' + self.schema.get('title') + '</h4>';
+    var onsubmit = function onsubmit(values) {
+      var values = self.toServer(values);
+
+      model.save(values, {
+        patch: true,
+        wait: true,
+        success: function success() {
+          self.model.trigger('update');
+          self.model.fetch({
+            success: function success() {
+              self.render();
+              self.dialog.close();
+            },
+            error: self.errorView.render
+          });
+        },
+        error: function error(collection, response) {
+          self.errorView.render(collection, response);
+          self.dialog.stopSpin();
+        }
+      });
+    };
+
+    self.dialogForm(action, formTitle, data, onsubmit);
   },
   renderProperty: function renderProperty(data, key) {
     var content;
