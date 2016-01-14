@@ -5,13 +5,14 @@ require('../css/sass/dashboard.scss');
 
 var AppView = require('./views/appView');
 var SchemaView = require('./views/schemaView');
+var Router = require('./routers/router');
 
 //Set up
 (function strict() {
   $.material.init();
   $.get('config.json').then(
     function onSuccess(config) {
-      var router = new Backbone.Router;
+      var router = new Router();
       var rootView = new AppView({
         router: router,
         config: config,

@@ -20,7 +20,10 @@ var AppView = Backbone.View.extend({
     var config = options.config;
 
     self.config = config;
-    self.viewClass = options.viewClass || {};
+    self.viewClass = _.extend({
+      table: TableView,
+      detail: DetailView
+    }, options.viewClass);
 
     if (config.authUrl.indexOf('__HOST__') > 0) {
       config.authUrl = config.authUrl.replace(
@@ -78,12 +81,9 @@ var AppView = Backbone.View.extend({
   },
   autoBuildUIForSchema: function autoBuildUIForSchema(schema) {
     var self = this;
-    var viewClass = {
-      table: TableView,
-      detail: DetailView
-    };
+    var viewClass = {};
 
-    _.extend(viewClass, self.viewClass[schema.id]);
+    _.extend(viewClass, self.viewClass, self.viewClass[schema.id]);
     var collection = schema.makeCollection();
 
     if (schema.hasParent()) {
@@ -160,22 +160,23 @@ var AppView = Backbone.View.extend({
         && _.contains(_.pluck(self.config.routes, 'path'), route)) {
         _.each(this.config.routes, function iterator(value) {
           if (value.path === route) {
-            var customView = function customView() {
+            var customView = function customView(data) {
               self.view && (self.view.close ? self.view.close() : self.view.remove());
               self.view = new viewClass[value.viewClass]({
                 arguments: arguments,
                 schema: schema,
                 collection: collection,
                 fragment: Backbone.history.fragment,
-                app: self
+                app: self,
+                data: data
               });
 
-              self.$('#main_body').html(custom.render().el);
+              self.$('#main_body').html(self.view.render().el);
               self.$('#main').addClass('active');
               self.sidebarView.select(sidebarMenu);
             };
 
-            self.router.route(value.path, value.name, self.view);
+            self.router.route(value.path, value.name, customView);
           }
         });
       } else {
@@ -222,12 +223,60 @@ var AppView = Backbone.View.extend({
       }
     }
   },
+  buildCustomUI: function buildCustomUI() {
+    var self = this;
+
+    _.each(this.config.sidebar, function iterator(route) {
+      if (!_.contains(_.pluck(self.sidebarView.collection.toJSON(), 'path'), route.path)) {
+        var sidebarMenu = self.sidebarView.collection.push({
+          path: route.path,
+          title: route.title
+        });
+
+        var customView = function customView(data) {
+          self.view && (self.view.close ? self.view.close() : self.view.remove());
+          self.view = new self.viewClass[route.viewClass]({
+            arguments: arguments,
+            fragment: Backbone.history.fragment,
+            app: self,
+            data: data
+          });
+
+          self.$('#main_body').html(self.view.render().el);
+          self.$('#main').addClass('active');
+          self.sidebarView.select(sidebarMenu);
+        };
+
+        self.router.route(route.path.substr(2), route.name, customView);
+      }
+    });
+
+    _.each(this.config.routes, function iterator(routes) {
+      if (!self.router.pathIsRegistered(routes.path)) {
+        var customView = function customView(data) {
+          self.view && (self.view.close ? self.view.close() : self.view.remove());
+          self.view = new self.viewClass[routes.viewClass]({
+            arguments: arguments,
+            fragment: Backbone.history.fragment,
+            app: self,
+            data: data
+          });
+
+          self.$('#main_body').html(self.view.render().el);
+          self.$('#main').addClass('active');
+        };
+
+        self.router.route(routes.path, routes.name, customView);
+      }
+    });
+  },
   autoBuildUI: function autoBuildUI() {
     var self = this;
 
     self.schemas.each(function iterator(schema) {
       self.autoBuildUIForSchema(schema);
     });
+    self.buildCustomUI();
     Backbone.history.loadUrl(Backbone.history.fragment);
   },
   login: function login() {
