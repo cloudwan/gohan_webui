@@ -6,6 +6,7 @@ var HeaderView = require('./headerView');
 var TableView = require('./tableView');
 var DetailView = require('./detailView');
 var LoginView = require('./loginView');
+var SampleView = require('./sampleView');
 var ErrorView = require('./errorView');
 var BreadCrumbView = require('./breadCrumbView');
 
@@ -23,7 +24,8 @@ var AppView = Backbone.View.extend({
     self.config = config;
     self.viewClass = _.extend({
       table: TableView,
-      detail: DetailView
+      detail: DetailView,
+      sampleview: SampleView
     }, options.viewClass);
 
     if (config.authUrl.indexOf('__HOST__') > 0) {

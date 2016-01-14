@@ -23,13 +23,20 @@
             "path": "#/v2.0/servers",
             "title": "Server",
             "class": "server"
+        },
+        {
+            "path": "#/sample",
+            "title": "Sample",
+            "class": "sample",
+            "name": "sample",
+            "viewClass": "sampleview"
         }
     ],
     "routes": [
         {
             "path": "sample/path",
-            "viewClass": "sample_class",
-            "name": "sample_name"
+            "viewClass": "sampleview",
+            "name": "sample"
         }
     ]
 }
