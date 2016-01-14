@@ -130,36 +130,17 @@ var DetailView = Backbone.View.extend({
       schema: self.schema.toJSON(),
       children: children
     }));
-    var makeBreadcrumb = function makeBreadcrumb(ancestors) {
-      ancestors.unshift(self.model);
-
-      var parents = ancestors.map(function iterator(ancestor) {
-        var fragment = ancestor.schema.get('url');
-        var modelFragment = ancestor.schema.get('url') + '/' + ancestor.get('id');
-        var schemaFragment = fragment;
-
-        if (ancestor.schema.hasParent() && self.childview) {
-          schemaFragment = ancestor.schema.parent().get('url') + '/' + ancestor.parentId()
-            + '/' + ancestor.schema.get('plural');
-        }
-        return {
-          title: ancestor.get('name'),
-          schemaTitle: ancestor.schema.get('title'),
-          fragment: modelFragment,
-          schemaFragment: schemaFragment
-        };
-      });
-
-      parents.reverse();
-      $('#bread_crumb', self.$el).html(breadcrumbTemplate({
-        parents: parents
-      }));
-    };
 
     if (self.childview) {
-      self.model.getAncestors(makeBreadcrumb);
+      self.model.getAncestors(function callback(ancestors) {
+        ancestors.unshift(self.model);
+        self.app.breadCrumb.update(ancestors, self.childview);
+      });
     } else {
-      makeBreadcrumb([]);
+      var ancestors = [];
+
+      ancestors.unshift(self.model);
+      self.app.breadCrumb.update(ancestors, self.childview);
     }
     self.schema.children().forEach(function iterator(child) {
       var fragment = self.fragment + '/' + child.get('plural');

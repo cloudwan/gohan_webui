@@ -287,6 +287,10 @@ var TableView = Backbone.View.extend({
 
     list = tmp;
 
+    if (this.app) {
+      this.app.breadCrumb.update([this.collection]);
+    }
+
     this.$el.html(tableTemplate({
       data: list,
       activePage: this.activePage,

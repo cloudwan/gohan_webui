@@ -7,6 +7,7 @@ var TableView = require('./tableView');
 var DetailView = require('./detailView');
 var LoginView = require('./loginView');
 var ErrorView = require('./errorView');
+var BreadCrumbView = require('./breadCrumbView');
 
 var AppView = Backbone.View.extend({
   mainView: null,
@@ -78,6 +79,7 @@ var AppView = Backbone.View.extend({
       config: this.config,
       model: this.userModel
     });
+    this.breadCrumb = new BreadCrumbView();
   },
   autoBuildUIForSchema: function autoBuildUIForSchema(schema) {
     var self = this;
@@ -293,6 +295,7 @@ var AppView = Backbone.View.extend({
       this.$el.html(template());
       this.$('#header').append(this.headerView.render().el);
       this.$('#sidebar').append(this.sidebarView.render().el);
+      this.$('#bread-crumb').append(this.breadCrumb.render().el);
     }
     return this;
   }
