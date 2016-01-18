@@ -46,8 +46,21 @@ body {
   bottom: 0;
 }
 
+/*
+ * Gohan home
+ */
 
-
+.gohan_home {
+  margin-bottom: 21px;
+  padding: 15px;
+  padding-bottom: 0;
+  h2 {
+    margin: 0;
+    margin-bottom: 1em;
+    font-size: 20px;
+    line-height: 1.2;
+  }
+}
 
 /*
  * Global add-ons
@@ -103,6 +116,11 @@ body {
   .title {
     min-height: 60px;
     padding: 0 20px;
+    a {
+      &:hover, &:focus {
+        text-decoration: none;
+      }
+    }
   }
   h2 {
     margin: 0;

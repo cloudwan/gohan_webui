@@ -145,11 +145,13 @@ var AppView = Backbone.View.extend({
       var sidebarMenu = {};
 
       if (this.config.sidebar) {
-        _.each(this.config.sidebar, function iterator(value) {
+        self.sidebarView.collection.comparator = 'order';
+        _.each(this.config.sidebar, function iterator(value, key) {
           if (value.path === path) {
-            sidebarMenu = self.sidebarView.collection.push({
+            sidebarMenu = self.sidebarView.collection.add({
               path: path,
-              title: value.title
+              title: value.title,
+              order: key
             });
           }
         });
@@ -230,11 +232,12 @@ var AppView = Backbone.View.extend({
   buildCustomUI: function buildCustomUI() {
     var self = this;
 
-    _.each(this.config.sidebar, function iterator(route) {
+    _.each(this.config.sidebar, function iterator(route, key) {
       if (!_.contains(_.pluck(self.sidebarView.collection.toJSON(), 'path'), route.path)) {
-        var sidebarMenu = self.sidebarView.collection.push({
+        var sidebarMenu = self.sidebarView.collection.add({
           path: route.path,
-          title: route.title
+          title: route.title,
+          order: key
         });
 
         var customView = function customView(data) {
