@@ -1,22 +1,21 @@
-<div class="container login-panel " id="main">
-    <div class="col-md-4 col-md-offset-4">
-      <div class="panel panel-default center-block">
-        <div class="panel-heading">
-          <h3 class="panel-title h3-material-blue-200">Please sign in</h3>
-        </div>
-        <div class="panel-body">
-          <div id="alerts"></div>
-          <form accept-charset="UTF-8" method="" action="" role="form" id="login">
-            <fieldset>
-              <div class="form-group">
-                <input class="form-control" placeholder="ID" name="id" type="text" id="id"></div>
-              <div class="form-group">
-                <input class="form-control" placeholder="Password" name="password" id="password" type="password" value=""></div>
-              <div class="form-group">
-                <input class="form-control" placeholder="Tenant" id="tenant" name="tenant" type="text" value="<%= tenantName %>"></div>
-              <input class="btn btn-lg btn-primary btn-raised btn-material-blue-600 btn-block" type="button" value="Login"></fieldset>
-          </form>
-        </div>
+<div class="login_container" id="main">
+  <div class="login_panel">
+    <div class="panel panel-default card">
+      <div class="panel-heading">
+        <h3 class="panel-title">Please sign in</h3>
+      </div>
+      <div class="panel-body">
+        <div id="alerts"></div>
+        <form accept-charset="UTF-8" method="" action="" role="form" id="login">
+          <fieldset>
+            <div class="form-group">
+              <input class="form-control" placeholder="ID" name="id" type="text" id="id"></div>
+            <div class="form-group">
+              <input class="form-control" placeholder="Password" name="password" id="password" type="password" value=""></div>
+            <div class="form-group">
+              <input class="form-control" placeholder="Tenant" id="tenant" name="tenant" type="text" value="<%= tenantName %>"></div>
+            <input class="btn btn-primary btn-block" type="button" value="Login"></fieldset>
+        </form>
       </div>
     </div>
   </div>

@@ -278,7 +278,7 @@ var TableView = Backbone.View.extend({
 
     list = this.sortArray(list, this.activeFilter.by, this.activeFilter.reverse);
 
-    this.pageSize = 10;
+    this.pageSize = 5;
     var tmp = [];
 
     for (var i = 0; i < list.length; i += this.pageSize) {
@@ -286,6 +286,10 @@ var TableView = Backbone.View.extend({
     }
 
     list = tmp;
+
+    if (this.app) {
+      this.app.breadCrumb.update([this.collection]);
+    }
 
     this.$el.html(tableTemplate({
       data: list,

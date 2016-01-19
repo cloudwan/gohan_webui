@@ -6,7 +6,9 @@ var HeaderView = require('./headerView');
 var TableView = require('./tableView');
 var DetailView = require('./detailView');
 var LoginView = require('./loginView');
+var SampleView = require('./sampleView');
 var ErrorView = require('./errorView');
+var BreadCrumbView = require('./breadCrumbView');
 
 var AppView = Backbone.View.extend({
   mainView: null,
@@ -22,7 +24,8 @@ var AppView = Backbone.View.extend({
     self.config = config;
     self.viewClass = _.extend({
       table: TableView,
-      detail: DetailView
+      detail: DetailView,
+      sampleview: SampleView
     }, options.viewClass);
 
     if (config.authUrl.indexOf('__HOST__') > 0) {
@@ -78,6 +81,7 @@ var AppView = Backbone.View.extend({
       config: this.config,
       model: this.userModel
     });
+    this.breadCrumb = new BreadCrumbView();
   },
   autoBuildUIForSchema: function autoBuildUIForSchema(schema) {
     var self = this;
@@ -141,11 +145,13 @@ var AppView = Backbone.View.extend({
       var sidebarMenu = {};
 
       if (this.config.sidebar) {
-        _.each(this.config.sidebar, function iterator(value) {
+        self.sidebarView.collection.comparator = 'order';
+        _.each(this.config.sidebar, function iterator(value, key) {
           if (value.path === path) {
-            sidebarMenu = self.sidebarView.collection.push({
+            sidebarMenu = self.sidebarView.collection.add({
               path: path,
-              title: value.title
+              title: value.title,
+              order: key
             });
           }
         });
@@ -226,11 +232,12 @@ var AppView = Backbone.View.extend({
   buildCustomUI: function buildCustomUI() {
     var self = this;
 
-    _.each(this.config.sidebar, function iterator(route) {
+    _.each(this.config.sidebar, function iterator(route, key) {
       if (!_.contains(_.pluck(self.sidebarView.collection.toJSON(), 'path'), route.path)) {
-        var sidebarMenu = self.sidebarView.collection.push({
+        var sidebarMenu = self.sidebarView.collection.add({
           path: route.path,
-          title: route.title
+          title: route.title,
+          order: key
         });
 
         var customView = function customView(data) {
@@ -293,6 +300,7 @@ var AppView = Backbone.View.extend({
       this.$el.html(template());
       this.$('#header').append(this.headerView.render().el);
       this.$('#sidebar').append(this.sidebarView.render().el);
+      this.$('#bread-crumb').append(this.breadCrumb.render().el);
     }
     return this;
   }

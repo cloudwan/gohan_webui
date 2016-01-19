@@ -1,7 +1,7 @@
 require('bootstrap');
-require('bootstrap-material-design');
 require('bootstrap-dialog');
-require('../css/sass/dashboard.scss');
+require('../bower_components/font-awesome/css/font-awesome.css');
+require('../css/sass/main.scss');
 
 var AppView = require('./views/appView');
 var SchemaView = require('./views/schemaView');
@@ -9,7 +9,6 @@ var Router = require('./routers/router');
 
 //Set up
 (function strict() {
-  $.material.init();
   $.get('config.json').then(
     function onSuccess(config) {
       var router = new Router();

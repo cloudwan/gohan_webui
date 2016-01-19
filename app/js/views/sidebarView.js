@@ -2,7 +2,7 @@ var SidebarItemView = require('./sidebarItemView');
 
 var SidebarView = Backbone.View.extend({
   tagName: 'ul',
-  className: 'document-row',
+  className: 'nav nav-sidebar',
   initialize: function initialize(options) {
     this.schemas = options.schemas;
     this.listenTo(this.collection, 'add', this.append);

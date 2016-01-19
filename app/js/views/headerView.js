@@ -5,7 +5,6 @@ var HeaderView = Backbone.View.extend({
   events: {
     'click #logout': 'logout'
   },
-  className: 'container-fluid',
   initialize: function initialize(options) {
     this.config = options.config;
     this.listenTo(this.model, 'change:auth_data', this.render);

@@ -1,4 +1,4 @@
-Chazuke
+Gohan Web UI
 ============
 
 Web UI project for Gohan project
@@ -67,5 +67,5 @@ Setup development environment
 ```
 - Build application for production
 ```
-    $ gulp build
+    $ npm run build
 ```

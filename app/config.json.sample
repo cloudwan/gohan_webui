@@ -15,6 +15,13 @@
     },
     "sidebar": [
         {
+            "path": "#/",
+            "title": "Top",
+            "class": "top",
+            "name": "sample",
+            "viewClass": "sampleview"
+        },
+        {
             "path": "#/v2.0/networks",
             "title": "Networks",
             "class": "networks"
@@ -27,9 +34,9 @@
     ],
     "routes": [
         {
-            "path": "sample/path",
-            "viewClass": "sample_class",
-            "name": "sample_name"
+            "path": "#/",
+            "viewClass": "sampleview",
+            "name": "sample"
         }
     ]
 }

@@ -1,4 +1,5 @@
 var jsyaml = require('js-yaml');
+var DialogView = require('./dialogView');
 var ErrorView = require('./errorView');
 var TableView = require('./tableView');
 var detailTemplate = require('./../../templates/detail.html');
@@ -7,6 +8,9 @@ var breadcrumbTemplate = require('./../../templates/breadcrumb.html');
 var DetailView = Backbone.View.extend({
   tagName: 'div',
   className: 'detailview',
+  events: {
+    'click a.edit': 'update'
+  },
   initialize: function initialize(options) {
     this.errorView = new ErrorView();
     this.app = options.app;
@@ -18,6 +22,56 @@ var DetailView = Backbone.View.extend({
     this.model.fetch({
       error: this.errorView.render
     });
+  },
+  dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
+    this.dialog = new DialogView({
+      action: action,
+      formTitle: formTitle,
+      data: data,
+      onsubmit: onsubmit,
+      schema: this.schema
+    });
+
+    this.dialog.render();
+  },
+  toLocal: function toLocal(data) {
+    return this.schema.toLocal(data);
+  },
+  toServer: function toServer(data) {
+    return this.schema.toServer(data);
+  },
+  update: function update(event) {
+    var self = this;
+    var $target = $(event.target);
+    var id = $target.data('id');
+    var model = this.model;
+    var data = self.toLocal(model.toJSON());
+    var action = 'update';
+    var formTitle = '<h4>Update ' + self.schema.get('title') + '</h4>';
+    var onsubmit = function onsubmit(values) {
+      var values = self.toServer(values);
+
+      model.save(values, {
+        patch: true,
+        wait: true,
+        success: function success() {
+          self.model.trigger('update');
+          self.model.fetch({
+            success: function success() {
+              self.render();
+              self.dialog.close();
+            },
+            error: self.errorView.render
+          });
+        },
+        error: function error(collection, response) {
+          self.errorView.render(collection, response);
+          self.dialog.stopSpin();
+        }
+      });
+    };
+
+    self.dialogForm(action, formTitle, data, onsubmit);
   },
   renderProperty: function renderProperty(data, key) {
     var content;
@@ -76,36 +130,17 @@ var DetailView = Backbone.View.extend({
       schema: self.schema.toJSON(),
       children: children
     }));
-    var makeBreadcrumb = function makeBreadcrumb(ancestors) {
-      ancestors.unshift(self.model);
-
-      var parents = ancestors.map(function iterator(ancestor) {
-        var fragment = ancestor.schema.get('url');
-        var modelFragment = ancestor.schema.get('url') + '/' + ancestor.get('id');
-        var schemaFragment = fragment;
-
-        if (ancestor.schema.hasParent() && self.childview) {
-          schemaFragment = ancestor.schema.parent().get('url') + '/' + ancestor.parentId()
-            + '/' + ancestor.schema.get('plural');
-        }
-        return {
-          title: ancestor.get('name'),
-          schemaTitle: ancestor.schema.get('title'),
-          fragment: modelFragment,
-          schemaFragment: schemaFragment
-        };
-      });
-
-      parents.reverse();
-      $('#bread_crumb', self.$el).html(breadcrumbTemplate({
-        parents: parents
-      }));
-    };
 
     if (self.childview) {
-      self.model.getAncestors(makeBreadcrumb);
+      self.model.getAncestors(function callback(ancestors) {
+        ancestors.unshift(self.model);
+        self.app.breadCrumb.update(ancestors, self.childview);
+      });
     } else {
-      makeBreadcrumb([]);
+      var ancestors = [];
+
+      ancestors.unshift(self.model);
+      self.app.breadCrumb.update(ancestors, self.childview);
     }
     self.schema.children().forEach(function iterator(child) {
       var fragment = self.fragment + '/' + child.get('plural');

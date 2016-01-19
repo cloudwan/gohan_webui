@@ -24,15 +24,15 @@ module.exports = {
     loaders: [
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('css?sourceMap')
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap')
       },
       {
         test: /\.scss$/,
-        loaders: ['style', 'css?sourceMap', 'sass?sourceMap']
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap!sass?sourceMap')
       },
       {
         test: /\.less$/,
-        loader: ExtractTextPlugin.extract('css?sourceMap!less?sourceMap')
+        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap!less?sourceMap')
       },
       {
         test: /\.(woff|svg|ttf|eot)([\?]?.*)$/,
@@ -41,6 +41,13 @@ module.exports = {
       {
         test: /\.html$/,
         loader: 'underscore-template-loader'
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+            'file?hash=sha512&digest=hex&name=[hash].[ext]',
+            'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+        ]
       }
     ]
   },
@@ -65,7 +72,7 @@ module.exports = {
       inject: 'body'
     }),
     new CopyWebpackPlugin([
-      { from: 'app/config.json.sample', to: '/config.json' }
+      { from: 'app/config.json', to: '/config.json' }
     ])
   ],
   devServer: {
