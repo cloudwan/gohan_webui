@@ -1,8 +1,13 @@
 var Backbone = require('backbone');
-var $ = require('jquery');
+var BootstrapDialog = require('bootstrap-dialog');
+var DialogView = require('./dialogView');
 var jsyaml = require('js-yaml');
 
-require('../../bower_components/jsonform/lib/jsonform');
+require('./../../bower_components/jsonform/lib/jsonform');
+require('./../../bower_components/ace-builds/src-min-noconflict/ace');
+require('./../../bower_components/ace-builds/src-min-noconflict/theme-monokai');
+require('./../../bower_components/ace-builds/src-min-noconflict/mode-yaml');
+require('./../../bower_components/ace-builds/src-min-noconflict/mode-javascript');
 
 var schemaFormTemplate = require('./../../templates/schemaForm.html');
 var propertyFormTemplate = require('./../../templates/propertyForm.html');
@@ -17,9 +22,48 @@ var SchemaView = TableView.extend({
   },
   dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
     var self = this;
-    var $form = $('<form></form>', self.$el);
     var schema = self.schema.filterByAction(action, self.parentProperty);
+    var onSubmit = function onSubmit(values) {
+      var propertiesOrder = [];
+      var required = [];
+      var properties = {};
 
+      $('#properties_table tbody tr').each(function iterator() {
+        var property = $(this).data('property');
+        var id = property.id;
+
+        if (_.isUndefined(id)) {
+          return;
+        }
+
+        if (properties[id]) {
+          return;
+        }
+
+        propertiesOrder.push(property.id);
+
+        if (property.required) {
+          required.push(id);
+        }
+
+        delete property.id;
+        delete property.required;
+        properties[id] = property;
+      });
+
+      var schema = {
+        type: 'object',
+        propertiesOrder: propertiesOrder,
+        required: required,
+        properties: properties
+      };
+
+      values.schema = schema;
+
+      onsubmit(values);
+    };
+
+    schema.additionalForm = ['*'];
     schema.propertiesOrder = [
       'id',
       'singular',
@@ -60,60 +104,20 @@ var SchemaView = TableView.extend({
     ];
     var properties = [];
 
-    $form.jsonForm({
-      schema: schema,
-      value: data,
-      form: ['*'],
-      onSubmit: function onSubmit(errors, values) {
-        var propertiesOrder = [];
-        var required = [];
-        var properties = {};
+    this.dialog = new DialogView({
+      action: action,
+      formTitle: formTitle,
+      data: data,
+      onsubmit: onSubmit,
+      schema: schema
+  });
 
-        $('#properties_table tbody tr').each(function iterator() {
-          var property = $(this).data('property');
-          var id = property.id;
+    this.dialog.render();
 
-          if (_.isUndefined(id)) {
-            return;
-          }
-
-          if (properties[id]) {
-            return;
-          }
-
-          propertiesOrder.push(property.id);
-
-          if (property.required) {
-            required.push(id);
-          }
-
-          delete property.id;
-          delete property.required;
-          properties[id] = property;
-        });
-
-        var schema = {
-          type: 'object',
-          propertiesOrder: propertiesOrder,
-          required: required,
-          properties: properties
-        };
-
-        values.schema = schema;
-
-        if (errors) {
-          self.dialog.getButton('submit').stopSpin();
-          self.dialog.enableButtons(true);
-          self.dialog.setClosable(true);
-          return;
-        }
-
-        onsubmit(values);
-      }
-    });
-    $form.append($(schemaFormTemplate({
+    this.dialog.$form.append($(schemaFormTemplate({
       propertyColumns: propertyColumns
     })));
+
     var dataSchema = data.schema || {};
 
     _.each(dataSchema.propertiesOrder, function iterator(id) {
@@ -145,7 +149,7 @@ var SchemaView = TableView.extend({
       }));
 
       $('.id_form', $newRow).change(ensureNewRow);
-      $('#properties_table tbody', $form).append($newRow);
+      $('#properties_table tbody', self.dialog.$form).append($newRow);
       $('#id', $newRow).change(function onChange() {
         property.id = $(this).val();
       });
@@ -173,7 +177,8 @@ var SchemaView = TableView.extend({
         var yaml = jsyaml.safeDump(property);
 
         editor.getSession().setValue(yaml);
-        var dialog = BootstrapDialog.show({
+        BootstrapDialog.show({
+          type: BootstrapDialog.TYPE_DEFAULT,
           title: 'Property Detail',
           closeByKeyboard: false,
           message: $detailPane,
@@ -190,6 +195,7 @@ var SchemaView = TableView.extend({
             action: function action(dialog) {
               var yaml = editor.getSession().getValue();
               var data = jsyaml.safeLoad(yaml);
+              var $propertiesTable = $($('#properties_table tbody tr').get(properties.indexOf(property)));
 
               _.each(property, function iterator(value, key) {
                 delete property[key];
@@ -199,6 +205,13 @@ var SchemaView = TableView.extend({
                 property[key] = value;
               });
 
+              _.each(property, function iterator(value, key) {
+                if (_.isBoolean(value)) {
+                  $propertiesTable.find('#' + key).prop('checked', value);
+                } else {
+                  $propertiesTable.find('#' + key).val(value);
+                }
+              });
               dialog.close();
             }
           }]
@@ -208,7 +221,7 @@ var SchemaView = TableView.extend({
     var ensureNewRow = function ensureNewRow() {
       var requireRow = true;
 
-      $('.id_form', $form).each(function iterator() {
+      $('.id_form', self.dialog.$form).each(function iterator() {
         if ($(this).val() == '\'\'') {
           requireRow = false;
         }
@@ -221,33 +234,6 @@ var SchemaView = TableView.extend({
 
     _.each(properties, function iterator(property) {
       addNewRow(property);
-    });
-
-    $('#properties_table tbody', $form).sortable();
-    $form.prepend('<div id="alerts_form"></div>');
-    self.dialog = BootstrapDialog.show({
-      size: BootstrapDialog.SIZE_WIDE,
-      type: BootstrapDialog.TYPE_DEFAULT,
-      title: formTitle,
-      closeByKeyboard: false,
-      message: $form,
-      spinicon: 'glyphicon glyphicon-refresh',
-      onshown: function onshown() {
-        $('.modal-body').css({
-          'max-height': $(window).height() - 200 + 'px'
-        });
-      },
-      buttons: [{
-        id: 'submit',
-        label: 'Submit',
-        cssClass: 'btn-primary btn-raised btn-material-blue-600',
-        action: function action() {
-          self.dialog.enableButtons(false);
-          self.dialog.setClosable(false);
-          this.spin();
-          $form.submit();
-        }
-      }]
     });
   }
 });
