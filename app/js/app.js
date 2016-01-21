@@ -1,5 +1,6 @@
 require('bootstrap');
 require('bootstrap-dialog');
+require('../bower_components/bootswatch/cosmo/bootstrap.css');
 require('../bower_components/font-awesome/css/font-awesome.css');
 require('../css/sass/main.scss');
 

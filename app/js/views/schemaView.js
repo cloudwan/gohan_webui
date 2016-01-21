@@ -2,7 +2,8 @@ var Backbone = require('backbone');
 var $ = require('jquery');
 var jsyaml = require('js-yaml');
 
-require('./../../bower_components/jsonform/lib/jsonform');
+require('../../bower_components/jsonform/lib/jsonform');
+
 var schemaFormTemplate = require('./../../templates/schemaForm.html');
 var propertyFormTemplate = require('./../../templates/propertyForm.html');
 var TableView = require('./tableView');
