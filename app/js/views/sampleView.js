@@ -6,6 +6,7 @@ var SampleView = Backbone.View.extend({
   },
   initialize: function initialize(options) {
     this.app = options.app;
+
     if (this.app) {
       this.app.breadCrumb.update([]);
     }

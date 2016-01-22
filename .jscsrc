@@ -68,6 +68,7 @@
         "test/**",
         "karma.conf.js",
         "webpack.config.js",
-        "webpack.test.config.js"
-    ]
+        "webpack.test.config.js",
+		"libs/**"
+	]
 }

@@ -1,7 +1,7 @@
 var BootstrapDialog = require('bootstrap-dialog');
 var ErrorView = require('./errorView');
 
-require('./../../bower_components/jsonform/lib/jsonform');
+require('../../bower_components/jsonform/lib/jsonform');
 
 var DialogView = Backbone.View.extend({
   /**

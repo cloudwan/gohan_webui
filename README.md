@@ -32,7 +32,11 @@ Setup development environment
 - Install all npm dependencies
 ```
     $ npm install
-``` 
+```
+- Install all bower dependencies
+```
+    $ bower install
+```
 - Copy configurations files
 ```
     $ cp app/config.json.sample app/config.json

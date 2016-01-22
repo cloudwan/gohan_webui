@@ -18,7 +18,7 @@ module.exports = {
   module: {
     preLoaders: [{
       test: /\.js$/,
-      exclude: /(node_modules|bower_components)/,
+      exclude: /(node_modules|bower_components|libs)/,
       loader: 'jscs-loader'
     }],
     loaders: [
@@ -55,7 +55,10 @@ module.exports = {
     new ExtractTextPlugin('styles.css'),
     new BowerWebpackPlugin({
       modulesDirectories: ['bower_components'],
-      manifestFiles: 'bower.json',
+      manifestFiles: [
+        'bower.json',
+        '.bower.json',
+      ],
       includes: /.*/,
       excludes: [],
       searchResolveModulesDirectories: true
