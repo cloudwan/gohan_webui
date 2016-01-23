@@ -51,7 +51,12 @@ var DialogView = Backbone.View.extend({
   updateDialogSchema: function updateDialogSchema(data) {
     var self = this;
 
-    this.dialogSchema = this.schema.filterByAction(this.action, this.parentProperty);
+    if (_.isUndefined(this.schema.filterByAction)) {
+      this.dialogSchema = this.schema;
+    } else {
+      this.dialogSchema = this.schema.filterByAction(this.action, this.parentProperty);
+    }
+
     _.each(this.dialogSchema, function iterator(value, key) {
       if (_.isObject(value) && key === 'properties') {
         _.each(value, function iterator(value) {

@@ -30,6 +30,7 @@
     "bootswatch": "~3.3.6",
     "bootstrap-dialog": "bootstrap-dialog#1.34.6",
     "z-schema": "~3.16.1",
-    "jsonform": "git@github.com:ulion/jsonform.git#dev"
+    "jsonform": "git@github.com:ulion/jsonform.git#dev",
+    "ace-builds": "~1.2.3"
   }
 }
