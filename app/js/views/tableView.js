@@ -167,6 +167,9 @@ var TableView = Backbone.View.extend({
     self.dialogForm(action, formTitle, data, onsubmit);
   },
   deleteModel: function deleteModel(evt) {
+    if (!confirm('Are you sure to delete?')) {
+      return;
+    }
     var $target = $(evt.target);
     var id = $target.data('id');
     var model = this.collection.get(id);

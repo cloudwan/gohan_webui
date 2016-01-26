@@ -192,6 +192,9 @@ var SchemaView = TableView.extend({
       }));
 
       $('.delete', $newRow).on('click', function onClick() {
+        if (!confirm('Are you sure to delete?')) {
+          return;
+        }
         $(this).off('click');
         $(this).parent().parent().remove();
       });
