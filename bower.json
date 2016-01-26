@@ -31,6 +31,7 @@
     "bootstrap-dialog": "bootstrap-dialog#1.34.6",
     "z-schema": "~3.16.1",
     "jsonform": "git@github.com:cloudwan/jsonform.git#properties_order",
-    "ace-builds": "~1.2.3"
+    "ace-builds": "~1.2.3",
+    "jquery-ui": "~1.11.4"
   }
 }

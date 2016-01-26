@@ -3,6 +3,10 @@ var BootstrapDialog = require('bootstrap-dialog');
 var DialogView = require('./dialogView');
 var jsyaml = require('js-yaml');
 
+require('./../../bower_components/jquery-ui/ui/core');
+require('./../../bower_components/jquery-ui/ui/widget');
+require('./../../bower_components/jquery-ui/ui/mouse');
+require('./../../bower_components/jquery-ui/ui/sortable');
 require('./../../bower_components/jsonform/lib/jsonform');
 require('./../../bower_components/ace-builds/src-min-noconflict/ace');
 require('./../../bower_components/ace-builds/src-min-noconflict/theme-monokai');
@@ -104,6 +108,44 @@ var SchemaView = TableView.extend({
     ];
     var properties = [];
 
+    if (_.isUndefined(data.schema)) {
+      data.schema = {
+        properties: {
+          id: {
+            title: 'ID',
+            type: 'string',
+            description: 'ID',
+            permission: ['create'],
+            view: ['detail']
+          },
+          name: {
+            title: 'Name',
+            type: 'string',
+            description: 'Name',
+            permission: ['create', 'update']
+          },
+          description: {
+            title: 'Description',
+            type: 'string',
+            description: 'Description',
+            permission: ['create', 'update']
+          },
+          tenant_id: {// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+            title: 'Tenant ID',
+            type: 'string',
+            description: 'Tenant ID',
+            permission: ['create'],
+            view: ['detail']
+          }
+        },
+        propertiesOrder: [
+          'id',
+          'name',
+          'description',
+          'tenant_id'
+        ]
+      };
+    }
     this.dialog = new DialogView({
       action: action,
       formTitle: formTitle,
@@ -117,6 +159,7 @@ var SchemaView = TableView.extend({
     this.dialog.$form.append($(schemaFormTemplate({
       propertyColumns: propertyColumns
     })));
+    $('#properties_table tbody', this.dialog.$form).sortable();
 
     var dataSchema = data.schema || {};
 
@@ -148,6 +191,10 @@ var SchemaView = TableView.extend({
         property: property
       }));
 
+      $('.delete', $newRow).on('click', function onClick() {
+        $(this).off('click');
+        $(this).parent().parent().remove();
+      });
       $('.id_form', $newRow).change(ensureNewRow);
       $('#properties_table tbody', self.dialog.$form).append($newRow);
       $('#id', $newRow).change(function onChange() {
