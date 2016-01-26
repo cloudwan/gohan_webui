@@ -1,6 +1,6 @@
 <tr>
 <td class="handle">
-    <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+    <span class="fa fa-reorder" aria-hidden="true"></span>
 </td>
 <td>
     <input id="id" value="<%- property["id"] %>" class="form-control id_form"/>
@@ -24,9 +24,8 @@
     <% } %>
     </td>
 <% }); %>
-<td>
+<td class="action">
     <button type="button" class="btn btn-default" aria-label="Detail" id="detail" > Detail </button>
-    <button type="button" class="btn btn-default btn-xs delete" aria-label="Delete">
-    <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+    <a class="delete" aria-label="Delete"><span class="fa fa-remove"></span></a>
 </td>
 </tr>

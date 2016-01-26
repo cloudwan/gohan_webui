@@ -327,6 +327,66 @@ body {
   margin-top: 0;
 }
 
+
+
+/*
+ * Schema Edit
+ */
+#properties_table {
+ .fa-reorder {
+    padding: 11px 0px;
+    padding-left: 2px;
+    font-size: 15px;
+    line-height: 1.42857143;
+    cursor: move;
+ }
+  td.action {
+    white-space: nowrap;
+    a.delete {
+      padding: 11px 6px;
+      font-size: 15px;
+      display: inline-block;
+      cursor: pointer;
+    }
+  }
+  input[type="checkbox"], input[type="radio"] {
+    box-shadow: none;
+    margin-top: 0;
+  }
+}
+
+.jsonform-node {
+  ul {
+    padding: 0;
+  }
+  li {
+    overflow: hidden;
+    span.line {float: left;}
+    div.form-group {
+      margin-left: 30px;
+      margin-right: 30px;
+    }
+  }
+  .glyphicon-list {
+    padding: 11px 0px;
+    padding-left: 8px;
+    cursor: move;
+    font-family: FontAwesome;
+    &:before {
+      content: "\F0C9";
+    }
+  }
+  .glyphicon-remove {
+    padding: 11px 0px;
+    padding-right: 8px;
+    font-family: FontAwesome;
+    &:before {
+      content: "\F00D";
+    }
+  }
+}
+
+
 /*
  * Cosmo theme
  */
