@@ -191,6 +191,10 @@ var SchemaView = TableView.extend({
         property: property
       }));
 
+      $('.delete', $newRow).on('click', function onClick() {
+        $(this).off('click');
+        $(this).parent().parent().remove();
+      });
       $('.id_form', $newRow).change(ensureNewRow);
       $('#properties_table tbody', self.dialog.$form).append($newRow);
       $('#id', $newRow).change(function onChange() {
