@@ -134,7 +134,7 @@ var DialogView = Backbone.View.extend({
     var $addNewOption = $('select', this.$form);
 
     if (!_.isUndefined($addNewOption)) {
-      $(this.$form).on('click', 'select', function onClick(event) {
+      $(this.$form).on('change', 'select', function onClick(event) {
         if (event.target.tagName.toLowerCase() !== 'select') {
           return;
         }
