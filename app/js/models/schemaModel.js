@@ -11,15 +11,14 @@ var SchemaModel = Backbone.Model.extend({
   detailPath: function detailPath(id) {
     return this.get('prefix') + '/' + id;
   },
-  prefix: function prefix() {
+  url: function url() {
     if (!this.hasParent()) {
-      return this.get('prefix');
+      return this.get('url');
     }
 
     var parentSchema = this.parent();
 
-    return parentSchema.prefix() + '/' + parentSchema.get('plural') + '/:' + parentSchema.get('singular')
-      + '/' + this.get('plural');
+    return parentSchema.url() + '/:' + parentSchema.get('singular') + '/' + this.get('plural');
   },
   parent: function parent() {
     var parentId = this.get('parent');

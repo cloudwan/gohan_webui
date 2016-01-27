@@ -91,7 +91,7 @@ var AppView = Backbone.View.extend({
     var collection = schema.makeCollection();
 
     if (schema.hasParent()) {
-      var fullRoute = schema.prefix();
+      var fullRoute = schema.url();
 
       fullRoute = fullRoute.substr(1);
 
