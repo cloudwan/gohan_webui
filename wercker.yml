@@ -1,0 +1,42 @@
+box: iteamdev/node-webpack
+build:
+    steps:
+    - script:
+       name: setup build environment
+       code: |
+         ./setup.sh
+    - script:
+       name: build
+       code: |
+         make
+    - script: check dist
+      code: |
+         ls dist
+deploy:
+  steps:
+    - script:
+        name: setup
+        code: |
+          apt-get update
+          apt-get -y install zip
+          mkdir -p ${WERCKER_OUTPUT_DIR}
+          cd ${WERCKER_SOURCE_DIR}/dist
+          mv config.json config.json.sample
+          zip -r ${WERCKER_OUTPUT_DIR}/gohan_webui.zip .
+    - tcnksm/ghr:
+        token: $GITHUB_TOKEN
+        input: ${WERCKER_OUTPUT_DIR}
+        replace: true
+    - lukevivier/gh-pages@0.2.1:
+        token: $GITHUB_TOKEN
+        domain: cloudwan.github.io
+        basedir: ${WERCKER_SOURCE_DIR}/dist
+    - script:
+        name: trigger ansible-gohan build
+        code: |
+            apt-get install -y curl
+            curl  -H 'Content-Type: application/json' \
+                  -H  "Authorization: Bearer ${WERCKER_TOKEN}" \
+                  -X POST \
+                  -d '{"applicationId": "'${ANSIBLE_GOHAN_APP_ID}'", "message":"build triggered from gohan_webui repo"}' \
+                  https://app.wercker.com/api/v3/builds

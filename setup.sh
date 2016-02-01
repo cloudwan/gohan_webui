@@ -3,14 +3,28 @@
 # Install hooks.
 ./installHooks.sh
 
-set -e
+set -xe
 
 # setup dev environment
 
-sudo apt-get update
-sudo apt-get install ruby-compass
+if [ "$(uname)" == "Darwin" ]; then
+    brew install npm
+    sudo gem install compass
+else
+    apt-get update
+    apt-get -y install ruby-compass
+fi
+
+if ! [ -e app/config.json ]; then
+    cp app/config.json.sample app/config.json
+fi
+
+npm install -g bower
 npm install -g karma
-npm install -g webpack webpack-dev-server
 npm install -g jscs
+
+npm install webpack webpack-dev-server
+
 npm install
-bower install
+
+bower install --allow-root
