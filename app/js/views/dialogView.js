@@ -14,6 +14,7 @@ var DialogView = Backbone.View.extend({
    * @param {Object} options.data
    * @param {function} options.onsubmit
    * @param {Object} options.schema
+   * @param {Object} options.parentProperty
    */
   initialize: function initialize(options) {
     this.errorView = new ErrorView();
@@ -22,6 +23,7 @@ var DialogView = Backbone.View.extend({
     this.data = options.data;
     this.onsubmit = options.onsubmit;
     this.schema = options.schema;
+    this.parentProperty = options.parentProperty;
     this.dialogSchema = {};
     this.additionalForm = this.schema.additionalForm[this.action] || ['*'];
     this.currentStep = 0;
