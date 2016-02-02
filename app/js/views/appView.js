@@ -83,9 +83,33 @@ var AppView = Backbone.View.extend({
     });
     this.breadCrumb = new BreadCrumbView();
   },
+  getParamFromQuery: function　getParamFromQuery()　{
+    var params = {};
+    var queryStrings = document.location.search.substr(1);
+
+    if ( queryStrings === '') {
+        return params;
+    }
+    _.each(
+      queryStrings.split('&'),
+      function parseEqual(query) {
+        var i = query.split('=');
+
+        params[i[0].toString()] = i[1].toString();
+    });
+    return params;
+  },
   autoBuildUIForSchema: function autoBuildUIForSchema(schema) {
     var self = this;
     var viewClass = {};
+
+    var metadata = schema.get('metadata');
+    var params = self.getParamFromQuery();
+    var type = params.type || 'tenant';
+
+    if (metadata && metadata.type != type) {
+        return;
+    }
 
     _.extend(viewClass, self.viewClass, self.viewClass[schema.id]);
     var collection = schema.makeCollection();
