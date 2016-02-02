@@ -95,7 +95,8 @@ var TableView = Backbone.View.extend({
       formTitle: formTitle,
       data: data,
       onsubmit: onsubmit,
-      schema: this.schema
+      schema: this.schema,
+      parentProperty: this.parentProperty
     });
 
     this.dialog.render();
