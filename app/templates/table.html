@@ -51,16 +51,21 @@
        <% _.each(schema.schema.propertiesOrder, function(key){
            var property = schema.schema.properties[key];
            var view = property['view']
-           if(view){
-             if(view.indexOf("list") < 0){
+
+           if (view) {
+             if (view.indexOf("list") < 0) {
                return
              }
            }
-           if(key === parentProperty){
+           if (key === parentProperty){
              return
            }
-           %>
+           var urlPattern = /^((http|https):\/\/)/;
+           if (property['format'] === 'uri' && urlPattern.test(d[key])) { %>
+        <td><a href="<%- d[key] %>"> link </a></td>
+        <% }else{ %>
         <td><%= d[key] %></td>
+        <% } %>
        <% }); %>
        <td class="action_column">
          <div class="btn-group ">
