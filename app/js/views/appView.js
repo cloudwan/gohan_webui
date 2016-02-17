@@ -107,8 +107,8 @@ var AppView = Backbone.View.extend({
     var params = self.getParamFromQuery();
     var type = params.type || 'tenant';
 
-    if (metadata && metadata.type != type) {
-        return;
+    if (! _.isUndefined(metadata.type) && metadata.type != type) {
+      return;
     }
 
     _.extend(viewClass, self.viewClass, self.viewClass[schema.id]);
