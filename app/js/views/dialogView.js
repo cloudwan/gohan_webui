@@ -1,3 +1,4 @@
+var Promise = require('promise');
 var BootstrapDialog = require('bootstrap-dialog');
 var ErrorView = require('./errorView');
 
@@ -54,34 +55,39 @@ var DialogView = Backbone.View.extend({
     var self = this;
 
     if (_.isUndefined(this.schema.filterByAction)) {
-      this.dialogSchema = this.schema;
+      this.dialogSchema = new Promise(function (resolve) {
+        resolve(this.schema);
+      }.bind(this));
     } else {
       this.dialogSchema = this.schema.filterByAction(this.action, this.parentProperty);
     }
 
-    _.each(this.dialogSchema, function iterator(value, key) {
-      if (_.isObject(value) && key === 'properties') {
-        _.each(value, function iterator(value) {
-          _.each(value, function iterator(value, key, obj) {
-            if (key === 'relation') {
-              obj.enum.push('addNew' + value);
-              obj.options['addNew' + value] = ' + New ' + value.charAt(0).toUpperCase() + value.slice(1);
-            }
+    this.dialogSchema.then(function onFulfilled(schema) {
+      _.each(schema, function iterator(value, key) {
+        if (_.isObject(value) && key === 'properties') {
+          _.each(value, function iterator(value) {
+            _.each(value, function iterator(value, key, obj) {
+              if (key === 'relation') {
+                obj.enum.push('addNew' + value);
+                obj.options['addNew' + value] = ' + New ' + value.charAt(0).toUpperCase() + value.slice(1);
+              }
+            });
           });
-        });
-      }
-    });
-    this.$form.jsonForm({
-      schema: this.dialogSchema,
-      value: data || this.data,
-      form: this.multiStep ? this.additionalForm[this.currentStep] : this.additionalForm,
-      onSubmit: function onSubmit(errors) {
-        if (errors) {
-          return;
         }
-        self.nextStep();
-      }
-    });
+      });
+
+      this.$form.jsonForm({
+        schema: schema,
+        value: data || this.data,
+        form: this.multiStep ? this.additionalForm[this.currentStep] : this.additionalForm,
+        onSubmit: function onSubmit(errors) {
+          if (errors) {
+            return;
+          }
+          self.nextStep();
+        }
+      });
+    }.bind(this));
   },
 
   /**

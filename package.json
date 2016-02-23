@@ -51,5 +51,8 @@
     "underscore-template-loader": "^0.5.2",
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.12.1"
+  },
+  "dependencies": {
+    "promise": "^7.1.1"
   }
 }
