@@ -1,4 +1,5 @@
 var jsyaml = require('js-yaml');
+var Promise = require('promise');
 
 var SchemaModel = Backbone.Model.extend({
   collections: [],
@@ -73,16 +74,18 @@ var SchemaModel = Backbone.Model.extend({
         this.unset('isNew');
 
         var data = {};
+        var cloneOfModel = model.clone();
         var modelJSON = {};
-        var schemaForAction = self.filterByAction(method);
 
-        _.each(schemaForAction.properties, function iterator(value, key) {
-          modelJSON[key] = model.get(key);
-        });
+        self.filterByAction(method).then(function onFulfilled(schemaForAction) {
+          _.each(schemaForAction.properties, function iterator(value, key) {
+            modelJSON[key] = cloneOfModel.get(key);
+          });
 
-        data[this.schema.get('singular')] = modelJSON;
-        options.data = JSON.stringify(data);
-        Backbone.sync(method, model, options);
+          data[this.schema.get('singular')] = modelJSON;
+          options.data = JSON.stringify(data);
+          Backbone.sync(method, model, options);
+        }.bind(this));
       },
       parentId: function parentId() {
         if (this.schema.hasParent()) {
@@ -198,6 +201,11 @@ var SchemaModel = Backbone.Model.extend({
     self.collections[url] = collection;
     return collection;
   },
+  /**
+   * Returns local schema for popup with content.
+   * @param {Object} schema
+   * @returns {Promise}
+   */
   toLocalSchema: function toLocalSchema(schema) {
     // Convert dict in schema to array for form generation
     // In json schema, we can't type dict element, so gohan
@@ -205,77 +213,98 @@ var SchemaModel = Backbone.Model.extend({
     // If object type has items property, items is considered to
     // schema for object of dict.
     // We will transform schema here for jsonform lib.
-    var self = this;
+    return new Promise(function promise(resolve, reject) {
+      var self = this;
 
-    if (_.isArray(schema.type)) {
-      schema.type = schema.type[0];
-    }
-
-    if (!_.isUndefined(schema.relation)) {
-      var enumValues = [];
-      var options = {};
-      var headers = {};
-
-      headers['X-Auth-Token'] = self.collection.userModel.authToken();
-      var relatedSchema = self.collection.get(schema.relation);
-
-      $.ajax({
-        url: relatedSchema.apiEndpoint(),
-        headers: headers,
-        // Need revisit
-        async: false
-      }).then(function success(data) {
-        _.each(data, function iterator(values) {
-          _.each(values, function iterator(value) {
-            enumValues.push(value.id);
-            options[value.id] = value.name;
-          });
-        });
-      });
-
-      schema.enum = enumValues;
-      schema.options = options;
-      return schema;
-    }
-    var result = $.extend(true, {}, schema);
-
-    if (schema.type == 'array') {
-      result.items = self.toLocalSchema(result.items);
-      return result;
-    }
-
-    if (schema.type != 'object') {
-      return schema;
-    }
-
-    if (!_.isUndefined(schema.properties)) {
-      $.each(schema.properties, function iterator(key, property) {
-        result.properties[key] = self.toLocalSchema(property);
-      });
-    } else if (!_.isUndefined(schema.items)) {
-      result.type = 'array';
-      var items = self.toLocalSchema(result.items);
-
-      if (_.isUndefined(items.title)) {
-        items.title = 'value';
+      if (_.isArray(schema.type)) {
+        schema.type = schema.type[0];
       }
 
-      result.items = {
-        type: 'object',
-        required: schema.required,
-        properties: {
-          id: {
-            title: 'key',
-            type: 'string'
-        },
-          value: items
+      if (!_.isUndefined(schema.relation)) {
+        var enumValues = [];
+        var options = {};
+        var headers = {};
+
+        headers['X-Auth-Token'] = self.collection.userModel.authToken();
+        var relatedSchema = self.collection.get(schema.relation);
+
+        $.ajax({
+          url: relatedSchema.apiEndpoint(),
+          headers: headers
+        }).then(function success(data) {
+          _.each(data, function iterator(values) {
+            _.each(values, function iterator(value) {
+              enumValues.push(value.id);
+              options[value.id] = value.name;
+            });
+          });
+
+          schema.enum = enumValues;
+          schema.options = options;
+          resolve(schema);
+        }, function error(error) {
+          reject(error);
+        });
+        return;
+      }
+      var result = $.extend(true, {}, schema);
+
+      if (schema.type == 'array') {
+        var promise = self.toLocalSchema(result.items);
+
+        promise.then(function onFulfilled(data) {
+          result.items = data;
+          resolve(result);
+        });
+        return;
+      }
+
+      if (schema.type != 'object') {
+        resolve(schema);
+        return;
+      }
+
+      if (!_.isUndefined(schema.properties)) {
+        var promises = [];
+
+        $.each(schema.properties, function iterator(key, property) {
+          var promise = self.toLocalSchema(property);
+
+          promises.push(promise);
+          promise.then(function onFulfilled(data) {
+            result.properties[key] = data;
+          });
+        });
+        Promise.all(promises).then(function onFulfilled() {
+          resolve(result);
+        }, function onRejected(data) {
+          reject(data);
+        });
+      } else if (!_.isUndefined(schema.items)) {
+        result.type = 'array';
+        var items = self.toLocalSchema(result.items);
+
+        if (_.isUndefined(items.title)) {
+          items.title = 'value';
         }
-      };
-    } else {
-      result.type = 'string';
-      result.format = 'yaml';
-    }
-    return result;
+        result.items = {
+          type: 'object',
+          required: schema.required,
+          properties: {
+            id: {
+              title: 'key',
+              type: 'string'
+            },
+            value: items
+          }
+        };
+        resolve(result);
+      } else {
+        result.type = 'string';
+        result.format = 'yaml';
+        resolve(result);
+      }
+    }.bind(this));
   },
   defaultValue: function defaultValue(schema) {
     var self = this;
@@ -371,46 +400,60 @@ var SchemaModel = Backbone.Model.extend({
     }
     return data;
   },
+  /**
+   * Returns filtered schema by action.
+   * @param {string} action
+   * @param {string} parentProperty
+   * @returns {Promise}
+   */
   filterByAction: function filterByAction(action, parentProperty) {
-    var result = {};
-    var schema = this.toJSON();
-    var localSchema = this.toLocalSchema(schema.schema);
+    return new Promise(function promise(resolve) {
+      var result = {};
+      var schema = this.toJSON();
 
-    $.each(localSchema.properties, function iterator(key, property) {
-      if (key == 'id' && property.format == 'uuid') {
-        return;
-      }
+      this.toLocalSchema(schema.schema).then(function onFulfilled(localSchema) {
+        $.each(localSchema.properties, function iterator(key, property) {
+          if (key == 'id' && property.format == 'uuid') {
+            return;
+          }
 
-      if (key == parentProperty) {
-        return;
-      }
+          if (key == parentProperty) {
+            return;
+          }
 
-      if (_.isNull(property.permission) || _.isUndefined(property.permission)) {
-        return;
-      }
+          if (_.isNull(property.permission) || _.isUndefined(property.permission)) {
+            return;
+          }
 
-      var view = property.view;
+          var view = property.view;
 
-      if (view) {
-        if (view.indexOf(action) < 0) {
-          return;
-        }
-      }
+          if (view) {
+            if (view.indexOf(action) < 0) {
+              return;
+            }
+          }
 
-      if (property.permission.indexOf(action) >= 0) {
-        result[key] = property;
-      }
-    });
-    var required = _.filter(schema.schema.required, function iterator(property) {
-      return result.hasOwnProperty(property);
-    });
+          if (property.permission.indexOf(action) >= 0) {
+            result[key] = property;
+          }
+        });
 
-    return {
-      type: 'object',
-      properties: result,
-      propertiesOrder: schema.schema.propertiesOrder,
-      required: required
-    };
+        var required = _.filter(schema.schema.required, function iterator(property) {
+          return result.hasOwnProperty(property);
+        });
+
+        result = {
+          type: 'object',
+          properties: result,
+          propertiesOrder: schema.schema.propertiesOrder,
+          required: required
+        };
+
+        resolve(result);
+      }, function onRejected(error) {
+        console.error(error);
+      });
+    }.bind(this));
   },
   children: function children() {
     var self = this;

@@ -116,7 +116,6 @@ var TableView = Backbone.View.extend({
       values = self.toServer(values);
       values.isNew = true;
       self.collection.create(values, {
-        wait: true,
         success: function success() {
           self.collection.fetch({
              success: function success() {
