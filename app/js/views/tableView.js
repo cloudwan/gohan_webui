@@ -199,19 +199,24 @@ var TableView = Backbone.View.extend({
           return relatedObject.name;
         }
     }
-
-    if (property.type == 'object') {
-      content = $('<pre style="width:500px;"></pre>').text(
-        '<pre>' + jsyaml.safeDump(value) + '</pre>').html();
-      content = content.replace('\'', '&#34;');
-      return dataPopupTemplate({
-        content: content
-      });
+    try{
+      if (property.type == 'object') {
+        content = $('<pre style="width:500px;"></pre>').text(
+          '<pre>' + jsyaml.safeDump(value) + '</pre>').html();
+        content = content.replace('\'', '&#34;');
+        return dataPopupTemplate({
+          content: content
+        });
+      }
+    }catch(e){
+    }
+    try{
+      if (property.type == 'array') {
+        return '<pre>' + jsyaml.safeDump(value) + '</pre>';
+      }
+    }catch(e){
     }
 
-    if (property.type == 'array') {
-      return '<pre>' + jsyaml.safeDump(value) + '</pre>';
-    }
 
     var title = property.title.toLowerCase();
 
