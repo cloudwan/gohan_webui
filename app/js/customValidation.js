@@ -1,4 +1,5 @@
-var ZSchema = require('z-schema');
+import ZSchema from 'z-schema';
+import * as _ from 'underscore';
 
 ZSchema.registerFormat('yaml', function yaml() {
   return true;
@@ -40,14 +41,14 @@ ZSchema.registerFormat('cidr', function cidr(str) {
 
   var address = parts[0];
   var mask = parts[1];
-  var isIPv4 = function isIPv4(address) {
+  var isIPv4 = function isIPv4(add) {
     return new RegExp('^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$')
-      .test(address);
+      .test(add);
   };
-  var isIPv4Mask = function isIPv4Mask(mask) {
-    var value = parseInt(mask, 10);
+  var isIPv4Mask = function isIPv4Mask(ip4Mask) {
+    var value = parseInt(ip4Mask, 10);
 
-    return RegExp('^\\d+$').test(mask) && (value >= 1) && (value <= 32);
+    return RegExp('^\\d+$').test(ip4Mask) && (value >= 1) && (value <= 32);
   };
 
   return isIPv4(address) && isIPv4Mask(mask);

@@ -1,20 +1,48 @@
-var template = require('./../../templates/header.html');
+/* global window */
+import {View} from 'backbone';
 
-var HeaderView = Backbone.View.extend({
-  tagName: 'div',
-  events: {
-    'click #logout': 'logout'
-  },
-  initialize: function initialize(options) {
+import template from './../../templates/header.html';
+
+/**
+ * Class contains logic of header view in application.
+ * @class HeaderView
+ * @extends View
+ */
+export default class HeaderView extends View {
+  get tagName() {
+    return 'div';
+  }
+  get events() {
+    return {
+      'click #logout': 'logout'
+    };
+  }
+
+  /**
+   * Constructs the object.
+   * @constructor
+   * @override View.constructor
+   * @param {Object} options
+   */
+  constructor(options) {
+    super(options);
     this.config = options.config;
-    this.listenTo(this.model, 'change:auth_data', this.render);
-  },
-  logout: function logout() {
-    console.log('click!');
+  }
+
+  /**
+   * Logs out user and reloads page.
+   */
+  logout() {
     this.model.unsetAuthData();
     window.location.reload();
-  },
-  render: function render() {
+  }
+
+  /**
+   * Renders component content.
+   * @override View.render
+   * @returns {HeaderView}
+   */
+  render() {
     this.$el.html(template({
       config: this.config,
       username: this.model.userName(),
@@ -22,10 +50,5 @@ var HeaderView = Backbone.View.extend({
       tenantName: this.model.tenantName()
     }));
     return this;
-  },
-  noaction: function noaction(e) {
-    e.preventDefault();
   }
-});
-
-module.exports = HeaderView;
+}

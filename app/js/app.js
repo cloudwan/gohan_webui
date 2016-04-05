@@ -1,31 +1,35 @@
-require('bootstrap');
-require('bootstrap-dialog');
-require('../bower_components/bootswatch/cosmo/bootstrap.css');
-require('../bower_components/font-awesome/css/font-awesome.css');
-require('../css/sass/main.scss');
-require('./customValidation');
+/* global $ */
+// Import bootstraps.
+import 'bootstrap';
+import 'bootstrap-dialog';
 
-var AppView = require('./views/appView');
-var SchemaView = require('./views/schemaView');
-var Router = require('./routers/router');
+// Import css.
+import './../../node_modules/bootswatch/cosmo/bootstrap.css';
+import './../../node_modules/font-awesome/css/font-awesome.css';
+import '../css/sass/main.scss';
 
-//Set up
-(function strict() {
-  $.get('config.json').then(
-    function onSuccess(config) {
-      var router = new Router();
-      var rootView = new AppView({
-        router: router,
-        config: config,
-        viewClass: {
-          schema: {
-          table: SchemaView
-        }}
-      });
+// Import JS.
+import {history} from 'backbone';
+import './customValidation';
+import AppView from './views/appView';
+import SchemaView from './views/schemaView';
+import Router from './routers/router';
+import Config from './models/configModel';
 
-      $('body').append(rootView.render().el);
-      Backbone.history.start();
-    }).fail(function onFail() {
-    $('body').append('Failed to load config.json');
+const config = new Config({url: 'config.json'});
+
+config.fetch().then(() => {
+  const rootView = new AppView({
+    router: new Router(),
+    config,
+    viewClass: {
+      schema: {
+        table: SchemaView
+      }}
   });
-})();
+
+  $('body').append(rootView.render().el);
+  history.start();
+}, () => {
+  $('body').append('Failed to load config.json');
+});
