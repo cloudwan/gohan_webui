@@ -29,17 +29,9 @@ Setup development environment
 ```
     $ npm install -g webpack webpack-dev-server
 ```
-- Install jscs
-```
-    $ npm install -g jscs
-```
 - Install all npm dependencies
 ```
     $ npm install
-```
-- Install all bower dependencies
-```
-    $ bower install
 ```
 - Copy configurations files
 ```
@@ -58,10 +50,6 @@ Setup development environment
 
 ```
     $ npm run dev-server -- --host 0.0.0.0 --https
-```
-- Start dev server with inline mode
-```
-    $ npm run dev-server-inline
 ```
  Server starts on 
 ```

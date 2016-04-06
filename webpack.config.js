@@ -1,6 +1,6 @@
 var port = 8080;
 var hostname = 'localhost';
-
+var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var BowerWebpackPlugin = require('bower-webpack-plugin');
@@ -9,19 +9,28 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   context: __dirname,
-  entry: './app/js/app',
+  entry: [
+    'babel-polyfill',
+    './app/js/app'
+  ],
   output: {
     path: __dirname + '/dist',
     filename: 'bundle.js',
     sourceMapFilename: '[file].map'
   },
   module: {
-    preLoaders: [{
-      test: /\.js$/,
-      exclude: /(node_modules|bower_components|libs)/,
-      loader: 'jscs-loader'
-    }],
     loaders: [
+      {
+        test: /\.js$/,
+        include: [
+          path.resolve(__dirname, 'app')
+        ],
+        loader: 'babel-loader',
+        query: {
+          cacheDirectory: true,
+          presets: ['es2015'],
+        }
+      },
       {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap')
@@ -43,6 +52,10 @@ module.exports = {
         loader: 'underscore-template-loader'
       },
       {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
             'file?hash=sha512&digest=hex&name=[hash].[ext]',
@@ -52,6 +65,11 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      'window.jQuery': 'jquery'
+    }),
     new ExtractTextPlugin('styles.css'),
     new BowerWebpackPlugin({
       modulesDirectories: ['bower_components'],

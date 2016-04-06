@@ -1,325 +1,335 @@
-var template = require('./../../templates/app.html');
-var UserModel = require('./../models/userModel');
-var SchemaCollection = require('./../models/schemaCollection');
-var SidebarView = require('./sidebarView');
-var HeaderView = require('./headerView');
-var TableView = require('./tableView');
-var DetailView = require('./detailView');
-var LoginView = require('./loginView');
-var SampleView = require('./sampleView');
-var ErrorView = require('./errorView');
-var BreadCrumbView = require('./breadCrumbView');
+/* global document, $ */
+import {View, Collection, history} from 'backbone';
 
-var AppView = Backbone.View.extend({
-  mainView: null,
-  className: 'appview',
-  initialize: function initialize(options) {
-    var self = this;
+import UserModel from './../models/userModel';
+import SchemaCollection from './../models/schemaCollection';
 
-    self.errorView = new ErrorView();
-    self.router = options.router;
+import SidebarView from './sidebarView';
+import HeaderView from './headerView';
+import TableView from './tableView';
+import DetailView from './detailView';
+import LoginView from './loginView';
+import SampleView from './sampleView';
+import ErrorView from './errorView';
+import BreadCrumbView from './breadCrumbView';
 
-    var config = options.config;
+import template from './../../templates/app.html';
 
-    self.config = config;
-    self.viewClass = _.extend({
-      table: TableView,
-      detail: DetailView,
-      sampleview: SampleView
-    }, options.viewClass);
+export default class AppView extends View {
+  className() {
+    return 'appview';
+  }
 
-    if (config.authUrl.indexOf('__HOST__') > 0) {
-      config.authUrl = config.authUrl.replace(
-        '__HOST__', window.location.hostname);
-    }
+  constructor(options) {
+    super(options);
 
-    if (config.gohan.url.indexOf('__HOST__') > 0) {
-      config.gohan.url = config.gohan.url.replace(
-        '__HOST__', window.location.hostname);
-    }
+    this.router = options.router;
+    this.config = options.config;
+    this.viewClass = Object.assign(
+      {
+        table: TableView,
+        detail: DetailView,
+        sampleview: SampleView
+      },
+      options.viewClass
+    );
+    this.userModel = options.userModel;
+    this.schemas = options.scheams;
+    this.errorView = new ErrorView();
 
-    self.userModel = options.userModel;
-
-    if (_.isUndefined(self.userModel)) {
-      self.userModel = new UserModel({
-        url: self.config.authUrl + '/tokens'
-      });
-    }
-    self.view = null;
-    self.buildView();
-
-    self.schemas = options.scheams;
-
-    if (_.isUndefined(self.schemas)) {
-      self.schemas = new SchemaCollection({
-        baseUrl: self.config.gohan.url,
-        userModel: self.userModel,
-        url: self.config.gohan.url + self.config.gohan.schema,
-        additionalForms: self.config.additionalForms
+    if (this.userModel === undefined) {
+      this.userModel = new UserModel({
+        url: this.config.get('authUrl') + '/tokens'
       });
     }
 
-    self.listenTo(self.schemas, 'update', self.autoBuildUI);
+    this.view = null;
+    this.buildView();
 
-    if (self.userModel.authToken()) {
-      self.schemas.fetch({
-        error: self.errorView.render
+    if (this.schemas === undefined) {
+      this.schemas = new SchemaCollection({
+        baseUrl: this.config.get('gohan').url,
+        userModel: this.userModel,
+        url: this.config.get('gohan').url + this.config.get('gohan').schema,
+        additionalForms: this.config.get('additionalForms')
+      });
+    }
+
+    if (this.userModel.authToken()) {
+      this.schemas.fetch().then(() => {
+        this.autoBuildUI();
+      }, error => {
+        this.errorView.render(...error);
       });
     } else {
-      self.listenTo(self.userModel, 'change:auth_data', function onChangeAuthData() {
-        self.$('#main_body').empty();
-        self.schemas.fetch();
-        self.render();
+      this.listenTo(this.userModel, 'change:authData', () => {
+        this.$('#main_body').empty();
+        this.schemas.fetch().then(() => {
+          this.autoBuildUI();
+        });
+        this.render();
       });
     }
-  },
-  buildView: function buildView() {
+  }
+
+  buildView() {
     this.sidebarView = new SidebarView({
-      collection: new Backbone.Collection()
+      collection: new Collection(),
+      app: this
     });
     this.headerView = new HeaderView({
-      config: this.config,
+      config: this.config.toJSON(),
       model: this.userModel
     });
     this.breadCrumb = new BreadCrumbView();
-  },
-  getParamFromQuery: function　getParamFromQuery()　{
-    var params = {};
-    var queryStrings = document.location.search.substr(1);
+  }
 
-    if ( queryStrings === '') {
-        return params;
+  getParamFromQuery() {
+    const params = {};
+    const queryStrings = document.location.search.substr(1);
+
+    if (queryStrings === '') {
+      return params;
     }
-    _.each(
-      queryStrings.split('&'),
-      function parseEqual(query) {
-        var i = query.split('=');
 
-        params[i[0].toString()] = i[1].toString();
+    queryStrings.split('&').map(query => {
+      const i = query.split('=');
+
+      params[i[0].toString()] = i[1].toString();
     });
+
     return params;
-  },
-  autoBuildUIForSchema: function autoBuildUIForSchema(schema) {
-    var self = this;
-    var viewClass = {};
+  }
 
-    var metadata = schema.get('metadata');
-    var params = self.getParamFromQuery();
-    var type = params.type || 'tenant';
+  autoBuildUIForSchema(schema) {
+    const viewClass = {};
+    const metadata = schema.get('metadata');
+    const collection = schema.makeCollection();
+    const route = schema.url().substr(1);
+    const params = this.getParamFromQuery();
+    const type = params.type || 'tenant';
 
-    if (! _.isUndefined(metadata.type) && metadata.type != type) {
+
+    if (metadata.type !== undefined && metadata.type !== type) {
       return;
     }
 
-    _.extend(viewClass, self.viewClass, self.viewClass[schema.id]);
-    var collection = schema.makeCollection();
+    Object.assign(viewClass, this.viewClass, this.viewClass[schema.id]);
 
     if (schema.hasParent()) {
-      var fullRoute = schema.url();
-
-      fullRoute = fullRoute.substr(1);
-
-      var childTableView = function childTableView() {
+      const childTableView = () => {
         $('#alerts').empty();
-        var endpoint = schema.apiEndpointBase() + '/' + Backbone.history.fragment;
-        var collection = schema.makeCollection(endpoint);
+        const endpoint = schema.apiEndpointBase() + '/' + history.fragment;
+        const collection = schema.makeCollection(endpoint);
 
-        self.view && (self.view.close ? self.view.close() : self.view.remove());
-        self.view = new viewClass.table({
-          schema: schema,
-          collection: collection,
+        if (this.view) {
+          if (typeof this.view.close === 'function') {
+            this.view.close();
+          } else {
+            this.view.remove();
+          }
+        }
+        this.view = new viewClass.table({
+          schema,
+          collection,
           childview: true,
-          fragment: Backbone.history.fragment,
-          app: self
+          fragment: history.fragment,
+          app: this
         });
 
-        self.$('#main_body').html(self.view.render().el);
-        self.$('#main').addClass('active');
+        this.$('#main_body').html(this.view.render().el);
+        this.$('#main').addClass('active');
       };
 
-      var childDetailView = function childDetailView() {
+      const childDetailView = (...params) => {
         $('#alerts').empty();
-        var id = arguments[arguments.length - 2];
-        var model = collection.get(id);
+        const id = params[params.length - 2];
+        let model = collection.get(id);
 
-        if (_.isUndefined(model)) {
-          model = new collection.model({id: id});
+        if (model === undefined) {
+          model = new collection.model({id});
         }
 
-        self.view && (self.view.close ? self.view.close() : self.view.remove());
-        self.view = new viewClass.detail({
-          schema: schema,
-          model: model,
+        if (this.view) {
+          if (typeof this.view.close === 'function') {
+            this.view.close();
+          } else {
+            this.view.remove();
+          }
+        }
+        this.view = new viewClass.detail({
+          schema,
+          model,
           childview: true,
-          fragment: Backbone.history.fragment,
-          app: self
+          fragment: history.fragment,
+          app: this
         });
 
-        self.$('#main_body').html(self.view.render().el);
-        self.$('#main').addClass('active');
+        this.$('#main_body').html(this.view.render().el);
+        this.$('#main').addClass('active');
       };
 
-      self.router.route(fullRoute, 'child_table_view', childTableView);
-      self.router.route(fullRoute + '/:id', 'detail_view', childDetailView);
+      this.router.route(route, 'child_table_view', childTableView);
+      this.router.route(route + '/:id', 'detail_view', childDetailView);
     } else {
-      var route = schema.get('url');
-      var path = '#' + route;
-
-      route = route.substr(1);
-      var sidebarMenu = {};
-
-      if (this.config.sidebar) {
-        self.sidebarView.collection.comparator = 'order';
-        _.each(this.config.sidebar, function iterator(value, key) {
-          if (value.path === path) {
-            sidebarMenu = self.sidebarView.collection.add({
-              path: path,
-              title: value.title,
-              order: key
-            });
-          }
-        });
-      } else {
-        sidebarMenu = self.sidebarView.collection.push({
-          path: path,
+      if (this.config.get('sidebar') === undefined) {
+        this.sidebarView.collection.add({
+          path: schema.get('url'),
           title: schema.get('title')
         });
       }
 
-      if (!_.isUndefined(this.config.routes)
-        && _.contains(_.pluck(self.config.routes, 'path'), route)) {
-        _.each(this.config.routes, function iterator(value) {
-          if (value.path === route) {
-            var customView = function customView(data) {
-              self.view && (self.view.close ? self.view.close() : self.view.remove());
-              self.view = new viewClass[value.viewClass]({
-                arguments: arguments,
-                schema: schema,
-                collection: collection,
-                fragment: Backbone.history.fragment,
-                app: self,
-                data: data
-              });
+      const tableView = page => {
+        $('#alerts').empty();
 
-              self.$('#main_body').html(self.view.render().el);
-              self.$('#main').addClass('active');
-              self.sidebarView.select(sidebarMenu);
-            };
-
-            self.router.route(value.path, value.name, customView);
+        if (this.view) {
+          if (typeof this.view.close === 'function') {
+            this.view.close();
+          } else {
+            this.view.remove();
           }
+        }
+
+        this.view = new viewClass.table({
+          schema,
+          collection,
+          fragment: history.fragment,
+          app: this,
+          page
         });
-      } else {
-        var tableView = function tableView(page) {
-          $('#alerts').empty();
-          self.view && (self.view.close ? self.view.close() : self.view.remove());
-          self.view = new viewClass.table({
-            schema: schema,
-            collection: collection,
-            fragment: Backbone.history.fragment,
-            app: self,
-            page: page
-          });
 
-          self.$('#main_body').html(self.view.render().el);
-          self.$('#main').addClass('active');
-          self.sidebarView.select(sidebarMenu);
-        };
+        this.$('#main_body').html(this.view.render().el);
+        this.$('#main').addClass('active');
+      };
 
-        var detailView = function detailView(id) {
-          $('#alerts').empty();
-          var model = collection.get(id);
+      const detailView = id => {
+        $('#alerts').empty();
+        let model = collection.get(id);
 
-          if (_.isUndefined(model)) {
-            model = new collection.model({id: id});
+        if (model === undefined) {
+          model = new collection.model({id});
+        }
+
+        if (this.view) {
+          if (typeof this.view.close === 'function') {
+            this.view.close();
+          } else {
+            this.view.remove();
           }
+        }
 
-          self.view && (self.view.close ? self.view.close() : self.view.remove());
-          self.view = new viewClass.detail({
-            schema: schema,
-            model: model,
-            fragment: Backbone.history.fragment,
-            app: self
-          });
+        this.view = new viewClass.detail({
+          schema,
+          model,
+          fragment: history.fragment,
+          app: this
+        });
 
-          self.$('#main_body').html(self.view.render().el);
-          self.$('#main').addClass('active');
-          self.sidebarView.select(sidebarMenu);
-        };
+        this.$('#main_body').html(this.view.render().el);
+        this.$('#main').addClass('active');
+      };
 
-        self.router.route(route, 'table_view', tableView);
-        self.router.route(route + '/page/:id', 'table_view', tableView);
-        self.router.route(route + '/:id', 'detail_view', detailView);
-      }
+      this.router.route(route, 'table_view', tableView);
+      this.router.route(route + '/page/:id', 'table_view', tableView);
+      this.router.route(route + '/:id', 'detail_view', detailView);
     }
-  },
-  buildCustomUI: function buildCustomUI() {
-    var self = this;
+  }
 
-    _.each(this.config.sidebar, function iterator(route, key) {
-      if (!_.contains(_.pluck(self.sidebarView.collection.toJSON(), 'path'), route.path)) {
-        var sidebarMenu = self.sidebarView.collection.add({
-          path: route.path,
-          title: route.title,
+  buildCustomUI() {
+    if (this.config.get('sidebar') !== undefined) {
+      this.config.get('sidebar').forEach((item, key) => {
+        this.sidebarView.collection.add({
+          path: item.path,
+          title: item.title,
+          cssClass: item.cssClass,
           order: key
         });
+      });
+    }
 
-        var customView = function customView(data) {
-          self.view && (self.view.close ? self.view.close() : self.view.remove());
-          self.view = new self.viewClass[route.viewClass]({
-            arguments: arguments,
-            fragment: Backbone.history.fragment,
-            app: self,
-            data: data
+    this.config.get('routes').forEach(routes => {
+      const customView = (data, ...params) => {
+        const schema = this.schemas.get(routes.name);
+
+        if (this.view) {
+          if (typeof this.view.close === 'function') {
+            this.view.close();
+          } else {
+            this.view.remove();
+          }
+        }
+
+        if (schema === undefined) {
+          this.view = new this.viewClass[routes.viewClass]({
+            arguments: params,
+            fragment: history.fragment,
+            app: this,
+            data
           });
+          this.$('#main_body').append(this.view.render().el);
+          this.$('#main').addClass('active');
+        } else {
+          const collection = schema.makeCollection();
 
-          self.$('#main_body').html(self.view.render().el);
-          self.$('#main').addClass('active');
-          self.sidebarView.select(sidebarMenu);
-        };
+          if (data !== null) {
+            const model = new collection.model({id: data});
 
-        self.router.route(route.path.substr(2), route.name, customView);
-      }
+            this.view = new this.viewClass[routes.viewClass]({
+              arguments: params,
+              fragment: history.fragment,
+              app: this,
+              schema,
+              model
+            });
+
+            this.$('#main_body').append(this.view.render().el);
+            this.$('#main').addClass('active');
+          } else {
+            this.view = new this.viewClass[routes.viewClass]({
+              arguments: params,
+              fragment: history.fragment,
+              app: this,
+              schema,
+              collection
+            });
+
+            this.$('#main_body').append(this.view.render().el);
+            this.$('#main').addClass('active');
+          }
+        }
+      };
+
+      this.router.route(routes.path.substr(2), routes.name, customView);
     });
+  }
 
-    _.each(this.config.routes, function iterator(routes) {
-      if (!self.router.pathIsRegistered(routes.path)) {
-        var customView = function customView(data) {
-          self.view && (self.view.close ? self.view.close() : self.view.remove());
-          self.view = new self.viewClass[routes.viewClass]({
-            arguments: arguments,
-            fragment: Backbone.history.fragment,
-            app: self,
-            data: data
-          });
-
-          self.$('#main_body').html(self.view.render().el);
-          self.$('#main').addClass('active');
-        };
-
-        self.router.route(routes.path, routes.name, customView);
-      }
+  autoBuildUI() {
+    this.schemas.each(schema => {
+      this.autoBuildUIForSchema(schema);
     });
-  },
-  autoBuildUI: function autoBuildUI() {
-    var self = this;
+    this.buildCustomUI();
+    history.loadUrl(history.fragment);
+  }
 
-    self.schemas.each(function iterator(schema) {
-      self.autoBuildUIForSchema(schema);
-    });
-    self.buildCustomUI();
-    Backbone.history.loadUrl(Backbone.history.fragment);
-  },
-  login: function login() {
-    var loginView = new LoginView({
+  /**
+   * Shows login page.
+   */
+  showLogin() {
+    const loginView = new LoginView({
       model: this.userModel
     });
 
     this.$el.html(loginView.render().el);
-  },
-  render: function render() {
+  }
+
+  /**
+   * Renders page content.
+   * @override View.render
+   * @returns {AppView}
+   */
+  render() {
     if (!this.userModel.authToken()) {
-      this.login();
+      this.showLogin();
     } else {
       this.$el.html(template());
       this.$('#header').append(this.headerView.render().el);
@@ -328,6 +338,4 @@ var AppView = Backbone.View.extend({
     }
     return this;
   }
-});
-
-module.exports = AppView;
+}

@@ -1,291 +1,294 @@
-var Backbone = require('backbone');
-var BootstrapDialog = require('bootstrap-dialog');
-var DialogView = require('./dialogView');
-var jsyaml = require('js-yaml');
+/* global window, $ */
+import BootstrapDialog from 'bootstrap-dialog';
+import DialogView from './dialogView';
+import _ from 'underscore';
+import jsyaml from 'js-yaml';
 
-require('./../../bower_components/jquery-ui/ui/core');
-require('./../../bower_components/jquery-ui/ui/widget');
-require('./../../bower_components/jquery-ui/ui/mouse');
-require('./../../bower_components/jquery-ui/ui/sortable');
-require('./../../bower_components/jsonform/lib/jsonform');
-require('./../../bower_components/ace-builds/src-min-noconflict/ace');
-require('./../../bower_components/ace-builds/src-min-noconflict/theme-monokai');
-require('./../../bower_components/ace-builds/src-min-noconflict/mode-yaml');
-require('./../../bower_components/ace-builds/src-min-noconflict/mode-javascript');
+import './../../../node_modules/jquery-ui/core';
+import './../../../node_modules/jquery-ui/widget';
+import './../../../node_modules/jquery-ui/mouse';
+import './../../../node_modules/jquery-ui/sortable';
+import './../../../node_modules/json-form/lib/jsonform';
+import './../../../node_modules/ace-builds/src-min-noconflict/ace';
+import './../../../node_modules/ace-builds/src-min-noconflict/theme-monokai';
+import './../../../node_modules/ace-builds/src-min-noconflict/mode-yaml';
+import './../../../node_modules/ace-builds/src-min-noconflict/mode-javascript';
 
-var schemaFormTemplate = require('./../../templates/schemaForm.html');
-var propertyFormTemplate = require('./../../templates/propertyForm.html');
-var TableView = require('./tableView');
+import TableView from './tableView';
 
-var SchemaView = TableView.extend({
-  toLocal: function toLocal(data) {
+import schemaFormTemplate from './../../templates/schemaForm.html';
+import propertyFormTemplate from './../../templates/propertyForm.html';
+
+export default class SchemaView extends TableView {
+  toLocal(data) {
     return data;
-  },
-  toServer: function toServer(data) {
+  }
+  toServer(data) {
     return data;
-  },
-  dialogForm: function dialogForm(action, formTitle, data, onsubmit) {
-    var self = this;
-    var schema = self.schema.filterByAction(action, self.parentProperty);
-    var onSubmit = function onSubmit(values) {
-      var propertiesOrder = [];
-      var required = [];
-      var properties = {};
+  }
+  dialogForm(action, formTitle, data, onsubmit) {
+    this.schema.filterByAction(action, this.parentProperty).then(schema => {
+      const onSubmit = values => {
+        const propertiesOrder = [];
+        const required = [];
+        const properties = {};
 
-      $('#properties_table tbody tr').each(function iterator() {
-        var property = $(this).data('property');
-        var id = property.id;
+        $('#properties_table tbody tr').each(function iterator() {
+          const property = $(this).data('property');
+          const id = property.id;
 
-        if (_.isUndefined(id)) {
-          return;
-        }
+          if (id === undefined) {
+            return;
+          }
 
-        if (properties[id]) {
-          return;
-        }
+          if (properties[id]) {
+            return;
+          }
 
-        propertiesOrder.push(property.id);
+          propertiesOrder.push(property.id);
 
-        if (property.required) {
-          required.push(id);
-        }
+          if (property.required) {
+            required.push(id);
+          }
 
-        delete property.id;
-        delete property.required;
-        properties[id] = property;
-      });
+          delete property.id;
+          delete property.required;
+          properties[id] = property;
+        });
 
-      var schema = {
-        type: 'object',
-        propertiesOrder: propertiesOrder,
-        required: required,
-        properties: properties
+        values.schema = {
+          type: 'object',
+          propertiesOrder,
+          required,
+          properties
+        };
+
+        onsubmit(values);
       };
 
-      values.schema = schema;
+      schema.additionalForm = ['*'];
+      schema.propertiesOrder = [
+        'id',
+        'singular',
+        'plural',
+        'title',
+        'description',
+        'parent',
+        'namespace',
+        'prefix'
+      ];
+      schema.required = [];
 
-      onsubmit(values);
-    };
-
-    schema.additionalForm = ['*'];
-    schema.propertiesOrder = [
-      'id',
-      'singular',
-      'plural',
-      'title',
-      'description',
-      'parent',
-      'namespace',
-      'prefix'
-    ];
-    schema.required = [];
-
-    var propertyColumns = [
-      {
-        id: 'title',
-        type: 'string'
-      },
-      {
-        id: 'type',
-        type: 'string',
-        enum: [
-          'string',
-          'boolean',
-          'integer',
-          'number',
-          'array',
-          'object'
-        ]
-      },
-      {
-        id: 'description',
-        type: 'string'
-      },
-      {
-        id: 'required',
-        type: 'checkbox'
-      }
-    ];
-    var properties = [];
-
-    if (_.isUndefined(data.schema)) {
-      data.schema = {
-        properties: {
-          id: {
-            title: 'ID',
-            type: 'string',
-            description: 'ID',
-            permission: ['create'],
-            view: ['detail']
-          },
-          name: {
-            title: 'Name',
-            type: 'string',
-            description: 'Name',
-            permission: ['create', 'update']
-          },
-          description: {
-            title: 'Description',
-            type: 'string',
-            description: 'Description',
-            permission: ['create', 'update']
-          },
-          tenant_id: {// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-            title: 'Tenant ID',
-            type: 'string',
-            description: 'Tenant ID',
-            permission: ['create'],
-            view: ['detail']
-          }
+      const propertyColumns = [
+        {
+          id: 'title',
+          type: 'string'
         },
-        propertiesOrder: [
-          'id',
-          'name',
-          'description',
-          'tenant_id'
-        ]
-      };
-    }
-    this.dialog = new DialogView({
-      action: action,
-      formTitle: formTitle,
-      data: data,
-      onsubmit: onSubmit,
-      schema: schema
-  });
+        {
+          id: 'type',
+          type: 'string',
+          enum: [
+            'string',
+            'boolean',
+            'integer',
+            'number',
+            'array',
+            'object'
+          ]
+        },
+        {
+          id: 'description',
+          type: 'string'
+        },
+        {
+          id: 'required',
+          type: 'checkbox'
+        }
+      ];
+      const properties = [];
 
-    this.dialog.render();
-
-    this.dialog.$form.append($(schemaFormTemplate({
-      propertyColumns: propertyColumns
-    })));
-    $('#properties_table tbody', this.dialog.$form).sortable();
-
-    var dataSchema = data.schema || {};
-
-    _.each(dataSchema.propertiesOrder, function iterator(id) {
-      var property = _.extend({}, dataSchema.properties[id]);
-
-      if (_.isUndefined(property)) {
-        return;
+      if (data.schema === undefined) {
+        data.schema = {
+          properties: {
+            id: {
+              title: 'ID',
+              type: 'string',
+              description: 'ID',
+              permission: ['create'],
+              view: ['detail']
+            },
+            name: {
+              title: 'Name',
+              type: 'string',
+              description: 'Name',
+              permission: ['create', 'update']
+            },
+            description: {
+              title: 'Description',
+              type: 'string',
+              description: 'Description',
+              permission: ['create', 'update']
+            },
+            tenant_id: {  // eslint-disable-line camelcase
+              title: 'Tenant ID',
+              type: 'string',
+              description: 'Tenant ID',
+              permission: ['create'],
+              view: ['detail']
+            }
+          },
+          propertiesOrder: [
+            'id',
+            'name',
+            'description',
+            'tenant_id'
+          ]
+        };
       }
+      this.dialog = new DialogView({
+        action,
+        formTitle,
+        data,
+        onsubmit: onSubmit,
+        schema
+      });
 
-      var required = false;
+      this.dialog.render();
 
-      if (dataSchema.required && dataSchema.required.indexOf(id) >= 0) {
-        required = true;
-      }
+      this.dialog.$form.append($(schemaFormTemplate({
+        propertyColumns
+      })));
 
-      property.id = id;
-      property.required = required;
-      properties.push(property);
-    });
+      $('#properties_table tbody', this.dialog.$form).sortable();
 
-    var defaultProperty = {type: 'string'};
+      const dataSchema = data.schema || {};
 
-    properties.push(_.extend({}, defaultProperty));
+      for (let id of dataSchema.propertiesOrder) {
+        const property = _.extend({}, dataSchema.properties[id]);
 
-    var addNewRow = function addNewRow(property) {
-      var $newRow = $(propertyFormTemplate({
-        propertyColumns: propertyColumns,
-        property: property
-      }));
-
-      $('.delete', $newRow).on('click', function onClick() {
-        if (!confirm('Are you sure to delete?')) {
+        if (property === undefined) {
           return;
         }
-        $(this).off('click');
-        $(this).parent().parent().remove();
-      });
-      $('.id_form', $newRow).change(ensureNewRow);
-      $('#properties_table tbody', self.dialog.$form).append($newRow);
-      $('#id', $newRow).change(function onChange() {
-        property.id = $(this).val();
-      });
-      $newRow.data('property', property);
-      _.each(propertyColumns, function iterator(column) {
-        $('#' + column.id, $newRow).change(function onChange() {
-          if (column.type == 'checkbox') {
-            property[column.id] = $(this).is(':checked');
-          } else {
-            property[column.id] = $(this).val();
+
+        let required = false;
+
+        if (dataSchema.required && dataSchema.required.indexOf(id) >= 0) {
+          required = true;
+        }
+
+        property.id = id;
+        property.required = required;
+        properties.push(property);
+      }
+
+      const defaultProperty = {type: 'string'};
+
+      properties.push(_.extend({}, defaultProperty));
+
+      const addNewRow = property => {
+        const $newRow = $(propertyFormTemplate({
+          propertyColumns,
+          property
+        }));
+
+        $('.delete', $newRow).on('click', function onClick() {
+          if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
+            return;
+          }
+          $(this).off('click');
+          $(this).parent().parent().remove();
+        });
+        $('.id_form', $newRow).change(ensureNewRow);
+        $('#properties_table tbody', this.dialog.$form).append($newRow);
+        $('#id', $newRow).change(function onChange() {
+          property.id = $(this).val();
+        });
+        $newRow.data('property', property);
+
+        for (let column of propertyColumns) {
+          $('#' + column.id, $newRow).change(function onChange() {
+            if (column.type === 'checkbox') {
+              property[column.id] = $(this).is(':checked');
+            } else {
+              property[column.id] = $(this).val();
+            }
+          });
+        }
+        $('button#detail', $newRow).click(() => {
+          const $detailPane = $('<div style="width:500px;height:200px;"></div>');
+          const ace = window.ace;
+          const editor = ace.edit($detailPane.get(0));
+
+          editor.getSession().setNewLineMode('unix');
+          editor.setTheme('ace/theme/monokai');
+          editor.getSession().setMode('ace/mode/yaml');
+          editor.getSession().setTabSize(2);
+          editor.$blockScrolling = 'Infinity';
+
+          const yaml = jsyaml.safeDump(property);
+
+          editor.getSession().setValue(yaml);
+          BootstrapDialog.show({
+            type: BootstrapDialog.TYPE_DEFAULT,
+            title: 'Property Detail',
+            closeByKeyboard: false,
+            message: $detailPane,
+            spinicon: 'glyphicon glyphicon-refresh',
+            onshown: () => {
+              $('.modal-body').css({
+                'max-height': $(window).height() - 200 + 'px'
+              });
+            },
+            buttons: [{
+              id: 'submit',
+              label: 'Submit',
+              cssClass: 'btn-primary btn-raised btn-material-blue-600',
+              action: function action(dialog) {
+                const yaml = editor.getSession().getValue();
+                const data = jsyaml.safeLoad(yaml);
+                const $propertiesTable = $($('#properties_table tbody tr')
+                  .get(properties.indexOf(property)));
+
+                for (let key in property) {
+                  delete property[key];
+                }
+
+                for (let key in data) {
+                  property[key] = data[key];
+                }
+
+                for (let key in property) {
+                  let value = property[key];
+
+                  if (typeof value === 'boolean') {
+                    $propertiesTable.find('#' + key).prop('checked', value);
+                  } else {
+                    $propertiesTable.find('#' + key).val(value);
+                  }
+                }
+                dialog.close();
+              }
+            }]
+          });
+        });
+      };
+      const ensureNewRow = () => {
+        let requireRow = true;
+
+        $('.id_form', this.dialog.$form).each(function iterator() {
+          if ($(this).val() === '\'\'') {
+            requireRow = false;
           }
         });
-      });
-      $('button#detail', $newRow).click(function onClick() {
-        var $detailPane = $('<div style="width:500px;height:200px;"></div>');
-        var ace = window.ace;
-        var editor = ace.edit($detailPane.get(0));
 
-        editor.getSession().setNewLineMode('unix');
-        editor.setTheme('ace/theme/monokai');
-        editor.getSession().setMode('ace/mode/yaml');
-        editor.getSession().setTabSize(2);
-        editor.$blockScrolling = 'Infinity';
-
-        var yaml = jsyaml.safeDump(property);
-
-        editor.getSession().setValue(yaml);
-        BootstrapDialog.show({
-          type: BootstrapDialog.TYPE_DEFAULT,
-          title: 'Property Detail',
-          closeByKeyboard: false,
-          message: $detailPane,
-          spinicon: 'glyphicon glyphicon-refresh',
-          onshown: function onshown() {
-            $('.modal-body').css({
-              'max-height': $(window).height() - 200 + 'px'
-            });
-          },
-          buttons: [{
-            id: 'submit',
-            label: 'Submit',
-            cssClass: 'btn-primary btn-raised btn-material-blue-600',
-            action: function action(dialog) {
-              var yaml = editor.getSession().getValue();
-              var data = jsyaml.safeLoad(yaml);
-              var $propertiesTable = $($('#properties_table tbody tr').get(properties.indexOf(property)));
-
-              _.each(property, function iterator(value, key) {
-                delete property[key];
-              });
-
-              _.each(data, function iterator(value, key) {
-                property[key] = value;
-              });
-
-              _.each(property, function iterator(value, key) {
-                if (_.isBoolean(value)) {
-                  $propertiesTable.find('#' + key).prop('checked', value);
-                } else {
-                  $propertiesTable.find('#' + key).val(value);
-                }
-              });
-              dialog.close();
-            }
-          }]
-        });
-      });
-    };
-    var ensureNewRow = function ensureNewRow() {
-      var requireRow = true;
-
-      $('.id_form', self.dialog.$form).each(function iterator() {
-        if ($(this).val() == '\'\'') {
-          requireRow = false;
+        if (requireRow) {
+          addNewRow(Object.assign({}, defaultProperty));
         }
-      });
+      };
 
-      if (requireRow) {
-        addNewRow(_.extend({}, defaultProperty));
+      for (let property of properties) {
+        addNewRow(property);
       }
-    };
-
-    _.each(properties, function iterator(property) {
-      addNewRow(property);
     });
   }
-});
-
-module.exports = SchemaView;
+}
