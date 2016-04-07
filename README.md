@@ -16,20 +16,8 @@ https://github.com/cloudwan/gohan
 Setup development environment
 ------------------------------------
 
-- Run gohan
-- Install compass
-```
-    $ gem install compass
-```
-- Install karma
-```
-    $ npm install -g karma
-```
-- Install webpack
-```
-    $ npm install -g webpack webpack-dev-server
-```
-- Install all npm dependencies
+- Run gohan server
+- Install npm dependencies
 ```
     $ npm install
 ```
@@ -41,27 +29,14 @@ Setup development environment
 ```
     $ npm run build-dev
 ```
-- Start dev server with auto refresh
+- Start dev server with auto refresh and options. Learn more about options, read the [official document](https://webpack.github.io/docs/webpack-dev-server.html#webpack-dev-server-cli).
 ```
     $ npm run dev-server
-```
-- Start dev server with auto refresh and options  
-<https://webpack.github.io/docs/webpack-dev-server.html#webpack-dev-server-cli>
-
-```
     $ npm run dev-server -- --host 0.0.0.0 --https
 ```
- Server starts on 
+- Server starts on
 ```
-    http://localhost:8080/webpack-dev-server/
-```
-- Start test dev server with auto refresh
-```
-    $ npm run test-dev-server
-```
- Server starts on 
-```
-    http://localhost:8081/webpack-dev-server/
+    http://localhost:8080/
 ```
 - Start tests
 ```
