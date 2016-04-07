@@ -1,18 +1,30 @@
-var template = require('./../../templates/error.html');
+/* global window, $ */
+import {View} from 'backbone';
 
-var ErrorView = Backbone.View.extend({
-  tagName: 'div',
+import template from './../../templates/error.html';
 
-  initialize: function initialize() {
+export default class ErrorView extends View {
+  get tagName() {
+    return 'div';
+  }
+  constructor() {
+    super();
     this.message = 'Unknown Error';
-  },
+  }
 
-  render: function render(collection, response) {
+  render(collection, response) {
+    if (response === undefined) {
+      window.location.reload();
+      return;
+    }
+
     this.message = response.statusText;
+
     switch (response.status) {
       case 0: {
         this.message = 'Server Connection failed';
         collection.unsetAuthData();
+        window.location.reload();
         break;
       }
       case 400: {
@@ -22,6 +34,7 @@ var ErrorView = Backbone.View.extend({
       case 401: {
         this.message = 'Unauthorized Error: please retry login';
         collection.unsetAuthData();
+        window.location.reload();
         break;
       }
       case 404: {
@@ -33,7 +46,7 @@ var ErrorView = Backbone.View.extend({
         break;
       }
     }
-    var html = template({
+    const html = template({
       message: this.message
     });
 
@@ -43,6 +56,4 @@ var ErrorView = Backbone.View.extend({
       $('#alerts').html(html);
     }
   }
-});
-
-module.exports = ErrorView;
+}

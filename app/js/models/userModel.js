@@ -1,75 +1,139 @@
-require('jquery.cookie');
+import {Model} from 'backbone';
+import cookie from 'js-cookie';
 
-var UserModel = Backbone.Model.extend({
-  defaults: {
-    authData: undefined
-  },
-  initialize: function initialize(options) {
+/**
+ * Class contains logic of user authority in application.
+ * @class UserModel
+ * @extends Model
+ */
+export default class UserModel extends Model {
+  defaults() {
+    return {
+      authData: undefined
+    };
+  }
+
+  /**
+   * Constructs the object.
+   * @constructor
+   * @extends Model.constructor
+   * @param {Object} options
+   */
+  constructor(options) {
+    super(options);
     this.url = options.url;
-  },
-  parse: function parse(data) {
+  }
+
+  /**
+   * Calls setAuthData function.
+   * @override Model.parse
+   * @param {Object} data
+   */
+  parse(data) {
     this.setAuthData(data);
-  },
-  sync: function sync(method, model, options) {
-    if (_.isUndefined(options)) {
-      options = {};
-    }
+  }
 
+  /**
+   * Syncs model data.
+   * @extends Model.sync
+   * @param {string} method
+   * @param {Object} model
+   * @param {Object} options
+   */
+  sync(method, model, options = {}) {
     options.headers = {
-      'Content-Type':'application/json'
+      'Content-Type': 'application/json'
     };
-    Backbone.sync(method, model, options);
-  },
-  saveAuth: function saveAuth(id, password, tenant, errorCB) {
-    var authData = {
-      auth: {
-        passwordCredentials: {
-          username: id,
-          password: password
+    super.sync(method, model, options);
+  }
+
+  /**
+   * Saves authorisation data in server.
+   * @param {string} id
+   * @param {string} password
+   * @param {String} tenant
+   * @returns {Promise}
+   */
+  saveAuth(id, password, tenant) {
+    return new Promise((resolve, reject) => {
+      const authData = {
+        auth: {
+          passwordCredentials: {
+            username: id,
+            password
+          },
+          tenantName: tenant
+        }
+      };
+
+      this.save(authData, {
+        data: JSON.stringify(authData),
+        success: (...params) => {
+          resolve(params);
         },
-        tenantName: tenant
-      }
-    };
-
-    this.save(authData, {
-       wait: true,
-       data: JSON.stringify(authData),
-       error: errorCB
+        error: (...params) => {
+          reject(params);
+        }
+      });
     });
-  },
-  setAuthData: function setAuthData(data) {
-    var MAX_COOKIE_LENGTH = 2000;
+  }
 
-    if (!_.isUndefined(data)) {
-      var token = data.access.token.id;
-      var tenantName = data.access.token.tenant.name;
-      var userName = data.access.user.name;
+  /**
+   * Saves data in cookie storage,
+   * if parameter is undefined removes cookies.
+   * @param {Object} data
+   */
+  setAuthData(data) {
+    const MAX_COOKIE_LENGTH = 2000;
 
-      $.cookie('tenant_name', tenantName);
-      $.cookie('user_name', userName);
-      $.cookie('auth_data1', token.slice(0, MAX_COOKIE_LENGTH));
-      $.cookie('auth_data2', token.slice(MAX_COOKIE_LENGTH));
-      this.set('auth_data', data);
+    if (data !== undefined) {
+      const token = data.access.token.id;
+      const tenantName = data.access.token.tenant.name;
+      const userName = data.access.user.name;
+
+      cookie.set('tenantName', tenantName);
+      cookie.set('userName', userName);
+      cookie.set('authData1', token.slice(0, MAX_COOKIE_LENGTH));
+      cookie.set('authData2', token.slice(MAX_COOKIE_LENGTH));
+      this.set('authData', data);
     } else {
-      $.removeCookie('auth_data1');
-      $.removeCookie('auth_data2');
+      cookie.remove('authData1');
+      cookie.remove('authData2');
     }
-  },
-  authToken: function authToken() {
-    if (_.isUndefined($.cookie('auth_data1'))) {
-      return false;
+  }
+
+  /**
+   * Returns authority token.
+   * @returns {string}
+   */
+  authToken() {
+    if (cookie.get('authData1') === undefined ||
+      cookie.get('authData2') === undefined) {
+      return '';
     }
-    return $.cookie('auth_data1') + $.cookie('auth_data2');
-  },
-  tenantName: function tenantName() {
-    return $.cookie('tenant_name');
-  },
-  userName: function userName() {
-    return $.cookie('user_name');
-  },
-  unsetAuthData: function unsetAuthData() {
+    return cookie.get('authData1') + cookie.get('authData2');
+  }
+
+  /**
+   * Returns tenant name.
+   * @returns {string}
+   */
+  tenantName() {
+    return cookie.get('tenantName');
+  }
+
+  /**
+   * Returns user name.
+   * @returns {string}
+   */
+  userName() {
+    return cookie.get('userName');
+  }
+
+  /**
+   * Unsets authority data.
+   */
+  unsetAuthData() {
     this.setAuthData(undefined);
   }
-});
-
-module.exports = UserModel;
+}

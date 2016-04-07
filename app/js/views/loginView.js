@@ -1,34 +1,65 @@
-var template = require('./../../templates/login.html');
-var ErrorView = require('./errorView');
+/* global $ */
+import {View, history} from 'backbone';
 
-var LoginView = Backbone.View.extend({
-  tagName: 'div',
-  events: {
-    'click input.btn': 'login'
-  },
-  initialize: function initialize(options) {
+import ErrorView from './errorView';
+
+import template from './../../templates/login.html';
+
+export default class LoginView extends View {
+  get tagName() {
+    return 'div';
+  }
+  get events() {
+    return {
+      'click input.btn': 'login'
+    };
+  }
+
+  /**
+   * Constructs the object.
+   * @constructor
+   * @extends View.constructor
+   * @param {Object} options
+   */
+  constructor(options) {
+    super(options);
+
     this.model = options.model;
     this.errorView = new ErrorView();
-    this.listenTo(this.model, 'change:auth_data', this.reload);
-  },
-  reload: function reload() {
-    Backbone.history.loadUrl(Backbone.history.fragment);
-  },
-  render: function render() {
-    this.$el.html(template({
-      tenantName: $.cookie('tenant_name')
-    }));
+    this.listenTo(this.model, 'change:authData', this.reload);
+  }
+
+  /**
+   * Reloads window on current history fragment.
+   */
+  reload() {
+    history.loadUrl(history.fragment);
+  }
+
+  /**
+   * Renders template to html element.
+   * @returns {LoginView}
+   */
+  render() {
+    this.el.innerHTML = template({
+      tenantName: this.model.tenantName()
+    });
     return this;
-  },
-  login: function login(e) {
-    e.preventDefault();
-    var id = this.$('#id').val();
-    var password = this.$('#password').val();
-    var tenant = this.$('#tenant').val();
+  }
+
+  /**
+   * Handles of click event on login button.
+   * @param {Event} event
+   */
+  login(event) {
+    event.preventDefault();
+    const id = this.$('#id').val();
+    const password = this.$('#password').val();
+    const tenant = this.$('#tenant').val();
 
     $('#alerts').empty();
-    this.model.saveAuth(id, password, tenant, this.errorView.render);
+    this.model.saveAuth(id, password, tenant).catch(error => {
+      this.errorView.render(...error);
+    });
   }
-});
-
-module.exports = LoginView;
+}

@@ -1,11 +1,15 @@
-all: build # test
-.PHONY: all build #test
+all: lint tests build
 
-# TODO fix webui test
-# test:
-# 	@echo "Testing.."
-# 	npm run test
+.PHONY: all
+
+tests:
+	@echo "Testing..."
+	npm run test
 
 build:
 	@echo "Building..."
 	npm run build
+
+lint:
+	@echo "Linting..."
+	npm run lint

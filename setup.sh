@@ -9,22 +9,12 @@ set -xe
 
 if [ "$(uname)" == "Darwin" ]; then
     brew install npm
-    sudo gem install compass
 else
     apt-get update
-    apt-get -y install ruby-compass
 fi
 
 if ! [ -e app/config.json ]; then
     cp app/config.json.sample app/config.json
 fi
 
-npm install -g bower
-npm install -g karma
-npm install -g jscs
-
-npm install webpack webpack-dev-server
-
 npm install
-
-bower install --allow-root
