@@ -111,7 +111,7 @@ export default class AppView extends View {
     const polling = this.polling;
 
 
-    if (metadata.type !== undefined && metadata.type !== type) {
+    if (metadata && metadata.type !== undefined && metadata.type !== type) {
       return;
     }
 

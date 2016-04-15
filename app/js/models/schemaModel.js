@@ -1,4 +1,4 @@
-/* global fetch */
+/* global window */
 import {Model, Collection} from 'backbone';
 import jsyaml from 'js-yaml';
 
@@ -435,7 +435,56 @@ export default class SchemaModel extends Model {
     self.collections[url] = collection;
     return collection;
   }
+  toFormJSON(json) {
+    const schema = {};
 
+    for (let key in json.properties) {
+      if (json.propertiesOrder !== undefined) {
+        if (!json.propertiesOrder.includes(key)) {
+          continue;
+        }
+      }
+
+      const value = json.properties[key];
+
+      schema[key] = {
+        title: value.title,
+        type: '',
+        validators: []
+      };
+
+      if (value.type === 'string') {
+        if (value.enum !== undefined) {
+          schema[key].type = 'Select';
+          schema[key].options = [];
+
+          if (value.options !== undefined) {
+            schema[key].options = value.options;
+          } else {
+            schema[key].options = value.enum;
+          }
+        } else {
+          schema[key].type = 'Text';
+        }
+      } else if (value.type === 'integer') {
+        schema[key].type = 'Number';
+      } else if (value.type === 'array') {
+        schema[key].type = 'List';
+        schema[key].itemType = 'Text';
+      } else if (value.type === 'object') {
+        schema[key].type = 'Object';
+        schema[key].subSchema = this.toFormJSON(value);
+      } else if (value.type === 'boolean') {
+        schema[key].type = 'Checkbox';
+      }
+
+      if (json.required !== undefined &&
+        json.required.includes(key)) {
+        schema[key].validators.push('required');
+      }
+    }
+    return schema;
+  }
   /**
    * Returns local schema for popup with content.
    * @param {Object} schema
@@ -463,7 +512,7 @@ export default class SchemaModel extends Model {
         headers['X-Auth-Token'] = this.collection.userModel.authToken();
         const relatedSchema = this.collection.get(schema.relation);
 
-        fetch(relatedSchema.apiEndpoint(), {headers}).then(
+        window.fetch(relatedSchema.apiEndpoint(), {headers}).then(
           response => response.json()).then(data => {
             for (let key in data) {
               for (let value of data[key]) {
