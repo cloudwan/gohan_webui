@@ -8,6 +8,7 @@ import ErrorView from './errorView';
 import 'backbone-forms';
 import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
 import 'backbone-forms/distribution/editors/list';
+import './formsEditors/codeEditor';
 import './formsEditors/template';
 
 import 'jquery-ui/core';
