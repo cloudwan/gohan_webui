@@ -455,3 +455,7 @@ fieldset[disabled] .btn-default.focus {
 .label-default[href]:focus {
   background-color: #e6e6e6;
 }
+div.form-control {
+  border: 0;
+  height: auto;
+}

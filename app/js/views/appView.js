@@ -110,7 +110,7 @@ export default class AppView extends View {
     const type = params.type || 'tenant';
 
 
-    if (metadata.type !== undefined && metadata.type !== type) {
+    if (metadata && metadata.type !== undefined && metadata.type !== type) {
       return;
     }
 

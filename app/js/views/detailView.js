@@ -38,15 +38,17 @@ export default class DetailView extends View {
     );
   }
   dialogForm(action, formTitle, data, onsubmit) {
-    this.dialog = new DialogView({
-      action,
-      formTitle,
-      data,
-      onsubmit,
-      schema: this.schema
-    });
 
-    this.dialog.render();
+    this.schema.filterByAction(action, this.parentProperty).then(schema => {
+      this.dialog = new DialogView({
+        formTitle,
+        data,
+        onsubmit,
+        schema: this.schema.toFormJSON(schema),
+        fields: schema.propertiesOrder
+      });
+      this.dialog.render();
+    });
   }
   toLocal(data) {
     return this.schema.toLocal(data);
