@@ -1,4 +1,4 @@
-/* global window */
+/* global location */
 import {Model} from 'backbone';
 
 /**
@@ -48,12 +48,12 @@ export default class ConfigModel extends Model {
   parse(resp) {
     if (resp.authUrl.indexOf('__HOST__') !== -1) {
       resp.authUrl = resp.authUrl.replace(
-        '__HOST__', window.location.hostname);
+        '__HOST__', location.hostname);
     }
 
     if (resp.gohan.url.indexOf('__HOST__') !== -1) {
       resp.gohan.url = resp.gohan.url.replace(
-        '__HOST__', window.location.hostname);
+        '__HOST__', location.hostname);
     }
     return resp;
   }
