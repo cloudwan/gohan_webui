@@ -1,4 +1,4 @@
-/* global window */
+/* global fetch */
 import {Model, Collection} from 'backbone';
 import jsyaml from 'js-yaml';
 
@@ -463,7 +463,7 @@ export default class SchemaModel extends Model {
         headers['X-Auth-Token'] = this.collection.userModel.authToken();
         const relatedSchema = this.collection.get(schema.relation);
 
-        window.fetch(relatedSchema.apiEndpoint(), {headers}).then(
+        fetch(relatedSchema.apiEndpoint(), {headers}).then(
           response => response.json()).then(data => {
             for (let key in data) {
               for (let value of data[key]) {
@@ -515,23 +515,26 @@ export default class SchemaModel extends Model {
         });
       } else if (schema.items !== undefined) {
         result.type = 'array';
-        const items = this.toLocalSchema(result.items);
 
-        if (items.title === undefined) {
-          items.title = 'value';
-        }
-        result.items = {
-          type: 'object',
-          required: schema.required,
-          properties: {
-            id: {
-              title: 'key',
-              type: 'string'
-            },
-            value: items
+        this.toLocalSchema(result.items).then(items => {
+          if (items.title === undefined) {
+            items.title = 'value';
           }
-        };
-        resolve(result);
+          result.items = {
+            type: 'object',
+            required: schema.required,
+            properties: {
+              id: {
+                title: 'key',
+                type: 'string'
+              },
+              value: items
+            }
+          };
+          resolve(result);
+        }, error => {
+          reject(error);
+        });
       } else {
         result.type = 'string';
         result.format = 'yaml';
@@ -543,7 +546,7 @@ export default class SchemaModel extends Model {
   /**
    * Returns default values in schema.
    * @param {Object} schema
-   * @returns {Object}
+   * @returns {*}
    */
   defaultValue(schema) {
     if (schema.type === 'object') {
@@ -566,8 +569,9 @@ export default class SchemaModel extends Model {
    */
   toLocal(data) {
     const schema = this.get('schema');
+    const defaultValue = this.defaultValue(schema);
 
-    data = this.defaultValue(schema) === undefined ? undefined : Object.assign(this.defaultValue(schema), data);
+    data = defaultValue === undefined ? undefined : Object.assign({}, defaultValue, data);
     return this.toLocalData(schema, data);
   }
 
@@ -603,7 +607,7 @@ export default class SchemaModel extends Model {
           });
         }
       } else {
-        for (let key in schema.items.propertiesOrder) {
+        for (let key of schema.items.propertiesOrder) {
           const value = data[key];
 
           result.push({
@@ -646,23 +650,23 @@ export default class SchemaModel extends Model {
     }
 
     if (schema.properties !== undefined) {
+      const result = {};
       for (let key in schema.properties) {
         if (key === 'id') {
           continue;
         }
-        data[key] = self.toServerData(schema.properties[key], data[key]);
+        result[key] = self.toServerData(schema.properties[key], data[key]);
       }
+      return result;
     } else if (schema.items !== undefined) {
       const result = {};
 
-      for (let key in data) {
-        result[data.id] = self.toServerData(schema.items, data[key].value);
+      for (let d of data) {
+        result[d.id] = self.toServerData(schema.items, d.value);
       }
       return result;
-    } else {
-      return jsyaml.safeLoad(data);
     }
-    return data;
+    return jsyaml.safeLoad(data);
   }
 
   /**
@@ -672,7 +676,7 @@ export default class SchemaModel extends Model {
    * @returns {Promise}
    */
   filterByAction(action, parentProperty) {
-    return new Promise(function promise(resolve) {
+    return new Promise((resolve, reject) => {
       let result = {};
       const schema = this.toJSON();
 
@@ -707,11 +711,12 @@ export default class SchemaModel extends Model {
         }
         let required = [];
 
-        if (schema.schema.required !== null) {
+        if (schema.schema.required) {
           required = schema.schema.required.filter(property => {
             return result.hasOwnProperty(property);
           });
         }
+
         result = {
           type: 'object',
           properties: result,
@@ -721,9 +726,10 @@ export default class SchemaModel extends Model {
 
         resolve(result);
       }, error => {
+        reject(error);
         console.error(error);
       });
-    }.bind(this));
+    });
   }
 
   /**
