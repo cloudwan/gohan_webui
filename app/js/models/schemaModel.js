@@ -463,6 +463,10 @@ export default class SchemaModel extends Model {
           } else {
             schema[key].options = value.enum;
           }
+        } else if (value.format !== undefined &&
+          (value.format === 'yaml' || value.format === 'javascript')) {
+          schema[key].format = value.format;
+          schema[key].type = 'CodeEditor';
         } else {
           schema[key].type = 'Text';
         }
