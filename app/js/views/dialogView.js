@@ -37,6 +37,7 @@ export default class DialogView extends View {
     this.onsubmit = options.onsubmit;
     this.schema = options.schema;
     this.fields = options.fields;
+    this.events = options.events;
     this.currentStep = 0;
     this.multiStep = Array.isArray(this.additionalForm) &&
       Array.isArray(this.additionalForm[0]);
@@ -74,6 +75,18 @@ export default class DialogView extends View {
   }
 
   /**
+   * Attaches event to form.
+   *
+   * @param {string} name
+   * @param {function} callback
+   */
+  on(name, callback) {
+    if (this.form) {
+      this.form.on(name, callback);
+    }
+  }
+
+  /**
    * Renders dialog view.
    * @returns {DialogView}
    */
@@ -86,6 +99,11 @@ export default class DialogView extends View {
       fields: this.fields.filter(item => Object.keys(this.schema).includes(item)),
       template: this.template
     });
+    if (this.events) {
+      for (let key in this.events) {
+        this.on(key, this.events[key]);
+      }
+    }
     this.form.render();
     this.dialog.setMessage(this.form.el);
     this.dialog.addButton({
