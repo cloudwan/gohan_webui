@@ -97,7 +97,7 @@ export default class DetailView extends View {
       }
     }
 
-    if (property.type === 'object') {
+    if (property.type === 'object' || property.originalType === 'object') {
       content = $('<pre style="width:500px;"></pre>').text(jsyaml.safeDump(value)).html();
       return '<pre>' + _.escape(content) + '</pre>';
     }
@@ -105,7 +105,9 @@ export default class DetailView extends View {
     if (property.type === 'array') {
       return '<pre>' + jsyaml.safeDump(value) + '</pre>';
     }
-
+    if (property.type === 'string' && property.format === 'yaml') {
+      return '<pre>' + _.escape(value) + '</pre>';
+    }
     return _.escape(value);
   }
   render() {

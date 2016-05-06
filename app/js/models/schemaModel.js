@@ -535,6 +535,7 @@ export default class SchemaModel extends Model {
       } else {
         result.type = 'string';
         result.format = 'yaml';
+        result.originalType = 'object';
         resolve(result);
       }
     });
@@ -637,7 +638,7 @@ export default class SchemaModel extends Model {
   toServerData(schema, data) {
     const self = this;
 
-    if (schema.type !== 'object') {
+    if (schema.type !== 'object' && schema.originalType !== 'object') {
       return data;
     }
 

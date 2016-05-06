@@ -194,7 +194,7 @@ export default class TableView extends View {
       }
     }
     try {
-      if (property.type === 'object') {
+      if (property.type === 'object' || property.originalType === 'object') {
         content = $('<pre style="width:500px;"></pre>').text(
           '<pre>' + jsyaml.safeDump(value) + '</pre>').html();
         content = content.replace('\'', '&#34;');
