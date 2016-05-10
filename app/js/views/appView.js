@@ -22,9 +22,9 @@ export default class AppView extends View {
 
   constructor(options) {
     super(options);
-
     this.router = options.router;
     this.config = options.config;
+    this.polling = this.config.get('polling');
     this.viewClass = Object.assign(
       {
         table: TableView,
@@ -108,6 +108,7 @@ export default class AppView extends View {
     const route = schema.url().substr(1);
     const params = this.getParamFromQuery();
     const type = params.type || 'tenant';
+    const polling = this.polling;
 
 
     if (metadata.type !== undefined && metadata.type !== type) {
@@ -195,6 +196,7 @@ export default class AppView extends View {
           collection,
           fragment: history.fragment,
           app: this,
+          polling,
           page
         });
 

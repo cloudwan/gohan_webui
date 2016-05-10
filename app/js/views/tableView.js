@@ -36,6 +36,7 @@ export default class TableView extends View {
     this.schema = options.schema;
     this.fragment = options.fragment;
     this.childview = options.childview;
+    this.polling = options.polling;
     this.activePage = Number(options.page) > 0 ? Number(options.page) - 1 : 0;
     this.activeFilter = {
       by: '',
@@ -50,7 +51,9 @@ export default class TableView extends View {
 
     this.collection.fetch().then(() => {
       this.render();
-      this.collection.startLongPolling();
+      if ( this.polling ) {
+        this.collection.startLongPolling();
+      }
       this.listenTo(this.collection, 'update', this.render);
     }, (...param) => {
       this.errorView.render(param[1]);
@@ -312,7 +315,9 @@ export default class TableView extends View {
     return this;
   }
   close() {
-    this.collection.stopLongPolling();
+    if ( this.polling ) {
+      this.collection.stopLongPolling();
+    }
     this.remove();
   }
 }
