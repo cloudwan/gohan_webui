@@ -449,7 +449,7 @@ export default class SchemaModel extends Model {
 
       schema[key] = {
         title: value.title,
-        type: '',
+        type: 'Text',
         validators: []
       };
 
@@ -474,14 +474,16 @@ export default class SchemaModel extends Model {
         schema[key].type = 'Number';
       } else if (value.type === 'array') {
         schema[key].type = 'List';
-        schema[key].itemType = 'Text';
+        if (value.items.type === 'object') {
+          schema[key].itemType = 'Object';
+          schema[key].subSchema = this.toFormJSON(value.items);
+        }
       } else if (value.type === 'object') {
         schema[key].type = 'Object';
         schema[key].subSchema = this.toFormJSON(value);
       } else if (value.type === 'boolean') {
         schema[key].type = 'Checkbox';
       }
-
       if (json.required !== undefined &&
         json.required.includes(key)) {
         schema[key].validators.push('required');
@@ -611,6 +613,15 @@ export default class SchemaModel extends Model {
           result[key] = this.defaultValue(schema.properties[key]);
         }
         return result;
+      }
+    } else if (schema.type === 'array') {
+      if (schema.items.properties !== undefined) {
+        const result = {};
+
+        for (let key in schema.items.properties) {
+          result[key] = this.defaultValue(schema.items.properties[key]);
+        }
+        return [result];
       }
     }
     return schema.default;
