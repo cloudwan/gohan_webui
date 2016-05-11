@@ -4,7 +4,7 @@ all: lint tests build
 
 tests:
 	@echo "Testing..."
-	npm run test
+	npm run test-cover
 
 build:
 	@echo "Building..."
