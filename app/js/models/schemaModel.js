@@ -479,11 +479,17 @@ export default class SchemaModel extends Model {
           schema[key].subSchema = this.toFormJSON(value.items);
         }
       } else if (value.type === 'object') {
-        schema[key].type = 'Object';
-        schema[key].subSchema = this.toFormJSON(value);
+        if (value.properties) {
+          schema[key].type = 'Object';
+          schema[key].subSchema = this.toFormJSON(value);
+        } else {
+          schema[key].type = 'CodeEditor';
+          schema[key].format = value.format;
+        }
       } else if (value.type === 'boolean') {
         schema[key].type = 'Checkbox';
       }
+
       if (json.required !== undefined &&
         json.required.includes(key)) {
         schema[key].validators.push('required');
@@ -588,7 +594,7 @@ export default class SchemaModel extends Model {
         };
         resolve(result);
       } else {
-        result.type = 'string';
+        result.type = schema.type;
         result.format = 'yaml';
         resolve(result);
       }
@@ -602,7 +608,7 @@ export default class SchemaModel extends Model {
    */
   defaultValue(schema) {
     if (schema.type === 'object') {
-      if (schema.default === undefined) {
+      if (schema.default === undefined && schema.properties !== undefined) {
         const result = {};
 
         for (let key in schema.properties) {
@@ -619,6 +625,7 @@ export default class SchemaModel extends Model {
         }
         return [result];
       }
+      return undefined;
     }
     return schema.default;
   }
