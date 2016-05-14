@@ -17,6 +17,7 @@ class CodeEditor extends Backbone.Form.editors.Base {
     this.$el.css('height', '300px');
     this.editor.setTheme('ace/theme/monokai');
     this.editor.getSession().setMode('ace/mode/' + this.format);
+    this.editor.$blockScrolling = Infinity;
   }
 
   render() {
@@ -29,7 +30,9 @@ class CodeEditor extends Backbone.Form.editors.Base {
   }
 
   setValue(value) {
-    this.editor.setValue(value);
+    if (value) {
+      this.editor.setValue(value);
+    }
   }
 
   focus() {
