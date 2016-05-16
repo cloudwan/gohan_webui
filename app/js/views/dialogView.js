@@ -8,6 +8,7 @@ import ErrorView from './errorView';
 import 'backbone-forms';
 import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
 import 'backbone-forms/distribution/editors/list';
+import ObjectListEditor from './formsEditors/objectListEditor';
 import './formsEditors/codeEditor';
 import './formsEditors/template';
 
@@ -15,6 +16,9 @@ import 'jquery-ui/core';
 import 'jquery-ui/widget';
 import 'jquery-ui/mouse';
 import 'jquery-ui/sortable';
+
+Backbone.Form.editors.List.Object = ObjectListEditor;
+
 export default class DialogView extends View {
   /**
    * Initialize of object properties.
@@ -91,8 +95,6 @@ export default class DialogView extends View {
    * @returns {DialogView}
    */
   render() {
-    Backbone.Form.editors.List.Object = Backbone.Form.editors.Object;
-
     this.form = new Backbone.Form({
       schema: this.schema,
       data: this.data,

@@ -470,12 +470,13 @@ export default class SchemaModel extends Model {
         } else {
           schema[key].type = 'Text';
         }
-      } else if (value.type === 'integer') {
+      } else if (value.type === 'integer' || value.type === 'number') {
         schema[key].type = 'Number';
       } else if (value.type === 'array') {
         schema[key].type = 'List';
         if (value.items.type === 'object') {
           schema[key].itemType = 'Object';
+          schema[key].order = value.items.propertiesOrder;
           schema[key].subSchema = this.toFormJSON(value.items);
         }
       } else if (value.type === 'object') {
