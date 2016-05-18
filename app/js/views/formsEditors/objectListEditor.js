@@ -3,7 +3,7 @@ import 'backbone-forms';
 
 export default class ObjectListEditor extends Backbone.Form.editors.Base {
   get hasNestedForm() {
-    return true;
+    return false;
   }
 
   constructor(options, ...params) {
@@ -64,7 +64,7 @@ export default class ObjectListEditor extends Backbone.Form.editors.Base {
   remove() {
     this.nestedForm.remove();
 
-    Backbone.View.prototype.remove.call(this);
+    super.remove();
   }
 
   validate() {
