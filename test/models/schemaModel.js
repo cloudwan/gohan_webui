@@ -274,6 +274,7 @@ describe('SchemaModel ', () => {
 
       model.toLocalSchema(schema).should.be.eventually.deep.equal({
         format: 'yaml',
+        originalType: 'object',
         type: 'string'
       }).notify(done);
     });
@@ -285,6 +286,7 @@ describe('SchemaModel ', () => {
 
       model.toLocalSchema(schema).should.be.eventually.deep.equal({
         format: 'yaml',
+        originalType: 'object',
         type: 'string'
       }).notify(done);
     });
