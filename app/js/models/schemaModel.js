@@ -450,6 +450,7 @@ export default class SchemaModel extends Model {
       schema[key] = {
         title: value.title,
         type: 'Text',
+        help: value.description,
         validators: []
       };
 
