@@ -23,9 +23,9 @@ Form.Field.template = _.template(
   '<div class="form-group jsonform-node jsonform-error-resource---properties field-<%= key %>">' +
   '  <label class="control-label" for="<%= editorId %>"><%= title %></label>' +
   '  <div class="controls">' +
+  '    <p class="help-block"><%= help %></p>' +
   '    <span data-editor></span>' +
   '    <p class="help-block" data-error></p>' +
-  '    <p class="help-block"><%= help %></p>' +
   '  </div>' +
   '</div>'
 );
@@ -34,10 +34,10 @@ Form.NestedField.template = _.template(
   '<div class="field-<%= key  %>">' +
   '  <div title="<%= title %>" class="input-xlarge">' +
   '    <%= title %>' +
+  '    <div class="help-block"><%= help %></div>' +
   '    <span data-editor></span>' +
   '    <div class="help-inline" data-error></div>' +
   '  </div>' +
-  '  <div class="help-block"><%= help %></div>' +
   '</div>'
 );
 
