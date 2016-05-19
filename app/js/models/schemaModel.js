@@ -491,7 +491,9 @@ export default class SchemaModel extends Model {
       } else if (value.type === 'boolean') {
         schema[key].type = 'Checkbox';
       }
-
+      if (value.format !== undefined) {
+        schema[key].validators.push(value.format);
+      }
       if (json.required !== undefined &&
         json.required.includes(key)) {
         schema[key].validators.push('required');

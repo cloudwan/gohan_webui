@@ -10,6 +10,7 @@ import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
 import './formsEditors/listEditor';
 import './formsEditors/codeEditor';
 import './formsEditors/template';
+import './formsEditors/validators';
 
 import 'jquery-ui/core';
 import 'jquery-ui/widget';
