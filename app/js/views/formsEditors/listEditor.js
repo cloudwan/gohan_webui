@@ -8,6 +8,7 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
   get events() {
     return {
       'click [data-action="add"]': event => {
+        event.stopPropagation();
         event.preventDefault();
         this.addItem(this.value[0], true);
       }
@@ -253,11 +254,13 @@ Backbone.Form.editors.List.Item = class ListItem extends Backbone.Form.editors.B
   get events() {
     return {
       'click [data-action="remove"]': event => {
+        event.stopPropagation();
         event.preventDefault();
         this.list.removeItem(this);
       },
       'keydown input[type=text]': event => {
         if (event.keyCode !== 13) return;
+        event.stopPropagation();
         event.preventDefault();
         this.list.addItem();
         this.list.$list.find('> li:last input').focus();
