@@ -7,7 +7,24 @@
     <div class="col-xs-6 func">
       <form class="form-inline">
         <div class="form-group">
-          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery %>">
+        <span>Filter by:</span>
+          <select class="form-control search" placeholder="Filter By">
+            <option value="">-- no filters --</option>
+            <% schema.schema.propertiesOrder.forEach( function(key){
+              var property = schema.schema.properties[key];
+              var view = property['view']
+
+              if(view && !view.includes('list') || key === parentProperty){
+               return;
+              }
+            %>
+                <option value="<%= key%>"><%= property.title %></option>
+            <%
+              }
+            );
+            %>
+          </select>
+          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery.sortBy %>">
         </div>
       </form><a class="btn btn-primary gohan_create"><strong>+</strong> New</a>
     </div>
@@ -17,16 +34,12 @@
   <table class="table table-hover gohan-table">
     <thead>
       <tr>
-       <% _.each(schema.schema.propertiesOrder, function(key){
+       <% schema.schema.propertiesOrder.forEach( function(key){
            var property = schema.schema.properties[key];
            var view = property['view']
-           if(view){
-             if(view.indexOf("list") < 0){
-               return
-             }
-           }
-           if(key === parentProperty){
-             return
+
+           if(view && !view.includes('list') || key === parentProperty){
+             return;
            }
         %>
         <th>
@@ -45,44 +58,49 @@
       </tr>
     </thead>
     <% _.each(data, function(page, key){ %>
+
     <tbody id="page<%= key + 1 %>" <% if (key !== activePage) { %> class="hidden" <% }%> >
       <% _.each(page, function(d){ %>
       <tr>
-       <% _.each(schema.schema.propertiesOrder, function(key){
-           var property = schema.schema.properties[key];
-           var view = property['view']
+        <% schema.schema.propertiesOrder.forEach( function(key){
+          var property = schema.schema.properties[key];
+          var view = property['view']
 
-           if (view) {
-             if (view.indexOf("list") < 0) {
-               return
-             }
-           }
-           if (key === parentProperty){
+          if (view) {
+           if (view.indexOf("list") < 0) {
              return
            }
-           var urlPattern = /^((http|https):\/\/)/;
-           if (property['format'] === 'uri' && urlPattern.test(d[key])) { %>
-        <td><a href="<%- d[key] %>"> link </a></td>
-        <% }else{ %>
-        <td><%= d[key] %></td>
+          }
+          if (key === parentProperty){
+           return
+          }
+          const title = property.title.toLowerCase();
+
+          var urlPattern = /^((http|https):\/\/)/;
+          if (property['format'] === 'uri' && urlPattern.test(d[key])) { %>
+          <td><a href="<%- d[key] %>"> link </a></td>
+        <% }else if(title === 'name' || title === 'title'){ %>
+          <td><a data-id="<%= d[key] %>" href="#<%= schema.url %>/<%= d.id %>"><%= _.escape(d[key]) %></a></td>
+        <% } else { %>
+          <td><%= d[key] %></td>
         <% } %>
-       <% }); %>
-       <td class="action_column">
-         <div class="btn-group ">
+        <% }); %>
+        <td class="action_column">
+          <div class="btn-group ">
           <a class="btn btn-default btn-sm gohan_update btn-raised btn-material-blue-600" data-id="<%- d['id']%>">Edit</a>
              <button type="button" class="btn btn-default btn-sm dropdown-toggle"
-               data-toggle="dropdown" aria-expanded="true" data-container="body">
+                data-toggle="dropdown" aria-expanded="true" data-container="body">
              <span class="caret"></span>
              <span class="sr-only">Toggle Dropdown</span>
            </button>
            <ul class="dropdown-menu pull-right" role="menu" >
-             <li><a class="gohan_delete" data-id="<%- d['id']%>" >Delete</a></li>
+              <li><a class="gohan_delete" data-id="<%- d['id']%>" >Delete</a></li>
            </ul>
-         </div>
-       </td>
+          </div>
+        </td>
       </tr>
       <% }); %>
-   </tbody>
+    </tbody>
     <% }); %>
   </table>
 </div>
