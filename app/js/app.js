@@ -10,7 +10,6 @@ import '../css/sass/main.scss';
 
 // Import JS.
 import {history} from 'backbone';
-import './customValidation';
 import AppView from './views/appView';
 import SchemaView from './views/schemaView';
 import Router from './routers/router';
