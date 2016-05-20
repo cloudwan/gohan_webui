@@ -1,5 +1,6 @@
 import Backbone from 'backbone';
 import 'backbone-forms';
+import jsyaml from 'js-yaml';
 
 Backbone.Form.validators.errMessages.ipv4 = 'The specified IP address has an invalid format.';
 Backbone.Form.validators.errMessages.ipv6 = 'The specified IP address has an invalid format.';
@@ -11,6 +12,8 @@ Backbone.Form.validators.errMessages.port = 'The specified port has an invalid f
 Backbone.Form.validators.errMessages.hostname = 'The specified hostname has an invalid format.';
 Backbone.Form.validators.errMessages.uri = 'The specified uri has an invalid format.';
 Backbone.Form.validators.errMessages['cidr-or-ipv4'] = 'The specified CIDR or IP has an invalid format.';
+Backbone.Form.validators.errMessages.yaml = 'The specified yaml has an invalid format.';
+
 
 Backbone.Form.validators.ipv4 = function ipv4(options) {
   options = Object.assign({
@@ -276,5 +279,37 @@ Backbone.Form.validators['cidr-or-ipv4'] = function cidrOrIpv4(options) {
     };
     return error;
 
+  };
+};
+
+Backbone.Form.validators.yaml = function uri(options) {
+  options = Object.assign({
+    type: 'yaml',
+    message: this.errMessages.yaml
+  }, options);
+
+  return value => {
+    let validation;
+
+    try {
+      let object = jsyaml.load(value);
+
+      if ((typeof object).toLowerCase() === 'object') {
+        throw Error();
+      }
+    } catch (err) {
+      validation = err;
+    }
+
+    options.value = value;
+
+    if (!validation && value) {
+      const error = {
+        type: options.type,
+        message: options.message
+      };
+
+      return error;
+    }
   };
 };
