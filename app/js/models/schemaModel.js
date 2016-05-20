@@ -479,6 +479,27 @@ export default class SchemaModel extends Model {
           schema[key].itemType = 'Object';
           schema[key].order = value.items.propertiesOrder;
           schema[key].subSchema = this.toFormJSON(value.items);
+        } else if (value.items.type === 'boolean') {
+          schema[key].itemType = 'Checkbox';
+        } else if (value.items.type === 'number' || value.items.type === 'integer') {
+          schema[key].itemType = 'Number';
+        } else if (value.items.type === 'string') {
+          if (value.items.enum !== undefined) {
+            schema[key].itemType = 'Select';
+            schema[key].options = [];
+
+            if (value.items.options !== undefined) {
+              schema[key].options = value.items.options;
+            } else {
+              schema[key].options = value.items.enum;
+            }
+          } else if (value.format !== undefined &&
+            (value.format === 'yaml' || value.format === 'javascript')) {
+            schema[key].format = value.format;
+            schema[key].itemType = 'CodeEditor';
+          } else {
+            schema[key].itemType = 'Text';
+          }
         }
       } else if (value.type === 'object') {
         if (value.properties) {
