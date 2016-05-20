@@ -1,4 +1,4 @@
-/* global window */
+/* global fetch */
 import {Model, Collection} from 'backbone';
 import jsyaml from 'js-yaml';
 
@@ -528,7 +528,7 @@ export default class SchemaModel extends Model {
         headers['X-Auth-Token'] = this.collection.userModel.authToken();
         const relatedSchema = this.collection.get(schema.relation);
 
-        window.fetch(relatedSchema.apiEndpoint(), {headers}).then(
+        fetch(relatedSchema.apiEndpoint(), {headers}).then(
           response => response.json()).then(data => {
             for (let key in data) {
               for (let value of data[key]) {
