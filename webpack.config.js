@@ -6,6 +6,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var BowerWebpackPlugin = require('bower-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var SingleModuleInstancePlugin = require('single-module-instance-webpack-plugin');
 
 module.exports = {
   context: __dirname,
@@ -29,6 +30,13 @@ module.exports = {
         query: {
           cacheDirectory: true,
           presets: ['es2015'],
+        }
+      },
+      {
+        test: /.jsx?$/,
+        loader: 'babel-loader',
+        query: {
+          presets: ['es2015', 'react']
         }
       },
       {
@@ -94,7 +102,9 @@ module.exports = {
     }),
     new CopyWebpackPlugin([
       { from: 'app/config.json', to: '/config.json' }
-    ])
+    ]),
+    new webpack.optimize.DedupePlugin(),
+    new SingleModuleInstancePlugin()
   ],
   devServer: {
     host: hostname,
