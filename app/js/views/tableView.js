@@ -115,6 +115,7 @@ export default class TableView extends View {
         data,
         onsubmit,
         schema: this.schema.toFormJSON(schema),
+        unformattedSchema: this.schema,
         fields: schema.propertiesOrder
       });
       this.dialog.render();
