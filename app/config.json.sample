@@ -10,5 +10,8 @@
             "viewClass": "sampleview",
             "name": "sample"
         }
+    ],
+    "addingRelationDialog": [
+        "Pet"
     ]
 }

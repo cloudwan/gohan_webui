@@ -1,4 +1,4 @@
-/* global window */
+/* global fetch */
 import {Model, Collection} from 'backbone';
 import jsyaml from 'js-yaml';
 
@@ -273,12 +273,17 @@ export default class SchemaModel extends Model {
     const model = this.makeModel(url);
     const userModel = this.collection.userModel;
     const additionalForms = this.collection.additionalForms;
+    const addingRelationDialog = this.collection.addingRelationDialog;
     const self = this;
 
     if (additionalForms !== undefined && additionalForms[this.id] === undefined) {
       this.additionalForm = additionalForms[self.id];
     } else {
       this.additionalForm = ['*'];
+    }
+
+    if (addingRelationDialog) {
+      this.addingRelationDialog = addingRelationDialog;
     }
 
     class CollectionClass extends Collection {
@@ -454,6 +459,13 @@ export default class SchemaModel extends Model {
         validators: []
       };
 
+      if (value.relation) {
+        schema[key].relation = value.relation;
+      }
+      if (value.relation_property) {
+        schema[key].relation_property = value.relation_property; // eslint-disable-line camelcase
+      }
+
       if (value.type === 'string') {
         if (value.enum !== undefined) {
           schema[key].type = 'Select';
@@ -528,7 +540,7 @@ export default class SchemaModel extends Model {
         headers['X-Auth-Token'] = this.collection.userModel.authToken();
         const relatedSchema = this.collection.get(schema.relation);
 
-        window.fetch(relatedSchema.apiEndpoint(), {headers}).then(
+        fetch(relatedSchema.apiEndpoint(), {headers}).then(
           response => response.json()).then(data => {
             for (let key in data) {
               for (let value of data[key]) {
