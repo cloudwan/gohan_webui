@@ -1,4 +1,4 @@
-box: iteamdev/node-webpack
+box: node
 build:
     steps:
     - script:

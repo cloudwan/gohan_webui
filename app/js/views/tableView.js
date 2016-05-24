@@ -24,7 +24,8 @@ export default class TableView extends View {
       'click .gohan_delete': 'deleteModel',
       'click .gohan_update': 'updateModel',
       'click a.title': 'filter',
-      'keyup input.search': 'search',
+      'keyup input.search': 'searchByKey',
+      'change select.search': 'searchByField',
       'click nav li:not(.disabled) a': 'pagination'
     };
   }
@@ -42,7 +43,10 @@ export default class TableView extends View {
       by: '',
       reverse: false
     };
-    this.searchQuery = '';
+    this.searchQuery = {
+      sortKey: '',
+      propField: ''
+    };
     this.pageSize = 25;
 
     if (this.childview) {
@@ -59,11 +63,19 @@ export default class TableView extends View {
       this.errorView.render(param[1]);
     });
   }
-  search(event) {
-    this.searchQuery = event.currentTarget.value;
+  searchByKey(event) {
+    this.searchQuery.sortKey = event.currentTarget.value;
     this.render();
 
-    $('input.search', this.$el).focus().val('').val(this.searchQuery);
+    $('input.search', this.$el).focus().val('').val(this.searchQuery.sortKey);
+    $('select.search', this.$el).val('').val(this.searchQuery.propField);
+  }
+  searchByField(event) {
+    this.searchQuery.propField = event.currentTarget.value;
+    this.render();
+
+    $('input.search', this.$el).val('').val(this.searchQuery.sortKey);
+    $('select.search', this.$el).focus().val('').val(this.searchQuery.propField);
   }
   filter(event) {
     const id = event.currentTarget.dataset.id;
@@ -217,32 +229,38 @@ export default class TableView extends View {
       console.error(error);
     }
 
-    const title = property.title.toLowerCase();
-
-    if (title === 'name' || title === 'title') {
-      return '<a data-id="' + value + '"href="#' + this.fragment + '/' + data.id + '">' + _.escape(value) + '</a>';
-    }
     return value;
   }
 
   /**
    * Filters array and return new array.
    * @param {Array} array
-   * @param {string} data
+   * @param {string} searchQuery
    * @returns {Array}
    */
-  filterArray(array, data) {
+  filterArray(array, searchQuery) {
+    if (this.searchQuery.sortKey === '') {
+      return array;
+    }
     return array.filter(value => {
-      let result = 0;
 
-      for (let key in value) {
-        const val = value[key];
+      if (searchQuery.propField !== '') {
+        const field = searchQuery.propField.toLowerCase();
 
-        if (val && val.toString().indexOf(data.toString()) !== -1) {
-          result = 1;
+        if (value.hasOwnProperty(field) && value[field].toString().includes(searchQuery.sortKey)) {
+          return true;
+        }
+      } else {
+        for (let key in value) {
+          let val = value[key];
+
+          if (val && val.toString().includes(searchQuery.sortKey.toString())) {
+            return true;
+          }
         }
       }
-      return result;
+
+      return false;
     });
   }
 
@@ -272,6 +290,7 @@ export default class TableView extends View {
   }
   render() {
     const self = this;
+
     let list = this.collection.map(model => {
       const data = model.toJSON();
       const result = Object.assign({}, data);
@@ -282,19 +301,16 @@ export default class TableView extends View {
       return result;
     });
 
-    if (this.searchQuery !== '') {
-      list = this.filterArray(list, this.searchQuery);
-    }
+    list = this.filterArray(list, this.searchQuery);
 
     list = this.sortArray(list, this.activeFilter.by, this.activeFilter.reverse);
 
-    const tmp = [];
+    const splitIntoPages = [];
 
     for (let i = 0; i < list.length; i += this.pageSize) {
-      tmp.push(list.slice(i, i + this.pageSize));
+      splitIntoPages.push(list.slice(i, i + this.pageSize));
     }
-
-    list = tmp;
+    list = splitIntoPages;
 
     if (this.app && !this.childview) {
       this.app.breadCrumb.update([this.collection]);
