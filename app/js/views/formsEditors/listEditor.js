@@ -170,8 +170,6 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
       this.trigger('remove', this, item.editor);
       this.trigger('change', this);
     }
-
-    if (!this.items.length && !this.Editor.isAsync) this.addItem();
   }
 
   getValue() {
