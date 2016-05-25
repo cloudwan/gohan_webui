@@ -10,7 +10,9 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
       'click [data-action="add"]': event => {
         event.stopPropagation();
         event.preventDefault();
-        this.addItem(this.value[0], true);
+        const defaultValue = Array.isArray(this.value) ? this.value[0] : this.value;
+
+        this.addItem(defaultValue, true);
       }
     };
   }
@@ -118,7 +120,7 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
       }, this);
       item.editor.on('blur', () => {
         if (!this.hasFocus) return;
-        setTimeout(function () {
+        setTimeout(() => {
           if (_.find(this.items, item => {
             return item.editor.hasFocus;
           })) return;
