@@ -487,6 +487,7 @@ export default class SchemaModel extends Model {
         schema[key].type = 'Number';
       } else if (value.type === 'array') {
         schema[key].type = 'List';
+        schema[key].default = this.defaultValue(value.items);
         if (value.items.type === 'object') {
           schema[key].itemType = 'Object';
           schema[key].order = value.items.propertiesOrder;
