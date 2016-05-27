@@ -59,14 +59,19 @@ if (Form.editors.List) {
 
   Form.editors.List.Item.template = _.template(
     '<li class="list-item-container">' +
-    '  <div class="list-drag"><span class="draggable fa fa-bars" title="Move Item"></span></div>' +
+    '  <div class="list-action">' +
+    '    <span class="fa fa-minus-circle" data-action="remove" title="Remove Item"></span>' +
+    '  </div>' +
     '  <div class="list-counter"></div>' +
     '  <div class="list-body">' +
     '    <span data-editor></span>' +
     '    <div class="help-block"><span class="error" data-error></span></div>' +
     '  </div>' +
-    '  <div class="list-action">' +
-    '    <span class="fa fa-minus-circle" data-action="remove" title="Remove Item"></span>' +
+    '  <div class="list-sort up">' +
+    '    <a class="" data-action="move-left"><span class="fa fa-chevron-circle-up"></span>Up</a>' +
+    '  </div>' +
+    '  <div class="list-sort down">' +
+    '    <a class="" data-action="move-right"><span class="fa fa-chevron-circle-down"></span>Down</a>' +
     '  </div>' +
     '</li>'
   );

@@ -379,7 +379,7 @@ div.list-container {
       border-left: 5px solid #ccc;
       margin-bottom: -1px;
       &:hover {
-        border-left-color: #aaa;
+        //border-left-color: #aaa;
       }
     }
     > li div.list-counter:before {
@@ -395,23 +395,15 @@ div.list-container {
       display: table-cell;
       vertical-align: top;
       padding: 8px 5px;
-      &.list-drag {
-        width: 1.5em;
-        text-align: center;
-        vertical-align: middle;
-        span.draggable {
-          cursor: move;
-        }
-      }
       &.list-counter {
         width: 1.5em;
         vertical-align: middle;
       }
       &.list-action {
-        width: 2em;
+        width: 3em;
         text-align: center;
         vertical-align: middle;
-        padding-right: 10px;
+        padding-left: 10px;
         span.fa-minus-circle {
           color: #999;
           cursor: pointer;
@@ -420,14 +412,119 @@ div.list-container {
           }
         }
       }
+      &.list-sort {
+        width: 3em;
+        text-align: center;
+        vertical-align: middle;
+        a {
+          cursor: pointer;
+        }
+        span.fa {
+          margin-right: 2px;
+        }
+        &.up {
+          padding-right: 0;
+        }
+        &.down {
+          padding-left: 0;
+          width: 5em;
+        }
+      }
       &.list-body {
         > span {
           display: block;
         }
       }
     }
+    &:first-child {
+      > .list-sort.up {
+        > a {
+          color: #ccc;
+          pointer-events: none;
+        }
+      }
+    }
+    &:last-child {
+      > .list-sort.down {
+        > a {
+          color: #ccc;
+          pointer-events: none;
+        }
+      }
+    }
   }
 }
+
+div.object-list-container {
+  .add-item {
+    cursor: pointer;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 5px;
+  }
+  > ul.object-list-tabs {
+    counter-reset: section;
+    > li {
+      > a.tab-link {
+        > span.tab-title:after {
+          counter-increment: section;
+          content: " "counter(section);
+        }
+      }
+    }
+  }
+  .tab-delete {
+    cursor: pointer;
+    padding-top: 1px;
+    margin: 0 2px;
+    color: #aaa;
+    &:hover {
+      color: #ff0039;
+    }
+  }
+  .object-list-tab-pane {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-top: none;
+    .tab-pane-action {
+      margin-top: -3px;
+      margin-bottom: 5px;
+      overflow: hidden;
+      span.fa {
+        font-weight: bold;
+      }
+      > .tab-pane-move-left {
+        float: left;
+        cursor: pointer;
+      }
+      > .tab-pane-move-right {
+        float: right;
+        cursor: pointer;
+      }
+    }
+  }
+  .list-tab-pane:first-child {
+    > .object-list-tab-pane {
+      > .tab-pane-action {
+        > a.tab-pane-move-left {
+          color: #ccc;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+  .list-tab-pane:last-child {
+    > .object-list-tab-pane {
+      > .tab-pane-action {
+        > a.tab-pane-move-right {
+          color: #ccc;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
+
 
 .nested-form-group {
   margin-bottom: 15px;
@@ -436,6 +533,7 @@ div.list-container {
 /*
  * Cosmo theme
  */
+
 .btn-default {
   color: #333333;
   background-color: #ffffff;
