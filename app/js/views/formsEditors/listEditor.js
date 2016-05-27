@@ -13,6 +13,14 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
         const defaultValue = Array.isArray(this.value) ? this.value[0] : this.value;
 
         this.addItem(defaultValue, true);
+      },
+      'click span.tab-delete': event => {
+        event.stopPropagation();
+        event.preventDefault();
+        const item = _.findWhere(this.items, {cid: $(event.target).data('cid')});
+        if (item) {
+          this.removeItem(item);
+        }
       }
     };
   }
@@ -22,7 +30,16 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
       '<div>' +
       '  <div data-items></div>' +
       '  <button type="button" data-action="add">Add</button>' +
-      '</div>', Backbone.Form.templateSettings);
+      '</div>', Backbone.Form.templateSettings)();
+  }
+
+  static objectTemplate() {
+    return _.template(
+      '<div class="object-list-container">' +
+      '  <a class="add-item" data-action="add"><span class="fa fa-plus-circle"></span> Add Item</a>' +
+      '  <ul class="nav nav-tabs object-list-tabs" role="tablist" data-tabs></ul>' +
+      '  <div class="tab-content" data-items></div>' +
+      '</div>', Backbone.Form.templateSettings)();
   }
 
   constructor(options) {
@@ -44,14 +61,19 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
       this.Editor = editors[type];
     }
 
+    this.isObjectType = (type === 'Object');
     this.items = [];
   }
 
   render() {
     const value = this.value || [];
-    const $el = $($.trim(List.template()));
+    const $el = (this.isObjectType) ? $($.trim(List.objectTemplate())) : $($.trim(List.template()));
 
     this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
+
+    if (this.isObjectType) {
+      this.$tab = $el.find('[data-tabs]');
+    }
 
     if (value.length) {
       value.forEach(itemValue => {
@@ -59,6 +81,11 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
       });
     } else if (!this.Editor.isAsync) {
       this.addItem();
+    }
+
+    if (this.isObjectType) {
+      this.$tab.find('a[href="#tab-' + this.items[0].cid + '"]').tab('show');
+      this.items[0].$el.addClass('active in');
     }
 
     this.setElement($el);
@@ -89,9 +116,21 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
       key: this.key
     }).render();
 
+    const tab = _.template(
+      '<li role="presentation" class="object-list-tab">' +
+      '  <a href="#tab-<%= cid %>" class="tab-link" aria-controls="tab-<%= cid %>" role="tab" data-toggle="tab">' +
+      '    <span class="tab-title">Item</span>' +
+      '    <span class="tab-delete fa fa-times-circle" data-cid="<%= cid %>"></span>' +
+      '  </a>' +
+      '</li>', Backbone.Form.templateSettings)({cid: item.cid});
+
     const _addItem = () => {
       this.items.push(item);
       this.$list.append(item.el);
+      if (this.isObjectType) {
+        this.$tab.append(tab);
+        this.$tab.find('a[href="#tab-' + item.cid + '"]').tab('show');
+      }
 
       item.editor.on('all', event => {
         if (event === 'change') return;
@@ -165,11 +204,47 @@ Backbone.Form.editors.List = class List extends Backbone.Form.editors.Base {
 
     this.items[index].remove();
     this.items.splice(index, 1);
+    if (this.isObjectType) {
+      let prev = (index - 1 < 0) ? 0 : index - 1;
+      this.$tab.children().eq(index).remove();
+      if (this.items.length > 0) {
+        this.$tab.find('a[href="#tab-' + this.items[prev].cid + '"]').tab('show');
+      }
+    }
 
     if (item.addEventTriggered) {
       this.trigger('remove', this, item.editor);
       this.trigger('change', this);
     }
+  }
+
+  /**
+   * Move an item in the list
+   * @param {List.Item} item
+   * @param {String} direction
+   */
+  moveItem(item, direction) {
+    const index = _.indexOf(this.items, item);
+    const $currentPane = this.$list.children().eq(index);
+    let moveIndex = index - 1;
+
+    if (direction === 'left') {
+      $currentPane.insertBefore($currentPane.prev());
+    } else if (direction === 'right') {
+      $currentPane.insertAfter($currentPane.next());
+      moveIndex++;
+    }
+
+    if (this.isObjectType) {
+      const $currentTab = this.$tab.children().eq(index);
+      if (direction === 'left') {
+        $currentTab.insertBefore($currentTab.prev());
+      } else if (direction === 'right') {
+        $currentTab.insertAfter($currentTab.next());
+      }
+    }
+
+    this.items.splice(moveIndex, 2, this.items[moveIndex + 1], this.items[moveIndex]);
   }
 
   getValue() {
@@ -258,6 +333,16 @@ Backbone.Form.editors.List.Item = class ListItem extends Backbone.Form.editors.B
         event.preventDefault();
         this.list.removeItem(this);
       },
+      'click [data-action="move-left"]': event => {
+        event.stopPropagation();
+        event.preventDefault();
+        this.list.moveItem(this, 'left');
+      },
+      'click [data-action="move-right"]': event => {
+        event.stopPropagation();
+        event.preventDefault();
+        this.list.moveItem(this, 'right');
+      },
       'keydown input[type=text]': event => {
         if (event.keyCode !== 13) return;
         event.stopPropagation();
@@ -270,11 +355,29 @@ Backbone.Form.editors.List.Item = class ListItem extends Backbone.Form.editors.B
 
   static template() {
     return _.template(
-      '<div>' +
+      '<div style="margin-bottom: 5px">' +
       '  <span data-editor></span>' +
-      '  <button type="button" data-action="remove">&times;</button>' +
-      '</div>'
-      , null, Backbone.Form.templateSettings);
+      '  <button type="button" data-action="move-left">&and; up</button>' +
+      '  <button type="button" data-action="move-right">&or; down</button>' +
+      '  <button type="button" data-action="remove">&times; delete</button>' +
+      '</div>', Backbone.Form.templateSettings)();
+  }
+
+  static objectTemplate(data) {
+    return _.template(
+      '<div role="tabpanel" class="list-tab-pane tab-pane fade" id="tab-<%= cid %>">' +
+      '  <div class="object-list-tab-pane">' +
+      '    <div class="tab-pane-action">' +
+      '     <a class="tab-pane-move-left" data-action="move-left">' +
+      '       <span class="fa fa-angle-left"></span> Move Left' +
+      '     </a>' +
+      '     <a class="tab-pane-move-right" data-action="move-right">' +
+      '       Move Right <span class="fa fa-angle-right"></span>' +
+      '     </a>' +
+      '    </div>' +
+      '    <span data-editor></span>' +
+      '  </div>' +
+      '</div>', Backbone.Form.templateSettings)(data);
   }
 
   static errorClassName() {
@@ -306,7 +409,8 @@ Backbone.Form.editors.List.Item = class ListItem extends Backbone.Form.editors.B
     }).render();
 
     // Create main element
-    const $el = $($.trim(this.template()));
+    const $el = (this.list.isObjectType) ?
+      $($.trim(this.constructor.objectTemplate({cid: this.cid}))) : $($.trim(this.template()));
 
     $el.find('[data-editor]').append(this.editor.el);
 
