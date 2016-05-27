@@ -69,7 +69,6 @@
     "jquery-ui": "^1.10.5",
     "js-cookie": "^2.1.0",
     "js-yaml": "^3.5.5",
-    "sortablejs": "^1.4.2",
     "underscore": "^1.8.3"
   }
 }
