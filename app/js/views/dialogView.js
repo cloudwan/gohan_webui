@@ -5,8 +5,6 @@ import BootstrapDialog from 'bootstrap-dialog';
 
 import ErrorView from './errorView';
 
-import Sortable from 'sortablejs/Sortable';
-
 import 'backbone-forms';
 import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
 import './formsEditors/listEditor';
@@ -208,13 +206,6 @@ export default class DialogView extends View {
         this.dialog.setClosable(false);
         this.onsubmit(this.form.getValue());
       }
-    });
-    $('.list-sortable', this.form.$el).each((index, element) => {
-      Sortable.create(element, {
-        animation: 150,
-        handle: '.list-drag',
-        draggable: '.list-item-container'
-      });
     });
     this.dialog.open();
   }
