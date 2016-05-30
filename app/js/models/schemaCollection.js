@@ -23,6 +23,7 @@ export default class SchemaCollection extends Collection {
     this.url = options.url;
     this.userModel = options.userModel;
     this.additionalForms = options.additionalForms;
+    this.pageLimit = options.pageLimit;
   }
 
   /**

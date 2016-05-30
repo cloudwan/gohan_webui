@@ -10,5 +10,6 @@
             "viewClass": "sampleview",
             "name": "sample"
         }
-    ]
+    ],
+    "pageLimit": 10
 }
