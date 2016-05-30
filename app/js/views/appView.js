@@ -52,6 +52,7 @@ export default class AppView extends View {
         userModel: this.userModel,
         url: this.config.get('gohan').url + this.config.get('gohan').schema,
         additionalForms: this.config.get('additionalForms'),
+        pageLimit: this.config.get('pageLimit'),
         addingRelationDialog: this.config.get('addingRelationDialog')
       });
     }
