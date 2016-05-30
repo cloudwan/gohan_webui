@@ -298,7 +298,7 @@ export default class SchemaModel extends Model {
       constructor(options) {
         super(options);
 
-        this.limit = ~~pageLimit;
+        this.pageLimit = ~~pageLimit;
         this.total = 0;
         this.offset = 0;
         this.sortKey = 'id';
@@ -306,6 +306,7 @@ export default class SchemaModel extends Model {
         this.baseUrl = url;
         this.model = model;
         this.schema = self;
+        this.filters = {};
         this.longPolling = false;
         this.timeOutId = -1;
         this.intervalSeconds = 10;
@@ -316,8 +317,16 @@ export default class SchemaModel extends Model {
        * Updates collection url to filter, sort and paging.
        */
       updateUrl() {
+        let filter = '';
+
+        for (let key in this.filters) {
+          if (this.filters.hasOwnProperty(key)) {
+            filter += '&' + key + '=' + this.filters[key];
+          }
+        }
+
         this.url = this.baseUrl + '?sort_key=' + this.sortKey + '&sort_order=' + this.sortOrder +
-          '&limit=' + this.limit + '&offset=' + this.offset;
+          '&limit=' + this.pageLimit + '&offset=' + this.offset + filter;
       }
 
       /**
@@ -336,12 +345,28 @@ export default class SchemaModel extends Model {
         });
       }
 
+      filter(property, value) {
+        return new Promise((resolve, reject) => {
+          if (property === undefined) {
+            this.filters = {};
+          } else if (value === undefined) {
+            delete this.filters[property];
+          } else {
+            this.filters[property] = value;
+          }
+
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
       /**
        * Returns count of pages.
        * @returns {number}
        */
-      getPageCout() {
-        return Math.ceil(this.total / this.limit);
+      getPageCount() {
+        return Math.ceil(this.total / this.pageLimit);
       }
 
       /**
@@ -351,7 +376,7 @@ export default class SchemaModel extends Model {
        */
       getPage(pageNo = 0) {
         return new Promise((resolve, reject) => {
-          const offset = this.limit * pageNo;
+          const offset = this.pageLimit * pageNo;
           if (offset >= this.total || offset < 0) {
             reject('Wrong page number!');
             return;
@@ -370,7 +395,7 @@ export default class SchemaModel extends Model {
        */
       getNextPage() {
         return new Promise((resolve, reject) => {
-          const offset = this.offset + this.limit;
+          const offset = this.offset + this.pageLimit;
           if (offset >= this.total) {
             reject('This was last page!');
             return;
@@ -389,7 +414,7 @@ export default class SchemaModel extends Model {
        */
       getPrevPage() {
         return new Promise((resolve, reject) => {
-          const offset = this.offset - this.limit;
+          const offset = this.offset - this.pageLimit;
           if (offset < 0) {
             reject('This was first page!');
             return;
