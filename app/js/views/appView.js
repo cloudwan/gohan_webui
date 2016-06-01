@@ -51,7 +51,8 @@ export default class AppView extends View {
         baseUrl: this.config.get('gohan').url,
         userModel: this.userModel,
         url: this.config.get('gohan').url + this.config.get('gohan').schema,
-        additionalForms: this.config.get('additionalForms')
+        additionalForms: this.config.get('additionalForms'),
+        addingRelationDialog: this.config.get('addingRelationDialog')
       });
     }
 
@@ -111,7 +112,7 @@ export default class AppView extends View {
     const polling = this.polling;
 
 
-    if (metadata.type !== undefined && metadata.type !== type) {
+    if (metadata && metadata.type !== undefined && metadata.type !== type) {
       return;
     }
 

@@ -273,12 +273,17 @@ export default class SchemaModel extends Model {
     const model = this.makeModel(url);
     const userModel = this.collection.userModel;
     const additionalForms = this.collection.additionalForms;
+    const addingRelationDialog = this.collection.addingRelationDialog;
     const self = this;
 
     if (additionalForms !== undefined && additionalForms[this.id] === undefined) {
       this.additionalForm = additionalForms[self.id];
     } else {
       this.additionalForm = ['*'];
+    }
+
+    if (addingRelationDialog) {
+      this.addingRelationDialog = addingRelationDialog;
     }
 
     class CollectionClass extends Collection {
@@ -435,7 +440,98 @@ export default class SchemaModel extends Model {
     self.collections[url] = collection;
     return collection;
   }
+  toFormJSON(json) {
+    const schema = {};
 
+    for (let key in json.properties) {
+      if (json.propertiesOrder !== undefined) {
+        if (!json.propertiesOrder.includes(key)) {
+          continue;
+        }
+      }
+
+      const value = json.properties[key];
+
+      schema[key] = {
+        title: value.title,
+        type: 'Text',
+        help: value.description,
+        validators: []
+      };
+
+      if (value.relation) {
+        schema[key].relation = value.relation;
+      }
+
+      if (value.type === 'string') {
+        if (value.enum !== undefined) {
+          schema[key].type = 'Select';
+          schema[key].options = [];
+
+          if (value.options !== undefined) {
+            schema[key].options = value.options;
+          } else {
+            schema[key].options = value.enum;
+          }
+        } else if (value.format !== undefined &&
+          (value.format === 'yaml' || value.format === 'javascript')) {
+          schema[key].format = value.format;
+          schema[key].type = 'CodeEditor';
+        } else {
+          schema[key].type = 'Text';
+        }
+      } else if (value.type === 'integer' || value.type === 'number') {
+        schema[key].type = 'Number';
+      } else if (value.type === 'array') {
+        schema[key].type = 'List';
+        schema[key].default = this.defaultValue(value.items);
+        if (value.items.type === 'object') {
+          schema[key].itemType = 'Object';
+          schema[key].order = value.items.propertiesOrder;
+          schema[key].subSchema = this.toFormJSON(value.items);
+        } else if (value.items.type === 'boolean') {
+          schema[key].itemType = 'Checkbox';
+        } else if (value.items.type === 'number' || value.items.type === 'integer') {
+          schema[key].itemType = 'Number';
+        } else if (value.items.type === 'string') {
+          if (value.items.enum !== undefined) {
+            schema[key].itemType = 'Select';
+            schema[key].options = [];
+
+            if (value.items.options !== undefined) {
+              schema[key].options = value.items.options;
+            } else {
+              schema[key].options = value.items.enum;
+            }
+          } else if (value.format !== undefined &&
+            (value.format === 'yaml' || value.format === 'javascript')) {
+            schema[key].format = value.format;
+            schema[key].itemType = 'CodeEditor';
+          } else {
+            schema[key].itemType = 'Text';
+          }
+        }
+      } else if (value.type === 'object') {
+        if (value.properties) {
+          schema[key].type = 'Object';
+          schema[key].subSchema = this.toFormJSON(value);
+        } else {
+          schema[key].type = 'CodeEditor';
+          schema[key].format = value.format;
+        }
+      } else if (value.type === 'boolean') {
+        schema[key].type = 'Checkbox';
+      }
+      if (value.format !== undefined) {
+        schema[key].validators.push(value.format);
+      }
+      if (json.required !== undefined &&
+        json.required.includes(key)) {
+        schema[key].validators.push('required');
+      }
+    }
+    return schema;
+  }
   /**
    * Returns local schema for popup with content.
    * @param {Object} schema
@@ -536,7 +632,7 @@ export default class SchemaModel extends Model {
           reject(error);
         });
       } else {
-        result.type = 'string';
+        result.type = schema.type;
         result.format = 'yaml';
         result.originalType = 'object';
         resolve(result);
@@ -551,7 +647,7 @@ export default class SchemaModel extends Model {
    */
   defaultValue(schema) {
     if (schema.type === 'object') {
-      if (schema.default === undefined) {
+      if (schema.default === undefined && schema.properties !== undefined) {
         const result = {};
 
         for (let key in schema.properties) {
@@ -559,6 +655,16 @@ export default class SchemaModel extends Model {
         }
         return result;
       }
+    } else if (schema.type === 'array') {
+      if (schema.items.properties !== undefined) {
+        const result = {};
+
+        for (let key in schema.items.properties) {
+          result[key] = this.defaultValue(schema.items.properties[key]);
+        }
+        return [result];
+      }
+      return undefined;
     }
     return schema.default;
   }
