@@ -3,6 +3,7 @@ import {View, history} from 'backbone';
 
 import SidebarItemView from './sidebarItemView';
 
+import SidebarHeadingView from './sidebarHeadingView';
 /**
  * Class contains logic of sidebar view in application.
  * @class SidebarView
@@ -13,7 +14,7 @@ export default class SidebarView extends View {
     return 'ul';
   }
   get className() {
-    return 'nav nav-sidebar';
+    return 'nav nav-sidebar nav-list';
   }
 
   /**
@@ -45,7 +46,7 @@ export default class SidebarView extends View {
     }
     const index = this.collection.indexOf(model);
 
-    $(this.$el.children()[index]).addClass('active');
+    $(this.$el.children()[index+1]).addClass('active');
   }
 
   /**
@@ -56,14 +57,21 @@ export default class SidebarView extends View {
     const itemView = (new SidebarItemView({
       model
     })).render();
+    const headingView = (new SidebarHeadingView({
+      model
+    })).render();
     const index = this.collection.indexOf(model);
 
-    if (index === 0) {
-      this.$el.prepend(itemView.el);
-    } else {
-      itemView.$el.insertAfter(this.$el.children()[index - 1]);
-    }
+    //if (index === 0) {
+       if( !(this.$el.find('li:first-child').attr('class') == 'head'))
+this.$el.prepend(headingView.el);
+      //this.$el.prepend(itemView.el);
+//    } else {
+       // if(index == 1) {
+         //           }
+      itemView.$el.insertAfter(this.$el.children()[index]);
   }
+
 
   /**
    * Renders component content.

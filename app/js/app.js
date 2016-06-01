@@ -1,5 +1,6 @@
 /* global $ */
 // Import bootstraps.
+
 import 'bootstrap';
 import 'bootstrap-dialog';
 
@@ -9,12 +10,16 @@ import './../../node_modules/font-awesome/css/font-awesome.css';
 import '../css/sass/main.scss';
 
 // Import JS.
+import 'jquery';
+import './contrail-layout';
 import {history} from 'backbone';
 import './customValidation';
 import AppView from './views/appView';
 import SchemaView from './views/schemaView';
 import Router from './routers/router';
 import Config from './models/configModel';
+
+
 
 const config = new Config({url: 'config.json'});
 

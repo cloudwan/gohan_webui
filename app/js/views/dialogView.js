@@ -205,7 +205,7 @@ export default class DialogView extends View {
     this.dialog.addButton({
       id: 'submit',
       label: this.multiStep ? 'Next' : 'Submit',
-      cssClass: 'btn-primary btn-raised btn-material-blue-600',
+      cssClass: 'btn btn-mini btn-primary btnSave',
       action: () => {
         this.dialog.enableButtons(false);
         this.dialog.setClosable(false);
