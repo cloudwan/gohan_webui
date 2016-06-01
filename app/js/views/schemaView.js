@@ -8,7 +8,6 @@ import './../../../node_modules/jquery-ui/core';
 import './../../../node_modules/jquery-ui/widget';
 import './../../../node_modules/jquery-ui/mouse';
 import './../../../node_modules/jquery-ui/sortable';
-import './../../../node_modules/json-form/lib/jsonform';
 import './../../../node_modules/ace-builds/src-min-noconflict/ace';
 import './../../../node_modules/ace-builds/src-min-noconflict/theme-monokai';
 import './../../../node_modules/ace-builds/src-min-noconflict/mode-yaml';
@@ -145,21 +144,24 @@ export default class SchemaView extends TableView {
           ]
         };
       }
+
       this.dialog = new DialogView({
         action,
         formTitle,
         data,
+        fields: schema.propertiesOrder,
         onsubmit: onSubmit,
-        schema
+        unformattedSchema: this.schema,
+        schema: this.schema.toFormJSON(schema)
       });
 
       this.dialog.render();
 
-      this.dialog.$form.append($(schemaFormTemplate({
+      this.dialog.form.$el.append($(schemaFormTemplate({
         propertyColumns
       })));
 
-      $('#properties_table tbody', this.dialog.$form).sortable();
+      $('#properties_table tbody', this.dialog.form.$el).sortable();
 
       const dataSchema = data.schema || {};
 
@@ -199,7 +201,7 @@ export default class SchemaView extends TableView {
           $(this).parent().parent().remove();
         });
         $('.id_form', $newRow).change(ensureNewRow);
-        $('#properties_table tbody', this.dialog.$form).append($newRow);
+        $('#properties_table tbody', this.dialog.form.$el).append($newRow);
         $('#id', $newRow).change(function onChange() {
           property.id = $(this).val();
         });
@@ -275,7 +277,7 @@ export default class SchemaView extends TableView {
       const ensureNewRow = () => {
         let requireRow = true;
 
-        $('.id_form', this.dialog.$form).each(function iterator() {
+        $('.id_form', this.dialog.form.$el).each(function iterator() {
           if ($(this).val() === '\'\'') {
             requireRow = false;
           }

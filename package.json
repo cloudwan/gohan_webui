@@ -60,6 +60,7 @@
   "dependencies": {
     "ace-builds": "^1.2.2",
     "backbone": "^1.3.2",
+    "backbone-forms": "^0.14.0",
     "bootstrap": "^3.3.6",
     "bootstrap-dialog": "^1.34.6",
     "bootswatch": "^3.3.6",
@@ -68,8 +69,6 @@
     "jquery-ui": "^1.10.5",
     "js-cookie": "^2.1.0",
     "js-yaml": "^3.5.5",
-    "json-form": "git+https://github.com/cloudwan/jsonform.git#properties_order",
-    "underscore": "^1.8.3",
-    "z-schema": "^3.16.1"
+    "underscore": "^1.8.3"
   }
 }

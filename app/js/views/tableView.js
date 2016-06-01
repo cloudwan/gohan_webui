@@ -121,15 +121,17 @@ export default class TableView extends View {
     history.navigate(history.getFragment().replace(/(\/page\/\w+)/, '') + '/page/' + newActivePage);
   }
   dialogForm(action, formTitle, data, onsubmit) {
-    this.dialog = new DialogView({
-      action,
-      formTitle,
-      data,
-      onsubmit,
-      schema: this.schema,
-      parentProperty: this.parentProperty
+    this.schema.filterByAction(action, this.parentProperty).then(schema => {
+      this.dialog = new DialogView({
+        formTitle,
+        data,
+        onsubmit,
+        schema: this.schema.toFormJSON(schema),
+        unformattedSchema: this.schema,
+        fields: schema.propertiesOrder
+      });
+      this.dialog.render();
     });
-    this.dialog.render();
   }
   toLocal(data) {
     return this.schema.toLocal(data);

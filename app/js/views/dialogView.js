@@ -1,10 +1,16 @@
 /* global $, window */
-import {View} from 'backbone';
+import Backbone, {View} from 'backbone';
 
-import './../../../node_modules/json-form/lib/jsonform';
 import BootstrapDialog from 'bootstrap-dialog';
 
 import ErrorView from './errorView';
+
+import 'backbone-forms';
+import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
+import './formsEditors/listEditor';
+import './formsEditors/codeEditor';
+import './formsEditors/template';
+import './formsEditors/validators';
 
 export default class DialogView extends View {
   /**
@@ -23,17 +29,15 @@ export default class DialogView extends View {
     super(options);
 
     this.errorView = new ErrorView();
-    this.action = options.action;
     this.formTitle = options.formTitle;
     this.data = options.data;
     this.onsubmit = options.onsubmit;
+    this.onhide = options.onhide;
+    this.unformattedSchema = options.unformattedSchema;
     this.schema = options.schema;
-    this.parentProperty = options.parentProperty;
-    this.dialogSchema = {};
-    this.additionalForm = this.schema.additionalForm[this.action] || ['*'];
-    this.currentStep = 0;
-    this.multiStep = Array.isArray(this.additionalForm) &&
-      Array.isArray(this.additionalForm[0]);
+    this.fields = options.fields;
+    this.events = options.events;
+    this.addingRelationDialog = this.unformattedSchema.addingRelationDialog || [];
     this.dialog = new BootstrapDialog({
       size: BootstrapDialog.SIZE_WIDE,
       type: BootstrapDialog.TYPE_DEFAULT,
@@ -45,89 +49,9 @@ export default class DialogView extends View {
           'max-height': $(window).height() - 200 + 'px',
           'overflow-y': 'auto'
         });
-      }
+      },
+      onhide: this.onhide
     });
-    this.result = {};
-    this.$form = $('<form></form>', this.$el);
-  }
-
-  /**
-   * Adds new options if is required and updates content of dialog message.
-   *
-   * @param {object} [data]
-   */
-  updateDialogSchema(data) {
-    if (this.schema.filterByAction === undefined) {
-      this.dialogSchema = new Promise(resolve => {
-        resolve(this.schema);
-      });
-    } else {
-      this.dialogSchema = this.schema.filterByAction(this.action, this.parentProperty);
-    }
-
-    this.dialogSchema.then(schema => {
-      for (let key in schema) {
-        if (!schema.hasOwnProperty(key)) {
-          continue;
-        }
-
-        const value = schema[key];
-
-        if (Boolean(value) && value.constructor === Object && key === 'properties') {
-          for (let key1 in value) {
-            if (!value.hasOwnProperty(key1)) {
-              continue;
-            }
-
-            const val = value[key1];
-
-            for (let key2 in val) {
-              if (!val.hasOwnProperty(key2)) {
-                continue;
-              }
-
-              if (key2 === 'relation') {
-                val.enum.push('addNew' + val[key2]);
-                val.options['addNew' + val[key2]] = ' + New ' + val.title;
-              }
-            }
-          }
-        }
-      }
-
-      this.$form.jsonForm({
-        schema,
-        value: data || this.data,
-        form: this.multiStep ? this.additionalForm[this.currentStep] : this.additionalForm,
-        onSubmit: errors => {
-          if (errors) {
-            return;
-          }
-          this.nextStep();
-        }
-      });
-    });
-  }
-
-  /**
-   * Renders new page in dialog message, if is needed,
-   * if triggered callback onsubmit with data from dialog.
-   */
-  nextStep() {
-    this.currentStep = this.currentStep + 1;
-    this.data = Object.assign(this.multiStep ? this.data : {}, this.$form.jsonFormValue());
-
-    if (this.currentStep < this.additionalForm.length) {
-      this.$form.html('');
-      this.updateDialogSchema();
-      this.stopSpin();
-
-      if (this.currentStep === this.additionalForm.length - 1) {
-        this.dialog.getButton('submit').text('Submit');
-      }
-    } else {
-      this.onsubmit(this.data);
-    }
   }
 
   /**
@@ -149,72 +73,137 @@ export default class DialogView extends View {
   }
 
   /**
+   * Attaches event to form.
+   *
+   * @param {string} name
+   * @param {function} callback
+   */
+  on(name, callback) {
+    if (this.form) {
+      this.form.on(name, callback);
+    }
+  }
+
+  createRelationModel(passedSchema) {
+    const data = passedSchema.toLocal({});
+    const formTitle = '<h4>Create ' + passedSchema.get('title') + '</h4>';
+    const action = 'create';
+    const onsubmit = values => {
+      values = passedSchema.toServer(values);
+      values.isNew = true;
+      const collection = passedSchema.makeCollection();
+
+      collection.create(values).then(params => {
+        this.updateSelectEditor(params[1]);
+        this.updateDialogSchema();
+        this.nestedDialog.close();
+      }, error => {
+        this.nestedDialog.errorView.render(...error);
+        this.nestedDialog.stopSpin();
+      });
+    };
+    const onhide = () => {
+      const editor = this.form.fields[passedSchema.id + '_id'].editor;
+
+      if (editor.getValue() === 'addNew' + passedSchema.id) {
+        editor.setValue(undefined);
+      }
+    };
+
+    passedSchema.filterByAction(action, this.parentProperty).then(schema => {
+      this.nestedDialog = new DialogView({
+        formTitle,
+        data,
+        onsubmit,
+        onhide,
+        schema: passedSchema.toFormJSON(schema),
+        unformattedSchema: passedSchema,
+        fields: schema.propertiesOrder
+      });
+      this.nestedDialog.render();
+    }, error => {
+      console.error(error);
+    });
+  }
+
+  updateSelectEditor(params) {
+    const schemaFieldName = Object.keys(params)[0];
+    const feedback = params[schemaFieldName];
+    const editor = this.form.fields[schemaFieldName + '_id'].editor;
+
+    this.schema[schemaFieldName + '_id'].options[feedback.id] = feedback.name;
+
+    editor.setOptions(this.schema[schemaFieldName + '_id'].options);
+    editor.setValue(feedback.id);
+  }
+
+  updateDialogSchema() {
+    for (let key in this.schema) {
+      if (this.schema.hasOwnProperty(key)) {
+        const field = this.schema[key];
+
+        const nestedCreationAllowed = this.addingRelationDialog.includes(field.title);
+
+        if (field.hasOwnProperty('relation') && field.type.toLowerCase() === 'select' && nestedCreationAllowed) {
+          field.options['addNew' + field.relation] = ' + New ' + field.title;
+        }
+      }
+    }
+  }
+  /**
    * Renders dialog view.
    * @returns {DialogView}
    */
   render() {
     this.updateDialogSchema();
-    this.$form.prepend('<div id="alerts_form"></div>');
-    const $addNewOption = $('select', this.$form);
 
-    if ($addNewOption !== undefined) {
-      $(this.$form).on('change', 'select', event => {
-        if (event.target.tagName.toLowerCase() !== 'select') {
-          return;
-        }
-
-        if (event.target.value.indexOf('addNew') !== -1) {
-          const addSchema = this.schema.collection.get(event.target.value.slice(6));
-          const formTitle = '<h4>Create ' + addSchema.get('title') + '</h4>';
-          let subDialog = {};
-          const onSubmit = value => {
-            const collection = addSchema.makeCollection();
-
-            value.isNew = true;
-
-            collection.create(value).then(() => {
-              const data = this.$form.jsonFormValue();
-
-              for (let key in data) {
-                if (key.indexOf(addSchema.get('id')) !== -1) {
-                  data[key] = value.id;
-                }
-              }
-              this.$form.html('');
-              this.updateDialogSchema(data);
-              subDialog.close();
-            }, (coll, response) => {
-              subDialog.errorView.render(coll, response);
-              subDialog.stopSpin();
-            });
-          };
-
-          subDialog = new DialogView({
-            action: 'create',
-            formTitle,
-            data: {},
-            onsubmit: onSubmit,
-            schema: addSchema
-          });
-          subDialog.render();
-        }
-      });
-    }
-
-    this.dialog.setMessage(this.$form);
-    this.dialog.addButton({
-      id: 'submit',
-      label: this.multiStep ? 'Next' : 'Submit',
-      cssClass: 'btn-primary btn-raised btn-material-blue-600',
-      action: () => {
-        this.dialog.enableButtons(false);
-        this.dialog.setClosable(false);
-        this.dialog.getButton('submit').spin();
-        this.$form.submit();
-      }
+    this.form = new Backbone.Form({
+      schema: this.schema,
+      data: this.data,
+      fields: this.fields.filter(item => Object.keys(this.schema).includes(item)),
+      template: this.template
     });
 
+    for (let key in this.schema) {
+      if (this.schema.hasOwnProperty(key)) {
+        const field = this.schema[key];
+
+        if (field.type.toLowerCase() === 'select') {
+          this.on( key + ':change', (form, element) => {
+            const elementKey = element.getValue();
+
+            if (elementKey.includes('addNew')) {
+              const newSchema = this.unformattedSchema.collection.get(element.schema.relation);
+              this.createRelationModel(newSchema);
+            }
+          });
+        }
+      }
+    }
+
+    if (this.events) {
+      for (let key in this.events) {
+        this.on(key, this.events[key]);
+      }
+    }
+    this.form.render();
+    this.dialog.setMessage(this.form.el);
+    this.dialog.addButton({
+      id: 'submit',
+      label: 'Submit',
+      cssClass: 'btn-primary',
+      action: () => {
+        var error = this.form.validate();
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+        this.dialog.enableButtons(false);
+        this.dialog.setClosable(false);
+        this.onsubmit(this.form.getValue());
+      }
+    });
     this.dialog.open();
-    return this;
   }
 }
