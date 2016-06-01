@@ -1,6 +1,7 @@
 import {View} from 'backbone';
 
 import template from './../../templates/sample.html';
+import 'jquery';
 
 /**
  * Class contains logic of sample page view in application.

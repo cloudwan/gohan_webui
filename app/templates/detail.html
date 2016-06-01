@@ -4,10 +4,15 @@
 <div class="detail_info_container card">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-xs-6 resource_name"><h2><%- schema.title %></h2></div>
-      <div class="col-xs-6 func"><a class="edit">Edit</a></div>
+      <div class="col-xs-6 resource_name"><h6 class="modal-header-title"><%- schema.title %></h6></div>
+       <!--<div class="col-xs-6 func"><a href="#" class="edit">Edit</a></div>-->
+     </div>
+
+      <div class="col-xs-12 func"><a class="edit">Edit</a></div>
     </div>
-   
+    <div class="detail-block-list-content row-fluid">
+    <h6>Details</h6>
+   <ul class="item-list row">
     <% _.each(schema.schema.propertiesOrder, function(key){
      var property = schema.schema.properties[key];
      var view = property['view'];
@@ -17,11 +22,10 @@
        }
      }
     %>
-    <div class="row_property">
-      <div class="property_title"><%- property.title %></div>
-      <div class="property_detail"><%= data[key] %></div>
-    </div>
+    <li><label class="inline col-md-12"><span class="key col-md-3  "> <%- property.title %> </span><span class="value col-md-9  "><%= data[key] %></span></label></li>
     <% }); %>
+    </ul>
+    </div>
   </div>
 </div>
 
@@ -30,7 +34,7 @@
 <div class="container-fluid">
   <div class="row">
     <% _.each(children, function(child){  %>
-    <div class="child_resource">
+    <div class="child_resource col-md-12">
       <div id="<%- child.id %>_table"></div>
     </div>
     <% }); %>

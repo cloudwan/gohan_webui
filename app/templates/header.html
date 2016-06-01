@@ -1,4 +1,4 @@
-<div class="title">
+<!--<div class="title">
   <a href="/#"><h2>Gohan</h2></a>
 </div>
 <% if (authToken) { %>
@@ -15,6 +15,51 @@
   </ul>
 </div>
 <% } %>
+-->
 
+<div id="pageHeader" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="row-fluid">
+            <a href="#" class="brand">
+                <img class="logo" src="../img/sdn-logo.png">
+            </a>
+            <% if (authToken) { %>
+            <div class="dropdown pull-right">
+              <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <span class="fa fa-user"></span>
+                <%= username %>
+                <span class="caret"></span>
+              </a>
+              <ul class="pull-right dropdown-menu dropdown-caret dropdown-closer" id="menu1" aria-labelledby="dLabel">
+                        <li>
+                            <a href="#" id="logout">
+                                <i class="fa fa-power-off"></i>
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+                    <!--
+              <ul id="menu1" class="dropdown-menu" aria-labelledby="dLabel">
+                <li>
+                  <a href="#"  id="logout">Log Out</a>
+                </li>
+              </ul>-->
+            </div>
+            <% } %>
+            <!--
+            <div id="nav-search">
+                <form id="search-form" onsubmit="searchSiteMap();">
+                    <span class="input-icon">
+                        <span role="status" aria-live="polite" class="ui-helper-hidden-accessible"></span><input type="text" placeholder="Search Sitemap" class="input-small search-query ui-autocomplete-input" id="nav-search-input" autocomplete="off">
+                        <i class="icon-search" id="nav-search-icon"></i>
+                    </span>
+                </form>
+            </div>
+            -->
+        </div>
+        <!--/.container-fluid-->
+    </div>
+    <!--/.navbar-inner-->
+</div>
 
 

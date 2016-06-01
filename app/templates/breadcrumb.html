@@ -1,15 +1,16 @@
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-8 title"><span class="fa fa-navicon"></span><h1>
+    <div id="breadcrumbs" class="fixed">
+        <div class="col-sm-8 title"><ul class="breadcrumb">
             <% _.each(parents, function iterator(parent, key) { %>
+            <% if (key === 0) { %><li><a href="#<%- parent.schemaFragment %>">Configure</a></li> ><% } %>
             <% if (key !== 0) { %> > <% } %>
-            <a href="#<%- parent.schemaFragment %>"><%- parent.schemaTitle %></a>
+            <li><a href="#<%- parent.schemaFragment %>"><%- parent.schemaTitle %></a></li>
             <% if (parent.title) { %>
             >
-            <a href="#<%- parent.fragment %>"><%- parent.title %></a>
+            <li><a href="#<%- parent.fragment %>"><%- parent.title %></a></li>
             <% } %>
         <% }) %>
-        </h1></div>
+        </ul></div>
         <div class="col-sm-4 edit"></div>
     </div>
 </div>

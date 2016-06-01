@@ -1,12 +1,16 @@
 
-<div class="container-fluid table_search">
-  <div class="row">
+<div class="container-fluid table_search grid-header">
+  <div >
     <div class="col-xs-6 resource_name">
-      <h2><%- schema.title %></h2>
+      <h4 style="margin-left:-15px"; class="modal-header-title grid-header-text smaller blue"><%- schema.title %></h4>
+     </div>
+     <div class="col-xs-6 func">
     </div>
     <div class="col-xs-6 func">
-      <form class="form-inline">
+      <div class="widget-toolbar pull-right">
+             <form class="form-inline">
         <div class="form-group">
+        <!--
         <span>Filter by:</span>
           <select class="form-control search" placeholder="Filter By">
             <option value="">-- no filters --</option>
@@ -24,14 +28,25 @@
             );
             %>
           </select>
-          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery.sortBy %>">
-        </div>
-      </form><a class="btn btn-primary gohan_create"><strong>+</strong> New</a>
+          -->
+           <a class="widget-toolbar-icon link-searchbox" title="Search" data-action="search" style="display: inline;" onclick="searchExpand()">
+                <i class="fa fa-search"></i>
+           </a>
+            <span class="input-searchbox hide" style="display: inline;">
+                <span class="input-icon">
+                    <input type="text" placeholder="Search" class="input-medium input-grid-search form-control search" value="">
+                       <i class="widget-toolbar-icon fa fa-search"></i>
+                </span>
+            </span>
+                    </div>
+      </form>
+       </div>
+      <div class="widget-toolbar pull-right"><a class="widget-toolbar-icon gohan_create" ><i class="fa fa-plus"></i></a></div>
     </div>
   </div>
 </div>
 <div class="card">
-  <table class="table table-hover gohan-table">
+  <table class="table table-striped gohan-table">
     <thead>
       <tr>
        <% schema.schema.propertiesOrder.forEach( function(key){
@@ -87,14 +102,17 @@
         <% }); %>
         <td class="action_column">
           <div class="btn-group ">
-          <a class="btn btn-default btn-sm gohan_update btn-raised btn-material-blue-600" data-id="<%- d['id']%>">Edit</a>
-             <button type="button" class="btn btn-default btn-sm dropdown-toggle"
-                data-toggle="dropdown" aria-expanded="true" data-container="body">
-             <span class="caret"></span>
-             <span class="sr-only">Toggle Dropdown</span>
-           </button>
-           <ul class="dropdown-menu pull-right" role="menu" >
-              <li><a class="gohan_delete" data-id="<%- d['id']%>" >Delete</a></li>
+             <!--<button type="button" class="btn btn-default btn-sm dropdown-toggle"
+               data-toggle="dropdown" aria-expanded="true" data-container="body">-->
+               <a data-toggle="dropdown" aria-expanded="true" data-container="body">
+             <i class="fa fa-cog"></i>
+             </a>
+           <!--</button>-->
+           <ul class="dropdown-menu pull-right dropdown-caret grid-action-menu" role="menu" >
+             <li><a class=" gohan_update" data-id="<%- d['id']%>">
+          <i class="fa fa-edit margin-right-10"></i>Edit</a></li>
+             <li><a class="gohan_delete" data-id="<%- d['id']%>" >
+          <i class="fa fa-trash-o margin-right-10"></i>Delete</a></li>
            </ul>
           </div>
         </td>

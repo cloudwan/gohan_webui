@@ -26,7 +26,7 @@ export default class SidebarItemView extends View {
   constructor(options) {
     super(options);
 
-    this.listenTo(this.model, 'change', this.render);
+  //  this.listenTo(this.model, 'change', this.render);
     this.listenTo(this.model, 'remove', this.remove);
     this.$el.addClass('withripple');
     this.$el.addClass(this.model.get('class'));
