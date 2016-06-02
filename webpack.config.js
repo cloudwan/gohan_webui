@@ -3,7 +3,6 @@ var hostname = 'localhost';
 var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var BowerWebpackPlugin = require('bower-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var SingleModuleInstancePlugin = require('single-module-instance-webpack-plugin');
@@ -29,11 +28,11 @@ module.exports = {
         loader: 'babel-loader',
         query: {
           cacheDirectory: true,
-          presets: ['es2015'],
+          presets: ['es2015']
         }
       },
       {
-        test: /.jsx?$/,
+        test: /.jsx$/,
         loader: 'babel-loader',
         query: {
           presets: ['es2015', 'react']
@@ -66,29 +65,14 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-            'file?hash=sha512&digest=hex&name=[hash].[ext]',
-            'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+          'file?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
       }
     ]
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery'
-    }),
     new ExtractTextPlugin('styles.css'),
-    new BowerWebpackPlugin({
-      modulesDirectories: ['bower_components'],
-      manifestFiles: [
-        'bower.json',
-        '.bower.json',
-      ],
-      includes: /.*/,
-      excludes: [],
-      searchResolveModulesDirectories: true
-    }),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
