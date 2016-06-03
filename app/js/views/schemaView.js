@@ -4,14 +4,14 @@ import DialogView from './dialogView';
 import _ from 'underscore';
 import jsyaml from 'js-yaml';
 
-import './../../../node_modules/jquery-ui/core';
-import './../../../node_modules/jquery-ui/widget';
-import './../../../node_modules/jquery-ui/mouse';
-import './../../../node_modules/jquery-ui/sortable';
-import './../../../node_modules/ace-builds/src-min-noconflict/ace';
-import './../../../node_modules/ace-builds/src-min-noconflict/theme-monokai';
-import './../../../node_modules/ace-builds/src-min-noconflict/mode-yaml';
-import './../../../node_modules/ace-builds/src-min-noconflict/mode-javascript';
+import 'jquery-ui/core';
+import 'jquery-ui/widget';
+import 'jquery-ui/mouse';
+import 'jquery-ui/sortable';
+import 'ace-builds/src-min-noconflict/ace';
+import 'ace-builds/src-min-noconflict/theme-monokai';
+import 'ace-builds/src-min-noconflict/mode-yaml';
+import 'ace-builds/src-min-noconflict/mode-javascript';
 
 import TableView from './tableView';
 

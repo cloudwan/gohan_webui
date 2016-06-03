@@ -24,6 +24,7 @@ export default class LoginView extends View {
   constructor(options) {
     super(options);
 
+    this.template = template;
     this.model = options.model;
     this.errorView = new ErrorView();
     this.listenTo(this.model, 'change:authData', this.reload);
@@ -41,7 +42,7 @@ export default class LoginView extends View {
    * @returns {LoginView}
    */
   render() {
-    this.el.innerHTML = template({
+    this.el.innerHTML = this.template({
       tenantName: this.model.tenantName()
     });
     return this;
