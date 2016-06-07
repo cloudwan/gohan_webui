@@ -146,7 +146,7 @@ export default class TableView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
       values.isNew = true;
-      this.collection.create(values).then(() => {
+      this.collection.create(values, {wait: true}).then(() => {
         this.dialog.close();
         this.render();
       }, error => {
@@ -167,7 +167,7 @@ export default class TableView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
 
-      model.save(values).then(() => {
+      model.save(values, {wait: true}).then(() => {
         this.collection.trigger('update');
         this.dialog.close();
       }, error => {
@@ -186,7 +186,7 @@ export default class TableView extends View {
     const id = $target.data('id');
     const model = this.collection.get(String(id));
 
-    model.destroy().then(() => {
+    model.destroy({wait: true}).then(() => {
       this.collection.fetch().catch(error => this.errorView.render(...error));
     }, error => this.errorView.render(...error));
   }
