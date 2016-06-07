@@ -1,4 +1,4 @@
-import {Router} from 'backbone';
+import {Router, history} from 'backbone';
 
 /**
  * Class contains logic of router in application.
@@ -31,6 +31,23 @@ export default class AppRouter extends Router {
       name
     });
     super.route(route, name, ...rest);
+  }
+
+  getQueryParams() {
+    const params = {};
+    const queryStrings = history.location.search.substr(1);
+
+    if (queryStrings === '') {
+      return params;
+    }
+
+    queryStrings.split('&').map(query => {
+      const keyvalue = query.split('=');
+
+      params[keyvalue[0].toString()] = keyvalue[1].toString();
+    });
+
+    return params;
   }
 
   /**

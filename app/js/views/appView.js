@@ -1,5 +1,5 @@
-/* global document, $ */
-import {View, Collection, history} from 'backbone';
+/* global $ */
+import {Collection, View, history} from 'backbone';
 
 import UserModel from './../models/userModel';
 import SchemaCollection from './../models/schemaCollection';
@@ -16,15 +16,17 @@ import BreadCrumbView from './breadCrumbView';
 import template from './../../templates/app.html';
 
 export default class AppView extends View {
-  className() {
+
+  get className() {
     return 'appview';
   }
 
   constructor(options) {
     super(options);
+
+    this.template = options.template || template;
     this.router = options.router;
     this.config = options.config;
-    this.polling = this.config.get('polling');
     this.viewClass = Object.assign(
       {
         table: TableView,
@@ -33,32 +35,26 @@ export default class AppView extends View {
       },
       options.viewClass
     );
-    this.userModel = options.userModel;
-    this.schemas = options.scheams;
-    this.errorView = new ErrorView();
 
-    if (this.userModel === undefined) {
-      this.userModel = new UserModel({
-        url: this.config.get('authUrl') + '/tokens'
-      });
-    }
+    this.menuCollection = new Collection();
+
+    this.userModel = options.userModel || new UserModel({
+      url: this.config.get('authUrl') + '/tokens'
+    });
+
+    this.schemas = options.schemas || new SchemaCollection({
+      baseUrl: this.config.get('gohan').url,
+      userModel: this.userModel,
+      url: this.config.get('gohan').url + this.config.get('gohan').schema,
+      additionalForms: this.config.get('additionalForms'),
+      addingRelationDialog: this.config.get('addingRelationDialog')
+    });
 
     this.view = null;
-    this.buildView();
-
-    if (this.schemas === undefined) {
-      this.schemas = new SchemaCollection({
-        baseUrl: this.config.get('gohan').url,
-        userModel: this.userModel,
-        url: this.config.get('gohan').url + this.config.get('gohan').schema,
-        additionalForms: this.config.get('additionalForms'),
-        addingRelationDialog: this.config.get('addingRelationDialog')
-      });
-    }
 
     if (this.userModel.authToken()) {
       this.schemas.fetch().then(() => {
-        this.autoBuildUI();
+        this.buildUi();
       }, error => {
         this.errorView.render(...error);
       });
@@ -66,179 +62,110 @@ export default class AppView extends View {
       this.listenTo(this.userModel, 'change:authData', () => {
         this.$('#main_body').empty();
         this.schemas.fetch().then(() => {
-          this.autoBuildUI();
+          this.buildUi();
         });
         this.render();
       });
     }
-  }
+    this.SidebarClass = options.SidebarClass || SidebarView;
+    this.HeaderClass = options.HeaderClass || HeaderView;
+    this.BreadCrumbClass = options.BreadCrumbClass || BreadCrumbView;
+    this.LoginClass = options.LoginClass || LoginView;
 
-  buildView() {
-    this.sidebarView = new SidebarView({
-      collection: new Collection(),
+    this.ErrorClass = options.ErrorClass || ErrorView;
+
+    this.errorView = new this.ErrorClass();
+    this.breadCrumb = new this.BreadCrumbClass();
+    this.sidebarView = new this.SidebarClass({
+      collection: this.menuCollection,
+      config: this.config.toJSON(),
       app: this
     });
-    this.headerView = new HeaderView({
+
+    this.headerView = new this.HeaderClass({
+      collection: this.menuCollection,
       config: this.config.toJSON(),
-      model: this.userModel
+      model: this.userModel,
+      app: this
     });
-    this.breadCrumb = new BreadCrumbView();
   }
 
-  getParamFromQuery() {
-    const params = {};
-    const queryStrings = document.location.search.substr(1);
-
-    if (queryStrings === '') {
-      return params;
+  closeActivePage() {
+    if (this.view) {
+      if (this.view.close) {
+        this.view.close();
+      } else {
+        this.view.remove();
+      }
     }
-
-    queryStrings.split('&').map(query => {
-      const i = query.split('=');
-
-      params[i[0].toString()] = i[1].toString();
-    });
-
-    return params;
   }
 
-  autoBuildUIForSchema(schema) {
-    const viewClass = {};
-    const metadata = schema.get('metadata');
-    const collection = schema.makeCollection();
-    const route = schema.url().substr(1);
-    const params = this.getParamFromQuery();
-    const type = params.type || 'tenant';
-    const polling = this.polling;
+  buildUi() {
+    this.schemas.each(schema => {
+      const params = this.router.getQueryParams();
+      const metadata = schema.get('metadata');
+      const type = params.type || 'tenant';
 
+      if (metadata && metadata.type !== undefined && metadata.type !== type) {
+        return;
+      }
 
-    if (metadata && metadata.type !== undefined && metadata.type !== type) {
-      return;
-    }
+      const viewClass = Object.assign({}, this.viewClass, this.viewClass[schema.id]);
+      const route = schema.url().substr(1);
 
-    Object.assign(viewClass, this.viewClass, this.viewClass[schema.id]);
-
-    if (schema.hasParent()) {
-      const childTableView = () => {
-        $('#alerts').empty();
-        const endpoint = schema.apiEndpointBase() + '/' + history.fragment;
-        const collection = schema.makeCollection(endpoint);
-
-        if (this.view) {
-          if (typeof this.view.close === 'function') {
-            this.view.close();
-          } else {
-            this.view.remove();
-          }
-        }
-        this.view = new viewClass.table({
-          schema,
-          collection,
-          childview: true,
-          fragment: history.fragment,
-          app: this
-        });
-
-        this.$('#main_body').html(this.view.render().el);
-        this.$('#main').addClass('active');
-      };
-
-      const childDetailView = (...params) => {
-        $('#alerts').empty();
-        const id = params[params.length - 2];
-        let model = collection.get(id);
-
-        if (model === undefined) {
-          model = new collection.model({id});
-        }
-
-        if (this.view) {
-          if (typeof this.view.close === 'function') {
-            this.view.close();
-          } else {
-            this.view.remove();
-          }
-        }
-        this.view = new viewClass.detail({
-          schema,
-          model,
-          childview: true,
-          fragment: history.fragment,
-          app: this
-        });
-
-        this.$('#main_body').html(this.view.render().el);
-        this.$('#main').addClass('active');
-      };
-
-      this.router.route(route, 'child_table_view', childTableView);
-      this.router.route(route + '/:id', 'detail_view', childDetailView);
-    } else {
-      if (this.config.get('sidebar') === undefined) {
-        this.sidebarView.collection.add({
+      if (!schema.hasParent() && this.config.get('sidebar') === undefined) {
+        this.menuCollection.add({
           path: schema.get('url'),
           title: schema.get('title')
         });
       }
-
-      const tableView = page => {
-        $('#alerts').empty();
-
-        if (this.view) {
-          if (typeof this.view.close === 'function') {
-            this.view.close();
-          } else {
-            this.view.remove();
-          }
+      const tableView = () => {
+        let collection = {};
+        if (schema.hasParent()) {
+          const endpoint = schema.apiEndpointBase() + '/' + history.fragment;
+          collection = schema.makeCollection(endpoint);
+        } else {
+          collection = schema.makeCollection();
         }
+
+        $('#alerts').empty();
+        this.closeActivePage();
 
         this.view = new viewClass.table({
           schema,
           collection,
-          fragment: history.fragment,
-          app: this,
-          polling,
-          page
-        });
-
-        this.$('#main_body').html(this.view.render().el);
-        this.$('#main').addClass('active');
-      };
-
-      const detailView = id => {
-        $('#alerts').empty();
-        let model = collection.get(id);
-
-        if (model === undefined) {
-          model = new collection.model({id});
-        }
-
-        if (this.view) {
-          if (typeof this.view.close === 'function') {
-            this.view.close();
-          } else {
-            this.view.remove();
-          }
-        }
-
-        this.view = new viewClass.detail({
-          schema,
-          model,
+          childview: schema.hasParent(),
           fragment: history.fragment,
           app: this
         });
 
         this.$('#main_body').html(this.view.render().el);
-        this.$('#main').addClass('active');
+      };
+
+      const detailView = (...rest) => {
+        const id = rest.length >= 2 ? rest[rest.length - 2] : '';
+        const collection = schema.makeCollection();
+        const model = collection.get(id) || new collection.model({id});
+
+        $('#alerts').empty();
+        this.closeActivePage();
+        this.view = new viewClass.detail({
+          schema,
+          collection,
+          model,
+          fragment: history.fragment,
+          app: this,
+          polling: this.config.get('polling'),
+          params
+        });
+
+        this.$('#main_body').html(this.view.render().el);
       };
 
       this.router.route(route, 'table_view', tableView);
-      this.router.route(route + '/page/:id', 'table_view', tableView);
       this.router.route(route + '/:id', 'detail_view', detailView);
-    }
-  }
+    });
 
-  buildCustomUI() {
     if (this.config.get('sidebar') !== undefined) {
       this.config.get('sidebar').forEach((item, key) => {
         this.sidebarView.collection.add({
@@ -250,46 +177,35 @@ export default class AppView extends View {
       });
     }
 
-    this.config.get('routes').forEach(routes => {
-      const customView = (data, ...params) => {
-        const schema = this.schemas.get(routes.name);
-
-        if (this.view) {
-          if (typeof this.view.close === 'function') {
-            this.view.close();
-          } else {
-            this.view.remove();
-          }
-        }
-
+    this.config.get('routes').forEach(route => {
+      const customView = (...rest) => {
+        const schema = this.schemas.get(route.name);
+        this.closeActivePage();
         if (schema === undefined) {
-          this.view = new this.viewClass[routes.viewClass]({
-            arguments: params,
+          this.view = new this.viewClass[route.viewClass]({
+            arguments: rest,
             fragment: history.fragment,
-            app: this,
-            data
+            app: this
           });
           this.$('#main_body').append(this.view.render().el);
-          this.$('#main').addClass('active');
         } else {
           const collection = schema.makeCollection();
+          if (rest) {
+            const id = rest.length >= 2 ? rest[rest.length - 2] : '';
+            const model = collection.get(id) || new collection.model({id});
 
-          if (data !== null) {
-            const model = new collection.model({id: data});
-
-            this.view = new this.viewClass[routes.viewClass]({
-              arguments: params,
+            this.view = new this.viewClass[route.viewClass]({
+              arguments: rest,
               fragment: history.fragment,
               app: this,
               schema,
-              model
+              model,
+              collection
             });
-
             this.$('#main_body').append(this.view.render().el);
-            this.$('#main').addClass('active');
           } else {
-            this.view = new this.viewClass[routes.viewClass]({
-              arguments: params,
+            this.view = new this.viewClass[route.viewClass]({
+              arguments: rest,
               fragment: history.fragment,
               app: this,
               schema,
@@ -297,20 +213,13 @@ export default class AppView extends View {
             });
 
             this.$('#main_body').append(this.view.render().el);
-            this.$('#main').addClass('active');
           }
         }
       };
 
-      this.router.route(routes.path.substr(2), routes.name, customView);
+      this.router.route(route.path.substr(2), route.name, customView);
     });
-  }
 
-  autoBuildUI() {
-    this.schemas.each(schema => {
-      this.autoBuildUIForSchema(schema);
-    });
-    this.buildCustomUI();
     history.loadUrl(history.fragment);
   }
 
@@ -318,7 +227,7 @@ export default class AppView extends View {
    * Shows login page.
    */
   showLogin() {
-    const loginView = new LoginView({
+    const loginView = new this.LoginClass({
       model: this.userModel
     });
 
@@ -334,7 +243,7 @@ export default class AppView extends View {
     if (!this.userModel.authToken()) {
       this.showLogin();
     } else {
-      this.$el.html(template());
+      this.$el.html(this.template());
       this.$('#header').append(this.headerView.render().el);
       this.$('#sidebar').append(this.sidebarView.render().el);
       this.$('#bread-crumb').append(this.breadCrumb.render().el);

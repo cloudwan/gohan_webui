@@ -435,7 +435,7 @@ export default class SchemaModel extends Model {
       }
     }
 
-    const collection = new CollectionClass({});
+    const collection = new CollectionClass();
 
     self.collections[url] = collection;
     return collection;
