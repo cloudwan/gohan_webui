@@ -14,6 +14,23 @@
     </li>
   </ul>
 </div>
+<% if(tenants.length > 1){%>
+<div class="dropdown">
+  <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+    <span class="fa fa-users"></span>
+    <%= tenantName %>
+    <span class="caret"></span>
+  </a>
+
+  <ul id="menu2" class="dropdown-menu" aria-labelledby="dLabel">
+<% _.each(tenants, function(tenant){ %>
+    <li>
+      <a id="changeTenant" data-tenant="<%= tenant.name %>"><%= tenant.name %></a>
+    </li>
+<% }); %>
+  </ul>
+</div>
+<% } %>
 <% } %>
 
 

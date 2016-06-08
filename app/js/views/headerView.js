@@ -1,4 +1,4 @@
-/* global window */
+/* global window, $ */
 import {View} from 'backbone';
 
 import template from './../../templates/header.html';
@@ -14,7 +14,8 @@ export default class HeaderView extends View {
   }
   get events() {
     return {
-      'click #logout': 'logout'
+      'click #logout': 'logout',
+      'click #changeTenant': 'changeTenant'
     };
   }
 
@@ -38,6 +39,18 @@ export default class HeaderView extends View {
   }
 
   /**
+   * Change Tenant
+   */
+  changeTenant( event ) {
+    const tenant = $( event.currentTarget ).data( 'tenant' );
+    this.model.loginTenant( tenant ).then(
+      () => {
+        window.location.reload();
+      }
+    );
+  }
+
+  /**
    * Renders component content.
    * @override View.render
    * @returns {HeaderView}
@@ -47,7 +60,8 @@ export default class HeaderView extends View {
       config: this.config,
       username: this.model.userName(),
       authToken: this.model.authToken(),
-      tenantName: this.model.tenantName()
+      tenantName: this.model.tenantName(),
+      tenants: this.model.tenants()
     }));
     return this;
   }

@@ -9,6 +9,7 @@ chai.use(sinonChai);
 
 const sync = sinon.spy();
 const save = sinon.spy();
+const ajax = sinon.spy();
 
 const backbone = {
   Model: class {
@@ -26,24 +27,22 @@ const backbone = {
       }
       save(data, options);
     }
+  },
+  ajax(options){
+    if (this._saveState) {
+      setTimeout(() => {
+        options.success(this._data)
+      }, 0);
+    } else {
+      setTimeout(options.error, 0);
+    }
+    ajax(options);
   }
-};
-const cookie = {
-  remove: sinon.spy(key => {
-    delete cookie.data[key];
-  }),
-  set: sinon.spy((key, value) => {
-    cookie.data[key] = value;
-  }),
-  get: sinon.spy(key => cookie.data[key]),
-  data: {}
 };
 
 const UserModel = proxyquire('./../../app/js/models/userModel', {
   backbone,
-  'js-cookie': cookie
 }).default;
-
 
 describe('UserModel ', () => {
   describe('#defaults()', () => {
@@ -51,7 +50,6 @@ describe('UserModel ', () => {
 
     beforeEach(() => {
       user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
     });
 
     it('returns defaults values', () => {
@@ -75,7 +73,6 @@ describe('UserModel ', () => {
 
     beforeEach(() => {
       user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
     });
 
     it('sets auth data.', () => {
@@ -92,12 +89,7 @@ describe('UserModel ', () => {
           }
         }
       };
-
       user.parse(testData);
-      cookie.data.tenantName.should.be.equal('testTenantName');
-      cookie.data.userName.should.be.equal('testName');
-      cookie.data.authData1.should.be.equal('test1');
-      cookie.data.authData2.should.be.equal('');
       user.authData.should.be.deep.equal(testData);
     });
   });
@@ -107,7 +99,6 @@ describe('UserModel ', () => {
 
     beforeEach(() => {
       user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
     });
 
     it('calls super sync() method with parameters.', () => {
@@ -129,162 +120,166 @@ describe('UserModel ', () => {
     });
   });
 
-  describe('#saveAuth()', () => {
+  describe('#login', () => {
     let user = {};
-
     beforeEach(() => {
+      sessionStorage.clear();
       user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
+      ajax.reset();
     });
 
-    it('calls super save() method with parameters.', () => {
-      user.saveAuth('admin', 'pass', 'tenant');
-      save.should.be.calledWith({
-        auth: {
-          passwordCredentials: {
-            username: 'admin',
-            password: 'pass'
-          },
-          tenantName: 'tenant'
-        }
-      });
-    });
-
-    it('calls success callback.', done => {
-      user._saveState = true; // Simulate error on save.
-      user.saveAuth('admin', 'pass', 'tenant').then(() => done());
-    });
-
-    it('calls error callback.', done => {
-      user._saveState = false; // Simulate error on save.
-      user.saveAuth('admin', 'pass', 'tenant').catch(() => done());
-    });
-
-  });
-
-  describe('#setAuthData()', () => {
-    let user = {};
-
-    beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
-    });
-
-    it('removes auth data calls without parameter.', () => {
-      user.setAuthData();
-      chai.expect(cookie.data.authData1).to.be.a('undefined');
-      chai.expect(cookie.data.authData2).to.be.a('undefined');
-    });
-
-    it('sets auth data.', () => {
-      const testData = {
+    it('calls login with parameters.', () => {
+      backbone._data = {
         access: {
           token: {
-            id: 'test1',
-            tenant: {
-              name: 'testTenantName'
-            }
-          },
-          user: {
-            name: 'testName'
+            id: "token"
           }
         }
+      }
+      backbone._saveState = true;
+      user.login("id", "password").then(() => {
+        user.unscopedToken().should.be.equal("token");
+        done()
+      });
+      ajax.should.be.calledWith(sinon.match({
+        data: '{"auth":{"passwordCredentials":{"username":"id","password":"password"}}}',
+        dataType: "json",
+        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        url: "http://foo.bar/tokens"
+      }))
+    });
+
+    it('calls login with parameters then fail', () => {
+      backbone._saveState = false;
+      user.login("id", "password").catch(() => done());
+    });
+
+    it('fetch tenant success', () => {
+      backbone._saveState = true;
+      backbone._data = {
+        tenants: []
+      }
+      user.fetchTenant(() => done(), null);
+      ajax.should.be.calledWith(sinon.match({
+        dataType: "json",
+        headers: { 'Content-Type': 'application/json' },
+        method: "GET",
+        url: "http://foo.bar/tenants"
+      }))
+    });
+
+    it('fetch tenant failed', () => {
+      backbone._saveState = false;
+      user.fetchTenant(null, () => done());
+    });
+
+    it('skip login if we have tenant list', () => {
+      user.saveTenants([{name: "admin"}, {name: "demo"}]);
+      user.login("id", "password");
+      ajax.called.should.be.equal(false);
+    });
+  });
+
+  describe('#loginTenant', () => {
+    let user = {};
+
+    beforeEach(() => {
+      sessionStorage.clear();
+      user = new UserModel({url: 'http://foo.bar'});
+    });
+
+    it('calls loginTenant with parameters.', () => {
+      user._saveState = true;
+      user.loginTenant("admin").then(() => done());
+      const authData = {
+        auth: {
+          token: {
+            id: undefined,
+          },
+          tenantName: "admin"
+        }
       };
-
-      user.setAuthData(testData);
-      cookie.data.tenantName.should.be.equal('testTenantName');
-      cookie.data.userName.should.be.equal('testName');
-      cookie.data.authData1.should.be.equal('test1');
-      cookie.data.authData2.should.be.equal('');
-      user.authData.should.be.deep.equal(testData);
+      save.should.be.calledWith(authData, sinon.match({
+        data: '{"auth":{"token":{},"tenantName":"admin"}}',
+      }))
     });
 
-    it('calls success callback.', done => {
-      user._saveState = true; // Simulate error on save.
-      user.saveAuth('admin', 'pass', 'tenant').then(() => done());
-    });
-
-    it('calls error callback.', done => {
-      user._saveState = false; // Simulate error on save.
-      user.saveAuth('admin', 'pass', 'tenant').catch(() => done());
+    it('calls loginTenant with parameters and fail', () => {
+      user._saveState = false;
+      user.loginTenant("admin").catch(() => done());
     });
   });
 
-  describe('#authToken()', () => {
+  describe('#setItem and getItem', () => {
     let user = {};
 
     beforeEach(() => {
       user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
     });
 
-    it('returns empty tokent.', () => {
-      delete cookie.data.authData1;
-      cookie.data.authData2 = 'test';
-
-      user.authToken().should.be.equal('');
-    });
-
-    it('returns empty tokent.', () => {
-      cookie.data.authData1 = 'test';
-      delete cookie.data.authData2;
-
-      user.authToken().should.be.equal('');
-    });
-
-    it('returns tokent.', () => {
-      cookie.data.authData1 = 'test';
-      cookie.data.authData2 = 'token';
-
-      user.authToken().should.be.equal('testtoken');
+    it('calls setItem and getItem', () => {
+      user.loginTenant("admin");
+      const value = {key: "value"};
+      user.setItem("testkey", value);
+      const actual = user.getItem("testkey");
+      actual.should.be.deep.equal(value);
     });
   });
 
-  describe('#tenantName()', () => {
+  describe('#token management', () => {
     let user = {};
 
     beforeEach(() => {
       user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
+      user.saveUnscopedToken({
+        access: {
+          user: {
+            name: "user"
+          },
+          token: {
+            id: "token"
+          }
+        }
+      });
+      user.saveTenant("admin");
+      user.saveScopedToken({
+        access: {
+          user: {
+            name: "user"
+          },
+          token: {
+            id: "token"
+          }
+        }
+      });
+      user.saveTenants([{name: "admin"}, {name: "demo"}]);
     });
 
-    it('returns tenant.', () => {
-      cookie.data.tenantName = 'Test tenant';
+    it('calls userName', () => {
+        user.userName().should.be.equal("user");
+    });
 
-      user.tenantName().should.be.equal('Test tenant');
+    it('calls authToken', () => {
+        user.authToken().should.be.equal("token");
+    });
+
+    it('calls unsetAuthData', () => {
+        user.unsetAuthData();
+        if(user.authToken()){
+            sinon.assert.fail("should be undefined")
+        }
+        if(user.tenantName()){
+            sinon.assert.fail("should be undefined")
+        }
+        if(user.tenants()){
+            sinon.assert.fail("should be undefined")
+        }
+        if(user.unscopedToken()){
+            sinon.assert.fail("should be undefined")
+        }
     });
   });
 
-  describe('#userName()', () => {
-    let user = {};
 
-    beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
-    });
-
-    it('returns userName.', () => {
-      cookie.data.userName = 'Test user name';
-
-      user.userName().should.be.equal('Test user name');
-    });
-  });
-
-  describe('#unsetAuthData()', () => {
-    let user = {};
-
-    beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
-      cookie.data = {};
-    });
-
-    it('unsets auth data.', () => {
-      cookie.data.authData1 = 'Test_auth_data1';
-      cookie.data.authData2 = 'Test_auth_data2';
-
-      user.unsetAuthData();
-      chai.expect(cookie.data.authData1).to.be.a('undefined');
-      chai.expect(cookie.data.authData2).to.be.a('undefined');
-    });
-  });
 });

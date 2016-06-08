@@ -39,7 +39,7 @@ export default class AppView extends View {
     this.menuCollection = new Collection();
 
     this.userModel = options.userModel || new UserModel({
-      url: this.config.get('authUrl') + '/tokens'
+      url: this.config.get('authUrl')
     });
 
     this.schemas = options.schemas || new SchemaCollection({
