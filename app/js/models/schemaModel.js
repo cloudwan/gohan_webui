@@ -345,6 +345,10 @@ export default class SchemaModel extends Model {
         });
       }
 
+      resetFilters() {
+        this.filters = {};
+        this.updateUrl();
+      }
       filter(property, value) {
         return new Promise((resolve, reject) => {
           if (property === undefined) {
@@ -354,7 +358,7 @@ export default class SchemaModel extends Model {
           } else {
             this.filters[property] = value;
           }
-
+          this.offset = 0;
           this.updateUrl();
 
           this.fetch().then(resolve, reject);

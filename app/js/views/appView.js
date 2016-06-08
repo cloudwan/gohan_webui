@@ -6,7 +6,7 @@ import SchemaCollection from './../models/schemaCollection';
 
 import SidebarView from './sidebarView';
 import HeaderView from './headerView';
-import TableView from './tableView';
+import TableView from './newTableView';
 import DetailView from './detailView';
 import LoginView from './loginView';
 import SampleView from './sampleView';
