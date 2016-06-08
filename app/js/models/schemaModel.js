@@ -700,8 +700,10 @@ export default class SchemaModel extends Model {
     if (schema.format === 'jsonschema') {
       return jsyaml.safeDump(data);
     } else if (schema.properties !== undefined) {
-      for (let key in schema.properties) {
-        data[key] = this.toLocalData(schema.properties[key], data[key]);
+      if (data) {
+        for (let key in schema.properties) {
+          data[key] = this.toLocalData(schema.properties[key], data[key]);
+        }
       }
     } else if (schema.items !== undefined) {
       const result = [];
