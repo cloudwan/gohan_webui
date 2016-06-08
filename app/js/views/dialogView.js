@@ -12,6 +12,11 @@ import './formsEditors/codeEditor';
 import './formsEditors/template';
 import './formsEditors/validators';
 
+import 'jquery-ui/core';
+import 'jquery-ui/widget';
+import 'jquery-ui/mouse';
+import 'jquery-ui/sortable';
+
 export default class DialogView extends View {
   /**
    * Initialize of object properties.
@@ -37,6 +42,9 @@ export default class DialogView extends View {
     this.schema = options.schema;
     this.fields = options.fields;
     this.events = options.events;
+    this.currentStep = 0;
+    this.multiStep = Array.isArray(this.additionalForm) &&
+      Array.isArray(this.additionalForm[0]);
     this.addingRelationDialog = this.unformattedSchema.addingRelationDialog || [];
     this.dialog = new BootstrapDialog({
       size: BootstrapDialog.SIZE_WIDE,
@@ -191,7 +199,7 @@ export default class DialogView extends View {
     this.dialog.addButton({
       id: 'submit',
       label: 'Submit',
-      cssClass: 'btn-primary',
+      cssClass: 'btn-primary btn-lg',
       action: () => {
         var error = this.form.validate();
 
@@ -204,6 +212,7 @@ export default class DialogView extends View {
         this.onsubmit(this.form.getValue());
       }
     });
+    $('.ui-sortable', this.form.$el).sortable();
     this.dialog.open();
   }
 }

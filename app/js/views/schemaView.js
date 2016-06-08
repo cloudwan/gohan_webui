@@ -13,7 +13,7 @@ import './../../../node_modules/ace-builds/src-min-noconflict/theme-monokai';
 import './../../../node_modules/ace-builds/src-min-noconflict/mode-yaml';
 import './../../../node_modules/ace-builds/src-min-noconflict/mode-javascript';
 
-import TableView from './tableView';
+import TableView from './newTableView';
 
 import schemaFormTemplate from './../../templates/schemaForm.html';
 import propertyFormTemplate from './../../templates/propertyForm.html';
