@@ -274,6 +274,7 @@ export default class SchemaModel extends Model {
     const userModel = this.collection.userModel;
     const additionalForms = this.collection.additionalForms;
     const addingRelationDialog = this.collection.addingRelationDialog;
+    const pageLimit = this.collection.pageLimit;
     const self = this;
 
     if (additionalForms !== undefined && additionalForms[this.id] === undefined) {
@@ -297,12 +298,133 @@ export default class SchemaModel extends Model {
       constructor(options) {
         super(options);
 
-        this.url = url;
+        this.pageLimit = ~~pageLimit;
+        this.total = 0;
+        this.offset = 0;
+        this.sortKey = 'id';
+        this.sortOrder = 'asc';
+        this.baseUrl = url;
         this.model = model;
         this.schema = self;
+        this.filters = {};
         this.longPolling = false;
         this.timeOutId = -1;
         this.intervalSeconds = 10;
+        this.updateUrl();
+      }
+
+      /**
+       * Updates collection url to filter, sort and paging.
+       */
+      updateUrl() {
+        let filter = '';
+
+        for (let key in this.filters) {
+          if (this.filters.hasOwnProperty(key)) {
+            filter += '&' + key + '=' + this.filters[key];
+          }
+        }
+
+        this.url = this.baseUrl + '?sort_key=' + this.sortKey + '&sort_order=' + this.sortOrder +
+          '&limit=' + this.pageLimit + '&offset=' + this.offset + filter;
+      }
+
+      /**
+       * Sorts by specified key and specified order (asc or desc).
+       * @param {string} key
+       * @param {string} order
+       * @returns {Promise}
+       */
+      sort(key = 'id', order = 'asc') {
+        return new Promise((resolve, reject) => {
+          this.sortKey = key;
+          this.sortOrder = order;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      filter(property, value) {
+        return new Promise((resolve, reject) => {
+          if (property === undefined) {
+            this.filters = {};
+          } else if (value === undefined) {
+            delete this.filters[property];
+          } else {
+            this.filters[property] = value;
+          }
+          this.offset = 0;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      /**
+       * Returns count of pages.
+       * @returns {number}
+       */
+      getPageCount() {
+        return Math.ceil(this.total / this.pageLimit);
+      }
+
+      /**
+       * Updates collection data to data from specified page.
+       * @param {number} pageNo
+       * @returns {Promise}
+       */
+      getPage(pageNo = 0) {
+        return new Promise((resolve, reject) => {
+          const offset = this.pageLimit * pageNo;
+          if (offset >= this.total || offset < 0) {
+            reject('Wrong page number!');
+            return;
+          }
+
+          this.offset = offset;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      /**
+       * Updated collection data to next page.
+       * @returns {Promise}
+       */
+      getNextPage() {
+        return new Promise((resolve, reject) => {
+          const offset = this.offset + this.pageLimit;
+          if (offset >= this.total) {
+            reject('This was last page!');
+            return;
+          }
+
+          this.offset = offset;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      /**
+       * Updated collection data to prev page.
+       * @returns {Promise}
+       */
+      getPrevPage() {
+        return new Promise((resolve, reject) => {
+          const offset = this.offset - this.pageLimit;
+          if (offset < 0) {
+            reject('This was first page!');
+            return;
+          }
+
+          this.offset = offset;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
       }
 
       /**
@@ -368,9 +490,12 @@ export default class SchemaModel extends Model {
        * Parses response from the server.
        * @override Collection.parse
        * @param {Object} resp
+       * @param {Object} options
        * @returns {Object}
        */
-      parse(resp) {
+      parse(resp, options) {
+        this.total = Number(options.xhr.getResponseHeader('X-Total-Count'));
+
         return resp[self.get('plural')];
       }
 
