@@ -215,6 +215,10 @@ body {
       padding-top: 6px;
       padding-bottom: 6px;
     }
+    .gohan_delete_selected {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
   }
   margin-bottom: 10px;
 }
@@ -265,6 +269,10 @@ body {
       color: #fff;
     }
   }
+}
+
+.selector_col {
+  width: 20px;
 }
 
 /*
@@ -665,4 +673,9 @@ input[type="checkbox"].form-control {
 .bootstrap-dialog .modal-header {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+tr.disabled {
+    background: #eeeeee;
+    color: #999999;
 }

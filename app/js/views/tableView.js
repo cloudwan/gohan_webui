@@ -23,6 +23,9 @@ export default class TableView extends View {
     return {
       'click [data-gohan="create"]': 'createModel',
       'click [data-gohan="delete"]': 'deleteModel',
+      'click .gohan_delete_selected': 'deleteSelectedModel',
+      'click input#all_selector': 'toggleAll',
+      'click input.row_selector': 'toggleDeleteSelectedButton',
       'click [data-gohan="update"]': 'updateModel',
       'click [data-gohan="sort-title"]': 'sortData',
       'keyup [data-gohan="search"]': 'searchByKey',
@@ -80,13 +83,22 @@ export default class TableView extends View {
 
     this.listenTo(this.collection, 'update', this.render);
   }
+  toggleAll(event) {
+    $('input.row_selector:checkbox').prop('checked', $(event.currentTarget).prop('checked'));
+    this.toggleDeleteSelectedButton();
+  }
+  toggleDeleteSelectedButton() {
+    let disabled = true;
+    $('input.row_selector:checked').each( () => {
+      disabled = false;
+    });
+    $('.gohan_delete_selected').attr('disabled', disabled);
+  }
   searchByKey(event) {
     event.preventDefault();
     event.stopPropagation();
-
     clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
-
       this.fetchData();
 
     }, this.searchDelay);
@@ -292,6 +304,32 @@ export default class TableView extends View {
       }
     });
   }
+  deleteSelectedModel(event) {
+    const $target = $(event.target);
+    if ($target.attr('disabled')) {
+      return;
+    }
+    BootstrapDialog.confirm({
+      title: 'Delete',
+      message: 'Are you sure to delete?',
+      closable: true,
+      btnOKLabel: 'Delete',
+      callback: result => {
+        if (result) {
+          $('input.row_selector:checked').each( (index, element) => {
+            const id = $(element).val();
+            const parent = $(element).parents('tr');
+            parent.addClass('disabled');
+            parent.find('button').attr('disabled', true);
+            const model = this.collection.get(String(id));
+            model.destroy({wait: true}).then(() => {
+              this.collection.fetch().catch(error => this.errorView.render(...error));
+            }, error => this.errorView.render(...error));
+          });
+        }
+      }
+    });
+  }
   renderProperty(data, key) {
     let content;
     const property = this.schema.get('schema').properties[key];
@@ -332,7 +370,6 @@ export default class TableView extends View {
     } catch (error) {
       console.error(error);
     }
-
     return value;
   }
 
