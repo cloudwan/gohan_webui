@@ -1,5 +1,6 @@
-import {Model} from 'backbone';
-import cookie from 'js-cookie';
+/* global sessionStorage */
+import Backbone, {Model} from 'backbone';
+
 
 /**
  * Class contains logic of user authority in application.
@@ -21,7 +22,8 @@ export default class UserModel extends Model {
    */
   constructor(options) {
     super(options);
-    this.url = options.url;
+    this.url = options.url + '/tokens';
+    this.tenantURL = options.url + '/tenants';
   }
 
   /**
@@ -30,7 +32,7 @@ export default class UserModel extends Model {
    * @param {Object} data
    */
   parse(data) {
-    this.setAuthData(data);
+    this.saveScopedToken(data);
   }
 
   /**
@@ -48,70 +50,189 @@ export default class UserModel extends Model {
   }
 
   /**
-   * Saves authorisation data in server.
+   * Login to the server
    * @param {string} id
    * @param {string} password
-   * @param {String} tenant
    * @returns {Promise}
    */
-  saveAuth(id, password, tenant) {
-    return new Promise((resolve, reject) => {
+  login(id, password) {
+    return new Promise( ( resolve, reject ) => {
       const authData = {
         auth: {
           passwordCredentials: {
             username: id,
             password
+          }
+        }
+      };
+
+      const tenants = this.tenants();
+      if ( tenants ) {
+        resolve( tenants );
+        return;
+      }
+      Backbone.ajax( {
+        dataType: 'json',
+        url: this.url,
+        data: JSON.stringify(authData),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        success: authToken => {
+          this.saveUnscopedToken(authToken);
+          this.fetchTenant(resolve, reject);
+        },
+        error: (...params) => {
+          reject(params);
+        }
+      } );
+    } );
+  }
+  /**
+   * Fetch tenants from server
+   */
+  fetchTenant(resolve, reject) {
+    Backbone.ajax( {
+      method: 'GET',
+      dataType: 'json',
+      url: this.tenantURL,
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': this.unscopedToken()
+      },
+      success: data => {
+        const tenants = data.tenants;
+        this.saveTenants(tenants);
+        resolve(tenants);
+      },
+      error: ( ...params ) => {
+        reject(params);
+      }
+    } );
+  }
+
+  /**
+   * Login to the server with tenant.
+   * @param {String} tenant
+   * @returns {Promise}
+   */
+  loginTenant(tenant) {
+    return new Promise( (resolve, reject) => {
+      const authData = {
+        auth: {
+          token: {
+            id: this.unscopedToken()
           },
           tenantName: tenant
         }
       };
-
+      this.saveTenant(tenant);
       this.save(authData, {
-        data: JSON.stringify(authData),
+        data: JSON.stringify( authData ),
         success: (...params) => {
           resolve(params);
         },
         error: (...params) => {
           reject(params);
         }
-      });
-    });
+      } );
+    } );
+  }
+
+
+  /**
+   * Save item to sessionStorage
+   * @param {Object} data
+   */
+  setItem(key, value) {
+    sessionStorage.setItem( key, JSON.stringify( value ) );
   }
 
   /**
-   * Saves data in cookie storage,
-   * if parameter is undefined removes cookies.
+   * Get item to from sessionStorage
    * @param {Object} data
    */
-  setAuthData(data) {
-    const MAX_COOKIE_LENGTH = 2000;
-
-    if (data !== undefined) {
-      const token = data.access.token.id;
-      const tenantName = data.access.token.tenant.name;
-      const userName = data.access.user.name;
-
-      cookie.set('tenantName', tenantName);
-      cookie.set('userName', userName);
-      cookie.set('authData1', token.slice(0, MAX_COOKIE_LENGTH));
-      cookie.set('authData2', token.slice(MAX_COOKIE_LENGTH));
-      this.set('authData', data);
-    } else {
-      cookie.remove('authData1');
-      cookie.remove('authData2');
+  getItem(key) {
+    const value = sessionStorage.getItem( key );
+    if ( value ) {
+      return JSON.parse( value );
     }
   }
 
   /**
-   * Returns authority token.
+   * Save unscoped token
+   * @param {Object} data
+   */
+  saveUnscopedToken(data) {
+    this.setItem('unscopedToken', data);
+  }
+
+  /**
+   * Save tenants
+   * @param {Object} data
+   */
+  saveTenants(data) {
+    this.setItem('tenants', data);
+  }
+
+  /**
+   * Save tenant selection
+   * @param {Object} data
+   */
+  saveTenant(data) {
+    this.setItem('tenant', data);
+  }
+
+  /**
+   * Save scoped token
+   * @param {Object} data
+   */
+  saveScopedToken(data) {
+    const tenant = this.tenantName();
+    let scopedToken = this.getItem( 'scopedToken' );
+    if ( !scopedToken ) {
+      scopedToken = {};
+    }
+    scopedToken[tenant] = data;
+    this.setItem( 'scopedToken', scopedToken );
+    this.set( 'authData', data );
+  }
+
+  /**
+   * Reset auth data
+   */
+  unsetAuthData() {
+    sessionStorage.removeItem( 'scopedToken' );
+    sessionStorage.removeItem( 'unscopedToken' );
+    sessionStorage.removeItem( 'tenant' );
+    sessionStorage.removeItem( 'tenants' );
+  }
+
+  /**
+   * Returns scoped token.
    * @returns {string}
    */
   authToken() {
-    if (cookie.get('authData1') === undefined ||
-      cookie.get('authData2') === undefined) {
-      return '';
+    const tenant = this.tenantName();
+    const scopedToken = this.getItem( 'scopedToken' );
+    if ( scopedToken ) {
+      const data = scopedToken[tenant];
+      if ( data ) {
+        return data.access.token.id;
+      }
     }
-    return cookie.get('authData1') + cookie.get('authData2');
+  }
+
+  /**
+   * Returns unscoped token.
+   * @returns {string}
+   */
+  unscopedToken() {
+    const unscopedToken = this.getItem( 'unscopedToken' );
+    if ( unscopedToken ) {
+      return unscopedToken.access.token.id;
+    }
   }
 
   /**
@@ -119,7 +240,15 @@ export default class UserModel extends Model {
    * @returns {string}
    */
   tenantName() {
-    return cookie.get('tenantName');
+    return this.getItem( 'tenant' );
+  }
+
+  /**
+   * Returns tenants.
+   * @returns {Object}
+   */
+  tenants() {
+    return this.getItem( 'tenants' );
   }
 
   /**
@@ -127,13 +256,13 @@ export default class UserModel extends Model {
    * @returns {string}
    */
   userName() {
-    return cookie.get('userName');
-  }
-
-  /**
-   * Unsets authority data.
-   */
-  unsetAuthData() {
-    this.setAuthData(undefined);
+    const tenant = this.tenantName();
+    const scopedToken = this.getItem( 'scopedToken' );
+    if ( scopedToken ) {
+      const data = scopedToken[tenant];
+      if ( data ) {
+        return data.access.user.name;
+      }
+    }
   }
 }

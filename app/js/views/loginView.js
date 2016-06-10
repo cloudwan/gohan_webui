@@ -42,9 +42,7 @@ export default class LoginView extends View {
    * @returns {LoginView}
    */
   render() {
-    this.el.innerHTML = this.template({
-      tenantName: this.model.tenantName()
-    });
+    this.el.innerHTML = this.template({});
     return this;
   }
 
@@ -56,10 +54,15 @@ export default class LoginView extends View {
     event.preventDefault();
     const id = this.$('#id').val();
     const password = this.$('#password').val();
-    const tenant = this.$('#tenant').val();
-
     $('#alerts').empty();
-    this.model.saveAuth(id, password, tenant).catch(error => {
+    this.model.login(id, password).then(
+      tenants => {
+        const tenant = tenants[0].name;
+        this.model.loginTenant(tenant).catch(error => {
+          this.errorView.render(...error);
+        });
+      }
+    ).catch(error => {
       this.errorView.render(...error);
     });
   }
