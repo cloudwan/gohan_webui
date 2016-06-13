@@ -345,6 +345,11 @@ export default class SchemaModel extends Model {
         });
       }
 
+      resetFilters() {
+        this.filters = {};
+        this.updateUrl();
+      }
+
       filter(property, value) {
         return new Promise((resolve, reject) => {
           if (property === undefined) {
@@ -377,7 +382,8 @@ export default class SchemaModel extends Model {
       getPage(pageNo = 0) {
         return new Promise((resolve, reject) => {
           const offset = this.pageLimit * pageNo;
-          if (offset >= this.total || offset < 0) {
+
+          if (offset > this.total || offset < 0) {
             reject('Wrong page number!');
             return;
           }

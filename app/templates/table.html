@@ -9,7 +9,6 @@
         <div class="form-group">
         <span>Filter by:</span>
           <select class="form-control search" placeholder="Filter By">
-            <option value="">-- no filters --</option>
             <% schema.schema.propertiesOrder.forEach( function(key){
               var property = schema.schema.properties[key];
               var view = property['view']
@@ -18,13 +17,13 @@
                return;
               }
             %>
-                <option value="<%= key%>"><%= property.title %></option>
+                <option value="<%= key %>"><%= property.title %></option>
             <%
               }
             );
             %>
           </select>
-          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery.sortBy %>">
+          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery.sortKey %>">
         </div>
       </form><a class="btn btn-primary gohan_create"><strong>+</strong> New</a>
     </div>
@@ -59,7 +58,7 @@
     </thead>
     <% _.each(data, function(page, key){ %>
 
-    <tbody id="page<%= key + 1 %>" <% if (key !== activePage) { %> class="hidden" <% }%> >
+    <tbody id="page<%= key + 1 %>" >
       <% _.each(page, function(d){ %>
       <tr>
         <% schema.schema.propertiesOrder.forEach( function(key){
@@ -105,18 +104,18 @@
   </table>
 </div>
 
-<% if (data.length > 1) { %>
+<% if (pageCount > 1) { %>
 <nav>
     <ul class="pagination pagination-sm">
-        <li <% if (activePage === 0) { %> class="disabled" <% }%>>
+        <li <% if (activePage === 1) { %> class="disabled" <% }%>>
             <a data-id="prev" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
-        <% _.each(data, function(d, key){ %>
-        <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key + 1 %>"><%= key + 1 %></a></li>
-        <% }); %>
-        <li <% if (activePage === data.length - 1) { %> class="disabled" <% }%>>
+        <% for (var key = 1; key <= pageCount; key++) { %>
+        <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key %>"><%= key %></a></li>
+        <% } %>
+        <li <% if (activePage === pageCount) { %> class="disabled" <% }%>>
             <a data-id="next" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>

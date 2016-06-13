@@ -1,6 +1,5 @@
 /* global $, window */
 import {View, history} from 'backbone';
-import _ from 'underscore';
 
 import 'bootstrap';
 import jsyaml from 'js-yaml';
@@ -38,7 +37,8 @@ export default class TableView extends View {
     this.fragment = options.fragment;
     this.childview = options.childview;
     this.polling = options.polling;
-    this.activePage = Number(options.page) > 0 ? Number(options.page) - 1 : 0;
+    this.activePage = 1;
+    this.pageLimit = options.collection.pageLimit || 10;
     this.activeFilter = {
       by: '',
       reverse: false
@@ -47,76 +47,89 @@ export default class TableView extends View {
       sortKey: '',
       propField: ''
     };
-    this.pageSize = 25;
+
+    this.searchDelay = 500;
+    this.searchTimeout = undefined;
 
     if (this.childview) {
       this.parentProperty = this.schema.get('parent') + '_id';
     }
 
-    this.collection.fetch().then(() => {
-      this.render();
-      if ( this.polling ) {
-        this.collection.startLongPolling();
-      }
-      this.listenTo(this.collection, 'update', this.render);
-    }, (...param) => {
-      this.errorView.render(param[1]);
+    if (this.collection !== undefined) {
+      this.collection.getPage().then(() => {
+        this.searchQuery.propField = $('select.search').val();
+        if ( this.polling ) {
+          this.collection.startLongPolling();
+        }
+      }, (...params) => {
+        this.errorView.render(params[0]);
+      });
+    }
+
+
+    this.listenTo(this.collection, 'update', this.render);
+  }
+  searchByKey() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+
+      this.fetchData();
+
+    }, this.searchDelay);
+  }
+  searchByField() {
+    this.fetchData();
+  }
+  fetchData() {
+    const property = $('select.search').val();
+    const value = $('input.search').val();
+
+    this.searchQuery = {
+      sortKey: value,
+      propField: property
+    };
+
+    if (value === '') {
+      this.fetchByQuery();
+    } else {
+      this.fetchByQuery(property, value);
+    }
+  }
+  getPage(pageNo) {
+    this.collection.getPage(pageNo - 1).then(() => {
+      $('select.search').val(this.searchQuery.propField);
+    }, (...params) => {
+      this.errorView.render(params[0]);
     });
   }
-  searchByKey(event) {
-    this.searchQuery.sortKey = event.currentTarget.value;
-    this.render();
+  fetchByQuery(property, value) {
+    this.activePage = 1;
 
-    $('input.search', this.$el).focus().val('').val(this.searchQuery.sortKey);
-    $('select.search', this.$el).val('').val(this.searchQuery.propField);
-  }
-  searchByField(event) {
-    this.searchQuery.propField = event.currentTarget.value;
-    this.render();
+    this.collection.resetFilters();
+    this.collection.filter(property, value).then(() => {
+      $('select.search').val(this.searchQuery.propField);
+      $('input.search').focus().val(this.searchQuery.sortKey);
 
-    $('input.search', this.$el).val('').val(this.searchQuery.sortKey);
-    $('select.search', this.$el).focus().val('').val(this.searchQuery.propField);
-  }
-  filter(event) {
-    const id = event.currentTarget.dataset.id;
-
-    if (this.activeFilter.by !== id) {
-      this.activeFilter.by = id;
-      this.activeFilter.reverse = false;
-    } else if (this.activeFilter.by === id && !this.activeFilter.reverse) {
-      this.activeFilter.reverse = true;
-    } else {
-      this.activeFilter.by = '';
-      this.activeFilter.reverse = false;
-    }
-    this.render();
+    }, (...params) => {
+      this.errorView.render(params[0]);
+    });
   }
   pagination(event) {
     let newActivePage = event.currentTarget.dataset.id;
 
     if (newActivePage === 'next') {
-      newActivePage = $('a', $('nav li.active', this.$el).next()).data('id');
+      newActivePage = Number(this.activePage) + 1;
     } else if (newActivePage === 'prev') {
-      newActivePage = $('a', $('nav li.active', this.$el).prev()).data('id');
+      newActivePage = Number(this.activePage) - 1;
     }
 
-    const activePage = $('nav li.active a', this.$el).data('id');
-    const newPageIndicator = $('[data-id=' + newActivePage + ']', this.$el).parent();
-    const activePageIndicator = $('[data-id=' + activePage + ']', this.$el).parent();
-
-    $('#page' + activePage, this.$el).addClass('hidden');
-    $('#page' + newActivePage, this.$el).removeClass('hidden');
-
-    activePageIndicator.removeClass('active');
-    newPageIndicator.addClass('active');
-
-    $('li.disabled', this.$el).removeClass('disabled');
-
-    if (newPageIndicator.next().children().data('id') === 'next') {
-      newPageIndicator.next().addClass('disabled');
-    } else if (newPageIndicator.prev().children().data('id') === 'prev') {
-      newPageIndicator.prev().addClass('disabled');
+    if (this.activePage === Number(newActivePage)) {
+      return;
     }
+
+    this.activePage = Number(newActivePage);
+
+    this.getPage(Number(newActivePage));
 
     history.navigate(history.getFragment().replace(/(\/page\/\w+)/, '') + '/page/' + newActivePage);
   }
@@ -146,7 +159,7 @@ export default class TableView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
       values.isNew = true;
-      this.collection.create(values, {wait: true}).then(() => {
+      this.collection.create(values).then(() => {
         this.dialog.close();
         this.render();
       }, error => {
@@ -167,7 +180,7 @@ export default class TableView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
 
-      model.save(values, {wait: true}).then(() => {
+      model.save(values).then(() => {
         this.collection.trigger('update');
         this.dialog.close();
       }, error => {
@@ -186,7 +199,7 @@ export default class TableView extends View {
     const id = $target.data('id');
     const model = this.collection.get(String(id));
 
-    model.destroy({wait: true}).then(() => {
+    model.destroy().then(() => {
       this.collection.fetch().catch(error => this.errorView.render(...error));
     }, error => this.errorView.render(...error));
   }
@@ -234,83 +247,21 @@ export default class TableView extends View {
     return value;
   }
 
-  /**
-   * Filters array and return new array.
-   * @param {Array} array
-   * @param {string} searchQuery
-   * @returns {Array}
-   */
-  filterArray(array, searchQuery) {
-    if (this.searchQuery.sortKey === '') {
-      return array;
-    }
-    return array.filter(value => {
-
-      if (searchQuery.propField !== '') {
-        const field = searchQuery.propField.toLowerCase();
-
-        if (value.hasOwnProperty(field) && value[field].toString().includes(searchQuery.sortKey)) {
-          return true;
-        }
-      } else {
-        for (let key in value) {
-          let val = value[key];
-
-          if (val && val.toString().includes(searchQuery.sortKey.toString())) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    });
-  }
-
-  /**
-   * Sorts array by specified property and return new array.
-   * @param {Array} array
-   * @param {string} by
-   * @param {boolean} reverse
-   * @returns {Array}
-   */
-  sortArray(array, by, reverse) {
-    const sortedArray = _.sortBy(array, value => {
-      if (by === '') {
-        return value;
-      }
-
-      if (_.isString(value[by])) {
-        return value[by].toLowerCase();
-      }
-      return value[by];
-    });
-
-    if (reverse === true) {
-      return sortedArray.reverse();
-    }
-    return sortedArray;
-  }
   render() {
-    const self = this;
-
     let list = this.collection.map(model => {
       const data = model.toJSON();
       const result = Object.assign({}, data);
 
       for (let key in data) {
-        result[key] = self.renderProperty(data, key);
+        result[key] = this.renderProperty(data, key);
       }
       return result;
     });
 
-    list = this.filterArray(list, this.searchQuery);
-
-    list = this.sortArray(list, this.activeFilter.by, this.activeFilter.reverse);
-
     const splitIntoPages = [];
 
-    for (let i = 0; i < list.length; i += this.pageSize) {
-      splitIntoPages.push(list.slice(i, i + this.pageSize));
+    for (let i = 0; i < list.length; i += this.pageLimit) {
+      splitIntoPages.push(list.slice(i, i + this.pageLimit));
     }
     list = splitIntoPages;
 
@@ -321,6 +272,7 @@ export default class TableView extends View {
     this.$el.html(tableTemplate({
       data: list,
       activePage: this.activePage,
+      pageCount: this.collection.getPageCount(),
       schema: this.schema.toJSON(),
       searchQuery: this.searchQuery,
       sort: {
@@ -333,8 +285,11 @@ export default class TableView extends View {
     return this;
   }
   close() {
-    if ( this.polling ) {
+    if (this.polling) {
       this.collection.stopLongPolling();
+    }
+    if (this.collection) {
+      this.collection.resetFilters();
     }
     this.remove();
   }
