@@ -22,7 +22,7 @@ export default class TableView extends View {
       'click .gohan_create': 'createModel',
       'click .gohan_delete': 'deleteModel',
       'click .gohan_update': 'updateModel',
-      'click a.title': 'filter',
+      'click a.title': 'sortData',
       'keyup input.search': 'searchByKey',
       'change select.search': 'searchByField',
       'click nav li:not(.disabled) a': 'pagination'
@@ -39,6 +39,10 @@ export default class TableView extends View {
     this.polling = options.polling;
     this.activePage = 1;
     this.pageLimit = options.collection.pageLimit || 10;
+    this.pagination = {
+      start: 1,
+      limit: 7
+    };
     this.activeFilter = {
       by: '',
       reverse: false
@@ -65,7 +69,6 @@ export default class TableView extends View {
         this.errorView.render(params[0]);
       });
     }
-
 
     this.listenTo(this.collection, 'update', this.render);
   }
@@ -114,8 +117,32 @@ export default class TableView extends View {
       this.errorView.render(params[0]);
     });
   }
+
+  sortData(event) {
+    const id = event.currentTarget.dataset.id;
+
+    if (this.activeFilter.by !== id) {
+      this.activeFilter.by = id;
+      this.activeFilter.reverse = false;
+    } else if (this.activeFilter.by === id && !this.activeFilter.reverse) {
+      this.activeFilter.reverse = true;
+    } else {
+      this.activeFilter.by = '';
+      this.activeFilter.reverse = false;
+    }
+
+    const key = this.activeFilter.by;
+    const order = this.activeFilter.reverse ? 'desc' : 'asc';
+
+    this.collection.sort(key, order).then(() => {
+
+    }, (...params) => {
+      this.errorView.render(params[0]);
+    });
+  }
   pagination(event) {
     let newActivePage = event.currentTarget.dataset.id;
+    let showMorePages = event.currentTarget.dataset.more;
 
     if (newActivePage === 'next') {
       newActivePage = Number(this.activePage) + 1;
@@ -125,6 +152,20 @@ export default class TableView extends View {
 
     if (this.activePage === Number(newActivePage)) {
       return;
+    }
+
+    if (newActivePage === this.pagination.start - 1) {
+      showMorePages = 'left';
+    } else if (newActivePage === this.pagination.start + this.pagination.limit - 1) {
+      showMorePages = 'right';
+    }
+
+    if (showMorePages === 'right') {
+      this.pagination.start = Number(newActivePage);
+    } else if (showMorePages === 'left') {
+      this.pagination.start = this.pagination.start - this.pagination.limit + 1;
+      if (this.pagination.start < 1)
+        this.pagination.start = 1;
     }
 
     this.activePage = Number(newActivePage);
@@ -161,7 +202,7 @@ export default class TableView extends View {
       values.isNew = true;
       this.collection.create(values).then(() => {
         this.dialog.close();
-        this.render();
+        this.fetchData();
       }, error => {
         this.errorView.render(...error);
         this.dialog.stopSpin();
@@ -275,11 +316,9 @@ export default class TableView extends View {
       pageCount: this.collection.getPageCount(),
       schema: this.schema.toJSON(),
       searchQuery: this.searchQuery,
-      sort: {
-        by: this.activeFilter.by,
-        reverse: this.activeFilter.reverse
-      },
-      parentProperty: this.parentProperty
+      sort: this.activeFilter,
+      parentProperty: this.parentProperty,
+      pagination: this.pagination
     }));
     this.$('button[data-toggle=hover]').popover();
     return this;

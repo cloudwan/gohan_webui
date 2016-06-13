@@ -112,9 +112,19 @@
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
-        <% for (var key = 1; key <= pageCount; key++) { %>
-        <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key %>"><%= key %></a></li>
+        <% if(pagination.start !== 1) { %>
+          <li><a data-id="<%= pagination.start - 1 %>" data-more="<%= 'left' %>"><%=(pagination.start - pagination.limit + 1) +'...' + (pagination.start - 1) %></a></li>
         <% } %>
+        <% for (var key = pagination.start; key <= pagination.start + pagination.limit - 1 && key <= pageCount; key++) {
+          if(key === pagination.start + pagination.limit - 1) {
+          %> 
+            <li ><a data-id="<%= key %>" data-more="right"><%= key + '...' + pageCount %></a></li>
+          <% } else {
+            %>
+            <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key %>"><%= key %></a></li>
+            <%
+          }
+        } %>
         <li <% if (activePage === pageCount) { %> class="disabled" <% }%>>
             <a data-id="next" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
