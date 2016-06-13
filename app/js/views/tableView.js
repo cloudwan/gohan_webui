@@ -33,6 +33,8 @@ export default class TableView extends View {
     super(options);
 
     this.errorView = new ErrorView();
+    this.template = options.template || tableTemplate;
+    this.dialogTemplate = options.dialogTemplate;
     this.app = options.app;
     this.schema = options.schema;
     this.fragment = options.fragment;
@@ -123,6 +125,7 @@ export default class TableView extends View {
   dialogForm(action, formTitle, data, onsubmit) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
       this.dialog = new DialogView({
+        template: this.dialogTemplate,
         formTitle,
         data,
         onsubmit,
@@ -318,7 +321,7 @@ export default class TableView extends View {
       this.app.breadCrumb.update([this.collection]);
     }
 
-    this.$el.html(tableTemplate({
+    this.$el.html(this.template({
       data: list,
       activePage: this.activePage,
       schema: this.schema.toJSON(),

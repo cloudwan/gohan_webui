@@ -26,6 +26,7 @@ export default class DetailView extends View {
   constructor(options) {
     super(options);
 
+    this.template = options.template || detailTemplate;
     this.errorView = new ErrorView();
     this.app = options.app;
     this.schema = options.schema;
@@ -130,7 +131,7 @@ export default class DetailView extends View {
       };
     });
 
-    this.$el.html(detailTemplate({
+    this.$el.html(this.template({
       data: result,
       schema: this.schema.toJSON(),
       children
