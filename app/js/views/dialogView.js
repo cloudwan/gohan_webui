@@ -30,6 +30,7 @@ export default class DialogView extends View {
 
     this.errorView = new ErrorView();
     this.formTitle = options.formTitle;
+    this.template = options.template;
     this.data = options.data;
     this.onsubmit = options.onsubmit;
     this.onhide = options.onhide;
