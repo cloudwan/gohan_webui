@@ -1,5 +1,5 @@
 /* global $, window */
-import {View, history} from 'backbone';
+import {View} from 'backbone';
 
 import 'bootstrap';
 import jsyaml from 'js-yaml';
@@ -171,8 +171,6 @@ export default class TableView extends View {
     this.activePage = Number(newActivePage);
 
     this.getPage(Number(newActivePage));
-
-    history.navigate(history.getFragment().replace(/(\/page\/\w+)/, '') + '/page/' + newActivePage);
   }
   dialogForm(action, formTitle, data, onsubmit) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
@@ -298,13 +296,6 @@ export default class TableView extends View {
       }
       return result;
     });
-
-    const splitIntoPages = [];
-
-    for (let i = 0; i < list.length; i += this.pageLimit) {
-      splitIntoPages.push(list.slice(i, i + this.pageLimit));
-    }
-    list = splitIntoPages;
 
     if (this.app && !this.childview) {
       this.app.breadCrumb.update([this.collection]);

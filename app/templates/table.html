@@ -56,10 +56,8 @@
        <th></th>
       </tr>
     </thead>
-    <% _.each(data, function(page, key){ %>
-
     <tbody id="page<%= key + 1 %>" >
-      <% _.each(page, function(d){ %>
+      <% _.each(data, function(d){ %>
       <tr>
         <% schema.schema.propertiesOrder.forEach( function(key){
           var property = schema.schema.properties[key];
@@ -100,7 +98,6 @@
       </tr>
       <% }); %>
     </tbody>
-    <% }); %>
   </table>
 </div>
 

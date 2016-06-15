@@ -263,9 +263,10 @@ export default class SchemaModel extends Model {
   /**
    * Returns new collection of models.
    * @param {string} url
+   * @param {*} pageLimit
    * @returns {CollectionClass}
    */
-  makeCollection(url = this.apiEndpoint()) {
+  makeCollection(url = this.apiEndpoint(), pageLimit = this.collection.pageLimit) {
     if (this.collections[url]) {
       return this.collections[url];
     }
@@ -274,7 +275,6 @@ export default class SchemaModel extends Model {
     const userModel = this.collection.userModel;
     const additionalForms = this.collection.additionalForms;
     const addingRelationDialog = this.collection.addingRelationDialog;
-    const pageLimit = this.collection.pageLimit;
     const self = this;
 
     if (additionalForms !== undefined && additionalForms[this.id] === undefined) {
@@ -298,7 +298,7 @@ export default class SchemaModel extends Model {
       constructor(options) {
         super(options);
 
-        this.pageLimit = ~~pageLimit;
+        this._pageLimit = ~~pageLimit;
         this.total = 0;
         this.offset = 0;
         this.sortKey = 'id';
@@ -313,11 +313,20 @@ export default class SchemaModel extends Model {
         this.updateUrl();
       }
 
+      get pageLimit() {
+        return this._pageLimit;
+      }
+
+      set pageLimit(pageLimit) {
+        this._pageLimit = pageLimit;
+      }
+
       /**
        * Updates collection url to filter, sort and paging.
        */
       updateUrl() {
         let filter = '';
+        let pagination = '';
 
         for (let key in this.filters) {
           if (this.filters.hasOwnProperty(key)) {
@@ -325,8 +334,11 @@ export default class SchemaModel extends Model {
           }
         }
 
+        if (this.pageLimit !== 0) {
+          pagination = '&limit=' + this.pageLimit + '&offset=' + this.offset;
+        }
         this.url = this.baseUrl + '?sort_key=' + this.sortKey + '&sort_order=' + this.sortOrder +
-          '&limit=' + this.pageLimit + '&offset=' + this.offset + filter;
+          pagination + filter;
       }
 
       /**
@@ -371,7 +383,7 @@ export default class SchemaModel extends Model {
        * @returns {number}
        */
       getPageCount() {
-        return Math.ceil(this.total / this.pageLimit);
+        return this.pageLimit === 0 ? this.pageLimit : Math.ceil(this.total / this.pageLimit);
       }
 
       /**
