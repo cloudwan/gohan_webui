@@ -263,9 +263,10 @@ export default class SchemaModel extends Model {
   /**
    * Returns new collection of models.
    * @param {string} url
+   * @param {*} pageLimit
    * @returns {CollectionClass}
    */
-  makeCollection(url = this.apiEndpoint()) {
+  makeCollection(url = this.apiEndpoint(), pageLimit = this.collection.pageLimit) {
     if (this.collections[url]) {
       return this.collections[url];
     }
@@ -297,12 +298,158 @@ export default class SchemaModel extends Model {
       constructor(options) {
         super(options);
 
+        this._pageLimit = ~~pageLimit;
+        this.total = 0;
+        this.offset = 0;
+        this.sortKey = 'id';
+        this.sortOrder = 'asc';
+        this.baseUrl = url;
         this.url = url;
         this.model = model;
         this.schema = self;
+        this.filters = {};
         this.longPolling = false;
         this.timeOutId = -1;
         this.intervalSeconds = 10;
+        this.updateUrl();
+      }
+
+      get pageLimit() {
+        return this._pageLimit;
+      }
+
+      set pageLimit(pageLimit) {
+        this._pageLimit = pageLimit;
+        this.updateUrl();
+      }
+
+      /**
+       * Updates collection url to filter, sort and paging.
+       */
+      updateUrl() {
+        let filter = '';
+        let pagination = '';
+        let queryExtension = '?';
+
+        for (let key in this.filters) {
+          if (this.filters.hasOwnProperty(key)) {
+            filter += '&' + key + '=' + this.filters[key];
+          }
+        }
+
+        if (this.pageLimit !== 0) {
+          pagination = '&limit=' + this.pageLimit + '&offset=' + this.offset;
+        }
+        if (this.baseUrl.includes('?')) {
+          queryExtension = '&';
+        }
+
+        this.url = this.baseUrl + queryExtension + 'sort_key=' + this.sortKey + '&sort_order=' + this.sortOrder +
+          pagination + filter;
+      }
+
+      /**
+       * Sorts by specified key and specified order (asc or desc).
+       * @param {string} key
+       * @param {string} order
+       * @returns {Promise}
+       */
+      sort(key = 'id', order = 'asc') {
+        return new Promise((resolve, reject) => {
+          this.sortKey = key;
+          this.sortOrder = order;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      resetFilters() {
+        this.filters = {};
+        this.updateUrl();
+      }
+
+      filter(property, value) {
+        return new Promise((resolve, reject) => {
+          if (property === undefined) {
+            this.filters = {};
+          } else if (value === undefined) {
+            delete this.filters[property];
+          } else {
+            this.filters[property] = value;
+          }
+          this.offset = 0;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      /**
+       * Returns count of pages.
+       * @returns {number}
+       */
+      getPageCount() {
+        return this.pageLimit === 0 ? this.pageLimit : Math.ceil(this.total / this.pageLimit);
+      }
+
+      /**
+       * Updates collection data to data from specified page.
+       * @param {number} pageNo
+       * @returns {Promise}
+       */
+      getPage(pageNo = 0) {
+        return new Promise((resolve, reject) => {
+          const offset = this.pageLimit * pageNo;
+
+          if (offset > this.total || offset < 0) {
+            reject('Wrong page number!');
+            return;
+          }
+
+          this.offset = offset;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      /**
+       * Updated collection data to next page.
+       * @returns {Promise}
+       */
+      getNextPage() {
+        return new Promise((resolve, reject) => {
+          const offset = this.offset + this.pageLimit;
+          if (offset >= this.total) {
+            reject('This was last page!');
+            return;
+          }
+
+          this.offset = offset;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
+      }
+
+      /**
+       * Updated collection data to prev page.
+       * @returns {Promise}
+       */
+      getPrevPage() {
+        return new Promise((resolve, reject) => {
+          const offset = this.offset - this.pageLimit;
+          if (offset < 0) {
+            reject('This was first page!');
+            return;
+          }
+
+          this.offset = offset;
+          this.updateUrl();
+
+          this.fetch().then(resolve, reject);
+        });
       }
 
       /**
@@ -368,9 +515,12 @@ export default class SchemaModel extends Model {
        * Parses response from the server.
        * @override Collection.parse
        * @param {Object} resp
+       * @param {Object} options
        * @returns {Object}
        */
-      parse(resp) {
+      parse(resp, options) {
+        this.total = Number(options.xhr.getResponseHeader('X-Total-Count'));
+
         return resp[self.get('plural')];
       }
 
