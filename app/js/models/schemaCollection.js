@@ -24,6 +24,7 @@ export default class SchemaCollection extends Collection {
     this.userModel = options.userModel;
     this.additionalForms = options.additionalForms;
     this.addingRelationDialog = options.addingRelationDialog;
+    this.pageLimit = options.pageLimit;
   }
 
   /**

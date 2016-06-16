@@ -9,7 +9,6 @@
         <div class="form-group">
         <span>Filter by:</span>
           <select class="form-control search" placeholder="Filter By">
-            <option value="">-- no filters --</option>
             <% schema.schema.propertiesOrder.forEach( function(key){
               var property = schema.schema.properties[key];
               var view = property['view']
@@ -18,13 +17,13 @@
                return;
               }
             %>
-                <option value="<%= key%>"><%= property.title %></option>
+                <option value="<%= key %>"><%= property.title %></option>
             <%
               }
             );
             %>
           </select>
-          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery.sortBy %>">
+          <input type="text" class="form-control search" placeholder="Search" value="<%= searchQuery.sortKey %>">
         </div>
       </form><a class="btn btn-primary gohan_create"><strong>+</strong> New</a>
     </div>
@@ -57,10 +56,8 @@
        <th></th>
       </tr>
     </thead>
-    <% _.each(data, function(page, key){ %>
-
-    <tbody id="page<%= key + 1 %>" <% if (key !== activePage) { %> class="hidden" <% }%> >
-      <% _.each(page, function(d){ %>
+    <tbody id="page<%= key + 1 %>" >
+      <% _.each(data, function(d){ %>
       <tr>
         <% schema.schema.propertiesOrder.forEach( function(key){
           var property = schema.schema.properties[key];
@@ -80,7 +77,7 @@
           if (property['format'] === 'uri' && urlPattern.test(d[key])) { %>
           <td><a href="<%- d[key] %>"> link </a></td>
         <% }else if(title === 'name' || title === 'title'){ %>
-          <td><a data-id="<%= d[key] %>" href="#<%= schema.url %>/<%= d.id %>"><%= _.escape(d[key]) %></a></td>
+          <td><a data-id="<%= d[key] %>" href="#<%= fragment %>/<%= d.id %>"><%= _.escape(d[key]) %></a></td>
         <% } else { %>
           <td><%= d[key] %></td>
         <% } %>
@@ -101,22 +98,31 @@
       </tr>
       <% }); %>
     </tbody>
-    <% }); %>
   </table>
 </div>
 
-<% if (data.length > 1) { %>
+<% if (pageCount > 1) { %>
 <nav>
     <ul class="pagination pagination-sm">
-        <li <% if (activePage === 0) { %> class="disabled" <% }%>>
+        <li <% if (activePage === 1) { %> class="disabled" <% }%>>
             <a data-id="prev" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
-        <% _.each(data, function(d, key){ %>
-        <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key + 1 %>"><%= key + 1 %></a></li>
-        <% }); %>
-        <li <% if (activePage === data.length - 1) { %> class="disabled" <% }%>>
+        <% if(pagination.start !== 1) { %>
+          <li><a data-id="<%= pagination.start - 1 %>" data-more="<%= 'left' %>"><%=(pagination.start - pagination.limit + 1) +'...' + (pagination.start - 1) %></a></li>
+        <% } %>
+        <% for (var key = pagination.start; key <= pagination.start + pagination.limit - 1 && key <= pageCount; key++) {
+          if(key === pagination.start + pagination.limit - 1) {
+          %> 
+            <li ><a data-id="<%= key %>" data-more="right"><%= key + '...' + pageCount %></a></li>
+          <% } else {
+            %>
+            <li <% if (key === activePage) { %> class="active" <% }%>><a data-id="<%= key %>"><%= key %></a></li>
+            <%
+          }
+        } %>
+        <li <% if (activePage === pageCount) { %> class="disabled" <% }%>>
             <a data-id="next" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
