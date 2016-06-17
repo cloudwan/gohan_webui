@@ -73,7 +73,9 @@ export default class TableView extends View {
 
     this.listenTo(this.collection, 'update', this.render);
   }
-  searchByKey() {
+  searchByKey(event) {
+    event.stopPropagation();
+
     clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
 
@@ -81,7 +83,9 @@ export default class TableView extends View {
 
     }, this.searchDelay);
   }
-  searchByField() {
+  searchByField(event) {
+    event.stopPropagation();
+
     this.fetchData();
   }
   fetchData() {
@@ -120,6 +124,8 @@ export default class TableView extends View {
   }
 
   sortData(event) {
+    event.stopPropagation();
+
     const id = event.currentTarget.dataset.id;
 
     if (this.activeSortFilter.by !== id) {
@@ -142,6 +148,7 @@ export default class TableView extends View {
     });
   }
   pagination(event) {
+    event.stopPropagation();
     let newActivePage = event.currentTarget.dataset.id;
     let showMorePages = event.currentTarget.dataset.more;
 
@@ -193,7 +200,9 @@ export default class TableView extends View {
   toServer(data) {
     return this.schema.toServer(data);
   }
-  createModel() {
+  createModel(event) {
+    event.stopPropagation();
+
     const data = this.toLocal({});
     const formTitle = '<h4>Create ' + this.schema.get('title') + '</h4>';
     const action = 'create';
@@ -212,6 +221,8 @@ export default class TableView extends View {
     this.dialogForm(action, formTitle, data, onsubmit);
   }
   updateModel(event) {
+    event.stopPropagation();
+
     const $target = $(event.target);
     const id = $target.data('id');
     const model = this.collection.get(String(id));
@@ -233,6 +244,8 @@ export default class TableView extends View {
     this.dialogForm(action, formTitle, data, onsubmit);
   }
   deleteModel(event) {
+    event.stopPropagation();
+
     if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
       return;
     }
