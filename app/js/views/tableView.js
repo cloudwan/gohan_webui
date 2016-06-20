@@ -209,7 +209,7 @@ export default class TableView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
       values.isNew = true;
-      this.collection.create(values).then(() => {
+      this.collection.create(values, {wait: true}).then(() => {
         this.dialog.close();
         this.fetchData();
       }, error => {
