@@ -25,7 +25,7 @@ export default class TableView extends View {
       'click a.title': 'sortData',
       'keyup input.search': 'searchByKey',
       'change select.search': 'searchByField',
-      'click nav li:not(.disabled) a': 'pagination'
+      'click nav li:not(.disabled) a': 'paginationHandler'
     };
   }
   constructor(options) {
@@ -40,7 +40,7 @@ export default class TableView extends View {
     this.childview = options.childview;
     this.polling = options.polling;
     this.activePage = 1;
-    this.pagination = {
+    this.paginationSettings = {
       start: 1,
       limit: 7
     };
@@ -110,7 +110,7 @@ export default class TableView extends View {
       this.errorView.render(params[0]);
     });
   }
-  fetchByQuery(property, value) {
+  fetchByQuery(property = 'name', value) {
     this.activePage = 1;
 
     this.collection.resetFilters();
@@ -147,7 +147,7 @@ export default class TableView extends View {
       this.errorView.render(params[0]);
     });
   }
-  pagination(event) {
+  paginationHandler(event) {
     event.stopPropagation();
     let newActivePage = event.currentTarget.dataset.id;
     let showMorePages = event.currentTarget.dataset.more;
@@ -162,18 +162,18 @@ export default class TableView extends View {
       return;
     }
 
-    if (newActivePage === this.pagination.start - 1) {
+    if (newActivePage === this.paginationSettings.start - 1) {
       showMorePages = 'left';
-    } else if (newActivePage === this.pagination.start + this.pagination.limit - 1) {
+    } else if (newActivePage === this.paginationSettings.start + this.paginationSettings.limit - 1) {
       showMorePages = 'right';
     }
 
     if (showMorePages === 'right') {
-      this.pagination.start = Number(newActivePage);
+      this.paginationSettings.start = Number(newActivePage);
     } else if (showMorePages === 'left') {
-      this.pagination.start = this.pagination.start - this.pagination.limit + 1;
-      if (this.pagination.start < 1)
-        this.pagination.start = 1;
+      this.paginationSettings.start = this.paginationSettings.start - this.paginationSettings.limit + 1;
+      if (this.paginationSettings.start < 1)
+        this.paginationSettings.start = 1;
     }
 
     this.activePage = Number(newActivePage);
@@ -324,7 +324,7 @@ export default class TableView extends View {
       searchQuery: this.searchQuery,
       sort: this.activeSortFilter,
       parentProperty: this.parentProperty,
-      pagination: this.pagination,
+      pagination: this.paginationSettings,
       fragment: this.fragment
     }));
     this.$('button[data-toggle=hover]').popover();
