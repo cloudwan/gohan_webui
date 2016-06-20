@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, window, history */
 import {View} from 'backbone';
 import _ from 'underscore';
 import jsyaml from 'js-yaml';
@@ -20,7 +20,8 @@ export default class DetailView extends View {
 
   get events() {
     return {
-      'click a.edit': 'update'
+      'click a.edit': 'update',
+      'click a.delete': 'delete'
     };
   }
   constructor(options) {
@@ -39,7 +40,6 @@ export default class DetailView extends View {
     );
   }
   dialogForm(action, formTitle, data, onsubmit) {
-
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
       this.dialog = new DialogView({
         formTitle,
@@ -57,6 +57,20 @@ export default class DetailView extends View {
   }
   toServer(data) {
     return this.schema.toServer(data);
+  }
+  delete() {
+    if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
+      return;
+    }
+
+    this.model.destroy().then(
+      () => {
+        history.back();
+      },
+      (collection, response) => {
+        this.errorView.render(collection, response);
+      }
+    );
   }
   update() {
     const model = this.model;
