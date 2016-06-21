@@ -20,7 +20,7 @@ export default class DetailView extends View {
 
   get events() {
     return {
-      'click a.edit': 'update',
+      'click a.update': 'update',
       'click a.delete': 'delete'
     };
   }
@@ -58,7 +58,9 @@ export default class DetailView extends View {
   toServer(data) {
     return this.schema.toServer(data);
   }
-  delete() {
+  delete(event) {
+    event.preventDefault();
+
     if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
       return;
     }
@@ -72,7 +74,9 @@ export default class DetailView extends View {
       }
     );
   }
-  update() {
+  update(event) {
+    event.preventDefault();
+
     const model = this.model;
     const data = this.toLocal(model.toJSON());
     const action = 'update';

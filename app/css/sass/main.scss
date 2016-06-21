@@ -199,6 +199,11 @@ body {
   .func {
     padding-right: 0;
     text-align: right;
+    .edit:first-child {
+      padding-right: 10px;
+      border-right:1px solid #ccc;
+      margin-right: 10px;
+    }
     .form-inline {
       display: inline;
       margin-right: 5px;
@@ -212,6 +217,10 @@ body {
     }
   }
   margin-bottom: 10px;
+}
+
+.pagination > li > a {
+  cursor: pointer;
 }
 
 .block-header{
