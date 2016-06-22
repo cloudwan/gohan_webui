@@ -75,6 +75,7 @@ export default class TableView extends View {
   }
   searchByKey(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
@@ -85,6 +86,7 @@ export default class TableView extends View {
   }
   searchByField(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     this.fetchData();
   }
@@ -125,6 +127,7 @@ export default class TableView extends View {
 
   sortData(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     const id = event.currentTarget.dataset.id;
 
@@ -149,6 +152,7 @@ export default class TableView extends View {
   }
   paginationHandler(event) {
     event.preventDefault();
+    event.stopPropagation();
     let newActivePage = event.currentTarget.dataset.id;
     let showMorePages = event.currentTarget.dataset.more;
 
@@ -202,6 +206,7 @@ export default class TableView extends View {
   }
   createModel(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     const data = this.toLocal({});
     const formTitle = '<h4>Create ' + this.schema.get('title') + '</h4>';
@@ -222,6 +227,7 @@ export default class TableView extends View {
   }
   updateModel(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     const $target = $(event.target);
     const id = $target.data('id');
@@ -245,6 +251,7 @@ export default class TableView extends View {
   }
   deleteModel(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
       return;
