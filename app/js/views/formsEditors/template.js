@@ -6,7 +6,7 @@ import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
 
 const Form = Backbone.Form;
 Form.template = _.template(
-  '<form class="" role="form">' +
+  '<form class="gohan-form" role="form">' +
   '  <div id="alerts_form"></div>' +
   '  <div data-fieldsets></div>' +
   '</form>'
