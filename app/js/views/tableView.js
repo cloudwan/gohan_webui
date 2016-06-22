@@ -74,7 +74,7 @@ export default class TableView extends View {
     this.listenTo(this.collection, 'update', this.render);
   }
   searchByKey(event) {
-    event.stopPropagation();
+    event.preventDefault();
 
     clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
@@ -84,7 +84,7 @@ export default class TableView extends View {
     }, this.searchDelay);
   }
   searchByField(event) {
-    event.stopPropagation();
+    event.preventDefault();
 
     this.fetchData();
   }
@@ -124,7 +124,7 @@ export default class TableView extends View {
   }
 
   sortData(event) {
-    event.stopPropagation();
+    event.preventDefault();
 
     const id = event.currentTarget.dataset.id;
 
@@ -148,7 +148,7 @@ export default class TableView extends View {
     });
   }
   paginationHandler(event) {
-    event.stopPropagation();
+    event.preventDefault();
     let newActivePage = event.currentTarget.dataset.id;
     let showMorePages = event.currentTarget.dataset.more;
 
@@ -201,7 +201,7 @@ export default class TableView extends View {
     return this.schema.toServer(data);
   }
   createModel(event) {
-    event.stopPropagation();
+    event.preventDefault();
 
     const data = this.toLocal({});
     const formTitle = '<h4>Create ' + this.schema.get('title') + '</h4>';
@@ -221,7 +221,7 @@ export default class TableView extends View {
     this.dialogForm(action, formTitle, data, onsubmit);
   }
   updateModel(event) {
-    event.stopPropagation();
+    event.preventDefault();
 
     const $target = $(event.target);
     const id = $target.data('id');
@@ -232,7 +232,7 @@ export default class TableView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
 
-      model.save(values).then(() => {
+      model.save(values, {wait: true}).then(() => {
         this.collection.trigger('update');
         this.dialog.close();
       }, error => {
@@ -244,7 +244,7 @@ export default class TableView extends View {
     this.dialogForm(action, formTitle, data, onsubmit);
   }
   deleteModel(event) {
-    event.stopPropagation();
+    event.preventDefault();
 
     if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
       return;
@@ -253,7 +253,7 @@ export default class TableView extends View {
     const id = $target.data('id');
     const model = this.collection.get(String(id));
 
-    model.destroy().then(() => {
+    model.destroy({wait: true}).then(() => {
       this.collection.fetch().catch(error => this.errorView.render(...error));
     }, error => this.errorView.render(...error));
   }
