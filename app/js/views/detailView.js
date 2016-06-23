@@ -28,6 +28,7 @@ export default class DetailView extends View {
     super(options);
 
     this.template = options.template || detailTemplate;
+    this.TableViewClass = options.TableViewClass || TableView;
     this.errorView = new ErrorView();
     this.app = options.app;
     this.schema = options.schema;
@@ -170,7 +171,7 @@ export default class DetailView extends View {
       const fragment = this.fragment + '/' + child.get('plural');
       const endpoint = this.schema.apiEndpointBase() + '/' + fragment;
       const collection = child.makeCollection(endpoint);
-      const tableView = new TableView({
+      const tableView = new this.TableViewClass({
         schema: child,
         collection,
         childview: true,
