@@ -19,13 +19,13 @@ export default class TableView extends View {
   }
   get events() {
     return {
-      'click .gohan_create': 'createModel',
-      'click .gohan_delete': 'deleteModel',
-      'click .gohan_update': 'updateModel',
-      'click a.title': 'sortData',
-      'keyup input.search': 'searchByKey',
-      'change select.search': 'searchByField',
-      'click nav li:not(.disabled) a': 'paginationHandler'
+      'click [data-gohan="create"]': 'createModel',
+      'click [data-gohan="delete"]': 'deleteModel',
+      'click [data-gohan="update"]': 'updateModel',
+      'click [data-gohan="sort-title"]': 'sortData',
+      'keyup [data-gohan="search"]': 'searchByKey',
+      'change [data-gohan="search"]': 'searchByField',
+      'click [data-gohan="pagination"] li:not(.disabled) a': 'paginationHandler'
     };
   }
   constructor(options) {
@@ -62,8 +62,8 @@ export default class TableView extends View {
 
     if (this.collection !== undefined) {
       this.collection.getPage().then(() => {
-        this.searchQuery.propField = $('select.search', this.$el).val();
-        if ( this.polling ) {
+        this.searchQuery.propField = $('[data-gohan="search"] select', this.$el).val();
+        if (this.polling) {
           this.collection.startLongPolling();
         }
       }, (...params) => {
@@ -91,8 +91,8 @@ export default class TableView extends View {
     this.fetchData();
   }
   fetchData() {
-    const property = $('select.search', this.$el).val();
-    const value = $('input.search', this.$el).val();
+    const property = $('[data-gohan="search"] select', this.$el).val();
+    const value = $('[data-gohan="search"] input', this.$el).val();
 
     this.searchQuery = {
       sortKey: value,
@@ -107,7 +107,7 @@ export default class TableView extends View {
   }
   getPage(pageNo) {
     this.collection.getPage(pageNo - 1).then(() => {
-      $('select.search', this.$el).val(this.searchQuery.propField);
+      $('[data-gohan="search"] select', this.$el).val(this.searchQuery.propField);
     }, (...params) => {
       this.errorView.render(params[0]);
     });
@@ -117,8 +117,8 @@ export default class TableView extends View {
 
     this.collection.resetFilters();
     this.collection.filter(property, value).then(() => {
-      $('select.search', this.$el).val(this.searchQuery.propField);
-      $('input.search', this.$el).focus().val(this.searchQuery.sortKey);
+      $('[data-gohan="search"] select', this.$el).val(this.searchQuery.propField);
+      $('[data-gohan="search"] input', this.$el).focus().val(this.searchQuery.sortKey);
 
     }, (...params) => {
       this.errorView.render(params[0]);

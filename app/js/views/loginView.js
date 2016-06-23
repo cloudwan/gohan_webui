@@ -11,7 +11,7 @@ export default class LoginView extends View {
   }
   get events() {
     return {
-      'click input.btn': 'login'
+      'click [data-gohan="login"]': 'login'
     };
   }
 

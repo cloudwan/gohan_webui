@@ -20,8 +20,8 @@ export default class DetailView extends View {
 
   get events() {
     return {
-      'click a.update': 'update',
-      'click a.delete': 'delete'
+      'click [data-gohan="update"]': 'update',
+      'click [data-gohan="delete"]': 'delete'
     };
   }
   constructor(options) {
