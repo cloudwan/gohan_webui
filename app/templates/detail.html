@@ -2,7 +2,10 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-xs-6 resource_name"><h2><%- schema.title %></h2></div>
-      <div class="col-xs-6 func"><a class="edit update" href="#">Edit</a><a class="edit delete" href="#">Delete</a></div>
+      <div class="col-xs-6 func">
+        <a class="edit" data-gohan="update" href="#">Edit</a>
+        <a class="edit" data-gohan="delete" href="#">Delete</a>
+      </div>
     </div>
 
     <% _.each(schema.schema.propertiesOrder, function(key){

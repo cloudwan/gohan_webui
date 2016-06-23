@@ -10,7 +10,7 @@
   </a>
   <ul id="menu1" class="dropdown-menu" aria-labelledby="dLabel">
     <li>
-      <a href="#"  id="logout">Log Out</a>
+      <a href="#" data-gohan="logout">Log Out</a>
     </li>
   </ul>
 </div>
@@ -25,7 +25,7 @@
   <ul id="menu2" class="dropdown-menu" aria-labelledby="dLabel">
 <% _.each(tenants, function(tenant){ %>
     <li>
-      <a id="changeTenant" data-tenant="<%= tenant.name %>"><%= tenant.name %></a>
+      <a data-gohan="change-tenant" data-tenant="<%= tenant.name %>"><%= tenant.name %></a>
     </li>
 <% }); %>
   </ul>

@@ -14,8 +14,8 @@ export default class HeaderView extends View {
   }
   get events() {
     return {
-      'click #logout': 'logout',
-      'click #changeTenant': 'changeTenant'
+      'click [data-gohan="logout"]': 'logout',
+      'click [data-gohan="change-tenant"]': 'changeTenant'
     };
   }
 
@@ -41,9 +41,9 @@ export default class HeaderView extends View {
   /**
    * Change Tenant
    */
-  changeTenant( event ) {
-    const tenant = $( event.currentTarget ).data( 'tenant' );
-    this.model.loginTenant( tenant ).then(
+  changeTenant(event) {
+    const tenant = $(event.currentTarget).data('tenant');
+    this.model.loginTenant(tenant).then(
       () => {
         window.location.reload();
       }
