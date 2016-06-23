@@ -39,6 +39,9 @@ export default class TableView extends View {
     this.fragment = options.fragment;
     this.childview = options.childview;
     this.polling = options.polling;
+    if (options.pageLimit !== undefined) {
+      this.collection.pageLimit = Number(options.pageLimit);
+    }
     this.activePage = 1;
     this.paginationSettings = {
       start: 1,
