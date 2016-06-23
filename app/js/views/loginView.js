@@ -52,6 +52,8 @@ export default class LoginView extends View {
    */
   login(event) {
     event.preventDefault();
+    event.currentTarget.disabled = true;
+
     const id = this.$('#id').val();
     const password = this.$('#password').val();
     $('#alerts').empty();
@@ -64,6 +66,7 @@ export default class LoginView extends View {
       }
     ).catch(error => {
       this.errorView.render(...error);
+      event.currentTarget.disabled = false;
     });
   }
 }
