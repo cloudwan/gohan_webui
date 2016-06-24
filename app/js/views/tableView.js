@@ -210,6 +210,7 @@ export default class TableView extends View {
   createModel(event) {
     event.preventDefault();
     event.stopPropagation();
+    event.currentTarget.disabled = true;
 
     const data = this.toLocal({});
     const formTitle = '<h4>Create ' + this.schema.get('title') + '</h4>';
@@ -220,6 +221,7 @@ export default class TableView extends View {
       this.collection.create(values, {wait: true}).then(() => {
         this.dialog.close();
         this.fetchData();
+        event.currentTarget.disabled = false;
       }, error => {
         this.errorView.render(...error);
         this.dialog.stopSpin();
@@ -231,8 +233,9 @@ export default class TableView extends View {
   updateModel(event) {
     event.preventDefault();
     event.stopPropagation();
+    event.currentTarget.disabled = true;
 
-    const $target = $(event.target);
+    const $target = $(event.currentTarget);
     const id = $target.data('id');
     const model = this.collection.get(String(id));
     const data = this.toLocal(model.toJSON());
@@ -244,6 +247,7 @@ export default class TableView extends View {
       model.save(values, {wait: true}).then(() => {
         this.collection.trigger('update');
         this.dialog.close();
+        event.currentTarget.disabled = false;
       }, error => {
         this.errorView.render(...error);
         this.dialog.stopSpin();
@@ -259,7 +263,7 @@ export default class TableView extends View {
     if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
       return;
     }
-    const $target = $(event.target);
+    const $target = $(event.currentTarget);
     const id = $target.data('id');
     const model = this.collection.get(String(id));
 

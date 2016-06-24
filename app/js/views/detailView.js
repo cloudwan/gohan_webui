@@ -77,6 +77,7 @@ export default class DetailView extends View {
   }
   update(event) {
     event.preventDefault();
+    event.currentTarget.disabled = true;
 
     const model = this.model;
     const data = this.toLocal(model.toJSON());
@@ -88,6 +89,7 @@ export default class DetailView extends View {
       model.save(values).then(
         () => {
           this.dialog.close();
+          event.currentTarget.disabled = false;
           this.render();
         },
         (collection, response) => {
