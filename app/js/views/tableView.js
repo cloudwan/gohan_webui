@@ -187,13 +187,14 @@ export default class TableView extends View {
 
     this.getPage(Number(newActivePage));
   }
-  dialogForm(action, formTitle, data, onsubmit) {
+  dialogForm(action, formTitle, data, onsubmit, onhide) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
       this.dialog = new DialogView({
         template: this.dialogTemplate,
         formTitle,
         data,
         onsubmit,
+        onhide,
         schema: this.schema.toFormJSON(schema),
         unformattedSchema: this.schema,
         fields: schema.propertiesOrder
@@ -215,20 +216,22 @@ export default class TableView extends View {
     const data = this.toLocal({});
     const formTitle = '<h4>Create ' + this.schema.get('title') + '</h4>';
     const action = 'create';
+    const onhide = () => {
+      event.currentTarget.disabled = false;
+    };
     const onsubmit = values => {
       values = this.toServer(values);
       values.isNew = true;
       this.collection.create(values, {wait: true}).then(() => {
         this.dialog.close();
         this.fetchData();
-        event.currentTarget.disabled = false;
       }, error => {
         this.errorView.render(...error);
         this.dialog.stopSpin();
       });
     };
 
-    this.dialogForm(action, formTitle, data, onsubmit);
+    this.dialogForm(action, formTitle, data, onsubmit, onhide);
   }
   updateModel(event) {
     event.preventDefault();

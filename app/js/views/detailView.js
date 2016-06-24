@@ -40,12 +40,13 @@ export default class DetailView extends View {
       error => this.errorView.render(...error)
     );
   }
-  dialogForm(action, formTitle, data, onsubmit) {
+  dialogForm(action, formTitle, data, onsubmit, onhide) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
       this.dialog = new DialogView({
         formTitle,
         data,
         onsubmit,
+        onhide,
         unformattedSchema: this.schema,
         schema: this.schema.toFormJSON(schema),
         fields: schema.propertiesOrder
@@ -83,13 +84,15 @@ export default class DetailView extends View {
     const data = this.toLocal(model.toJSON());
     const action = 'update';
     const formTitle = '<h4>Update ' + this.schema.get('title') + '</h4>';
+    const onhide = () => {
+      event.currentTarget.disabled = false;
+    };
     const onsubmit = values => {
       values = this.toServer(values);
 
       model.save(values).then(
         () => {
           this.dialog.close();
-          event.currentTarget.disabled = false;
           this.render();
         },
         (collection, response) => {
@@ -99,7 +102,7 @@ export default class DetailView extends View {
       );
     };
 
-    this.dialogForm(action, formTitle, data, onsubmit);
+    this.dialogForm(action, formTitle, data, onsubmit, onhide);
   }
   renderProperty(data, key) {
     let content;
