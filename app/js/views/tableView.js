@@ -244,6 +244,9 @@ export default class TableView extends View {
     const data = this.toLocal(model.toJSON());
     const action = 'update';
     const formTitle = '<h4>Update ' + this.schema.get('title') + '</h4>';
+    const onhide = () => {
+      event.currentTarget.disabled = false;
+    };
     const onsubmit = values => {
       values = this.toServer(values);
 
@@ -257,7 +260,7 @@ export default class TableView extends View {
       });
     };
 
-    this.dialogForm(action, formTitle, data, onsubmit);
+    this.dialogForm(action, formTitle, data, onsubmit, onhide);
   }
   deleteModel(event) {
     event.preventDefault();
