@@ -36,6 +36,8 @@ export default class TableView extends View {
     this.dialogTemplate = options.dialogTemplate;
     this.app = options.app;
     this.schema = options.schema;
+    this.parent = options.parent;
+    this.parentId = options.parentId;
     this.fragment = options.fragment;
     this.childview = options.childview;
     this.polling = options.polling;
@@ -60,7 +62,7 @@ export default class TableView extends View {
     this.searchTimeout = undefined;
 
     if (this.childview) {
-      this.parentProperty = this.schema.get('parent') + '_id';
+      this.parentProperty = (this.parent || this.schema.get('parent')) + '_id';
     }
 
     if (this.collection !== undefined) {
@@ -222,6 +224,9 @@ export default class TableView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
       values.isNew = true;
+      if (this.parentId) {
+        Object.assign(values, {[this.parent + '_id']: this.parentId});
+      }
       this.collection.create(values, {wait: true}).then(() => {
         this.dialog.close();
         this.fetchData();
