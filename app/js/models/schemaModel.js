@@ -369,7 +369,7 @@ export default class SchemaModel extends Model {
         this.updateUrl();
       }
 
-      filter(property, value) {
+      filterByQuery(property, value) {
         return new Promise((resolve, reject) => {
           if (property === undefined) {
             this.filters = {};

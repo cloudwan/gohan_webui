@@ -121,7 +121,7 @@ export default class TableView extends View {
     this.activePage = 1;
 
     this.collection.resetFilters();
-    this.collection.filter(property, value).then(() => {
+    this.collection.filterByQuery(property, value).then(() => {
       $('[data-gohan="search"] select', this.$el).val(this.searchQuery.propField);
       $('[data-gohan="search"] input', this.$el).focus().val(this.searchQuery.sortKey);
 
