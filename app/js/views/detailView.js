@@ -71,8 +71,8 @@ export default class DetailView extends View {
       () => {
         history.back();
       },
-      (collection, response) => {
-        this.errorView.render(collection, response);
+      error => {
+        this.errorView.render(...error);
       }
     );
   }
@@ -95,8 +95,8 @@ export default class DetailView extends View {
           this.dialog.close();
           this.render();
         },
-        (collection, response) => {
-          this.errorView.render(collection, response);
+        error => {
+          this.dialog.errorView.render(...error);
           this.dialog.stopSpin();
         }
       );
@@ -160,6 +160,7 @@ export default class DetailView extends View {
       schema: this.schema.toJSON(),
       children
     }));
+    $('[data-gohan="error"]', this.el).append(this.errorView.el);
 
     if (this.childview) {
       this.model.getAncestors(ancestors => {
@@ -193,6 +194,7 @@ export default class DetailView extends View {
     });
 
     this.$('button[data-toggle=hover]').popover();
+
     return this;
   }
 }

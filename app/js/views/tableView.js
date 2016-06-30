@@ -71,8 +71,8 @@ export default class TableView extends View {
         if (this.polling) {
           this.collection.startLongPolling();
         }
-      }, (...params) => {
-        this.errorView.render(params[0]);
+      }, error => {
+        this.errorView.render(...error);
       });
     }
 
@@ -113,8 +113,8 @@ export default class TableView extends View {
   getPage(pageNo) {
     this.collection.getPage(pageNo - 1).then(() => {
       $('[data-gohan="search"] select', this.$el).val(this.searchQuery.propField);
-    }, (...params) => {
-      this.errorView.render(params[0]);
+    }, error => {
+      this.errorView.render(...error);
     });
   }
   fetchByQuery(property = 'name', value) {
@@ -125,8 +125,8 @@ export default class TableView extends View {
       $('[data-gohan="search"] select', this.$el).val(this.searchQuery.propField);
       $('[data-gohan="search"] input', this.$el).focus().val(this.searchQuery.sortKey);
 
-    }, (...params) => {
-      this.errorView.render(params[0]);
+    }, error => {
+      this.errorView.render(...error);
     });
   }
 
@@ -151,8 +151,8 @@ export default class TableView extends View {
 
     this.collection.sort(key, order).then(() => {
 
-    }, (...params) => {
-      this.errorView.render(params[0]);
+    }, error => {
+      this.errorView.render(...error);
     });
   }
   paginationHandler(event) {
@@ -231,7 +231,7 @@ export default class TableView extends View {
         this.dialog.close();
         this.fetchData();
       }, error => {
-        this.errorView.render(...error);
+        this.dialog.errorView.render(...error);
         this.dialog.stopSpin();
       });
     };
@@ -260,7 +260,7 @@ export default class TableView extends View {
         this.dialog.close();
         event.currentTarget.disabled = false;
       }, error => {
-        this.errorView.render(...error);
+        this.dialog.errorView.render(...error);
         this.dialog.stopSpin();
       });
     };
@@ -353,6 +353,7 @@ export default class TableView extends View {
       fragment: this.fragment
     }));
     this.$('button[data-toggle=hover]').popover();
+    $('[data-gohan="error"]', this.el).append(this.errorView.el);
     return this;
   }
   close() {

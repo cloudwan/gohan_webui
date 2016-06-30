@@ -43,6 +43,7 @@ export default class LoginView extends View {
    */
   render() {
     this.el.innerHTML = this.template({});
+    $('[data-gohan="error"]', this.el).append(this.errorView.el);
     return this;
   }
 
