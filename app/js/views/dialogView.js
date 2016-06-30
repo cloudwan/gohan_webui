@@ -207,6 +207,7 @@ export default class DialogView extends View {
         this.onsubmit(this.form.getValue());
       }
     });
+    $('[data-gohan="error"]', this.form.el).append(this.errorView.el);
     this.dialog.open();
   }
 }

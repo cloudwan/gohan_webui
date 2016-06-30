@@ -1,4 +1,4 @@
-/* global window, $ */
+/* global window */
 import {View} from 'backbone';
 
 import template from './../../templates/error.html';
@@ -7,14 +7,23 @@ export default class ErrorView extends View {
   get tagName() {
     return 'div';
   }
+
+  get events() {
+    return {
+      'click [data-gohan="reload"]': 'reload',
+      'click [data-gohan="close"]': 'close'
+    };
+  }
+
   constructor() {
     super();
     this.message = 'Unknown Error';
   }
-
+  reload() {
+    window.location.reload();
+  }
   render(collection, response) {
     if (response === undefined) {
-      window.location.reload();
       return;
     }
 
@@ -22,9 +31,7 @@ export default class ErrorView extends View {
 
     switch (response.status) {
       case 0: {
-        this.message = 'Server Connection failed';
-        collection.unsetAuthData();
-        window.location.reload();
+        this.message = 'Server Connection failed <a data-gohan="reload">Refresh</a>';
         break;
       }
       case 400: {
@@ -32,9 +39,8 @@ export default class ErrorView extends View {
         break;
       }
       case 401: {
-        this.message = 'Unauthorized Error: please retry login';
+        this.message = 'Unauthorized Error: please retry login <a data-gohan="reload">Refresh</a>';
         collection.unsetAuthData();
-        window.location.reload();
         break;
       }
       case 404: {
@@ -50,10 +56,12 @@ export default class ErrorView extends View {
       message: this.message
     });
 
-    if ($('#alerts_form').length > 0) {
-      $('#alerts_form').html(html);
-    } else {
-      $('#alerts').html(html);
-    }
+
+    this.$el.html(html);
+    return this;
+  }
+
+  close() {
+    this.$el.html('<div></div>');
   }
 }

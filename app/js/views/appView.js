@@ -74,8 +74,8 @@ export default class AppView extends View {
     this.LoginClass = options.LoginClass || LoginView;
 
     this.ErrorClass = options.ErrorClass || ErrorView;
-
     this.errorView = new this.ErrorClass();
+    $('[data-gohan="error"]').append(this.errorView.el);
     this.breadCrumb = new this.BreadCrumbClass();
     this.sidebarView = new this.SidebarClass({
       collection: this.menuCollection,
