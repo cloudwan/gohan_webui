@@ -1,8 +1,10 @@
-/* global $, window */
+/* global $ */
 import {View} from 'backbone';
 
 import 'bootstrap';
 import jsyaml from 'js-yaml';
+
+import BootstrapDialog from 'bootstrap-dialog';
 
 import DialogView from './dialogView';
 import ErrorView from './errorView';
@@ -271,16 +273,23 @@ export default class TableView extends View {
     event.preventDefault();
     event.stopPropagation();
 
-    if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
-      return;
-    }
-    const $target = $(event.currentTarget);
-    const id = $target.data('id');
-    const model = this.collection.get(String(id));
+    BootstrapDialog.confirm({
+      title: 'Delete',
+      message: 'Are you sure to delete?',
+      closable: true,
+      btnOKLabel: 'Delete',
+      callback: result => {
+        if (result) {
+          const $target = $(event.currentTarget);
+          const id = $target.data('id');
+          const model = this.collection.get(String(id));
 
-    model.destroy({wait: true}).then(() => {
-      this.collection.fetch().catch(error => this.errorView.render(...error));
-    }, error => this.errorView.render(...error));
+          model.destroy({wait: true}).then(() => {
+            this.collection.fetch().catch(error => this.errorView.render(...error));
+          }, error => this.errorView.render(...error));
+        }
+      }
+    });
   }
   renderProperty(data, key) {
     let content;
