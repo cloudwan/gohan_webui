@@ -645,6 +645,7 @@ input[type="checkbox"].form-control {
   margin-top: 0;
   margin-bottom: 0;
 }
+
 .tableview, .detailview, .error-message{
   > [data-gohan="error"] {
     position: absolute;
@@ -652,10 +653,16 @@ input[type="checkbox"].form-control {
     margin: 0;
     left: 0;
     z-index: 1001;
+    top: 20px;
     > div {
       width: 60vw;
       margin-left: auto;
       margin-right: auto;
     }
   }
+}
+
+.bootstrap-dialog .modal-header {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
