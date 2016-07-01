@@ -1,7 +1,9 @@
-/* global $, window, history */
+/* global $, history */
 import {View} from 'backbone';
 import _ from 'underscore';
 import jsyaml from 'js-yaml';
+
+import BootstrapDialog from 'bootstrap-dialog';
 
 import DialogView from './dialogView';
 import ErrorView from './errorView';
@@ -63,18 +65,24 @@ export default class DetailView extends View {
   delete(event) {
     event.preventDefault();
 
-    if (!window.confirm('Are you sure to delete?')) { // eslint-disable-line no-alert
-      return;
-    }
-
-    this.model.destroy().then(
-      () => {
-        history.back();
-      },
-      error => {
-        this.errorView.render(...error);
+    BootstrapDialog.confirm({
+      title: 'Delete',
+      message: 'Are you sure to delete?',
+      closable: true,
+      btnOKLabel: 'Delete',
+      callback: result => {
+        if (result) {
+          this.model.destroy().then(
+            () => {
+              history.back();
+            },
+            error => {
+              this.errorView.render(...error);
+            }
+          );
+        }
       }
-    );
+    });
   }
   update(event) {
     event.preventDefault();
