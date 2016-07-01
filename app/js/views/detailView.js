@@ -29,10 +29,10 @@ export default class DetailView extends View {
   constructor(options) {
     super(options);
 
+    this.app = options.app;
+    this.errorView = this.app.ErrorClass ? new this.app.ErrorClass() : new ErrorView();
     this.template = options.template || detailTemplate;
     this.TableViewClass = options.TableViewClass || TableView;
-    this.errorView = new ErrorView();
-    this.app = options.app;
     this.schema = options.schema;
     this.childview = options.childview;
     this.model = options.model;
@@ -45,6 +45,7 @@ export default class DetailView extends View {
   dialogForm(action, formTitle, data, onsubmit, onhide) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
       this.dialog = new DialogView({
+        app: this.app,
         formTitle,
         data,
         onsubmit,

@@ -72,6 +72,7 @@ export default class AppView extends View {
     this.HeaderClass = options.HeaderClass || HeaderView;
     this.BreadCrumbClass = options.BreadCrumbClass || BreadCrumbView;
     this.LoginClass = options.LoginClass || LoginView;
+    this.ErrorClass = options.ErrorClass || ErrorView;
 
     this.ErrorClass = options.ErrorClass || ErrorView;
     this.errorView = new this.ErrorClass();
