@@ -204,6 +204,11 @@ export default class SchemaModel extends Model {
         const cloneOfModel = model.clone();
         const modelJSON = {};
 
+        if (method.toLowerCase() === 'read') {
+          super.sync(method, model, options);
+          return;
+        }
+
         this.schema.filterByAction(method).then(schemaForAction => {
           for (let key in schemaForAction.properties) {
             modelJSON[key] = cloneOfModel.get(key);
