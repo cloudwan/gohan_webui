@@ -18,29 +18,38 @@ export default class ErrorView extends View {
   constructor() {
     super();
     this.message = 'Unknown Error';
+    this.messageDetail = '';
   }
   reload() {
     window.location.reload();
   }
-  render(collection, response) {
+  render(...params) {
+    const response = params.find(param => {
+      return param.hasOwnProperty('status') && param.hasOwnProperty('readyState');
+    });
+
     if (response === undefined) {
       return;
     }
 
     this.message = response.statusText;
+    if (response.hasOwnProperty('responseJSON') && response.responseJSON !== null) {
+      if (response.responseJSON.hasOwnProperty('error')) {
+        this.messageDetail = response.responseJSON.error;
+      }
+    }
 
     switch (response.status) {
       case 0: {
-        this.message = 'Server Connection failed <a data-gohan="reload">Refresh</a>';
+        this.message = 'Server Connection failed (<a href="#" data-gohan="reload" class="alert-link">Reload</a>)';
         break;
       }
       case 400: {
-        this.message = 'Invalid input error:' + response.responseJSON.error;
+        this.message = 'Bad Request';
         break;
       }
       case 401: {
-        this.message = 'Unauthorized Error: please retry login <a data-gohan="reload">Refresh</a>';
-        collection.unsetAuthData();
+        this.message = 'Unauthorized Error';
         break;
       }
       case 404: {
@@ -52,12 +61,14 @@ export default class ErrorView extends View {
         break;
       }
     }
+
     const html = template({
-      message: this.message
+      message: this.message,
+      messageDetail: this.messageDetail
     });
 
-
     this.$el.html(html);
+    this.delegateEvents();
     return this;
   }
 
