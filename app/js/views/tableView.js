@@ -33,10 +33,10 @@ export default class TableView extends View {
   constructor(options) {
     super(options);
 
-    this.errorView = new ErrorView();
+    this.app = options.app;
+    this.errorView = this.app.ErrorClass ? new this.app.ErrorClass() : new ErrorView();
     this.template = options.template || tableTemplate;
     this.dialogTemplate = options.dialogTemplate;
-    this.app = options.app;
     this.schema = options.schema;
     this.parent = options.parent;
     this.parentId = options.parentId;
@@ -194,6 +194,7 @@ export default class TableView extends View {
   dialogForm(action, formTitle, data, onsubmit, onhide) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
       this.dialog = new DialogView({
+        app: this.app,
         template: this.dialogTemplate,
         formTitle,
         data,
