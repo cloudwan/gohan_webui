@@ -96,6 +96,9 @@ export default class SchemaModel extends Model {
         this.schema = self;
         this.baseUrl = baseUrl;
         this.url = this.baseUrl;
+        this.longPolling = false;
+        this.timeOutId = -1;
+        this.intervalSeconds = 10;
       }
 
       /**
@@ -218,6 +221,44 @@ export default class SchemaModel extends Model {
           options.data = JSON.stringify(data);
           super.sync(method, model, options);
         });
+      }
+
+      /**
+       * Starts long polling.
+       * @param {number} intervalSeconds
+       */
+      startLongPolling(intervalSeconds) {
+        this.longPolling = true;
+
+        if (intervalSeconds) {
+          this.intervalSeconds = intervalSeconds;
+        }
+        this.executeLongPolling();
+      }
+
+      /**
+       * Stops long polling.
+       */
+      stopLongPolling() {
+        this.longPolling = false;
+        clearTimeout(this.timeOutId);
+        this.timeOutId = -1;
+      }
+
+      /**
+       * Fetches data from server.
+       */
+      executeLongPolling() {
+        const fetchSuccess = () => {
+          if (this.longPolling) {
+            this.timeOutId = setTimeout(
+              this.executeLongPolling.bind(this),
+              1000 * this.intervalSeconds
+            );
+          }
+        };
+
+        this.fetch().then(fetchSuccess);
       }
 
       /**
