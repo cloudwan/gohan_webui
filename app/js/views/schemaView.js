@@ -4,10 +4,10 @@ import DialogView from './dialogView';
 import _ from 'underscore';
 import jsyaml from 'js-yaml';
 
-import 'jquery-ui/core';
-import 'jquery-ui/widget';
-import 'jquery-ui/mouse';
-import 'jquery-ui/sortable';
+import 'jquery-ui/ui/core';
+import 'jquery-ui/ui/widget';
+import 'jquery-ui/ui/widgets/mouse';
+import 'jquery-ui/ui/widgets/sortable';
 import 'ace-builds/src-min-noconflict/ace';
 import 'ace-builds/src-min-noconflict/theme-monokai';
 import 'ace-builds/src-min-noconflict/mode-yaml';
