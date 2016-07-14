@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, document */
 // Import bootstraps.
 import 'bootstrap';
 import 'bootstrap-dialog';
@@ -19,7 +19,7 @@ const config = new Config({url: 'config.json'});
 
 config.fetch().then(() => {
   const rootView = new AppView({
-    router: new Router(),
+    router: new Router({title: document.title}),
     config,
     viewClass: {
       schema: {
