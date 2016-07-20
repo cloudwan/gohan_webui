@@ -26,6 +26,7 @@ export default class SampleView extends View {
     this.app = options.app;
 
     if (this.app) {
+      this.app.router.changeTitle('Home');
       this.app.breadCrumb.update([]);
     }
   }

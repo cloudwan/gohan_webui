@@ -178,7 +178,7 @@ export default class DetailView extends View {
       });
     } else {
       const ancestors = [];
-
+      this.app.router.changeTitle(this.model.get('name') || this.model.get('id'));
       ancestors.unshift(this.model);
       this.app.breadCrumb.update(ancestors, this.childview);
     }

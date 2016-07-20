@@ -349,6 +349,7 @@ export default class TableView extends View {
 
     if (this.app && !this.childview) {
       this.app.breadCrumb.update([this.collection]);
+      this.app.router.changeTitle(this.schema.get('title'));
     }
 
     this.$el.html(this.template({

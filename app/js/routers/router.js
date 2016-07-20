@@ -1,3 +1,4 @@
+/* global document */
 import {Router, history} from 'backbone';
 
 /**
@@ -10,17 +11,19 @@ export default class AppRouter extends Router {
   /**
    * Constructs the object.
    * @constructor
-   * @override Router.constructor
-   * @param options
+   * @override
+   * @param {Object} options={}
    */
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
+
+    this.pageBaseTitle = options.title || '';
     this.routes = [];
   }
 
   /**
    * Adds route to router.
-   * @override Router.route
+   * @override
    * @param {string} route
    * @param {string} name
    * @param {!*} rest
@@ -31,6 +34,18 @@ export default class AppRouter extends Router {
       name
     });
     super.route(route, name, ...rest);
+  }
+
+  /**
+   * Changes title to specified value.
+   * @param {string} name=''
+   */
+  changeTitle(name = '') {
+    if (name !== '') {
+      document.title = name + ' | ' + this.pageBaseTitle;
+      return;
+    }
+    document.title = this.pageBaseTitle;
   }
 
   getQueryParams() {
