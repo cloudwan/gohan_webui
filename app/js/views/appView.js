@@ -237,7 +237,7 @@ export default class AppView extends View {
         }
       };
 
-      this.router.route(route.path.substr(2), route.name, customView);
+      this.router.route(route.path, route.name, customView);
     });
 
     history.loadUrl(history.fragment);
