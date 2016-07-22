@@ -225,6 +225,22 @@ export default class UserModel extends Model {
   }
 
   /**
+   * Returns scoped token expires date.
+   * @returns {Date}
+   */
+  expiresTokenDate() {
+    const tenant = this.tenantName();
+    const scopedToken = this.getItem( 'scopedToken' );
+
+    if (scopedToken) {
+      const data = scopedToken[tenant];
+      if (data) {
+        return new Date(data.access.token.expires);
+      }
+    }
+  }
+
+  /**
    * Returns unscoped token.
    * @returns {string}
    */

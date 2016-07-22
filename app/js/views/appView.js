@@ -1,4 +1,4 @@
-/* global $ */
+/* global window, $ */
 import {View, Collection, history} from 'backbone';
 
 import UserModel from './../models/userModel';
@@ -53,7 +53,24 @@ export default class AppView extends View {
 
     this.view = null;
 
+    const showTokenExpireError = () => {
+      const message = this.config.get('errorMessages') && this.config.get('errorMessages')['tokenExpire'] ?
+        this.config.get('errorMessages')['tokenExpire'] : 'The token is expired. Please re-login. ';
+      this.errorView.render(
+        {
+          status: 1,
+          readyState: 1,
+          statusText: message + ' <a href="#" data-gohan="logout" class="alert-link">Logout</a>'
+        }
+      );
+      $('[data-gohan="logout"]', this.errorView.el).on('click', event => {
+        event.preventDefault();
+        this.userModel.unsetAuthData();
+        window.location.reload();
+      });
+    };
     if (this.userModel.authToken()) {
+      setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
       this.schemas.fetch().then(() => {
         this.buildUi();
       }, error => {
@@ -61,6 +78,7 @@ export default class AppView extends View {
       });
     } else {
       this.listenTo(this.userModel, 'change:authData', () => {
+        setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
         this.$('#main_body').empty();
         this.schemas.fetch().then(() => {
           this.buildUi();
