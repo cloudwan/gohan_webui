@@ -11,6 +11,9 @@
             "name": "sample"
         }
     ],
+    "errorMessages": {
+        "tokenExpire": "The token is expired. Please re-login."
+    },
     "addingRelationDialog": [
         "Pet"
     ],
