@@ -170,18 +170,36 @@ export default class DetailView extends View {
       children
     }));
     $('[data-gohan="error"]', this.el).append(this.errorView.el);
-
-    if (this.childview) {
-      this.model.getAncestors(ancestors => {
-        ancestors.unshift(this.model);
-        this.app.breadCrumb.update(ancestors, this.childview);
-      });
-    } else {
-      const ancestors = [];
-      this.app.router.changeTitle(this.model.get('name') || this.model.get('id'));
+    this.model.getAncestors(ancestors => {
       ancestors.unshift(this.model);
-      this.app.breadCrumb.update(ancestors, this.childview);
-    }
+      const parents = ancestors.reduce((result, ancestor) => {
+        const fragment = ancestor.schema.get('url');
+        let modelFragment;
+        let schemaFragment;
+        if (ancestor.schema.hasParent()) {
+          modelFragment = ancestor.schema.parent().get('url') +
+          '/' + ancestor.parentId() + '/' + ancestor.schema.get('plural') + '/' + ancestor.get('id');
+          schemaFragment = ancestor.schema.parent().get('url') +
+          '/' + ancestor.parentId() + '/' + ancestor.schema.get('plural');
+        } else {
+          modelFragment = ancestor.schema.get('url') + '/' + ancestor.get('id');
+          schemaFragment = fragment;
+        }
+        result.push({
+          title: ancestor.get('name'),
+          url: modelFragment
+        },
+          {
+            title: ancestor.schema.get('title'),
+            url: schemaFragment
+          });
+        return result;
+      },
+      []);
+      parents.reverse();
+      this.app.breadCrumb.update(parents);
+    });
+
     this.schema.children().forEach(child => {
       const fragment = this.fragment + '/' + child.get('plural');
       const endpoint = this.schema.apiEndpointBase() + '/' + fragment;

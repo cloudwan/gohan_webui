@@ -346,10 +346,24 @@ export default class TableView extends View {
       }
       return result;
     });
-
     if (this.app && !this.childview) {
-      this.app.breadCrumb.update([this.collection]);
-      this.app.router.changeTitle(this.schema.get('title'));
+      const parents = [];
+      const fragment = this.collection.schema.get('url');
+      let schemaFragment;
+      if (this.collection.schema.hasParent()) {
+        schemaFragment = this.collection.schema.parent().get('url') +
+        '/' + this.collection.parentId() + '/' + this.collection.schema.get('plural');
+      } else {
+        schemaFragment = fragment;
+      }
+      parents.push(
+        {
+          title: this.collection.schema.get('title'),
+          url: schemaFragment
+        });
+
+      parents.reverse();
+      this.app.breadCrumb.update(parents);
     }
 
     this.$el.html(this.template({
