@@ -46,7 +46,7 @@
            }
         %>
         <th>
-            <a href="#<%= schema.url.substring(1) %>" data-id="<%= key %>" class="title" data-gohan="sort-title"><%= property.title %>
+            <a href="#/<%= schema.url.substring(1) %>" data-id="<%= key %>" class="title" data-gohan="sort-title"><%= property.title %>
                 <% if(sort.by === key) {
                     if(sort.reverse) {%>
                         <div class="glyphicon glyphicon-sort-by-alphabet-alt"></div>
@@ -81,7 +81,7 @@
           if (property['format'] === 'uri' && urlPattern.test(d[key])) { %>
           <td><a href="<%- d[key] %>"> link </a></td>
         <% }else if(title === 'name' || title === 'title'){ %>
-          <td><a data-id="<%= d[key] %>" href="#<%= fragment %>/<%= d.id %>"><%= _.escape(d[key]) %></a></td>
+          <td><a data-id="<%= d[key] %>" href="#/<%= fragment %>/<%= d.id %>"><%= _.escape(d[key]) %></a></td>
         <% } else { %>
           <td><%= d[key] %></td>
         <% } %>

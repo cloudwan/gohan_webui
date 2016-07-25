@@ -1,4 +1,4 @@
-import {View, history} from 'backbone';
+import {View} from 'backbone';
 
 import sideviewItemTemplate from './../../templates/sideviewItem.html';
 
@@ -10,11 +10,6 @@ import sideviewItemTemplate from './../../templates/sideviewItem.html';
 export default class SidebarItemView extends View {
   get tagName() {
     return 'li';
-  }
-  get events() {
-    return {
-      'click a': 'onClick'
-    };
   }
 
   /**
@@ -30,15 +25,6 @@ export default class SidebarItemView extends View {
     this.listenTo(this.model, 'remove', this.remove);
     this.$el.addClass('withripple');
     this.$el.addClass(this.model.get('class'));
-  }
-
-  /**
-   * Handles on click event on element.
-   * @param {Event} event
-   */
-  onClick(event) {
-    event.preventDefault();
-    history.navigate(this.model.get('path'), true);
   }
 
   /**
