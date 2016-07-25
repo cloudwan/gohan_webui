@@ -170,6 +170,7 @@ export default class DetailView extends View {
       children
     }));
     $('[data-gohan="error"]', this.el).append(this.errorView.el);
+    this.app.router.changeTitle(this.model.get('name') || this.model.get('id'));
     this.model.getAncestors(ancestors => {
       ancestors.unshift(this.model);
       const parents = ancestors.reduce((result, ancestor) => {
