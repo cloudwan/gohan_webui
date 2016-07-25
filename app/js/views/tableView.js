@@ -347,6 +347,7 @@ export default class TableView extends View {
       return result;
     });
     if (this.app && !this.childview) {
+      this.app.router.changeTitle(this.schema.get('title'));
       const parents = [];
       const fragment = this.collection.schema.get('url');
       let schemaFragment;
