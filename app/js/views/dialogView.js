@@ -172,7 +172,7 @@ export default class DialogView extends View {
         const field = this.schema[key];
 
         if (field.type.toLowerCase() === 'select') {
-          this.on( key + ':change', (form, element) => {
+          this.on(key + ':change', (form, element) => {
             const elementKey = element.getValue();
 
             if (elementKey.includes('addNew')) {

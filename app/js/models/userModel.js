@@ -1,6 +1,5 @@
-/* global sessionStorage */
+/* global window, sessionStorage, localStorage */
 import Backbone, {Model} from 'backbone';
-
 
 /**
  * Class contains logic of user authority in application.
@@ -22,8 +21,42 @@ export default class UserModel extends Model {
    */
   constructor(options) {
     super(options);
+
     this.url = options.url + '/tokens';
     this.tenantURL = options.url + '/tenants';
+
+    window.addEventListener('storage', this.sessionStorageTransfer.bind(this), false);
+
+    if (!sessionStorage.length) {
+      localStorage.setItem('getSessionStorage', 'true');
+      setTimeout(() => {
+        localStorage.removeItem('getSessionStorage');
+      }, 500);
+    }
+  }
+
+  sessionStorageTransfer(event) {
+    if (!event.newValue) {
+      return;
+    }
+    if (event.key === 'getSessionStorage') {
+      localStorage.setItem('sessionStorage', JSON.stringify(sessionStorage));
+      setTimeout(() => {
+        localStorage.removeItem('sessionStorage');
+        localStorage.removeItem('getSessionStorage');
+      }, 0);
+    } else if (event.key === 'sessionStorage' && !sessionStorage.length) {
+      const data = JSON.parse(event.newValue);
+      for (let key in data) {
+        sessionStorage.setItem(key, data[key]);
+      }
+      if (data.unscopedToken) {
+        this.set('authData', JSON.parse(data.unscopedToken));
+      }
+    } else if (event.key === 'clearSessionStorage') {
+      this.unsetAuthData();
+
+    }
   }
 
   /**
@@ -51,27 +84,27 @@ export default class UserModel extends Model {
 
   /**
    * Login to the server
-   * @param {string} id
+   * @param {string} username
    * @param {string} password
    * @returns {Promise}
    */
-  login(id, password) {
-    return new Promise( ( resolve, reject ) => {
+  login(username, password) {
+    return new Promise((resolve, reject) => {
       const authData = {
         auth: {
           passwordCredentials: {
-            username: id,
+            username,
             password
           }
         }
       };
 
       const tenants = this.tenants();
-      if ( tenants ) {
-        resolve( tenants );
+      if (tenants) {
+        resolve(tenants);
         return;
       }
-      Backbone.ajax( {
+      Backbone.ajax({
         dataType: 'json',
         url: this.url,
         data: JSON.stringify(authData),
@@ -86,14 +119,15 @@ export default class UserModel extends Model {
         error: (...params) => {
           reject(params);
         }
-      } );
-    } );
+      });
+    });
   }
+
   /**
    * Fetch tenants from server
    */
   fetchTenant(resolve, reject) {
-    Backbone.ajax( {
+    Backbone.ajax({
       method: 'GET',
       dataType: 'json',
       url: this.tenantURL,
@@ -106,10 +140,10 @@ export default class UserModel extends Model {
         this.saveTenants(tenants);
         resolve(tenants);
       },
-      error: ( ...params ) => {
+      error: (...params) => {
         reject(params);
       }
-    } );
+    });
   }
 
   /**
@@ -118,7 +152,7 @@ export default class UserModel extends Model {
    * @returns {Promise}
    */
   loginTenant(tenant) {
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const authData = {
         auth: {
           token: {
@@ -129,15 +163,15 @@ export default class UserModel extends Model {
       };
       this.saveTenant(tenant);
       this.save(authData, {
-        data: JSON.stringify( authData ),
+        data: JSON.stringify(authData),
         success: (...params) => {
           resolve(params);
         },
         error: (...params) => {
           reject(params);
         }
-      } );
-    } );
+      });
+    });
   }
 
 
@@ -146,7 +180,7 @@ export default class UserModel extends Model {
    * @param {Object} data
    */
   setItem(key, value) {
-    sessionStorage.setItem( key, JSON.stringify( value ) );
+    sessionStorage.setItem(key, JSON.stringify(value));
   }
 
   /**
@@ -154,9 +188,9 @@ export default class UserModel extends Model {
    * @param {Object} data
    */
   getItem(key) {
-    const value = sessionStorage.getItem( key );
-    if ( value ) {
-      return JSON.parse( value );
+    const value = sessionStorage.getItem(key);
+    if (value) {
+      return JSON.parse(value);
     }
   }
 
@@ -190,23 +224,27 @@ export default class UserModel extends Model {
    */
   saveScopedToken(data) {
     const tenant = this.tenantName();
-    let scopedToken = this.getItem( 'scopedToken' );
-    if ( !scopedToken ) {
+    let scopedToken = this.getItem('scopedToken');
+    if (!scopedToken) {
       scopedToken = {};
     }
     scopedToken[tenant] = data;
-    this.setItem( 'scopedToken', scopedToken );
-    this.set( 'authData', data );
+    this.setItem('scopedToken', scopedToken);
+    this.set('authData', data);
   }
 
   /**
    * Reset auth data
    */
   unsetAuthData() {
-    sessionStorage.removeItem( 'scopedToken' );
-    sessionStorage.removeItem( 'unscopedToken' );
-    sessionStorage.removeItem( 'tenant' );
-    sessionStorage.removeItem( 'tenants' );
+    localStorage.setItem('clearSessionStorage', 'true');
+    setTimeout(() => {
+      localStorage.removeItem('clearSessionStorage');
+    }, 0);
+    sessionStorage.removeItem('scopedToken');
+    sessionStorage.removeItem('unscopedToken');
+    sessionStorage.removeItem('tenant');
+    sessionStorage.removeItem('tenants');
   }
 
   /**
@@ -215,10 +253,10 @@ export default class UserModel extends Model {
    */
   authToken() {
     const tenant = this.tenantName();
-    const scopedToken = this.getItem( 'scopedToken' );
-    if ( scopedToken ) {
+    const scopedToken = this.getItem('scopedToken');
+    if (scopedToken) {
       const data = scopedToken[tenant];
-      if ( data ) {
+      if (data) {
         return data.access.token.id;
       }
     }
@@ -230,7 +268,7 @@ export default class UserModel extends Model {
    */
   expiresTokenDate() {
     const tenant = this.tenantName();
-    const scopedToken = this.getItem( 'scopedToken' );
+    const scopedToken = this.getItem('scopedToken');
 
     if (scopedToken) {
       const data = scopedToken[tenant];
@@ -245,8 +283,8 @@ export default class UserModel extends Model {
    * @returns {string}
    */
   unscopedToken() {
-    const unscopedToken = this.getItem( 'unscopedToken' );
-    if ( unscopedToken ) {
+    const unscopedToken = this.getItem('unscopedToken');
+    if (unscopedToken) {
       return unscopedToken.access.token.id;
     }
   }
@@ -256,7 +294,7 @@ export default class UserModel extends Model {
    * @returns {string}
    */
   tenantName() {
-    return this.getItem( 'tenant' );
+    return this.getItem('tenant');
   }
 
   /**
@@ -264,7 +302,7 @@ export default class UserModel extends Model {
    * @returns {Object}
    */
   tenants() {
-    return this.getItem( 'tenants' );
+    return this.getItem('tenants');
   }
 
   /**
@@ -273,10 +311,10 @@ export default class UserModel extends Model {
    */
   userName() {
     const tenant = this.tenantName();
-    const scopedToken = this.getItem( 'scopedToken' );
-    if ( scopedToken ) {
+    const scopedToken = this.getItem('scopedToken');
+    if (scopedToken) {
       const data = scopedToken[tenant];
-      if ( data ) {
+      if (data) {
         return data.access.user.name;
       }
     }
