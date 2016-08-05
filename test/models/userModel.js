@@ -9,7 +9,7 @@ chai.use(sinonChai);
 
 const sync = sinon.spy();
 const save = sinon.spy();
-const ajax = sinon.spy();
+const ajax = sinon.spy((...params) => console.log(...params));
 
 const backbone = {
   Model: class {
@@ -124,7 +124,7 @@ describe('UserModel ', () => {
     let user = {};
     beforeEach(() => {
       sessionStorage.clear();
-      user = new UserModel({url: 'http://foo.bar'});
+      user = new UserModel({url: 'http://foo.bar', config: {get: () => 30000}});
       ajax.reset();
     });
 
@@ -137,11 +137,12 @@ describe('UserModel ', () => {
         }
       }
       backbone._saveState = true;
-      user.login("id", "password").then(() => {
+      user.login("id", "password").then((aa) => {console.log(aa)
         user.unscopedToken().should.be.equal("token");
         done()
       });
       ajax.should.be.calledWith(sinon.match({
+        timeout: 30000,
         data: '{"auth":{"passwordCredentials":{"username":"id","password":"password"}}}',
         dataType: "json",
         headers: { 'Content-Type': 'application/json' },

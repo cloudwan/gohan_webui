@@ -24,6 +24,7 @@ export default class UserModel extends Model {
 
     this.url = options.url + '/tokens';
     this.tenantURL = options.url + '/tenants';
+    this.config = options.config;
 
     window.addEventListener('storage', this.sessionStorageTransfer.bind(this), false);
 
@@ -109,6 +110,7 @@ export default class UserModel extends Model {
         url: this.url,
         data: JSON.stringify(authData),
         method: 'POST',
+        timeout: this.config.get('loginRequestTimeout'),
         headers: {
           'Content-Type': 'application/json'
         },
