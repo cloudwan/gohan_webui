@@ -17,5 +17,6 @@
     "addingRelationDialog": [
         "Pet"
     ],
-    "pageLimit": 25
+    "pageLimit": 25,
+    "loginRequestTimeout": 30000
 }
