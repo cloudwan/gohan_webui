@@ -33,6 +33,7 @@ export default class DialogView extends View {
     this.formTitle = options.formTitle;
     this.template = options.template;
     this.data = options.data;
+    this.onshow = options.onshow;
     this.onsubmit = options.onsubmit;
     this.onhide = options.onhide;
     this.unformattedSchema = options.unformattedSchema;
@@ -53,7 +54,8 @@ export default class DialogView extends View {
         });
         $('#name').focus();
       },
-      onhide: this.onhide
+      onhide: this.onhide,
+      onshow: this.onshow
     });
   }
 
