@@ -33,7 +33,7 @@ export default class ErrorView extends View {
     }
 
     this.message = response.statusText;
-    if (response.hasOwnProperty('responseJSON') && response.responseJSON !== (null || undefined)) {
+    if (response.hasOwnProperty('responseJSON') && response.responseJSON) {
       if (response.responseJSON.hasOwnProperty('error')) {
         if (typeof response.responseJSON.error === 'object' && response.responseJSON.error.message) {
           this.messageDetail = response.responseJSON.error.message;
