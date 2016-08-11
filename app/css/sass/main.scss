@@ -25,7 +25,6 @@ body {
   background-color: #edecec;
 }
 
-
 /*
  * login
  */
@@ -47,22 +46,6 @@ body {
 }
 
 /*
- * Gohan home
- */
-
-.gohan_home {
-  margin-bottom: 21px;
-  padding: 15px;
-  padding-bottom: 0;
-  h2 {
-    margin: 0;
-    margin-bottom: 1em;
-    font-size: 20px;
-    line-height: 1.2;
-  }
-}
-
-/*
  * Global add-ons
  */
 
@@ -70,7 +53,6 @@ body {
   padding-bottom: 10px;
   border-bottom: 1px solid #f3f3f3;
 }
-
 
 /*
  * Sidebar
@@ -149,8 +131,8 @@ body {
   }
 }
 
-
 /* Sidebar navigation */
+
 .nav-sidebar {
   margin-right: -20px;
   margin-bottom: 20px;
@@ -199,17 +181,9 @@ body {
   .func {
     padding-right: 0;
     text-align: right;
-    .edit:first-child {
-      padding-right: 10px;
-      border-right:1px solid #ccc;
-      margin-right: 10px;
-    }
     .form-inline {
       display: inline;
       margin-right: 5px;
-      select input.form-control {
-        height: 35px;
-      }
     }
     .gohan_create {
       padding-top: 6px;
@@ -217,10 +191,6 @@ body {
     }
   }
   margin-bottom: 10px;
-}
-
-.pagination > li > a {
-  cursor: pointer;
 }
 
 .block-header{
@@ -233,7 +203,6 @@ body {
     margin-top: 10px;
     text-transform: uppercase;
   }
-
 }
 
 .gohan_header {
@@ -279,9 +248,6 @@ body {
     }
   }
 
-
-
-
 /*
  * detail info container
  */
@@ -320,9 +286,7 @@ body {
 
 .child_resource {
   margin-bottom: 20px;
-
 }
-
 
 @media (min-width: 768px) {
   .main {
@@ -348,8 +312,6 @@ body {
 .main .page-header {
   margin-top: 0;
 }
-
-
 
 /*
  * Schema Edit
@@ -387,176 +349,6 @@ span.help-description {
   margin-bottom: 5px;
   color: #999;
   margin-left: 0.3em;
-}
-
-div.list-container {
-  position: relative;
-  .add-item {
-    cursor: pointer;
-    font-weight: bold;
-  }
-  > ul {
-    counter-reset: section;
-    padding: 0;
-    background-color: #f3f3f3;
-    margin-bottom: 5px;
-    min-height: 2em;
-    > li {
-      list-style: none;
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-left: 5px solid #ccc;
-      margin-bottom: -1px;
-      &:hover {
-        //border-left-color: #aaa;
-      }
-    }
-    > li div.list-counter:before {
-      counter-increment: section;
-      content: counter(section) " ";
-    }
-  }
-  .list-item-container {
-    display: table;
-    table-layout: fixed;
-    width: 100%;
-    > div {
-      display: table-cell;
-      vertical-align: top;
-      padding: 8px 5px;
-      &.list-counter {
-        width: 1.5em;
-        vertical-align: middle;
-      }
-      &.list-action {
-        width: 3em;
-        text-align: center;
-        vertical-align: middle;
-        padding-left: 10px;
-        span.fa-minus-circle {
-          color: #999;
-          cursor: pointer;
-          &:hover {
-            color: #ff0039;
-          }
-        }
-      }
-      &.list-sort {
-        width: 3em;
-        text-align: center;
-        vertical-align: middle;
-        a {
-          cursor: pointer;
-        }
-        span.fa {
-          margin-right: 2px;
-        }
-        &.up {
-          padding-right: 0;
-        }
-        &.down {
-          padding-left: 0;
-          width: 5em;
-        }
-      }
-      &.list-body {
-        > span {
-          display: block;
-        }
-      }
-    }
-    &:first-child {
-      > .list-sort.up {
-        > a {
-          color: #ccc;
-          pointer-events: none;
-        }
-      }
-    }
-    &:last-child {
-      > .list-sort.down {
-        > a {
-          color: #ccc;
-          pointer-events: none;
-        }
-      }
-    }
-  }
-}
-
-div.object-list-container {
-  .add-item {
-    cursor: pointer;
-    font-weight: bold;
-    display: inline-block;
-    margin-bottom: 5px;
-  }
-  > ul.object-list-tabs {
-    counter-reset: section;
-    > li {
-      > a.tab-link {
-        > span.tab-title:after {
-          counter-increment: section;
-          content: " "counter(section);
-        }
-      }
-    }
-  }
-  .tab-delete {
-    cursor: pointer;
-    padding-top: 1px;
-    margin: 0 2px;
-    color: #aaa;
-    &:hover {
-      color: #ff0039;
-    }
-  }
-  .object-list-tab-pane {
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-top: none;
-    .tab-pane-action {
-      margin-top: -3px;
-      margin-bottom: 5px;
-      overflow: hidden;
-      span.fa {
-        font-weight: bold;
-      }
-      > .tab-pane-move-left {
-        float: left;
-        cursor: pointer;
-      }
-      > .tab-pane-move-right {
-        float: right;
-        cursor: pointer;
-      }
-    }
-  }
-  .list-tab-pane:first-child {
-    > .object-list-tab-pane {
-      > .tab-pane-action {
-        > a.tab-pane-move-left {
-          color: #ccc;
-          pointer-events: none;
-        }
-      }
-    }
-  }
-  .list-tab-pane:last-child {
-    > .object-list-tab-pane {
-      > .tab-pane-action {
-        > a.tab-pane-move-right {
-          color: #ccc;
-          pointer-events: none;
-        }
-      }
-    }
-  }
-}
-
-
-.nested-form-group {
-  margin-bottom: 15px;
 }
 
 /*
@@ -642,18 +434,18 @@ fieldset[disabled] .btn-default.focus {
   height: 40px;
 }
 
-div.form-control {
-  border: 0;
-  height: auto;
-  box-shadow: none;
-  padding: 0px;
-}
-
 input[type="checkbox"].form-control {
   box-shadow: none;
   display: inline-block;
   width: auto;
   height: auto;
+}
+
+div.form-control {
+  border: 0;
+  height: auto;
+  box-shadow: none;
+  padding: 0px;
 }
 
 .help-block {
