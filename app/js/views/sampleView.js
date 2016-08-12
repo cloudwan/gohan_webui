@@ -1,5 +1,7 @@
+/* global setTimeout */
 import {View} from 'backbone';
 
+import loaderTemplate from './../../templates/loader.html';
 import template from './../../templates/sample.html';
 
 /**
@@ -24,6 +26,9 @@ export default class SampleView extends View {
   constructor(options) {
     super(options);
     this.app = options.app;
+
+    this.$el.html(loaderTemplate());
+    setTimeout(() => this.render(), 2000); // this was added for showing loading.
 
     if (this.app) {
       this.app.router.changeTitle('Home');

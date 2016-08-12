@@ -159,7 +159,7 @@ export default class AppView extends View {
           app: this
         });
 
-        this.$('#main_body').html(this.view.render().el);
+        this.$('#main_body').html(this.view.el);
       };
 
       const detailView = (...rest) => {
@@ -179,7 +179,7 @@ export default class AppView extends View {
           params
         });
 
-        this.$('#main_body').html(this.view.render().el);
+        this.$('#main_body').html(this.view.el);
       };
 
       this.router.route(route, 'table_view', tableView);
@@ -207,7 +207,7 @@ export default class AppView extends View {
             fragment: history.fragment,
             app: this
           });
-          this.$('#main_body').append(this.view.render().el);
+          this.$('#main_body').append(this.view.el);
         } else {
           const collection = schema.makeCollection();
           if (rest) {
@@ -222,7 +222,7 @@ export default class AppView extends View {
               model,
               collection
             });
-            this.$('#main_body').append(this.view.render().el);
+            this.$('#main_body').append(this.view.el);
           } else {
             this.view = new this.viewClass[route.viewClass]({
               arguments: rest,
@@ -232,7 +232,7 @@ export default class AppView extends View {
               collection
             });
 
-            this.$('#main_body').append(this.view.render().el);
+            this.$('#main_body').append(this.view.el);
           }
         }
       };

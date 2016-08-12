@@ -7,6 +7,7 @@ import 'bootstrap-dialog';
 import './../../node_modules/bootswatch/cosmo/bootstrap.css';
 import './../../node_modules/font-awesome/css/font-awesome.css';
 import '../css/sass/main.scss';
+import './../../node_modules/spinkit/scss/spinners/7-three-bounce.scss';
 
 // Import JS.
 import {history} from 'backbone';

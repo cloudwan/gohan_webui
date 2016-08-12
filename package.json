@@ -89,6 +89,7 @@
     "jquery": "^2.2.2",
     "jquery-ui": "^1.10.5",
     "js-yaml": "^3.5.5",
+    "spinkit": "^1.2.5",
     "underscore": "^1.8.3"
   }
 }

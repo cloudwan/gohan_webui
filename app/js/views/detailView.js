@@ -9,6 +9,7 @@ import DialogView from './dialogView';
 import ErrorView from './errorView';
 import TableView from './tableView';
 
+import loaderTemplate from './../../templates/loader.html';
 import detailTemplate from './../../templates/detail.html';
 
 export default class DetailView extends View {
@@ -32,11 +33,14 @@ export default class DetailView extends View {
     this.app = options.app;
     this.errorView = this.app.ErrorClass ? new this.app.ErrorClass() : new ErrorView();
     this.template = options.template || detailTemplate;
+    this.loaderTemplate = options.loaderTemplate || loaderTemplate;
     this.TableViewClass = options.TableViewClass || TableView;
     this.schema = options.schema;
     this.childview = options.childview;
     this.model = options.model;
     this.fragment = options.fragment;
+
+    this.$el.html(this.loaderTemplate());
     this.model.fetch().then(
       () => this.render(),
       error => this.errorView.render(...error)
