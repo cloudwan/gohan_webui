@@ -9,6 +9,7 @@ import BootstrapDialog from 'bootstrap-dialog';
 import DialogView from './dialogView';
 import ErrorView from './errorView';
 
+import loaderTemplate from './../../templates/loader.html';
 import dataPopupTemplate from './../../templates/dataPopup.html';
 import tableTemplate from './../../templates/table.html';
 
@@ -36,6 +37,7 @@ export default class TableView extends View {
     this.app = options.app;
     this.errorView = this.app.ErrorClass ? new this.app.ErrorClass() : new ErrorView();
     this.template = options.template || tableTemplate;
+    this.loaderTemplate = options.loaderTemplate || loaderTemplate;
     this.dialogTemplate = options.dialogTemplate;
     this.schema = options.schema;
     this.parent = options.parent;
@@ -66,9 +68,11 @@ export default class TableView extends View {
     if (this.childview) {
       this.parentProperty = (this.parent || this.schema.get('parent')) + '_id';
     }
+    this.$el.html(this.loaderTemplate());
 
     if (this.collection !== undefined) {
       this.collection.getPage().then(() => {
+        this.render();
         this.searchQuery.propField = $('[data-gohan="search"] select', this.$el).val();
         if (this.polling) {
           this.collection.startLongPolling();
