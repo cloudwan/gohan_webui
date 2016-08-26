@@ -28,7 +28,7 @@ config.fetch().then(() => {
       }}
   });
 
-  $('body').append(rootView.render().el);
+  $('body').append(rootView.el);
   history.start();
 }, () => {
   $('body').append('Failed to load config.json');

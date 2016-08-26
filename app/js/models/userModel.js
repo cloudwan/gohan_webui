@@ -31,8 +31,13 @@ export default class UserModel extends Model {
     if (!sessionStorage.length) {
       localStorage.setItem('getSessionStorage', 'true');
       setTimeout(() => {
-        localStorage.removeItem('getSessionStorage');
+        if (localStorage.length > 0) {
+          localStorage.removeItem('getSessionStorage');
+          this.set('authData', null);
+        }
       }, 500);
+    } else {
+      this.set('authData', JSON.parse(sessionStorage.getItem('unscopedToken')));
     }
   }
 
@@ -44,7 +49,6 @@ export default class UserModel extends Model {
       localStorage.setItem('sessionStorage', JSON.stringify(sessionStorage));
       setTimeout(() => {
         localStorage.removeItem('sessionStorage');
-        localStorage.removeItem('getSessionStorage');
       }, 0);
     } else if (event.key === 'sessionStorage' && !sessionStorage.length) {
       const data = JSON.parse(event.newValue);
@@ -53,6 +57,8 @@ export default class UserModel extends Model {
       }
       if (data.unscopedToken) {
         this.set('authData', JSON.parse(data.unscopedToken));
+      } else {
+        this.set('authData', null);
       }
     } else if (event.key === 'clearSessionStorage') {
       this.unsetAuthData();
