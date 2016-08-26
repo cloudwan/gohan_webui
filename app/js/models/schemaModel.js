@@ -309,10 +309,18 @@ export default class SchemaModel extends Model {
   /**
    * Returns new collection of models.
    * @param {string} url
-   * @param {*} pageLimit
+   * @param {object} options
+   * @param {*} options.pageLimit
+   * @param {string} options.sortKey
+   * @param {string} options.sortOrder
    * @returns {CollectionClass}
    */
-  makeCollection(url = this.apiEndpoint(), pageLimit = this.collection.pageLimit) {
+  makeCollection(url = this.apiEndpoint(), options = {pageLimit: this.collection.pageLimit}) {
+    if (typeof options !== 'object') {
+      console.warn('2nd argument of makeCollection should be options object.');
+      options = Object.assign({}, {pageLimit: options});
+    }
+
     if (this.collections[url]) {
       return this.collections[url];
     }
@@ -341,14 +349,14 @@ export default class SchemaModel extends Model {
        * @extends Collection.constructor
        * @param {Object} options
        */
-      constructor(options) {
+      constructor(options = {}) {
         super(options);
 
-        this._pageLimit = ~~pageLimit;
+        this._pageLimit = ~~options.pageLimit;
         this.total = 0;
         this.offset = 0;
-        this.sortKey = 'id';
-        this.sortOrder = 'asc';
+        this.sortKey = options.sortKey || 'id';
+        this.sortOrder = options.sortOrder || 'asc';
         this.baseUrl = url;
         this.url = url;
         this.model = model;
@@ -357,7 +365,6 @@ export default class SchemaModel extends Model {
         this.longPolling = false;
         this.timeOutId = -1;
         this.intervalSeconds = 10;
-        this.updateUrl();
       }
 
       get pageLimit() {
@@ -366,13 +373,21 @@ export default class SchemaModel extends Model {
 
       set pageLimit(pageLimit) {
         this._pageLimit = pageLimit;
-        this.updateUrl();
       }
 
       /**
        * Updates collection url to filter, sort and paging.
        */
       updateUrl() {
+        if (this.sortKey !== undefined && !Object.keys(this.schema.get('schema').properties).includes(this.sortKey)) {
+          console.warn('sortKey is invalid, as sortKey will be set "id" key.');
+          this.sortKey = 'id';
+        }
+
+        if (this.sortOrder !== undefined && !(this.sortOrder === 'asc' || this.sortOrder === 'desc')) {
+          console.warn('sortOrder should be asc or desc, as sortOrder will be set "asc".');
+          this.sortOrder = 'asc';
+        }
         let filter = '';
         let pagination = '';
         let queryExtension = '?';
@@ -404,7 +419,6 @@ export default class SchemaModel extends Model {
         return new Promise((resolve, reject) => {
           this.sortKey = key;
           this.sortOrder = order;
-          this.updateUrl();
 
           this.fetch().then(resolve, reject);
         });
@@ -412,7 +426,6 @@ export default class SchemaModel extends Model {
 
       resetFilters() {
         this.filters = {};
-        this.updateUrl();
       }
 
       filterByQuery(property, value) {
@@ -425,7 +438,6 @@ export default class SchemaModel extends Model {
             this.filters[property] = value;
           }
           this.offset = 0;
-          this.updateUrl();
 
           this.fetch().then(resolve, reject);
         });
@@ -454,7 +466,6 @@ export default class SchemaModel extends Model {
           }
 
           this.offset = offset;
-          this.updateUrl();
 
           this.fetch().then(resolve, reject);
         });
@@ -473,7 +484,6 @@ export default class SchemaModel extends Model {
           }
 
           this.offset = offset;
-          this.updateUrl();
 
           this.fetch().then(resolve, reject);
         });
@@ -492,7 +502,6 @@ export default class SchemaModel extends Model {
           }
 
           this.offset = offset;
-          this.updateUrl();
 
           this.fetch().then(resolve, reject);
         });
@@ -505,6 +514,8 @@ export default class SchemaModel extends Model {
        * @returns {Promise}
        */
       fetch(options) {
+        this.updateUrl();
+
         return new Promise((resolve, reject) => {
           super.fetch(Object.assign({
             success: (...params) => {
@@ -631,7 +642,7 @@ export default class SchemaModel extends Model {
       }
     }
 
-    const collection = new CollectionClass();
+    const collection = new CollectionClass(options);
 
     self.collections[url] = collection;
     return collection;
