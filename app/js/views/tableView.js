@@ -71,6 +71,13 @@ export default class TableView extends View {
     this.$el.html(this.loaderTemplate());
 
     if (this.collection !== undefined) {
+      if (options.sortKey) {
+        this.collection.sortKey = options.sortKey;
+      }
+
+      if (options.sortOrder) {
+        this.collection.sortOrder = options.sortOrder;
+      }
       this.collection.getPage().then(() => {
         this.render();
         this.searchQuery.propField = $('[data-gohan="search"] select', this.$el).val();
@@ -80,6 +87,9 @@ export default class TableView extends View {
       }, error => {
         this.errorView.render(...error);
       });
+
+      this.activeSortFilter.reverse = this.collection.sortOrder !== 'asc';
+      this.activeSortFilter.by = this.collection.sortKey;
     }
 
     this.listenTo(this.collection, 'update', this.render);
