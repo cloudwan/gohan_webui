@@ -73,18 +73,24 @@ export default class AppView extends View {
     if (this.userModel.authToken()) {
       setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
       this.schemas.fetch().then(() => {
+        this.render();
         this.buildUi();
       }, error => {
         this.errorView.render(...error);
       });
     } else {
+      const timeoutId = setTimeout(this.render.bind(this), 256); // This is hack for prevent blinking login page!
+
       this.listenTo(this.userModel, 'change:authData', () => {
-        setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
-        this.$('#main_body').empty();
-        this.schemas.fetch().then(() => {
-          this.buildUi();
-        });
-        this.render();
+        if (this.userModel.get('authData')) {
+          clearTimeout(timeoutId); // This is hack for prevent blinking login page!
+          setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
+          this.$('#main_body').empty();
+          this.schemas.fetch().then(() => {
+            this.render();
+            this.buildUi();
+          });
+        }
       });
     }
     this.SidebarClass = options.SidebarClass || SidebarView;
