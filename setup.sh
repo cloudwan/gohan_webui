@@ -14,7 +14,7 @@ else
 fi
 
 if ! [ -e app/config.json ]; then
-    cp app/config.json.sample app/config.json
+    cp src/config.json.sample src/config.json
 fi
 
 npm install

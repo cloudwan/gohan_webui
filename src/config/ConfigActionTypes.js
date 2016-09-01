@@ -1,0 +1,2 @@
+export const FETCH_SUCCESS = 'CONFIG_FETCH_SUCCESS';
+export const FETCH_ERROR = 'CONFIG_FETCH_ERROR';

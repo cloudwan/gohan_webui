@@ -1,35 +1,30 @@
-var port = 8080;
-var hostname = 'localhost';
-var path = require('path');
+const port = 8080;
+const hostname = 'localhost';
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
-var BowerWebpackPlugin = require('bower-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   context: __dirname,
   entry: [
-    'babel-polyfill',
-    './app/js/app'
+    './src/index'
   ],
   output: {
     path: __dirname + '/dist',
     filename: 'bundle.js',
     sourceMapFilename: '[file].map'
   },
+  resolve: {
+    extensions: ['', '.js', '.jsx']
+  },
   module: {
     loaders: [
       {
-        test: /\.js$/,
-        include: [
-          path.resolve(__dirname, 'app')
-        ],
+        test: /\.js(x?)$/,
+        exclude: /node_modules/,
+        include: __dirname,
         loader: 'babel-loader',
-        query: {
-          cacheDirectory: true,
-          presets: ['es2015'],
-        }
       },
       {
         test: /\.css$/,
@@ -48,52 +43,26 @@ module.exports = {
         loader: 'file-loader?name=[name].[ext]'
       },
       {
-        test: /\.html$/,
-        loader: 'underscore-template-loader'
-      },
-      {
         test: /\.json$/,
         loader: 'json-loader'
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-            'file?hash=sha512&digest=hex&name=[hash].[ext]',
-            'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+          'file?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
       }
     ]
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery'
-    }),
     new ExtractTextPlugin('styles.css'),
-    new BowerWebpackPlugin({
-      modulesDirectories: ['bower_components'],
-      manifestFiles: [
-        'bower.json',
-        '.bower.json',
-      ],
-      includes: /.*/,
-      excludes: [],
-      searchResolveModulesDirectories: true
-    }),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-      'window.jQuery': 'jquery',
-      _: 'underscore',
-      Backbone: 'backbone'
-    }),
     new HtmlWebpackPlugin({
-      template: './app/index.html',
+      template: './src/index.html',
       inject: 'body'
     }),
     new CopyWebpackPlugin([
-      { from: 'app/config.json', to: '/config.json' }
+      { from: 'src/config.json', to: '/config.json' }
     ])
   ],
   devServer: {
