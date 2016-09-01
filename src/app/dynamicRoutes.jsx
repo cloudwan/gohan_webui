@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../table/Table';
 import Detail from '../detail/Detail';
@@ -14,13 +14,13 @@ export default function dynamicRoutes() {
         );
 
         return (
-          <Detail schema={finedElement}/>
+          <Detail key={finedElement.id} schema={finedElement}/>
         );
       }
 
       const finedElement = this.props.schemaReducer.find(object => object.plural === splitSplat[splitSplat.length - 1]);
       return (
-        <Table schema={finedElement}/>
+        <Table key={finedElement.id} schema={finedElement}/>
       );
     }
 
@@ -34,7 +34,7 @@ export default function dynamicRoutes() {
   }
 
   DynamicRoute.contextTypes = {
-    router: React.PropTypes.object
+    router: PropTypes.object
   };
 
   function mapStateToProps(state) {
