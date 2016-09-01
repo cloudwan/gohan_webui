@@ -82,6 +82,7 @@
     "react-dom": "^15.3.0",
     "react-redux": "^4.4.5",
     "react-router": "^2.6.1",
+    "react-spinkit": "^1.1.11",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0"
   }
