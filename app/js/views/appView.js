@@ -55,18 +55,20 @@ export default class AppView extends View {
     this.view = null;
 
     const showTokenExpireError = () => {
-      const message = this.config.get('errorMessages') && this.config.get('errorMessages')['tokenExpire'] ?
-        this.config.get('errorMessages')['tokenExpire'] : 'The token is expired. Please re-login. ';
-      this.errorView.render(
-        {
-          status: 1,
-          readyState: 1,
-          statusText: message + ' <a href="#" data-gohan="logout" class="alert-link">Logout</a>'
-        }
-      );
+      let message;
+      if (this.config.get('errorMessages') && this.config.get('errorMessages')['tokenExpire']) {
+        message = this.config.get('errorMessages')['tokenExpire'];
+      } else {
+        message = 'The token is expired. Please re-login. ';
+      }
+      this.errorView.render({
+        status: 1,
+        readyState: 1,
+        statusText: message + ' <a href="#" data-gohan="logout" class="alert-link">Logout</a>'
+      });
+      this.userModel.unsetAuthData();
       $('[data-gohan="logout"]', this.errorView.el).on('click', event => {
         event.preventDefault();
-        this.userModel.unsetAuthData();
         window.location.reload();
       });
     };
