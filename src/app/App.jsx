@@ -45,7 +45,7 @@ class App extends Component {
       this.props.schemaReducer.forEach((item, index) => {
         if (!item.parent && item.metadata.type !== 'metaschema') {
           sidebarMenuItems.push(
-            <SidebarMenuItem title={item.title} url={item.url}
+            <SidebarMenuItem title={item.title} url={'/' + item.plural}
               description={item.description} key={index}
             />
           );
