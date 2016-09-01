@@ -1,0 +1,2 @@
+export const FETCH_SUCCESS = 'SCHEMA_FETCH_SUCCESS';
+export const FETCH_ERROR = 'SCHEMA_FETCH_ERROR';
