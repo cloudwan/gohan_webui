@@ -14,7 +14,9 @@ export default function dynamicRoutes() {
         );
 
         return (
-          <Detail key={finedElement.id} schema={finedElement}/>
+          <Detail key={finedElement.id} schema={finedElement}
+            splat={splitSplat}
+          />
         );
       }
 
