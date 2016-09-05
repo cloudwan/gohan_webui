@@ -33,18 +33,18 @@ Form.Field.template = _.template(
   '</div>'
 );
 
-Form.NestedField.template = _.template(
-  '<div class="nested-form-group field-<%= key  %>">' +
-  '  <label class="control-label" for="<%= editorId %>"><%= title %></label>' +
-  '  <% if (help) { %>' +
-  '  <span class="help-description"> <%= help %></span>' +
-  '  <% } %>' +
-  '  <div class="controls">' +
-  '    <span data-editor></span>' +
-  '    <div class="help-block"><span class="error" data-error></span></div>' +
-  '  </div>' +
-  '</div>'
-);
+Form.NestedField = Form.Field.extend({
+  template: _.template('<div class="nested-form-group field-<%= key  %>">' +
+    '  <label class="control-label" for="<%= editorId %>"><%= title %></label>' +
+    '  <% if (help) { %>' +
+    '  <span class="help-description"> <%= help %></span>' +
+    '  <% } %>' +
+    '  <div class="controls">' +
+    '    <span data-editor></span>' +
+    '    <div class="help-block"><span class="error" data-error></span></div>' +
+    '  </div>' +
+    '</div>', null, Form.templateSettings)
+});
 
 Form.editors.Base.prototype.className = 'form-control';
 Form.Field.errorClassName = 'has-error';
