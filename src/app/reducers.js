@@ -5,6 +5,7 @@ import authReducer from './../auth/authReducer';
 import schemaReducer from './../schema/schemaReducer';
 import tableReducer from './../table/tableReducer';
 import detailReducer from './../detail/detailReducer';
+import dialogReducer from './../dialog/dialogReducer';
 
 export default combineReducers({
   configReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
   authReducer,
   schemaReducer,
   tableReducer,
-  detailReducer
+  detailReducer,
+  dialogReducer
 });
