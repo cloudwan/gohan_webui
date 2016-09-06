@@ -39,6 +39,11 @@ class Table extends Component {
   render() {
     const {schema, singular} = this.props.schema;
 
+    if (this.props.tableReducer.isLoading) {
+      return (
+        <div>Loading...</div>
+      );
+    }
     return (
       <div>
         <button onClick={this.handleOpenModal}>{'Add new ' + singular}</button>
@@ -61,7 +66,7 @@ class Table extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.tableReducer.map((item, index) => (
+            {this.props.tableReducer.data.map((item, index) => (
               <tr key={index}>
                 {schema.propertiesOrder.map((key, i) => {
                   const data = item[key];
@@ -106,7 +111,7 @@ function mapStateToProps(state) {
 
 Table.propTypes = {
   schema: PropTypes.object.isRequired,
-  tableReducer: PropTypes.array,
+  tableReducer: PropTypes.object,
   fetchData: PropTypes.func.isRequired
 };
 
