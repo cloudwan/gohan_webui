@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {FETCH_SUCCESS, FETCH_FAILURE, CLEAR_DATA} from './TableActionTypes';
+import {FETCH_SUCCESS, FETCH_FAILURE, CREATE_SUCCESS, CREATE_FAILURE, CLEAR_DATA} from './TableActionTypes';
 
 function fetchSuccess(data) {
   return dispatch => {
@@ -27,6 +27,39 @@ export function fetchData(url, plural) {
       dispatch(fetchSuccess(response.data[plural]));
     }).catch(error => {
       dispatch(fetchError(error.response));
+    });
+  };
+}
+
+
+
+function createSuccess(data) {
+  return dispatch => {
+    dispatch({data, type: CREATE_SUCCESS});
+  };
+}
+
+function createError(data) {
+  return dispatch => {
+    const error = data.data;
+
+    dispatch({type: CREATE_FAILURE, error});
+  };
+}
+
+
+export function createData(url, data, singular) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': state.authReducer.tokenId
+    };
+
+    axios.post(state.configReducer.gohan.url + url, data, {headers}).then(response => {
+      dispatch(createSuccess(response.data[singular]));
+    }).catch(error => {
+      dispatch(createError(error.response));
     });
   };
 }
