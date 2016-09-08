@@ -7,7 +7,7 @@ import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
 const Form = Backbone.Form;
 Form.template = _.template(
   '<form class="gohan-form" role="form">' +
-  '  <div data-gohan="error"></div>' +
+  '  <div class="required-description"><span class="form-asterisk">*</span> Indicates required field</div>' +
   '  <div data-fieldsets></div>' +
   '</form>'
 );
