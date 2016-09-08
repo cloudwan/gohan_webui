@@ -734,6 +734,7 @@ export default class SchemaModel extends Model {
       }
       if (json.required !== undefined &&
         json.required.includes(key)) {
+        schema[key].title += '<span class="form-asterisk">*</span>';
         schema[key].validators.push('required');
       }
     }
