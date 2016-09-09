@@ -3,8 +3,6 @@ import {connect} from 'react-redux';
 import {Link} from 'react-router';
 import Dialog from './../dialog/Dialog';
 
-import {fetchData, clearData, createData} from './TableActions';
-
 class Table extends Component {
 
   constructor(props) {
@@ -16,12 +14,8 @@ class Table extends Component {
     };
   }
 
-  componentWillMount() {
-    this.props.fetchData(this.props.schema.url, this.props.schema.plural);
-  }
-
   componentWillUnmount() {
-    this.props.clearData();
+    //
   }
 
   handleOpenModal = () => {
@@ -39,7 +33,7 @@ class Table extends Component {
   render() {
     const {schema, singular} = this.props.schema;
 
-    if (this.props.tableReducer.isLoading) {
+    if (this.props.isLoading || !Array.isArray(this.props.data)) {
       return (
         <div>Loading...</div>
       );
@@ -66,7 +60,7 @@ class Table extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.tableReducer.data.map((item, index) => (
+            {this.props.data.map((item, index) => (
               <tr key={index}>
                 {schema.propertiesOrder.map((key, i) => {
                   const data = item[key];
@@ -103,20 +97,13 @@ Table.contextTypes = {
   router: PropTypes.object
 };
 
-function mapStateToProps(state) {
-  return {
-    tableReducer: state.tableReducer
-  };
+function mapStateToProps() {
+  return {};
 }
 
 Table.propTypes = {
   schema: PropTypes.object.isRequired,
-  tableReducer: PropTypes.object,
-  fetchData: PropTypes.func.isRequired
 };
 
 export default connect(mapStateToProps, {
-  fetchData,
-  clearData,
-  createData
 })(Table);

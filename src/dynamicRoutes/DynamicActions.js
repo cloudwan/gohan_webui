@@ -1,5 +1,12 @@
 import axios from 'axios';
-import {FETCH_SUCCESS, FETCH_FAILURE, CREATE_SUCCESS, CREATE_FAILURE, CLEAR_DATA} from './TableActionTypes';
+import {
+  FETCH_SUCCESS,
+  FETCH_CHILD_SUCCESS,
+  FETCH_FAILURE,
+  CREATE_SUCCESS,
+  CREATE_FAILURE,
+  CLEAR_DATA
+} from './DynamicActionTypes';
 
 function fetchSuccess(data) {
   return dispatch => {
@@ -31,6 +38,28 @@ export function fetchData(url, plural) {
   };
 }
 
+
+function fetchChildrenSuccess(data) {
+  return dispatch => {
+    dispatch({data, type: FETCH_CHILD_SUCCESS});
+  };
+}
+
+export function fetchChildrenData(url) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': state.authReducer.tokenId
+    };
+
+    axios.get(state.configReducer.gohan.url + url, {headers}).then(response => {
+      dispatch(fetchChildrenSuccess(response.data));
+    }).catch(error => {
+      dispatch(fetchError(error.response));
+    });
+  };
+}
 
 
 function createSuccess(data) {
