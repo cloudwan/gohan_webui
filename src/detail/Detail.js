@@ -1,15 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {fetchData, clearData} from './DetailActions';
+import {clearData} from './../dynamicRoutes/DynamicActions';
 
 class Detail extends Component {
-
-  componentWillMount() {
-    const {schema, splat} = this.props;
-
-    this.props.fetchData(schema.url + '/' + splat[splat.length - 1], schema.singular);
-  }
 
   componentWillUnmount() {
     this.props.clearData();
@@ -17,13 +11,18 @@ class Detail extends Component {
 
   render() {
     const {schema} = this.props.schema;
-    const {detailReducer} = this.props;
+    const {data} = this.props;
 
+    if (this.props.isLoading && typeof this.props.data !== 'object') {
+      return (
+        <div>Loading...</div>
+      );
+    }
     return (
       <div>
         {schema.propertiesOrder.map((key, index) => {
           const property = schema.properties[key];
-          const data = detailReducer[key];
+          const propertyValue = data[key];
 
           if (property.view && !property.view.includes('detail')) {
             return null;
@@ -32,7 +31,7 @@ class Detail extends Component {
           return (
             <div key={index}>
               <div>{property.title}</div>
-              <div>{typeof data === 'object' ? JSON.stringify(data) : data}</div>
+              <div>{typeof propertyValue === 'object' ? JSON.stringify(propertyValue) : propertyValue}</div>
             </div>
           );
         })}
@@ -47,8 +46,6 @@ Detail.contextTypes = {
 
 Detail.propTypes = {
   schema: PropTypes.object.isRequired,
-  detailReducer: PropTypes.object,
-  fetchData: PropTypes.func.isRequired,
   clearData: PropTypes.func.isRequired
 };
 
@@ -59,6 +56,5 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  fetchData,
   clearData
 })(Detail);
