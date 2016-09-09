@@ -460,7 +460,7 @@ export default class SchemaModel extends Model {
         return new Promise((resolve, reject) => {
           const offset = this.pageLimit * pageNo;
 
-          if (offset > this.total || offset < 0) {
+          if (this.total !== 0 && (offset > this.total || offset < 0)) {
             reject('Wrong page number!');
             return;
           }
