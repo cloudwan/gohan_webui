@@ -12,6 +12,7 @@ import './formsEditors/codeEditor';
 import './formsEditors/template';
 import './formsEditors/validators';
 import './formsEditors/selectEditor';
+import './formsEditors/numberEditor';
 
 export default class DialogView extends View {
   /**

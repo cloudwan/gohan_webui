@@ -957,13 +957,16 @@ export default class SchemaModel extends Model {
    */
   toServerData(schema, data) {
     const self = this;
+    if (data === undefined || data === null || data === '') {
+      return undefined;
+    }
+
+    if (schema.type === 'array') {
+      return data.map(item => this.toServerData(schema.items, item));
+    }
 
     if (schema.type !== 'object' && schema.originalType !== 'object') {
       return data;
-    }
-
-    if (data === undefined) {
-      return undefined;
     }
 
     if (schema.properties !== undefined) {
