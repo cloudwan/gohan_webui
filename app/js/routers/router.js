@@ -1,4 +1,4 @@
-/* global document */
+/* global document, window */
 import {Router, history} from 'backbone';
 
 /**
@@ -46,6 +46,23 @@ export default class AppRouter extends Router {
       return;
     }
     document.title = this.pageBaseTitle;
+  }
+
+  setQueryParams(params) {
+
+    let queryStrings = '';
+
+    for (let x in params) {
+      if (params.hasOwnProperty(x)) {
+        if (queryStrings === '') {
+          queryStrings += '?';
+        } else {
+          queryStrings += '&';
+        }
+        queryStrings += x + '=' + params[x];
+      }
+    }
+    window.history.replaceState({},'','/' + queryStrings + window.location.hash);
   }
 
   getQueryParams() {
