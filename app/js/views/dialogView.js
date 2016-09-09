@@ -192,6 +192,7 @@ export default class DialogView extends View {
       }
     }
     this.form.render();
+    this.form.$el.prepend('<div data-gohan="error"></div>');
     this.dialog.setMessage(this.form.el);
     this.dialog.addButton({
       id: 'submit',
