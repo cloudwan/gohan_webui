@@ -84,6 +84,7 @@
     "backbone-forms": "^0.14.1",
     "bootstrap": "^3.3.6",
     "bootstrap-dialog": "^1.34.6",
+    "bootstrap-select": "^1.11.2",
     "bootswatch": "^3.3.6",
     "font-awesome": "^4.5.0",
     "jquery": "^2.2.2",
