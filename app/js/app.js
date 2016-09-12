@@ -2,6 +2,7 @@
 // Import bootstraps.
 import 'bootstrap';
 import 'bootstrap-dialog';
+import 'bootstrap-select';
 
 // Import css.
 import './../../node_modules/bootswatch/cosmo/bootstrap.css';
