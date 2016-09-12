@@ -7,6 +7,24 @@ class SelectEditor extends Backbone.Form.editors.Select {
       super.setValue(value);
     }
   }
+
+  render() {
+    super.render();
+    const searchThreshold = 6;
+    const options = {
+      container: 'body',
+      width: 'auto'
+    };
+    const optionLength = Object.keys(this.schema.options).length;
+    if (optionLength >= searchThreshold) {
+      options.liveSearch = true;
+    }
+    this.$el.addClass('selectpicker');
+    setTimeout(() => {
+      this.$el.selectpicker(options);
+    }, 0);
+    return this;
+  }
 }
 
 Backbone.Form.editors.Select = SelectEditor;
