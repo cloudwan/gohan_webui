@@ -403,7 +403,7 @@ export default class TableView extends View {
       pagination: this.paginationSettings,
       fragment: this.fragment
     }));
-    this.$('button[data-toggle=hover]').popover();
+    this.$('a[data-toggle=popover]').popover();
     $('[data-gohan="error"]', this.el).append(this.errorView.el);
     return this;
   }
