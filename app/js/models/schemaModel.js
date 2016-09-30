@@ -763,6 +763,7 @@ export default class SchemaModel extends Model {
         const enumValues = [];
         const options = {};
         const headers = {};
+        const properties = [];
 
         headers['X-Auth-Token'] = this.collection.userModel.authToken();
         const relatedSchema = this.collection.get(schema.relation);
@@ -773,10 +774,12 @@ export default class SchemaModel extends Model {
               for (let value of data[key]) {
                 enumValues.push(value.id);
                 options[value.id] = value.name;
+                properties.push(value);
               }
             }
             schema.enum = enumValues;
             schema.options = options;
+            schema.properties = properties;
             resolve(schema);
           }, error => {
             reject(error);

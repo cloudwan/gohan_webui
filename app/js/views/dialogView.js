@@ -53,7 +53,7 @@ export default class DialogView extends View {
           'max-height': $(window).height() - 200 + 'px',
           'overflow-y': 'auto'
         });
-        $('#name').focus();
+        this.form.focus();
       },
       onhide: this.onhide,
       onshow: this.onshow

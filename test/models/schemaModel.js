@@ -458,6 +458,12 @@ describe('SchemaModel ', () => {
               options: {
                 sampleIdFoo: 'sample_name_bar'
               },
+              properties: [
+                {
+                  id: 'sampleIdFoo',
+                  name: 'sample_name_bar'
+                }
+              ],
               relation: 'sampleParent'
             }
           },
