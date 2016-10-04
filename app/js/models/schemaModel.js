@@ -1,6 +1,7 @@
 /* global fetch */
-import {Model, Collection} from 'backbone';
+import 'whatwg-fetch';
 import jsyaml from 'js-yaml';
+import {Model, Collection} from 'backbone';
 
 /**
  * Class contains logic of schema model in application.
