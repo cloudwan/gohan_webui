@@ -10,7 +10,6 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   context: __dirname,
   entry: [
-    'babel-polyfill',
     './app/js/app'
   ],
   output: {
@@ -25,11 +24,7 @@ module.exports = {
         include: [
           path.resolve(__dirname, 'app')
         ],
-        loader: 'babel-loader',
-        query: {
-          cacheDirectory: true,
-          presets: ['es2015'],
-        }
+        loader: 'babel-loader'
       },
       {
         test: /\.css$/,
