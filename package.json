@@ -1,6 +1,6 @@
 {
   "name": "gohan-webui",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "WebUI for Gohan project",
   "main": "./app/index.js",
   "scripts": {
@@ -19,20 +19,32 @@
   "author": "",
   "contributors": [
     {
-      "name": "Nachi Ueno",
-      "email": "nati.ueno@gmail.com"
+      "name": "Kamil Stepczuk",
+      "email": "k.stepczuk@hotmail.com"
     },
     {
       "name": "Toshiyuki Hayashi",
       "email": "hayashi@ntti3.com"
     },
     {
-      "name": "Kamil Stepczuk",
-      "email": "k.stepczuk@hotmail.com"
-    },
-    {
       "name": "Adam Baszak",
       "email": "adambaszak@gmail.com"
+    },
+    {
+      "name": "Nachi Ueno",
+      "email": "nati.ueno@gmail.com"
+    },
+    {
+      "name": "Daisuke Morita",
+      "email": "morita.daisuke@ntti3.com"
+    },    
+    {
+      "name": "Iwasaki Yudai",
+      "email": "yudai.iwasaki@ntti3.com"
+    },
+    {
+      "name": "Tomasz Swirski",
+      "email": "tomasz.swirski@codilime.com"
     }
   ],
   "license": "Apache-2.0",
