@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../table/Table';
 import Detail from '../detail/Detail';
-import {fetchData, fetchChildrenData, clearData} from './DynamicActions';
+import {fetchData, fetchChildrenData, clearData, createData} from './DynamicActions';
 
 export default function dynamicRoutes() {
   class DynamicRoute extends Component {
@@ -63,7 +63,9 @@ export default function dynamicRoutes() {
         );
       }
       return (
-        <Table schema={this.state.activeSchema} {...this.props.dynamicReducer} />
+        <Table schema={this.state.activeSchema} {...this.props.dynamicReducer}
+          createData={this.props.createData}
+        />
       );
     }
 
@@ -95,6 +97,7 @@ export default function dynamicRoutes() {
   return connect(mapStateToProps, {
     fetchData,
     fetchChildrenData,
-    clearData
+    clearData,
+    createData
   })(DynamicRoute);
 }
