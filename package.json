@@ -69,6 +69,7 @@
     "less-loader": "^2.2.2",
     "mocha": "^2.3.4",
     "node-sass": "^3.4.2",
+    "react-tap-event-plugin": "^1.0.0",
     "sass-loader": "^3.1.2",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
@@ -78,6 +79,7 @@
   },
   "dependencies": {
     "axios": "^0.13.1",
+    "material-ui": "^0.16.0",
     "react": "^15.3.0",
     "react-dom": "^15.3.0",
     "react-jsonschema-form": "^0.40.0",

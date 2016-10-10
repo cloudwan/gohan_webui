@@ -1,10 +1,20 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Spinner from 'react-spinkit';
+import {Paper} from 'material-ui';
 
 import {login, selectTenant} from './AuthActions';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
+
+const style = {
+  minWidth: 250,
+  maxWidth: 450,
+  padding: 20,
+  margin: 'auto',
+  textAlign: 'center',
+  display: 'block',
+};
 
 class Auth extends Component {
   componentWillReceiveProps(nextProps) {
@@ -15,7 +25,7 @@ class Auth extends Component {
 
   render() {
     return (
-      <div>
+      <Paper style={style} zDepth={2}>
         {(() => {
           if (this.props.tokenId === undefined) {
             return (<Login login={this.props.login}/>);
@@ -24,7 +34,7 @@ class Auth extends Component {
           }
           return (<Spinner spinnerName='double-bounce' />);
         })()}
-      </div>
+      </Paper>
     );
   }
 }
