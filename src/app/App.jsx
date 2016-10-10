@@ -3,7 +3,6 @@ import {connect} from 'react-redux';
 import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
 import SidebarMenu from './components/SidebarMenu';
-import SidebarMenuItem from './components/SidebarMenuItem';
 
 class App extends Component {
 
@@ -39,25 +38,11 @@ class App extends Component {
 
   render() {
     const {children} = this.props;
-    const sidebarMenuItems = [];
 
-    if (this.props.schemaReducer !== undefined) {
-      this.props.schemaReducer.forEach((item, index) => {
-        if (!item.parent && item.metadata.type !== 'metaschema') {
-          sidebarMenuItems.push(
-            <SidebarMenuItem title={item.title} url={'/' + item.plural}
-              description={item.description} key={index}
-            />
-          );
-        }
-      });
-    }
     return (
       <div>
         {this.renderErrorMessage()}
-        <SidebarMenu>
-          {sidebarMenuItems}
-        </SidebarMenu>
+        <SidebarMenu schemaReducer={this.props.schemaReducer}/>
         {children}
       </div>
     );
