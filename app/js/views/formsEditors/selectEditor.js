@@ -20,7 +20,7 @@ class SelectEditor extends Backbone.Form.editors.Select {
       this.setOptions(this.schema.options);
     } else {
       const sortedOptions = Object.keys(this.schema.options)
-        .sort((a, b) => this.schema.options[a] > this.schema.options[b])
+        .sort((a, b) => this.schema.options[a].localeCompare(this.schema.options[b]))
         .reduce((acc, val) => {
           acc[val] = this.schema.options[val];
           return acc;
