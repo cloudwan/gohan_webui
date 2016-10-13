@@ -1,17 +1,14 @@
 import React, {Component, PropTypes} from 'react';
-import {Drawer, FontIcon, Divider} from 'material-ui';
-import {Link} from 'react-router';
+import {AppBar, Drawer, Menu} from 'material-ui';
 import SidebarMenuItem from '../components/SidebarMenuItem';
 
-const iconStyles = {
-  marginRight: 24
-};
 const drawerStyles = {
-  width: 280
+  width: 260,
+  float: 'left'
 };
+
 export default class SidebarMenu extends Component {
   render() {
-    const {children} = this.props;
     const sidebarMenuItems = [];
 
     if (this.props.schemaReducer !== undefined) {
@@ -27,21 +24,12 @@ export default class SidebarMenu extends Component {
     }
 
     return (
-      <div>
-        <Drawer width={drawerStyles.width}>
-          <div>
-            <Link to={''}>
-              <h2>Gohan icon place</h2>
-            </Link>
-          </div>
-          <div>
-            <FontIcon className="material-icons" style={iconStyles}>home icon</FontIcon>
-          </div>
-          <Divider/>
+      <Drawer style={drawerStyles}>
+        <AppBar title="Gohan webui" />
+        <Menu>
           {sidebarMenuItems}
-        </Drawer>
-        {children}
-      </div>
+        </Menu>
+      </Drawer>
     );
   }
 }
