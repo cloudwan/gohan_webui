@@ -19,6 +19,10 @@ export default class AppRouter extends Router {
 
     this.pageBaseTitle = options.title || '';
     this.routes = [];
+
+    window.addEventListener('popstate', () => {
+      this.navigate(window.location.hash, {trigger: true, replace: true});
+    });
   }
 
   /**
