@@ -1,8 +1,20 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {AppBar} from 'material-ui';
 import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
 import SidebarMenu from './components/SidebarMenu';
+
+const contentStyle = {
+  paddingTop: 64,
+  minHeight: 400,
+  paddingLeft: 256
+};
+
+const appBar = {
+  position: 'fixed',
+  top: 0
+};
 
 class App extends Component {
 
@@ -43,7 +55,10 @@ class App extends Component {
       <div>
         {this.renderErrorMessage()}
         <SidebarMenu schemaReducer={this.props.schemaReducer}/>
-        {children}
+        <AppBar style={appBar} title="Gohan webui" />
+        <div style={contentStyle}>
+          {children}
+        </div>
       </div>
     );
   }

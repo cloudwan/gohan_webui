@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router';
-import {MenuItem, Divider} from 'material-ui';
+import {MenuItem} from 'material-ui';
 
 const linkStyles = {
   textDecoration: 'none',
@@ -14,8 +14,7 @@ export default class SidebarMenuItem extends Component {
     return (
       <Link to={'/' + item.plural}
         style={linkStyles}>
-        <MenuItem>{item.title}</MenuItem>
-        <Divider/>
+        <MenuItem primaryText={item.title} />
       </Link>
     );
   }
