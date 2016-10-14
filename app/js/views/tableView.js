@@ -401,7 +401,8 @@ export default class TableView extends View {
       sort: this.activeSortFilter,
       parentProperty: this.parentProperty,
       pagination: this.paginationSettings,
-      fragment: this.fragment
+      fragment: this.fragment,
+      params: this.params
     }));
     this.$('a[data-toggle=popover]').popover();
     $('[data-gohan="error"]', this.el).append(this.errorView.el);
