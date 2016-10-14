@@ -1,7 +1,17 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {Paper, RefreshIndicator} from 'material-ui';
 
 import {clearData} from './../dynamicRoutes/DynamicActions';
+
+const detailStyle = {
+  padding: 15
+};
+
+const loadingIndicatorStyle = {
+  margin: 'auto',
+  position: 'relative'
+};
 
 class Detail extends Component {
 
@@ -11,15 +21,22 @@ class Detail extends Component {
 
   render() {
     const {schema} = this.props.schema;
-    const {data} = this.props;
+    const {data, isLoading} = this.props;
+    const titleStyle = {
+      fontWeight: 'bold'
+    };
 
-    if (this.props.isLoading && typeof this.props.data !== 'object') {
+    if (isLoading) {
       return (
-        <div>Loading...</div>
+        <RefreshIndicator size={60} left={0}
+          top={0} status="loading"
+          style={loadingIndicatorStyle}
+        />
       );
     }
+
     return (
-      <div>
+      <Paper style={detailStyle}>
         {schema.propertiesOrder.map((key, index) => {
           const property = schema.properties[key];
           const propertyValue = data[key];
@@ -29,13 +46,13 @@ class Detail extends Component {
           }
 
           return (
-            <div key={index}>
-              <div>{property.title}</div>
-              <div>{typeof propertyValue === 'object' ? JSON.stringify(propertyValue) : propertyValue}</div>
-            </div>
+            <p key={index}>
+              <span style={titleStyle}>{property.title}: </span>
+              <span>{typeof propertyValue === 'object' ? JSON.stringify(propertyValue) : propertyValue}</span>
+            </p>
           );
         })}
-      </div>
+      </Paper>
     );
   }
 }
@@ -45,6 +62,7 @@ Detail.contextTypes = {
 };
 
 Detail.propTypes = {
+  isLoading: PropTypes.bool.isRequired,
   schema: PropTypes.object.isRequired,
   clearData: PropTypes.func.isRequired
 };
