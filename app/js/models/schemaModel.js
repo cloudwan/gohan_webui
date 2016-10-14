@@ -314,16 +314,54 @@ export default class SchemaModel extends Model {
    * @param {*} options.pageLimit
    * @param {string} options.sortKey
    * @param {string} options.sortOrder
+   * @param {object} options.filters
    * @returns {CollectionClass}
    */
   makeCollection(url = this.apiEndpoint(), options = {pageLimit: this.collection.pageLimit}) {
+    let resourceUrl;
+
     if (typeof options !== 'object') {
       console.warn('2nd argument of makeCollection should be options object.');
       options = Object.assign({}, {pageLimit: options});
     }
 
-    if (this.collections[url]) {
-      return this.collections[url];
+    if (options.filters) {
+      let filter = '';
+
+      for (let key in options.filters) {
+        if (options.filters.hasOwnProperty(key)) {
+          if (filter === '') {
+            filter += '?';
+          } else {
+            filter += '&';
+          }
+          filter += key + '=' + options.filters[key];
+        }
+      }
+
+      resourceUrl = url + filter;
+    } else {
+      resourceUrl = url;
+    }
+
+    if (this.collections[resourceUrl]) {
+      return this.collections[resourceUrl];
+    }
+
+    if (/\?/.test(url)) {
+      let filtersString = url.match(/(\?.*)$/g)[0].slice(1);
+      let filtersArray = filtersString.split('&');
+
+      options.filters = Object.assign({}, options.filters);
+
+      for (let item of filtersArray) {
+        let keyValue = item.split('=');
+
+        if (keyValue[0] && keyValue[1]) {
+          options.filters[keyValue[0]] = keyValue[1];
+        }
+      }
+      url = url.match(/^(.*?)\?/g)[0].replace('?', '');
     }
 
     const model = this.makeModel(url);
@@ -362,7 +400,7 @@ export default class SchemaModel extends Model {
         this.url = url;
         this.model = model;
         this.schema = self;
-        this.filters = {};
+        this.filters = options.filters || {};
         this.longPolling = false;
         this.timeOutId = -1;
         this.intervalSeconds = 10;
@@ -645,7 +683,7 @@ export default class SchemaModel extends Model {
 
     const collection = new CollectionClass(options);
 
-    self.collections[url] = collection;
+    this.collections[resourceUrl] = collection;
     return collection;
   }
   toFormJSON(json) {
