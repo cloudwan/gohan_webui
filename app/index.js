@@ -1,3 +1,4 @@
+import './js/browserDetect';
 import ConfigModel from './js/models/configModel';
 import SchemaCollection from './js/models/schemaCollection';
 import SchemaModel from './js/models/schemaModel';
