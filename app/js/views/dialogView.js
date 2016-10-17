@@ -178,7 +178,7 @@ export default class DialogView extends View {
           this.on(key + ':change', (form, element) => {
             const elementKey = element.getValue();
 
-            if (elementKey.includes('addNew')) {
+            if (elementKey && elementKey.includes('addNew')) {
               const newSchema = this.unformattedSchema.collection.get(element.schema.relation);
               this.createRelationModel(newSchema);
             }
