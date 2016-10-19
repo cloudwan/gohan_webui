@@ -345,6 +345,11 @@ export default class SchemaModel extends Model {
     }
 
     if (this.collections[resourceUrl]) {
+      this.collections[resourceUrl].filters = options.filters;
+      this.collections[resourceUrl]._pageLimit = options.pageLimit;
+      this.collections[resourceUrl].sortKey = options.sortKey || 'id';
+      this.collections[resourceUrl].sortOrder = options.sortOrder || 'asc';
+
       return this.collections[resourceUrl];
     }
 
