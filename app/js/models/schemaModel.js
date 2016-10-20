@@ -344,15 +344,6 @@ export default class SchemaModel extends Model {
       resourceUrl = url;
     }
 
-    if (this.collections[resourceUrl]) {
-      this.collections[resourceUrl].filters = options.filters;
-      this.collections[resourceUrl]._pageLimit = options.pageLimit;
-      this.collections[resourceUrl].sortKey = options.sortKey || 'id';
-      this.collections[resourceUrl].sortOrder = options.sortOrder || 'asc';
-
-      return this.collections[resourceUrl];
-    }
-
     if (/\?/.test(url)) {
       let filtersString = url.match(/(\?.*)$/g)[0].slice(1);
       let filtersArray = filtersString.split('&');
@@ -367,6 +358,15 @@ export default class SchemaModel extends Model {
         }
       }
       url = url.match(/^(.*?)\?/g)[0].replace('?', '');
+    }
+
+    if (this.collections[resourceUrl]) {
+      this.collections[resourceUrl].filters = options.filters || {};
+      this.collections[resourceUrl]._pageLimit = options.pageLimit;
+      this.collections[resourceUrl].sortKey = options.sortKey || 'id';
+      this.collections[resourceUrl].sortOrder = options.sortOrder || 'asc';
+
+      return this.collections[resourceUrl];
     }
 
     const model = this.makeModel(url);
