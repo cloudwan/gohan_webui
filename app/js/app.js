@@ -12,6 +12,7 @@ import './../../node_modules/spinkit/scss/spinners/7-three-bounce.scss';
 
 // Import JS.
 import {history} from 'backbone';
+import './browserDetect';
 import AppView from './views/appView';
 import SchemaView from './views/schemaView';
 import Router from './routers/router';
