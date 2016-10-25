@@ -4,8 +4,10 @@ import Spinner from 'react-spinkit';
 import {Paper} from 'material-ui';
 
 import {login, selectTenant} from './AuthActions';
+import {resetErrorMessage} from './../error/ErrorActions';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
+import Alert from './../alert/Alert';
 
 const style = {
   minWidth: 250,
@@ -17,6 +19,14 @@ const style = {
 };
 
 class Auth extends Component {
+  handleDismissClick = event => {
+    if (event) {
+      event.preventDefault();
+    }
+
+    this.props.resetErrorMessage();
+  };
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined) {
       this.context.router.push('/');
@@ -24,8 +34,12 @@ class Auth extends Component {
   }
 
   render() {
+    const {errorMessage} = this.props;
+    let error = errorMessage ? errorMessage : '';
+
     return (
       <Paper style={style} zDepth={2}>
+        {error && <Alert message={error} dismissClick={this.handleDismissClick}/> }
         {(() => {
           if (this.props.tokenId === undefined) {
             return (<Login login={this.props.login}/>);
@@ -47,7 +61,8 @@ Auth.propTypes = {
   tokenId: PropTypes.string,
   tokenExpires: PropTypes.string,
   tenant: PropTypes.object,
-  tenants: PropTypes.array
+  tenants: PropTypes.array,
+  errorMessage: PropTypes.string
 };
 
 function mapStateToProps(state) {
@@ -55,11 +70,13 @@ function mapStateToProps(state) {
     tokenId: state.authReducer.tokenId,
     tokenExpires: state.authReducer.tokenExpires,
     tenant: state.authReducer.tenant,
-    tenants: state.authReducer.tenants
+    tenants: state.authReducer.tenants,
+    errorMessage: state.errorReducer
   };
 }
 
 export default connect(mapStateToProps, {
   login,
-  selectTenant
+  selectTenant,
+  resetErrorMessage
 })(Auth);
