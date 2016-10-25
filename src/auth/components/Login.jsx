@@ -4,11 +4,11 @@ import {TextField, RaisedButton} from 'material-ui';
 export default class Login extends Component {
 
   handleLoginSubmit = event => {
-    const userId = this.userId.getValue();
-    const pass = this.userPass.getValue();
-
     event.preventDefault();
     event.stopPropagation();
+
+    const userId = this.userId.getValue();
+    const pass = this.userPass.getValue();
 
     this.props.login(userId, pass);
   };

@@ -4,6 +4,7 @@ import {AppBar} from 'material-ui';
 import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
 import SidebarMenu from './components/SidebarMenu';
+import Alert from './../alert/Alert';
 
 const contentStyle = {
   paddingTop: 64,
@@ -18,9 +19,15 @@ const appBar = {
 
 class App extends Component {
 
+  componentWillMount() {
+    this.props.fetchSchema();
+  }
+
   handleDismissClick = event => {
+    if (event) {
+      event.preventDefault();
+    }
     this.props.resetErrorMessage();
-    event.preventDefault();
   };
 
   renderErrorMessage() {
@@ -31,21 +38,8 @@ class App extends Component {
     }
 
     return (
-      <p style={{backgroundColor: '#e99', padding: 10}}>
-        <b>{errorMessage}</b>
-        {' '}
-        (
-        <a href="#"
-          onClick={this.handleDismissClick}>
-          Dismiss
-        </a>
-        )
-      </p>
+      <Alert message={errorMessage} dismissClick={this.handleDismissClick} />
     );
-  }
-
-  componentWillMount() {
-    this.props.fetchSchema();
   }
 
   render() {
@@ -67,13 +61,13 @@ class App extends Component {
 App.propTypes = {
   errorMessage: PropTypes.string,
   schemaReducer: PropTypes.array,
-  resetErrorMessage: PropTypes.func.isRequired,
   children: PropTypes.node
 };
 
 function mapStateToProps(state) {
   return {
     errorMessage: state.errorReducer,
+    resetErrorMessage: PropTypes.func.isRequired,
     schemaReducer: state.schemaReducer
   };
 }
