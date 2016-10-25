@@ -11,14 +11,22 @@ import Root from './app/Root';
 import createStore from './app/store';
 import {fetchConfig} from './config/ConfigActions';
 
+import {updateLocation} from './routes/LocationActions';
+import createRoutes from './routes/routes';
+
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
+store.unsubscribeHistory = hashHistory.listen(updateLocation(store));
+
+const routes = createRoutes(store);
 
 injectTapEventPlugin();
 store.dispatch(fetchConfig());
 
 render(
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-    <Root store={store} history={hashHistory} />
+    <Root store={store} routes={routes}
+      history={hashHistory}
+    />
   </MuiThemeProvider>,
   document.getElementById('root')
 );
