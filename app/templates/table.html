@@ -1,10 +1,10 @@
 
 <div class="container-fluid table_search">
   <div class="row">
-    <div class="col-xs-6 resource_name">
+    <div class="col-xs-4 resource_name">
       <h2><%- schema.title %></h2>
     </div>
-    <div class="col-xs-6 func">
+    <div class="col-xs-8 func">
       <form class="form-inline">
         <div class="form-group" data-gohan="search">
         <span>Filter by:</span>
@@ -26,9 +26,10 @@
           <input type="text" class="form-control"  placeholder="Search" value="<%= searchQuery.sortKey %>">
         </div>
       </form>
-        <a class="btn btn-primary gohan_create" data-gohan="create">
-            <strong>+</strong> New
-        </a>
+      <a class="btn btn-primary gohan_create" data-gohan="create">
+         <strong>+</strong> New
+      </a>
+      <a class="btn btn-primary gohan_delete_selected" disabled>Delete</a>
     </div>
   </div>
 </div>
@@ -37,6 +38,9 @@
   <table class="table table-hover gohan-table">
     <thead>
       <tr>
+       <th class="selector_col">
+         <input id="all_selector" class="selector_checkbox" type="checkbox" value=""/>
+       </th>
        <% schema.schema.propertiesOrder.forEach( function(key){
            var property = schema.schema.properties[key];
            var view = property['view']
@@ -63,6 +67,9 @@
     <tbody id="page<%= key + 1 %>" >
       <% _.each(data, function(d){ %>
       <tr>
+        <td class="selector_col">
+          <input class="row_selector" type="checkbox" value="<%= d.id %>"/>
+        </td>
         <% schema.schema.propertiesOrder.forEach( function(key){
           var property = schema.schema.properties[key];
           var view = property['view']
