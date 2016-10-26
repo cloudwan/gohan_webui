@@ -17,13 +17,13 @@
                return;
               }
             %>
-                <option value="<%= key %>"><%= property.title %></option>
+                <option value="<%= key %>" <%= key === searchQuery.property ? 'selected' : ''%>><%= property.title %></option>
             <%
               }
             );
             %>
           </select>
-          <input type="text" class="form-control"  placeholder="Search" value="<%= searchQuery.sortKey %>">
+          <input type="text" class="form-control"  placeholder="Search" value="<%= searchQuery.value %>">
         </div>
       </form>
         <a class="btn btn-primary gohan_create" data-gohan="create">
