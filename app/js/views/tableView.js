@@ -64,8 +64,8 @@ export default class TableView extends View {
       reverse: false
     };
     this.searchQuery = {
-      sortKey: '',
-      propField: ''
+      property: 'name',
+      value: undefined
     };
 
     this.searchDelay = 500;
@@ -86,7 +86,7 @@ export default class TableView extends View {
       }
       this.collection.getPage(this.activePage - 1).then(() => {
         this.render();
-        this.searchQuery.propField = $('[data-gohan="search"] select', this.$el).val();
+        this.searchQuery.property = $('[data-gohan="search"] select', this.$el).val() || 'name';
         if (this.polling) {
           this.collection.startLongPolling();
         }
@@ -106,52 +106,47 @@ export default class TableView extends View {
 
     clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => {
+      const value = $('[data-gohan="search"] input', this.$el).val();
 
-      this.fetchData();
+      this.searchQuery.value = value || undefined;
 
+      this.collection.filterByQuery(this.searchQuery.property, this.searchQuery.value).then(() => {
+        $('[data-gohan="search"] input', this.$el).focus().val(this.searchQuery.value);
+      }, error => {
+        this.errorView.render(...error);
+      });
     }, this.searchDelay);
   }
   searchByField(event) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.fetchData();
-  }
-  fetchData() {
+    if (!$('[data-gohan="search"] select', this.$el)) {
+      return;
+    }
+
     const property = $('[data-gohan="search"] select', this.$el).val();
-    const value = $('[data-gohan="search"] input', this.$el).val();
 
-    this.searchQuery = {
-      sortKey: value,
-      propField: property
-    };
+    if (!property || this.searchQuery.property === property) {
+      return;
+    }
+    this.searchQuery.property = property;
 
-    if (value === '') {
-      this.fetchByQuery();
-    } else {
-      this.fetchByQuery(property, value);
+    if (this.searchQuery.value) {
+      this.collection.filterByQuery(this.searchQuery.property, this.searchQuery.value).then(() => {
+        $('[data-gohan="search"] select', this.$el).val(this.searchQuery.property);
+      }, error => {
+        this.errorView.render(...error);
+      });
     }
   }
   getPage(pageNo) {
     this.collection.getPage(pageNo - 1).then(() => {
-      $('[data-gohan="search"] select', this.$el).val(this.searchQuery.propField);
+      $('[data-gohan="search"] select', this.$el).val(this.searchQuery.property);
     }, error => {
       this.errorView.render(...error);
     });
   }
-  fetchByQuery(property = 'name', value) {
-    this.activePage = 1;
-
-    this.collection.resetFilters();
-    this.collection.filterByQuery(property, value).then(() => {
-      $('[data-gohan="search"] select', this.$el).val(this.searchQuery.propField);
-      $('[data-gohan="search"] input', this.$el).focus().val(this.searchQuery.sortKey);
-
-    }, error => {
-      this.errorView.render(...error);
-    });
-  }
-
   sortData(event) {
     event.preventDefault();
     event.stopPropagation();
@@ -257,7 +252,7 @@ export default class TableView extends View {
       }
       this.collection.create(values, {wait: true}).then(() => {
         this.dialog.close();
-        this.fetchData();
+        this.collection.fetch();
       }, error => {
         this.dialog.errorView.render(...error);
         this.dialog.stopSpin();
@@ -378,7 +373,7 @@ export default class TableView extends View {
       let schemaFragment;
       if (this.collection.schema.hasParent()) {
         schemaFragment = this.collection.schema.parent().get('url') +
-        '/' + this.collection.parentId() + '/' + this.collection.schema.get('plural');
+          '/' + this.collection.parentId() + '/' + this.collection.schema.get('plural');
       } else {
         schemaFragment = fragment;
       }
