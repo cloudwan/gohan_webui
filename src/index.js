@@ -17,16 +17,18 @@ import createRoutes from './routes/routes';
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
 store.unsubscribeHistory = hashHistory.listen(updateLocation(store));
 
-const routes = createRoutes(store);
+
 
 injectTapEventPlugin();
-store.dispatch(fetchConfig());
+store.dispatch(fetchConfig()).then(() => {
+  const routes = createRoutes(store);
 
-render(
-  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-    <Root store={store} routes={routes}
-      history={hashHistory}
-    />
-  </MuiThemeProvider>,
-  document.getElementById('root')
-);
+  render(
+    <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+      <Root store={store} routes={routes}
+        history={hashHistory}
+      />
+    </MuiThemeProvider>,
+    document.getElementById('root')
+  );
+});
