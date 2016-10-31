@@ -1,4 +1,4 @@
-/* global window, $ */
+/* global window, document, $ */
 import {View, Collection, history} from 'backbone';
 
 import UserModel from './../models/userModel';
@@ -110,6 +110,16 @@ export default class AppView extends View {
       config: this.config.toJSON(),
       model: this.userModel,
       app: this
+    });
+
+    $(document).on('click', function (event) {
+      $('[data-toggle="popover"],[data-original-title]').each(function () {
+        if (!$(this).is(event.target) &&
+          $(this).has(event.target).length === 0 &&
+          $('.popover').has(event.target).length === 0) {
+          (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false;
+        }
+      });
     });
   }
 
