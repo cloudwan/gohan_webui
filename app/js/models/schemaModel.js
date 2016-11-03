@@ -859,12 +859,15 @@ export default class SchemaModel extends Model {
         const promises = [];
 
         for (let key in schema.properties) {
-          const promise = self.toLocalSchema(schema.properties[key]);
+          // workaround for Firefox 49
+          (key => {
+            const promise = self.toLocalSchema(schema.properties[key]);
 
-          promises.push(promise);
-          promise.then(function onFulfilled(data) {
-            result.properties[key] = data;
-          });
+            promises.push(promise);
+            promise.then(function onFulfilled(data) {
+              result.properties[key] = data;
+            });
+          })(key);
         }
         Promise.all(promises).then(() => {
           resolve(result);
