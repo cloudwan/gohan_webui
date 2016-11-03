@@ -714,6 +714,10 @@ export default class SchemaModel extends Model {
         schema[key].relation = value.relation;
       }
 
+      if (value.nullable) {
+        schema[key].nullable = true;
+      }
+
       if (value.type === 'string') {
         if (value.enum !== undefined) {
           schema[key].type = 'Select';
@@ -800,6 +804,9 @@ export default class SchemaModel extends Model {
       const self = this;
 
       if (Array.isArray(schema.type)) {
+        if (schema.type.includes('null')) {
+          schema.nullable = true;
+        }
         schema.type = schema.type[0];
       }
 
@@ -1004,6 +1011,11 @@ export default class SchemaModel extends Model {
    */
   toServerData(schema, data) {
     const self = this;
+
+    if (schema.nullable && (data === null || data === '')) {
+      return null;
+    }
+
     if (data === undefined || data === null || data === '') {
       return undefined;
     }

@@ -8,12 +8,35 @@ class SelectEditor extends Backbone.Form.editors.Select {
     }
   }
 
+  _arrayToHtml(array) {
+    return array.reduce((result, option) => {
+      if (option instanceof Object && !Array.isArray(option)) {
+        if (option.group) {
+          result.push(`<optgroup label="${option.group}">`);
+          result.push(this._getOptionsHtml(option.options));
+          result.push('</optgroup>');
+        } else {
+          const val = (option.val || option.val === 0) ? option.val : '';
+          result.push(`<option value="${val}">${option.label}</option>`);
+        }
+      } else {
+        if (option === null) {
+          result.push('<option value="">Not selected</option>');
+          return result;
+        }
+        result.push(`<option>${option}</option>`);
+      }
+      return result;
+    }, []).join('');
+  }
+
   render() {
     const searchThreshold = 6;
     const options = {
       container: 'body',
       width: '100%'
     };
+
     const optionLength = Object.keys(this.schema.options).length;
 
     if ((this.schema.options instanceof Array)) {
@@ -24,7 +47,12 @@ class SelectEditor extends Backbone.Form.editors.Select {
         .reduce((acc, val) => {
           acc[val] = this.schema.options[val];
           return acc;
-        }, {});
+        }, (() => {
+          if (this.schema.nullable && !this.schema.validators.includes('required')) {
+            return {'': 'Not selected'};
+          }
+          return {};
+        })());
 
       this.setOptions(sortedOptions);
     }
