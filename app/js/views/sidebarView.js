@@ -1,7 +1,8 @@
-/* global $ */
+/* global VERSION, $ */
 import {View, history} from 'backbone';
+import template from './../../templates/sidebar.html';
 
-import SidebarItemView from './sidebarItemView';
+
 
 /**
  * Class contains logic of sidebar view in application.
@@ -10,10 +11,20 @@ import SidebarItemView from './sidebarItemView';
  */
 export default class SidebarView extends View {
   get tagName() {
-    return 'ul';
+    return 'div';
   }
+
   get className() {
-    return 'nav nav-sidebar';
+    return 'nav-sidebar';
+  }
+
+  get events() {
+    return {
+      'focus [data-gohan="menu-filter"]': 'onFilter',
+      'blur [data-gohan="menu-filter"]': 'onFilter',
+      'click [data-gohan="sidebar-open"]': 'openSidebar',
+      'click [data-gohan="sidebar-close"]': 'closeSidebar'
+    };
   }
 
   /**
@@ -24,10 +35,12 @@ export default class SidebarView extends View {
    */
   constructor(options) {
     super(options);
-
     this.schemas = options.schemas;
     this.router = options.app.router;
-    this.listenTo(this.collection, 'add', this.append);
+    this.filterDelay = 300;
+    this.filterTimeout = undefined;
+    this.filterCache = '';
+    this.listenTo(this.collection, 'sync', this.render);
     this.router.on('route', this.onRoute.bind(this));
   }
 
@@ -36,33 +49,69 @@ export default class SidebarView extends View {
    * Selects item in menu, by url fragment.
    */
   onRoute() {
-    const model = this.collection.where({path: '/' + history.getFragment()})[0];
+    const prevModel = this.collection.findWhere({active: true});
+    const nextModel = this.collection.findWhere({path: '/' + history.getFragment()});
 
-    this.$('.active').removeClass('active');
-
-    if (model === undefined) {
-      return;
+    if (prevModel !== undefined) {
+      prevModel.set('active', false);
     }
-    const index = this.collection.indexOf(model);
 
-    $(this.$el.children()[index]).addClass('active');
+    if (nextModel !== undefined) {
+      nextModel.set('active', true);
+    }
+    this.closeSidebar();
+    this.render();
   }
 
   /**
-   * Appends model and create sidebar item.
-   * @param {Model} model
+   * Handles on focus event for the filter input field.
    */
-  append(model) {
-    const itemView = (new SidebarItemView({
-      model
-    })).render();
-    const index = this.collection.indexOf(model);
-
-    if (index === 0) {
-      this.$el.prepend(itemView.el);
-    } else {
-      itemView.$el.insertAfter(this.$el.children()[index - 1]);
+  onFilter(event) {
+    if (event.type === 'focusin') {
+      this.menuFilter();
+    } else if (event.type === 'focusout') {
+      clearTimeout(this.filterTimeout);
     }
+  }
+
+  /**
+   * Handles each menu dom visibility as to input text.
+   */
+  menuFilter() {
+    clearTimeout(this.filterTimeout);
+    const value = $('.menu-filter', this.$el).val().toLowerCase();
+    const $defaultMenu = $('.nav > li > a', this.$el);
+
+    if (value !== '' && this.filterCache !== value) {
+      $defaultMenu.hide();
+      const $filteredMenu = $defaultMenu.filter(function () {
+        return $(this).text().toLowerCase().includes(value);
+      });
+
+      $filteredMenu.show();
+      this.filterCache = value;
+    } else if (value === '' && this.filterCache !== value) {
+      this.filterCache = '';
+      $defaultMenu.show();
+    }
+
+    this.filterTimeout = setTimeout(() => {
+      this.menuFilter();
+    }, this.filterDelay);
+  }
+
+  /**
+   * Handles sidebar visivility when screen size is smaller than sm.
+   */
+  openSidebar() {
+    this.$el.parent().addClass('open');
+  }
+
+  /**
+   * Handles sidebar visivility when screen size is smaller than sm.
+   */
+  closeSidebar() {
+    this.$el.parent().removeClass('open');
   }
 
   /**
@@ -71,9 +120,10 @@ export default class SidebarView extends View {
    * @returns {SidebarView}
    */
   render() {
-    this.collection.each(function iterator(model) {
-      this.append(model);
-    }, this);
+    this.$el.html(template({
+      version: VERSION,
+      defaultMenu: this.collection.toJSON()
+    }));
     return this;
   }
 }

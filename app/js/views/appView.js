@@ -9,7 +9,7 @@ import HeaderView from './headerView';
 import TableView from './tableView';
 import DetailView from './detailView';
 import LoginView from './loginView';
-import SampleView from './sampleView';
+import TopView from './topView';
 import ErrorView from './errorView';
 import BreadCrumbView from './breadCrumbView';
 
@@ -31,7 +31,7 @@ export default class AppView extends View {
       {
         table: TableView,
         detail: DetailView,
-        sampleview: SampleView
+        topView: TopView
       },
       options.viewClass
     );

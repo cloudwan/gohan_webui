@@ -1,28 +1,27 @@
 <div data-gohan="error"></div>
-<div class="detail_info_container card">
+<div class="card gohan-detail-container">
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-xs-6 resource_name"><h2><%- schema.title %></h2></div>
-      <div class="col-xs-6 func">
-        <a class="edit" data-gohan="update" href="#">Edit</a>
-        <a class="edit" data-gohan="delete" href="#">Delete</a>
+    <div class="row gohan-detail-header">
+      <div class="col-sm-8 resource-name"><h2><%- schema.title %></h2></div>
+      <div class="col-sm-4 actions">
+        <a class="edit" data-gohan="update" href="#"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Edit</a><a class="edit" data-gohan="delete" href="#"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete</a>
       </div>
     </div>
-
-    <% _.each(schema.schema.propertiesOrder, function(key){
-     var property = schema.schema.properties[key];
-     var view = property['view'];
-     if(view){
-       if(view.indexOf("detail") < 0){
-         return
-       }
-     }
-    %>
-    <div class="row_property">
-      <div class="property_title"><%- property.title %></div>
-      <div class="property_detail"><%= data[key] %></div>
+<%
+    schema.schema.propertiesOrder.forEach(function(key) {
+      let property = schema.schema.properties[key];
+      let view = property['view'];
+      if (view && !view.includes('detail')) {
+        return;
+      }
+%>
+    <div class="row gohan-detail-property">
+      <div class="col-sm-3 property-title"><%- property.title %></div>
+      <div class="col-sm-9 property-detail"><%= data[key] %></div>
     </div>
-    <% }); %>
+<%
+    });
+%>
   </div>
 </div>
 
@@ -31,7 +30,7 @@
 <div class="container-fluid">
   <div class="row">
     <% _.each(children, function(child){  %>
-    <div class="child_resource">
+    <div class="child-resource">
       <div id="<%- child.id %>_table"></div>
     </div>
     <% }); %>

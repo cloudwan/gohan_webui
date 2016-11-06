@@ -8,6 +8,10 @@ import template from '../../templates/breadcrumb.html';
  * @extends View
  */
 export default class BreadCrumbView extends View {
+  get className() {
+    return 'bread-crumb';
+  }
+
   get template() {
     return template;
   }

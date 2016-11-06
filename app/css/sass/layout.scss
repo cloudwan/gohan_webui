@@ -1,0 +1,475 @@
+/*
+ * Variables
+ */
+
+$sidebar-width: 230px;
+
+
+/*
+ * Override Bootstrap
+ */
+
+.popover {
+  .popover-content {
+    padding: 0;
+  }
+  pre {
+    margin-bottom: 0;
+    border-radius: 0;
+    border: none;
+    background-color: transparent;
+  }
+}
+
+.pagination > li > a, .pagination > li > span {
+  cursor: pointer;
+}
+
+
+/*
+ * Base structure
+ */
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900);
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #eceef2;
+}
+
+.main {
+  padding-top: 70px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-left: 0;
+}
+@media (min-width: 768px) {
+  .main {
+    margin-left: $sidebar-width;
+  }
+}
+
+
+/*
+ * login
+ */
+
+.login-panel {
+  width: 420px;
+  height: 360px;
+  padding: 55px 50px 30px;
+  margin: auto;
+  position: absolute;
+  top: -80px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  h1 {
+    background: url(../../img/gohan-logo-gray.png) no-repeat 8px center;
+    background-size: 55px 60px;
+    font-size: 38px;
+    line-height: 60px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    padding-left: 76px;
+    font-weight: 300;
+  }
+}
+
+
+// Error Message
+.tableview, .detailview, .error-message {
+  > [data-gohan="error"] {
+    position: fixed;
+    width: 100%;
+    margin: 0;
+    left: 0;
+    padding-left: 0;
+    z-index: 1050;
+    top: 30px;
+    > div {
+      margin-left: 30px;
+      margin-right: 30px;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .tableview, .detailview, .error-message {
+    > [data-gohan="error"] {
+      padding-left: $sidebar-width;
+    }
+  }
+}
+
+
+/*
+ * Header
+ */
+.gohan-header {
+  left: 0;
+  ol {
+    margin-left: 0;
+    padding: 0px;
+    margin: 0;
+    line-height: 50px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 300;
+    a {
+      color: #fff;
+    }
+    li{
+      display: inline;
+      list-style: none;
+    }
+    li+li:before{
+      content: " > ";
+    }
+  }
+  .navbar-toggle {
+    .glyphicon {
+      color: #fff;
+    }
+    .glyphicon-triangle-top {
+      display: inline-block;
+    }
+    .glyphicon-triangle-bottom {
+      display: none;
+    }
+    &.collapsed {
+      .glyphicon-triangle-top {
+        display: none;
+      }
+      .glyphicon-triangle-bottom {
+        display: inline-block;
+      }
+    }
+  }
+  .bread-crumb {
+    margin-left: 35px;
+  }
+}
+@media (min-width: 768px) {
+  .gohan-header {
+    left: $sidebar-width;
+    .bread-crumb {
+      margin-left: 0;
+    }
+  }
+}
+
+
+/*
+ * Sidebar
+ */
+
+.sidebar {
+  position: absolute;
+  top: 0px;
+  bottom: 0;
+  left: -$sidebar-width;
+  width: $sidebar-width;
+  display: block;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  z-index: 1035;
+  transition-property: left;
+  transition-duration: 0.2s;
+  &.open {
+    left: 0;
+    position: fixed;
+    overflow-x: hidden;
+    overflow-y: auto;
+    .sidebar-open {
+      display: none;
+    }
+    .sidebar-close {
+      display: block;
+    }
+  }
+  .brand {
+    width: ($sidebar-width - 17px);
+    padding: 15px;
+    padding-top: 5px;
+    height: 100px;
+    top: 0px;
+    .search {
+      padding-top: 5px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 35px;
+      padding-left: 45px;
+      background: url(../../img/gohan-logo-gray.png) no-repeat 5px 3px;
+      background-size: 30px 32px;
+      font-weight: 300;
+      a {
+        color: #333;
+      }
+    }
+    background-color: #fff;
+    .version-info {
+      font-size: 11px;
+      text-align: right;
+      color: #aaa;
+      padding-right: 5px;
+      margin-top: -5px;
+    }
+  }
+  .nav {
+    li {
+      > a {
+
+      }
+      &.active {
+        > a {
+          color: #212121;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+  .sidebar-open {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    color: #fff;
+    padding: 9px 10px;
+    margin-top: 7px;
+    margin-bottom: 8px;
+    background-color: transparent;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    outline: none;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+  .sidebar-close {
+    position: absolute;
+    display: none;
+    left: 0px;
+    top: 0px;
+    padding: 8px 4px;
+    margin-top: 7px;
+    background-color: transparent;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    z-index: 1038;
+    outline: none;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+@media (min-width: 768px) {
+  .sidebar {
+    left: 0;
+    position: fixed;
+    overflow-x: hidden;
+    overflow-y: auto;
+    .brand {
+      position: fixed;
+      z-index: 1038;
+    }
+    .nav-sidebar {
+      padding-top: 101px;
+    }
+  }
+}
+
+
+/*
+ * Table View
+ */
+
+.gohan-table-header {
+  padding-left: 0;
+  padding-right: 0;
+  margin-bottom: 10px;
+  .resource-name {
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 34px;
+      text-indent: 2px;
+    }
+  }
+  span.filterby {
+    color: #bbb;
+    text-transform: uppercase;
+    font-size: 12px;
+    display: block;
+    text-indent: 2px;
+  }
+  .form-group {
+    margin-bottom: 0;
+  }
+  .form-control {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+  }
+}
+@media (min-width: 768px) {
+  .gohan-table-header {
+    .actions {
+      text-align: right;
+    }
+    span.filterby {
+      display: inline;
+    }
+  }
+}
+
+.gohan-table {
+  table-layout: fixed;
+  td, th {
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+  td.action_column {
+    min-width: 70px;
+    text-align: right;
+    .action-icon {
+      display: inline-block;
+      margin-right: 13px;
+      cursor: pointer;
+      opacity: 0.4;
+      transition-property: opacity;
+      transition-duration: 0.2s;
+    }
+  }
+  tr:hover {
+    .action-icon {
+      opacity: 1;
+    }
+  }
+  td.no-data {
+    text-align: center;
+    font-size: 1em;
+    color: #bbb;
+    padding: 10px;
+  }
+}
+
+
+/*
+ * Detail View
+ */
+
+.gohan-detail-container {
+  margin-bottom: 20px;
+  .gohan-detail-header {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    > div {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    h2 {
+      font-size: 16px;
+      line-height: 20px;
+      color: #bbb;
+      font-weight: normal;
+      display: inline-block;
+      margin: 0;
+    }
+    .edit {
+      line-height: 20px;
+      padding-right: 10px;
+      border-right: 1px solid #ddd;
+      margin-right: 10px;
+      display: inline-block;
+      .glyphicon {
+        margin-right: 5px;
+      }
+      &:last-child {
+        border: none;
+        padding-right: 0;
+        margin-right: 0;
+      }
+    }
+  }
+  .gohan-detail-property {
+    margin-bottom: 20px;
+    .property-title {
+      color: #bbb;
+      padding-top: 2px;
+    }
+    .property-detail {
+      font-size: 1.3em;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+  }
+}
+@media (min-width: 768px) {
+  .gohan-detail-container {
+  .gohan-detail-header {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    > div.actions {
+      text-align: right;
+    }
+  }
+    .gohan-detail-property {
+      .property-title {
+        text-align: right;
+      }
+    }
+  }
+}
+
+
+/*
+ * child resource
+ */
+
+.child-resource {
+  margin-bottom: 20px;
+}
+
+
+/*
+ * Card
+ */
+
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 1px rgba(0,0,0,.1);
+  .table {
+    margin-bottom: 0;
+  }
+}
+
+
+/*
+ * Top
+ */
+
+.top-container {
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    margin-bottom: 10px;
+    padding-left: 5px;
+  }
+  .card {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .pre-url {
+    line-height: 34px;
+  }
+}

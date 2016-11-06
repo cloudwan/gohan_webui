@@ -1,0 +1,31 @@
+<button type="button" class="sidebar-open" data-gohan="sidebar-open">
+  <span class="glyphicon glyphicon-menu-hamburger" aria-label="Open Sidebar"></span>
+</button>
+
+<button type="button" class="sidebar-close" data-gohan="sidebar-close">
+  <span class="glyphicon glyphicon glyphicon-menu-left" aria-label="Close Sidebar"></span>
+</button>
+
+<div class="brand">
+  <h1>
+    <a href="#/">Gohan WebUI</a>
+  </h1>
+  <div class="version-info">
+    <span>version:<%= version.version %></span>
+  </div>
+  <div class="search">
+    <input class="form-control menu-filter" data-gohan="menu-filter" type="text" placeholder="Menu Search">
+  </div>
+</div>
+
+<div class="default-menu">
+  <ul class="default-ul nav">
+    <% defaultMenu.forEach( function(menu) { %>
+      <li <% if (menu.active) { %> class="active" <% } %> >
+        <a href="#<%= menu.path %>">
+          <%= menu.title %>
+        </a>
+      </li>
+    <% }); %>
+  </ul>
+</div>

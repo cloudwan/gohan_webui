@@ -7,8 +7,8 @@
     "routes": [
         {
             "path": "",
-            "viewClass": "sampleview",
-            "name": "sample"
+            "viewClass": "topView",
+            "name": "top_view"
         }
     ],
     "errorMessages": {
