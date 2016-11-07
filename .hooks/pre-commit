@@ -1,7 +1,5 @@
 #!/bin/sh
 
-clear
-
 # Check JavaScript code style
 RUN_JSCS=1
 RUN_TESTS=1
