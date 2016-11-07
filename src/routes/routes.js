@@ -41,10 +41,7 @@ export const createRoutes = store => {
       component: requireAuthentication(App),
       childRoutes: [
         ...prepareRoutes(routes),
-        {
-          path: '*',
-          component: dynamicRoutes()
-        }
+        dynamicRoutes(store)
       ]
     }
   ];

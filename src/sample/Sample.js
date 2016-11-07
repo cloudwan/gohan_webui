@@ -2,15 +2,12 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Paper} from 'material-ui';
 
-import {clearData} from './../dynamicRoutes/DynamicActions';
-
 const detailStyle = {
   padding: 15
 };
 
 class Sample extends Component {
   componentWillUnmount() {
-    this.props.clearData();
   }
 
   render() {
@@ -33,5 +30,4 @@ function mapStateToProps() {
 }
 
 export default connect(mapStateToProps, {
-  clearData
 })(Sample);
