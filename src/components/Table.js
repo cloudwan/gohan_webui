@@ -1,7 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
 import {Link} from 'react-router';
-import {Paper, RefreshIndicator} from 'material-ui';
+import {Paper} from 'material-ui';
 
 import Dialog from './../dialog/Dialog';
 
@@ -9,12 +8,7 @@ const detailStyle = {
   padding: 15
 };
 
-const loadingIndicatorStyle = {
-  margin: 'auto',
-  position: 'relative'
-};
-
-class Table extends Component {
+export default class Table extends Component {
 
   constructor(props) {
     super(props);
@@ -44,14 +38,6 @@ class Table extends Component {
   render() {
     const {schema, singular} = this.props.schema;
 
-    if (this.props.isLoading || !Array.isArray(this.props.data)) {
-      return (
-        <RefreshIndicator size={60} left={0}
-          top={0} status="loading"
-          style={loadingIndicatorStyle}
-        />
-      );
-    }
     return (
       <Paper style={detailStyle}>
         <button onClick={this.handleOpenModal}>{'Add new ' + singular}</button>
@@ -107,17 +93,7 @@ class Table extends Component {
   }
 }
 
-Table.contextTypes = {
-  router: PropTypes.object
-};
-
-function mapStateToProps() {
-  return {};
-}
-
 Table.propTypes = {
   schema: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired
 };
-
-export default connect(mapStateToProps, {
-})(Table);

@@ -6,7 +6,7 @@ import {
   CREATE_SUCCESS,
   CREATE_FAILURE,
   CLEAR_DATA
-} from './DynamicActionTypes';
+} from './DetailActionTypes';
 
 function fetchSuccess(data) {
   return dispatch => {
