@@ -42,7 +42,6 @@ NPM_TESTCMD="npm run test"
 if [ $RUN_TESTS -ne 0 ]; then
   echo "Running tests..."
   $NPM_TESTCMD
-  CODE=$?
 
-  exit $CODE
+  exit $?
 fi
