@@ -1,39 +1,21 @@
 import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {Paper, RefreshIndicator} from 'material-ui';
-
-import {clearData} from './../dynamicRoutes/DynamicActions';
+import {Paper} from 'material-ui';
 
 const detailStyle = {
   padding: 15
 };
 
-const loadingIndicatorStyle = {
-  margin: 'auto',
-  position: 'relative'
-};
-
-class Detail extends Component {
+export default class Detail extends Component {
 
   componentWillUnmount() {
-    this.props.clearData();
   }
 
   render() {
     const {schema} = this.props.schema;
-    const {data, isLoading} = this.props;
+    const {data} = this.props;
     const titleStyle = {
       fontWeight: 'bold'
     };
-
-    if (isLoading) {
-      return (
-        <RefreshIndicator size={60} left={0}
-          top={0} status="loading"
-          style={loadingIndicatorStyle}
-        />
-      );
-    }
 
     return (
       <Paper style={detailStyle}>
@@ -57,22 +39,7 @@ class Detail extends Component {
   }
 }
 
-Detail.contextTypes = {
-  router: PropTypes.object
-};
-
 Detail.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
   schema: PropTypes.object.isRequired,
-  clearData: PropTypes.func.isRequired
+  data: PropTypes.object.isRequired
 };
-
-function mapStateToProps(state) {
-  return {
-    detailReducer: state.detailReducer
-  };
-}
-
-export default connect(mapStateToProps, {
-  clearData
-})(Detail);
