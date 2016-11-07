@@ -1,4 +1,4 @@
-import {FETCH_SUCCESS, FETCH_CHILD_SUCCESS, CLEAR_DATA, CREATE_SUCCESS} from './DynamicActionTypes';
+import {FETCH_SUCCESS, FETCH_CHILD_SUCCESS, CLEAR_DATA, CREATE_SUCCESS} from './TableActionTypes';
 
 export default function dynamicReducer(
   state = {
