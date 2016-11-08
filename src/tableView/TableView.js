@@ -9,11 +9,11 @@ class TableView extends Component {
   constructor(props) {
     super(props);
 
-    const splitSplat = props.params.splat.split('/');
+    const splitPathname = props.location.pathname.split('/');
 
     this.state = {
       activeSchema: props.schemaReducer.data.find(
-        object => object.plural === splitSplat[splitSplat.length - 1]
+        object => object.plural === splitPathname[splitPathname.length - 1]
       )
     };
     props.fetchData(this.state.activeSchema.url, this.state.activeSchema.plural);
@@ -27,11 +27,11 @@ class TableView extends Component {
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props.clearData();
 
-      const splitSplat = nextProps.params.splat.split('/');
+      const splitPathname = nextProps.location.pathname.split('/');
 
       this.state = {
         activeSchema: this.props.schemaReducer.data.find(
-          object => object.plural === splitSplat[splitSplat.length - 1]
+          object => object.plural === splitPathname[splitPathname.length - 1]
         )
       };
       this.props.fetchData(this.state.activeSchema.url, this.state.activeSchema.plural);
