@@ -9,7 +9,7 @@ class DetailView extends Component {
   constructor(props) {
     super(props);
 
-    const splitSplat = props.params.splat.split('/');
+    const splitSplat = props.location.pathname.split('/');
     const activeSchema = props.schemaReducer.data.find(
       object => object.singular === splitSplat[splitSplat.length - 2]
     );
