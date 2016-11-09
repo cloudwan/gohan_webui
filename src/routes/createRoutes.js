@@ -1,8 +1,6 @@
 import App from './../app/App';
 import components from './componentsList';
 import dynamicRoutes from '../dynamicRoutes/dynamicRoutes';
-import requireAuthentication from '../auth/requireAuthentication';
-import Login from '../auth/Auth';
 
 export const createRoutes = store => {
   const {routes} = store.getState().configReducer;
@@ -33,12 +31,8 @@ export const createRoutes = store => {
 
   return [
     {
-      path: '/login',
-      component: Login
-    },
-    {
       path: '/',
-      component: requireAuthentication(App),
+      component: App,
       childRoutes: [
         ...prepareRoutes(routes),
         dynamicRoutes(store)

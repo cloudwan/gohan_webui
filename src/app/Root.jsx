@@ -1,15 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import {Provider} from 'react-redux';
-import {Router} from 'react-router';
+import Authenticated from '../auth/Authenticated';
 
 export default class Root extends Component {
 
   render() {
-    const {store, history, routes} = this.props;
+    const {store, history} = this.props;
 
     return (
       <Provider store={store}>
-        <Router history={history} routes={routes} />
+        <Authenticated history={history} store={store} />
       </Provider>
     );
   }

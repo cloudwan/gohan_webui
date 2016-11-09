@@ -12,7 +12,7 @@ export default class SidebarMenu extends Component {
     const sidebarMenuItems = [];
 
     if (this.props.schemaReducer !== undefined) {
-      this.props.schemaReducer.forEach((item, index) => {
+      this.props.schemaReducer.data.forEach((item, index) => {
         if (!item.parent && item.metadata.type !== 'metaschema') {
           sidebarMenuItems.push(
             <SidebarMenuItem item={item}
@@ -35,6 +35,6 @@ export default class SidebarMenu extends Component {
 }
 
 SidebarMenu.propTypes = {
-  schemaReducer: PropTypes.array
+  schemaReducer: PropTypes.object
 };
 
