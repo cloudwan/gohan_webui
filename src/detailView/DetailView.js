@@ -10,10 +10,10 @@ class DetailView extends Component {
     super(props);
 
     const splitSplat = props.params.splat.split('/');
-    const activeSchema = props.schemaReducer.find(
+    const activeSchema = props.schemaReducer.data.find(
       object => object.singular === splitSplat[splitSplat.length - 2]
     );
-    const childSchemas = props.schemaReducer.filter(
+    const childSchemas = props.schemaReducer.data.filter(
       object => object.parent === activeSchema.id
     );
 
@@ -44,7 +44,7 @@ class DetailView extends Component {
 }
 
 DetailView.propTypes = {
-  schemaReducer: PropTypes.array.isRequired,
+  schemaReducer: PropTypes.object.isRequired,
   detailReducer: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
   clearData: PropTypes.func.isRequired

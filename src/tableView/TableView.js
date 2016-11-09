@@ -12,7 +12,7 @@ class TableView extends Component {
     const splitSplat = props.params.splat.split('/');
 
     this.state = {
-      activeSchema: props.schemaReducer.find(
+      activeSchema: props.schemaReducer.data.find(
         object => object.plural === splitSplat[splitSplat.length - 1]
       )
     };
@@ -30,7 +30,7 @@ class TableView extends Component {
       const splitSplat = nextProps.params.splat.split('/');
 
       this.state = {
-        activeSchema: this.props.schemaReducer.find(
+        activeSchema: this.props.schemaReducer.data.find(
           object => object.plural === splitSplat[splitSplat.length - 1]
         )
       };
@@ -53,7 +53,7 @@ class TableView extends Component {
 }
 
 TableView.propTypes = {
-  schemaReducer: PropTypes.array.isRequired,
+  schemaReducer: PropTypes.object.isRequired,
   tableReducer: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
   clearData: PropTypes.func.isRequired

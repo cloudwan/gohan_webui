@@ -60,7 +60,7 @@ class App extends Component {
 
 App.propTypes = {
   errorMessage: PropTypes.string,
-  schemaReducer: PropTypes.array,
+  schemaReducer: PropTypes.object,
   children: PropTypes.node
 };
 
