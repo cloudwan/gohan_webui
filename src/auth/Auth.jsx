@@ -29,7 +29,7 @@ class Auth extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined) {
-      this.context.router.push('/');
+      this.props.onLoginSuccess();
     }
   }
 
