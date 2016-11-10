@@ -49,10 +49,6 @@ export default class DialogView extends View {
       closeByKeyboard: false,
       spinicon: 'glyphicon glyphicon-refresh',
       onshown: () => {
-        $('.modal-body').css({
-          'max-height': $(window).height() - 200 + 'px',
-          'overflow-y': 'auto'
-        });
         this.form.focus();
       },
       onhide: this.onhide,
@@ -213,5 +209,9 @@ export default class DialogView extends View {
     });
     $('[data-gohan="error"]', this.form.el).append(this.errorView.el);
     this.dialog.open();
+    this.dialog.$modalBody.css({
+      'max-height': $(window).height() - 200 + 'px',
+      'overflow-y': 'auto'
+    });
   }
 }
