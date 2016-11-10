@@ -333,7 +333,7 @@ export default class TableView extends View {
       }
     }
     try {
-      if (property.type === 'object' || property.originalType === 'object') {
+      if (property.type.includes('object') || (property.originalType && property.originalType.includes('object'))) {
         content = $('<pre style="width:500px;"></pre>').text(
           '<pre>' + jsyaml.safeDump(value) + '</pre>').html();
         content = content.replace('\'', '&#34;');
@@ -346,7 +346,7 @@ export default class TableView extends View {
     }
 
     try {
-      if (property.type === 'array') {
+      if (property.type.includes('array')) {
         return '<pre>' + jsyaml.safeDump(value) + '</pre>';
       }
     } catch (error) {
