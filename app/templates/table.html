@@ -128,20 +128,15 @@ const selectedResource =
           const title = property.title.toLowerCase();
           const urlPattern = /^((http|https):\/\/)/;
 
-          if (property['format'] === 'uri' && urlPattern.test(d[key])) {
-%>
+          if (property['format'] === 'uri' && urlPattern.test(d[key])) { %>
           <td><a href="<%- d[key] %>"> link </a></td>
-<%
-          } else if (title === 'name' || title === 'title') { 
-%>
-          <td><a data-id="<%= d[key] %>" href="#/<%= fragment %>/<%= d.id %>"><%= _.escape(d[key]) %></a></td>
-<%
-          } else {
-%>
+        <% } else if (title === 'name' || title === 'title') { %>
+          <td><a data-id="<%- d[key] %>" href="#/<%- fragment %>/<%- d.id %>"><%- d[key] %></a></td>
+        <% } else if (property.type === 'object') { %>
           <td><%= d[key] %></td>
-<%
-          }
-%>
+        <% } else { %>
+          <td><%- d[key] %></td>
+        <% } %>
 <%
         });
 %>
