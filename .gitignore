@@ -2,7 +2,7 @@ npm-debug.log
 config.json
 schema.json
 node_modules
-bower_components
 dist/*
 .sass-cache
 coverage
+.idea

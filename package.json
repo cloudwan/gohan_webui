@@ -55,7 +55,6 @@
     "babel-eslint": "^6.0.2",
     "babel-loader": "^6.2.3",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.11.5",
-    "bower-webpack-plugin": "^0.1.9",
     "chai": "^3.4.1",
     "chai-as-promised": "^5.3.0",
     "chai-backbone": "^0.9.4",

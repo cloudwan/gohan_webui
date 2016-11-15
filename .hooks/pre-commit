@@ -5,7 +5,7 @@ RUN_JSCS=1
 RUN_TESTS=1
 TOTAL_ERRORS=0
 JSCS_PATH=`command -v ./node_modules/.bin/eslint`
-JSFILES=$(git diff-index --name-status --cached HEAD | grep -v ^D | grep -oP '^((?!karma|test|node_modules|bower_components|webpack).)*$' | egrep '.js$' | cut -c3-)
+JSFILES=$(git diff-index --name-status --cached HEAD | grep -v ^D | grep -oP '^((?!karma|test|node_modules|webpack).)*$' | egrep '.js$' | cut -c3-)
 if [ -z "$JSFILES" ]; then
     # No JavaScript file changed for this commit
     echo "Files not changed"
