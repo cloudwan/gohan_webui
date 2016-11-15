@@ -2,7 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Detail from '../components/Detail';
-import {fetchData, clearData} from './DetailActions';
+import {fetchData, clearData, pollData, cancelPollData} from './DetailActions';
+import axios from 'axios';
 
 class DetailView extends Component {
 
@@ -16,15 +17,29 @@ class DetailView extends Component {
     const childSchemas = props.schemaReducer.data.filter(
       object => object.parent === activeSchema.id
     );
+    const detail = splitSplat[splitSplat.length - 1];
+    const CancelToken = axios.CancelToken;
+    const source = CancelToken.source();
 
     this.state = {
       activeSchema,
-      childSchemas
+      childSchemas,
+      detail,
+      source
     };
-    this.props.fetchData(activeSchema.url + '/' + splitSplat[splitSplat.length - 1], activeSchema.singular);
+    this.props.fetchData(activeSchema.url + '/' + detail, activeSchema.singular);
+  }
+
+  componentDidMount() {
+
+    if (this.props.configReducer.polling) {
+      this.pollData();
+    }
   }
 
   componentWillUnmount() {
+    this.state.source.cancel();
+    this.props.cancelPollData();
     this.props.clearData();
   }
 
@@ -38,26 +53,37 @@ class DetailView extends Component {
     }
 
     return (
-      <Detail schema={this.state.activeSchema} data={data} />
+      <Detail schema={this.state.activeSchema} data={data}/>
     );
+  }
+
+  pollData() {
+    const {detail, activeSchema, source} = this.state;
+    this.props.pollData(activeSchema.url + '/' + detail, activeSchema.singular, source.token);
   }
 }
 
 DetailView.propTypes = {
   schemaReducer: PropTypes.object.isRequired,
   detailReducer: PropTypes.object.isRequired,
+  configReducer: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
-  clearData: PropTypes.func.isRequired
+  clearData: PropTypes.func.isRequired,
+  cancelPollData: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
   return {
     schemaReducer: state.schemaReducer,
-    detailReducer: state.detailReducer
+    detailReducer: state.detailReducer,
+    configReducer: state.configReducer
   };
 }
 
+
 export default connect(mapStateToProps, {
   fetchData,
-  clearData
+  clearData,
+  pollData,
+  cancelPollData
 })(DetailView);

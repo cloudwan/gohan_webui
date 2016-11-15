@@ -1,4 +1,11 @@
-import {FETCH_SUCCESS, FETCH_CHILD_SUCCESS, CLEAR_DATA} from './DetailActionTypes';
+import {
+  FETCH_SUCCESS,
+  FETCH_CHILD_SUCCESS,
+  CLEAR_DATA,
+  CREATE_SUCCESS,
+  POLLING_DATA,
+  CANCEL_POLLING_DATA
+} from './DetailActionTypes';
 
 export default function dynamicReducer(
   state = {
@@ -30,6 +37,23 @@ export default function dynamicReducer(
         data: {},
         children: {},
         polling: false
+      };
+    case CREATE_SUCCESS:
+      return {
+        ...state,
+        data: {...state.data, ...data}
+      };
+    case POLLING_DATA:
+      return {
+        ...state,
+        polling: true,
+        data: {...state.data, ...data}
+      };
+    case CANCEL_POLLING_DATA:
+      return {
+        ...state,
+        polling: true,
+        data: {...state.data, ...data}
       };
     default:
       return state;
