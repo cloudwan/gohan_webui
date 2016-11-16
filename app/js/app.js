@@ -9,6 +9,8 @@ import './../../node_modules/bootswatch/cosmo/bootstrap.css';
 import './../../node_modules/font-awesome/css/font-awesome.css';
 import '../css/sass/main.scss';
 import './../../node_modules/spinkit/scss/spinners/7-three-bounce.scss';
+import './../../node_modules/bootstrap-select/dist/css/bootstrap-select.css';
+import './../../node_modules/bootstrap-dialog/dist/css/bootstrap-dialog.css';
 
 // Import JS.
 import {history} from 'backbone';
