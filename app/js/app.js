@@ -5,12 +5,12 @@ import 'bootstrap-dialog';
 import 'bootstrap-select';
 
 // Import css.
-import './../../node_modules/bootswatch/cosmo/bootstrap.css';
-import './../../node_modules/font-awesome/css/font-awesome.css';
-import '../css/sass/main.scss';
-import './../../node_modules/spinkit/scss/spinners/7-three-bounce.scss';
-import './../../node_modules/bootstrap-select/dist/css/bootstrap-select.css';
-import './../../node_modules/bootstrap-dialog/dist/css/bootstrap-dialog.css';
+import '../css/less/bootstrap.less';
+import 'bootstrap-select/dist/css/bootstrap-select.css';
+import 'font-awesome/css/font-awesome.css';
+import 'spinkit/scss/spinners/7-three-bounce.scss';
+import '../css/sass/layout.scss';
+import '../css/sass/form.scss';
 
 // Import JS.
 import {history} from 'backbone';

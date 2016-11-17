@@ -1,10 +1,5 @@
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-8 title"><span class="fa fa-navicon"></span><h1><ol>
-            <% _.each(parents, function iterator(parent, key) { %><li>
-                <a href="#<%- parent.url %>"><%- parent.title %></a></li>
-            <% }) %>
-        </ol></h1></div>
-        <div class="col-sm-4 edit"></div>
-    </div>
-</div>
+<ol>
+  <% _.each(parents, function iterator(parent, key) { %><li>
+      <a href="#<%- parent.url %>"><%- parent.title %></a></li>
+  <% }) %>
+</ol>

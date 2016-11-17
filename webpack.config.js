@@ -1,10 +1,20 @@
 var port = 8080;
 var hostname = 'localhost';
+var process = require('process');
 var path = require('path');
+var git = require('git-rev-sync');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+function version() {
+  return {
+    hash: git.long(),
+    tag: git.tag(),
+    version: process.env.npm_package_version
+  };
+}
 
 module.exports = {
   context: __dirname,
@@ -13,7 +23,7 @@ module.exports = {
   ],
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js',
+    filename: 'bundle.[hash].js',
     sourceMapFilename: '[file].map'
   },
   module: {
@@ -52,13 +62,16 @@ module.exports = {
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
-            'file?hash=sha512&digest=hex&name=[hash].[ext]',
-            'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+          'file?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
       }
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(version())
+    }),
     new ExtractTextPlugin('styles.css'),
     new webpack.ProvidePlugin({
       $: 'jquery',

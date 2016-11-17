@@ -1,37 +1,26 @@
-<div class="title">
-  <a href="/#"><h2>Gohan</h2></a>
-</div>
 <% if (authToken) { %>
-<div class="dropdown">
-  <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-    <span class="fa fa-user"></span>
-    <%= username %>
-    <span class="caret"></span>
-  </a>
-  <ul id="menu1" class="dropdown-menu" aria-labelledby="dLabel">
-    <li>
-      <a href="#" data-gohan="logout">Log Out</a>
-    </li>
-  </ul>
-</div>
-<% if(tenants.length > 1){%>
-<div class="dropdown">
-  <a data-target="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-    <span class="fa fa-users"></span>
-    <%= tenantName %>
-    <span class="caret"></span>
-  </a>
-
-  <ul id="menu2" class="dropdown-menu" aria-labelledby="dLabel">
-<% _.each(tenants, function(tenant){ %>
-    <li>
-      <a data-gohan="change-tenant" data-tenant="<%= tenant.name %>"><%= tenant.name %></a>
-    </li>
-<% }); %>
-  </ul>
-</div>
-<% } %>
-<% } %>
-
-
-
+<ul class="nav navbar-nav navbar-right">
+  <% if (tenants.length > 1) { %>
+  <li class="dropdown">
+    <a  id="tenant-ddm" href="#" class="dropdown-toggle" data-toggle="dropdown" 
+        role="button" aria-haspopup="true" aria-expanded="false">Tenant: <%= tenantName %> <span class="caret"></span> </a>
+    <ul class="dropdown-menu" aria-labelledby="tenant-ddm">
+      <% _.each(tenants, function(tenant){ %>
+      <li><a href="#" data-gohan="change-tenant" data-tenant="<%= tenant.name %>"><%= tenant.name %></a></li>
+      <% }); %>
+    </ul>
+  </li>
+  <% } else { %>
+  <li><a style="pointer-events: none;">Tenant: <%= tenantName %></a></li>
+  <% } %>
+  <li class="dropdown">
+    <a  id="user-ddm" href="#" class="dropdown-toggle" data-toggle="dropdown" 
+        role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <%= username %> <span class="caret"></span> </a>
+    <ul class="dropdown-menu" aria-labelledby="user-ddm">
+      <li>
+        <a href="#" data-gohan="logout">Log Out</a>
+      </li>
+    </ul>
+  </li>
+ </ul>
+ <% } %>

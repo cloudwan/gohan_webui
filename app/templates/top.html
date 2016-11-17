@@ -1,0 +1,57 @@
+<div data-gohan="error"></div>
+<div class="top-container">
+  <h2>Resources</h2>
+  <div class="card">
+    <ul>
+      <li><a href="https://github.com/cloudwan/gohan" target="_blank">Gohan (Github Repo)</a></li>
+      <li><a href="https://github.com/cloudwan/gohan_webui" target="_blank">Gohan WebUI (Github Repo)</a></li>
+    </ul>
+  </div>
+
+  <h2>API Request</h2>
+  <div class="card">
+    <p>You can see the result in the browser console, X-Auth-Token wll be added to every API call</p>
+    <form class="form-horizontal">
+      <div class="form-group">
+        <label for="api-url" class="col-sm-2 control-label">URL</label>
+        <div class="col-sm-3 pre-url" id="pre-url"><%- gohanURL %> + </div>
+
+        <div class="col-sm-7">
+          <div class="input-group">
+            <input type="text" class="form-control" aria-label="API URL" id="api-url" placeholder="<%= schemaURL[0] %>">
+            <div class="input-group-btn">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <span class="caret"></span></button>
+              <ul class="dropdown-menu dropdown-menu-right api-list">
+                <% schemaURL.forEach( function(url){ %>
+                  <li><a href="#"><%= url %></a></li>
+                <% }); %>
+              </ul>
+            </div><!-- /btn-group -->
+          </div><!-- /input-group -->
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-2 control-label" for="HTTPmethod">HTTP Method</label>
+        <div class="col-sm-10">
+          <select class="form-control" id="HTTPmethod">
+            <option>GET</option>
+            <option>POST</option>
+            <option>PUT</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="requestData" class="col-sm-2 control-label">Data</label>
+        <div class="col-sm-10">
+          <textarea class="form-control" rows="3" id="request-data"></textarea>
+          <span class="help-block">Put Stringified JSON here</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="button" class="btn btn-primary api-request">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
