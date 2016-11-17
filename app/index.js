@@ -13,9 +13,7 @@ import DialogView from './js/views/dialogView';
 import ErrorView from './js/views/errorView';
 import HeaderView from './js/views/headerView';
 import LoginView from './js/views/loginView';
-import SampleView from './js/views/sampleView';
 import SchemaView from './js/views/schemaView';
-import SidebarItemView from './js/views/sidebarItemView';
 import SidebarView from './js/views/sidebarView';
 import TableView from './js/views/tableView';
 
@@ -32,9 +30,7 @@ export {
   ErrorView,
   HeaderView,
   LoginView,
-  SampleView,
   SchemaView,
-  SidebarItemView,
   SidebarView,
   TableView
 };
