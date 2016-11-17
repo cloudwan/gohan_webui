@@ -222,7 +222,8 @@ export default class TableView extends View {
         onhide,
         schema: this.schema.toFormJSON(schema),
         unformattedSchema: this.schema,
-        fields: schema.propertiesOrder
+        fields: schema.propertiesOrder,
+        action
       });
       this.dialog.render();
     });

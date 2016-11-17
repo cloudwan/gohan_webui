@@ -54,6 +54,7 @@ export default class DialogView extends View {
       onhide: this.onhide,
       onshow: this.onshow
     });
+    this.action = options.action;
   }
 
   /**
@@ -193,10 +194,10 @@ export default class DialogView extends View {
     this.dialog.setMessage(this.form.el);
     this.dialog.addButton({
       id: 'submit',
-      label: 'Submit',
+      label: this.action === 'create' ? 'Create' : 'Update',
       cssClass: 'btn-primary',
       action: () => {
-        var error = this.form.validate();
+        const error = this.form.validate();
 
         if (error) {
           console.error(error);
