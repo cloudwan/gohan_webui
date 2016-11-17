@@ -100,6 +100,8 @@ export default class SchemaModel extends Model {
         this.longPolling = false;
         this.timeOutId = -1;
         this.intervalSeconds = 10;
+        this.isSelected = false;
+        this.isDeleting = false;
       }
 
       /**

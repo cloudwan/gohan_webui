@@ -1,4 +1,4 @@
-/* global VERSION, $ */
+/* global $ */
 import {View, ajax} from 'backbone';
 import template from './../../templates/top.html';
 import BootstrapDialog from 'bootstrap-dialog';
