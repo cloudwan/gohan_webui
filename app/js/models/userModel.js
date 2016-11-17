@@ -125,6 +125,41 @@ export default class UserModel extends Model {
     });
   }
 
+  extendToken(password) {
+    return new Promise((resolve, reject) => {
+      const authData = {
+        auth: {
+          tenantName: this.tenantName(),
+          passwordCredentials: {
+            username: this.userName(),
+            password
+          }
+        }
+      };
+
+      Backbone.ajax({
+        dataType: 'json',
+        url: this.url,
+        data: JSON.stringify(authData),
+        method: 'POST',
+        timeout: this.config.get('loginRequestTimeout'),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        success: authToken => {
+          const scopedToken = this.getItem('scopedToken');
+
+          scopedToken[this.tenantName()].access.token = authToken.access.token;
+          this.saveScopedToken(scopedToken[this.tenantName()]);
+          resolve();
+        },
+        error: (...params) => {
+          reject(params);
+        }
+      });
+    });
+  }
+
   /**
    * Fetch tenants from server
    */

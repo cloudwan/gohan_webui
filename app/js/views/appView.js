@@ -54,6 +54,32 @@ export default class AppView extends View {
 
     this.view = null;
 
+    const extendTokenTime = this.config.get('extendTokenTime') || 300000;
+
+    const showTokenExtendPopup = () => {
+      const message = `The token will expire in less than ${(extendTokenTime / 60000).toFixed()} minutes.` +
+        'Enter your password for extends token.';
+
+      this.errorView.render({
+        status: 1,
+        readyState: 1,
+        statusText: `${message} <div id="extend-token-error"/>` +
+          '<form accept-charset="UTF-8" method="" action="" role="form">' +
+          '<input class="form-control" placeholder="Password" name="password" ' +
+          'id="password" type="password" value=""/>' +
+          '<input class="btn btn-primary btn-block" data-gohan="extend" type="submit" value="Extend">' +
+          '</form>'
+      });
+      $('[data-gohan="extend"]', this.errorView.el).on('click', event => {
+        event.currentTarget.disabled = true;
+        this.userModel.extendToken(document.getElementById('password').value)
+          .then(() => this.errorView.close())
+          .catch(() => {
+            event.currentTarget.disabled = false;
+            document.getElementById('extend-token-error').innerText = 'Error: Wrong password!';
+          });
+      });
+    };
     const showTokenExpireError = () => {
       let message;
       if (this.config.get('errorMessages') && this.config.get('errorMessages')['tokenExpire']) {
@@ -73,15 +99,38 @@ export default class AppView extends View {
       });
     };
     if (this.userModel.authToken()) {
-      setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
+      this.listenTo(this.userModel, 'change:authData', () => {
+        clearTimeout(this.extendPopupTimeoutId);
+        clearTimeout(this.expirePopupTimeoutId);
+        this.extendPopupTimeoutId = setTimeout(
+          showTokenExtendPopup, this.userModel.expiresTokenDate() - new Date() - extendTokenTime
+        );
+        this.expirePopupTimeoutId = setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
+      });
+      this.extendPopupTimeoutId = setTimeout(
+        showTokenExtendPopup, this.userModel.expiresTokenDate() - new Date() - extendTokenTime
+      );
+      this.expirePopupTimeoutId = setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
       this.schemas.fetch().then(() => {
         this.buildUi();
       }, error => {
         this.errorView.render(...error);
       });
+
     } else {
-      this.listenTo(this.userModel, 'change:authData', () => {
-        setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
+      this.listenToOnce(this.userModel, 'change:authData', () => {
+        this.extendPopupTimeoutId = setTimeout(
+          showTokenExtendPopup, this.userModel.expiresTokenDate() - new Date() - extendTokenTime
+        );
+        this.expirePopupTimeoutId = setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
+        this.listenTo(this.userModel, 'change:authData', () => {
+          clearTimeout(this.extendPopupTimeoutId);
+          clearTimeout(this.expirePopupTimeoutId);
+          this.extendPopupTimeoutId = setTimeout(
+            showTokenExtendPopup, this.userModel.expiresTokenDate() - new Date() - extendTokenTime
+          );
+          this.expirePopupTimeoutId = setTimeout(showTokenExpireError, this.userModel.expiresTokenDate() - new Date());
+        });
         this.$('#main_body').empty();
         this.schemas.fetch().then(() => {
           this.buildUi();

@@ -18,5 +18,6 @@
         "Pet"
     ],
     "pageLimit": 25,
-    "loginRequestTimeout": 30000
+    "loginRequestTimeout": 30000,
+    "extendTokenTime": 300000
 }
