@@ -17,6 +17,7 @@ export default class ErrorView extends View {
 
   constructor() {
     super();
+
     this.message = 'Unknown Error';
     this.messageDetail = '';
   }
