@@ -96,6 +96,17 @@ body {
       margin-right: 30px;
     }
   }
+  p.extend-token-message {
+    font-weight: normal;
+    margin-bottom: 3px;
+  }
+  p.extend-token-error {
+    margin-bottom: 3px;
+  }
+  input.extend-token {
+    font-weight: normal;
+    margin-right: 5px;
+  }
 }
 
 @media (min-width: 768px) {
