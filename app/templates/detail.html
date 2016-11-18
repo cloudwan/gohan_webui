@@ -9,8 +9,8 @@
     </div>
 <%
     schema.schema.propertiesOrder.forEach(function(key) {
-      let property = schema.schema.properties[key];
-      let view = property['view'];
+      const property = schema.schema.properties[key];
+      const view = property['view'];
       if (view && !view.includes('detail')) {
         return;
       }
@@ -25,15 +25,22 @@
   </div>
 </div>
 
-
-<% if ( children.length > 0 ) { %>
+<%
+if (children.length > 0) {
+%>
 <div class="container-fluid">
   <div class="row">
-    <% _.each(children, function(child){  %>
+<%
+    children.forEach(function(child) {
+%>
     <div class="child-resource">
       <div id="<%- child.id %>_table"></div>
     </div>
-    <% }); %>
+<%
+    });
+%>
   </div>
 </div>
-<% } %>
+<%
+}
+%>

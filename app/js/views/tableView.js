@@ -28,7 +28,10 @@ export default class TableView extends View {
       'click [data-gohan="sort-title"]': 'sortData',
       'keyup [data-gohan="search"]': 'searchByKey',
       'change [data-gohan="search"]': 'searchByField',
-      'click [data-gohan="pagination"] li:not(.disabled) a': 'paginationHandler'
+      'click [data-gohan="pagination"] li:not(.disabled) a': 'paginationHandler',
+      'click [data-gohan="toggle-row"]': 'toggleRow',
+      'click [data-gohan="toggle-all-row"]': 'toggleAllRow',
+      'click [data-gohan="delete-all"]': 'deleteSelectedModel'
     };
   }
   constructor(options) {
@@ -211,6 +214,30 @@ export default class TableView extends View {
 
     this.getPage(Number(newActivePage));
   }
+  toggleRow(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const $target = $(event.currentTarget);
+    const id = $target.data('id');
+    const model = this.collection.get(String(id));
+
+    model.isSelected = !model.isSelected;
+    this.render();
+  }
+  toggleAllRow(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const selected = this.collection.some(model => {
+      return model.isSelected;
+    });
+
+    this.collection.each(model => {
+      model.isSelected = !selected;
+    });
+    this.render();
+  }
   dialogForm(action, formTitle, data, onsubmit, onhide) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
       this.dialog = new DialogView({
@@ -306,9 +333,45 @@ export default class TableView extends View {
           const id = $target.data('id');
           const model = this.collection.get(String(id));
 
+          model.isDeleting = true;
+          this.render();
           model.destroy({wait: true}).then(() => {
             this.collection.fetch().catch(error => this.errorView.render(...error));
-          }, error => this.errorView.render(...error));
+          },
+          error => {
+            model.isDeleting = false;
+            this.render();
+            this.errorView.render(...error);
+          });
+        }
+      }
+    });
+  }
+  deleteSelectedModel(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    BootstrapDialog.confirm({
+      title: 'Delete',
+      message: 'Are you sure to delete?',
+      closable: true,
+      btnOKLabel: 'Delete',
+      callback: result => {
+        if (result) {
+          this.collection.each(model => {
+            if (model.isSelected && !model.isDeleting) {
+              model.isDeleting = true;
+              model.destroy({wait: true}).then(() => {
+                this.collection.fetch().catch(error => this.errorView.render(...error));
+              },
+              error => {
+                model.isDeleting = false;
+                this.render();
+                this.errorView.render(...error);
+              });
+            }
+          });
+          this.render();
         }
       }
     });
@@ -358,7 +421,7 @@ export default class TableView extends View {
   }
 
   render() {
-    let list = this.collection.map(model => {
+    const list = this.collection.map(model => {
       const data = model.toJSON();
       const result = Object.assign({}, data);
 
@@ -366,6 +429,12 @@ export default class TableView extends View {
         result[key] = this.renderProperty(data, key);
       }
       return result;
+    });
+    const uiState = this.collection.map(model => {
+      return {
+        isSelected: model.isSelected,
+        isDeleting: model.isDeleting
+      };
     });
     if (this.app && !this.childview) {
       this.app.router.changeTitle(this.schema.get('title'));
@@ -390,6 +459,7 @@ export default class TableView extends View {
 
     this.$el.html(this.template({
       data: list,
+      uiState,
       activePage: this.activePage,
       pageCount: this.collection.getPageCount(),
       schema: this.schema.toJSON(),
@@ -400,7 +470,8 @@ export default class TableView extends View {
       fragment: this.fragment,
       params: this.params
     }));
-    this.$('a[data-toggle=popover]').popover();
+    $('a[data-toggle="popover"]', this.el).popover();
+    $('a[data-toggle="tooltip"]', this.el).tooltip();
     $('[data-gohan="error"]', this.el).append(this.errorView.el);
     return this;
   }
