@@ -1,6 +1,6 @@
 {
   "name": "gohan-webui",
-  "version": "1.15.2",
+  "version": "1.16.0",
   "description": "WebUI for Gohan project",
   "main": "./app/index.js",
   "scripts": {
@@ -37,6 +37,10 @@
     {
       "name": "Daisuke Morita",
       "email": "morita.daisuke@ntti3.com"
+    },
+    {
+      "name": "Katarzyna Fokow",
+      "email": "sealionkat@gmail.com"
     },
     {
       "name": "Iwasaki Yudai",
