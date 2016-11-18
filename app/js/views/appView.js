@@ -58,16 +58,17 @@ export default class AppView extends View {
 
     const showTokenExtendPopup = () => {
       const message = `The token will expire in less than ${(extendTokenTime / 60000).toFixed()} minutes.` +
-        'Enter your password for extends token.';
+        ' Enter your password for extends token.';
 
       this.errorView.render({
         status: 1,
         readyState: 1,
-        statusText: `${message} <div id="extend-token-error"/>` +
-          '<form accept-charset="UTF-8" method="" action="" role="form">' +
-          '<input class="form-control" placeholder="Password" name="password" ' +
+        statusText: `<p class="extend-token-message">${message}</p>` +
+          '<p id="extend-token-error" class="extend-token-error" />' +
+          '<form accept-charset="UTF-8" method="" action="" role="form" class="form-inline">' +
+          '<input class="form-control extend-token" placeholder="Password" name="password" ' +
           'id="password" type="password" value=""/>' +
-          '<input class="btn btn-primary btn-block" data-gohan="extend" type="submit" value="Extend">' +
+          '<input class="btn btn-primary extend-token-btn" data-gohan="extend" type="submit" value="Extend">' +
           '</form>'
       });
       $('[data-gohan="extend"]', this.errorView.el).on('click', event => {
