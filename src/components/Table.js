@@ -41,11 +41,10 @@ export default class Table extends Component {
     return (
       <Paper style={detailStyle}>
         <button onClick={this.handleOpenModal}>{'Add new ' + singular}</button>
-        <Dialog isOpen={this.state.openModal} action={this.state.actionModal}
+        <Dialog open={this.state.openModal} action={this.state.actionModal}
           onRequestClose={this.handleCloseModal} schema={this.props.schema}
-          onSubmit={this.handleSubmit}>
-          <button onClick={this.handleCloseModal}>Close</button>
-        </Dialog>
+          onSubmit={this.handleSubmit}
+        />
         <table>
           <thead>
             <tr>

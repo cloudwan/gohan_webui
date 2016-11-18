@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../components/Table';
-import {fetchData, clearData} from './TableActions';
+import {fetchData, clearData, createData} from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 class TableView extends Component {
@@ -47,7 +47,9 @@ class TableView extends Component {
       );
     }
     return (
-      <Table schema={this.state.activeSchema} data={data} />
+      <Table schema={this.state.activeSchema} data={data}
+        createData={this.props.createData}
+      />
     );
   }
 }
@@ -68,5 +70,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   fetchData,
-  clearData
+  clearData,
+  createData
 })(TableView);
