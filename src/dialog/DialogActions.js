@@ -36,7 +36,7 @@ function toLocalSchema(schema, state) {
         'X-Auth-Token': state.authReducer.tokenId
       };
 
-      const relatedSchema = state.schemaReducer.find(item => item.id === result.relation);
+      const relatedSchema = state.schemaReducer.data.find(item => item.id === result.relation);
 
       axios.get(state.configReducer.gohan.url + relatedSchema.url, {headers}).then(response => {
         const data = response.data;

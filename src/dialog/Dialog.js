@@ -1,11 +1,16 @@
 import React, {Component} from 'react';
-import Modal from 'react-modal';
+import {Dialog, RefreshIndicator, FlatButton} from 'material-ui';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
-
+import CustomSchemaField from './formComponents/CustomSchemaField/CustomSchemaField';
 import {fetchRelationFields, clearData} from './DialogActions';
 
-class Dialog extends Component {
+const loadingIndicatorStyle = {
+  margin: 'auto',
+  position: 'relative'
+};
+
+class GeneratedDialog extends Component {
   constructor(props) {
     super(props);
 
@@ -15,8 +20,8 @@ class Dialog extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.isOpen !== nextProps.isOpen) {
-      if (nextProps.isOpen) {
+    if (this.props.open !== nextProps.open) {
+      if (nextProps.open) {
         this.props.fetchRelationFields(this.props.schema.schema, this.props.action);
       } else {
         this.props.clearData();
@@ -30,30 +35,50 @@ class Dialog extends Component {
   };
 
   render() {
+    const {action, schema} = this.props;
+    const title = `${action[0].toUpperCase() + action.slice(1)} new ${schema.singular}`;
+
+    const actions = [
+      <FlatButton key={0} label="Cancel"
+        primary={true} onTouchTap={this.props.onRequestClose}
+      />,
+      <FlatButton key={1} label="Submit"
+        primary={true} onTouchTap={event => {
+          this.form.onSubmit(event);
+        }}
+      />,
+    ];
+
     return (
-      <Modal {...this.props}>
+      <Dialog title={title} actions={actions}
+        autoScrollBodyContent={true}
+        {...this.props}>
         {(() => {
           if (this.props.dialogReducer.isLoading) {
             return (
-              <div>Loading...</div>
+              <RefreshIndicator size={60} left={0}
+                top={0} status="loading"
+                style={loadingIndicatorStyle}
+              />
             );
           }
+
           return (
             <div>
-              <Form schema={this.props.dialogReducer.schema}
+              <Form ref={c => {this.form = c;}} schema={this.props.dialogReducer.schema}
+                fields={{SchemaField: CustomSchemaField}}
                 uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder}} onSubmit={this.handleSubmit}>
-                <button type="submit">Submit</button>
-                {this.props.children}
+                <div/>
               </Form>
             </div>
           );
         })()}
-      </Modal>
+      </Dialog>
     );
   }
 }
 
-Dialog.contextTypes = {
+GeneratedDialog.contextTypes = {
   router: React.PropTypes.object
 };
 
@@ -65,4 +90,4 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   fetchRelationFields,
   clearData
-})(Dialog);
+})(GeneratedDialog);
