@@ -1,5 +1,9 @@
 <ol>
-  <% _.each(parents, function iterator(parent, key) { %><li>
-      <a href="#<%- parent.url %>"><%- parent.title %></a></li>
-  <% }) %>
+<%
+  parents.forEach(parent => {
+%>
+  <li><a href="#<%= parent.url %>"><%= parent.title %></a></li>
+<%
+  });
+%>
 </ol>
