@@ -138,7 +138,7 @@ export default class DetailView extends View {
       }
     }
 
-    if (property.type === 'object' || property.originalType === 'object') {
+    if (property.type.includes('object') || (property.originalType && property.originalType.includes('object'))) {
       content = $('<pre style="width:500px;"></pre>').text(jsyaml.safeDump(value)).html();
       return '<pre>' + _.escape(content) + '</pre>';
     }
