@@ -1,4 +1,5 @@
 import Backbone from 'backbone';
+import _ from 'underscore';
 import 'backbone-forms';
 
 class SelectEditor extends Backbone.Form.editors.Select {
@@ -12,19 +13,19 @@ class SelectEditor extends Backbone.Form.editors.Select {
     return array.reduce((result, option) => {
       if (option instanceof Object && !Array.isArray(option)) {
         if (option.group) {
-          result.push(`<optgroup label="${option.group}">`);
+          result.push(`<optgroup label="${_.escape(option.group)}">`);
           result.push(this._getOptionsHtml(option.options));
           result.push('</optgroup>');
         } else {
           const val = (option.val || option.val === 0) ? option.val : '';
-          result.push(`<option value="${val}">${option.label}</option>`);
+          result.push(`<option value="${val}">${_.escape(option.label)}</option>`);
         }
       } else {
         if (option === null) {
           result.push('<option value="">Not selected</option>');
           return result;
         }
-        result.push(`<option>${option}</option>`);
+        result.push(`<option>${_.escape(option)}</option>`);
       }
       return result;
     }, []).join('');
