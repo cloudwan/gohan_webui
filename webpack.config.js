@@ -24,7 +24,7 @@ module.exports = {
         test: /\.js(x?)$/,
         exclude: /node_modules/,
         include: __dirname,
-        loader: 'babel-loader',
+        loader: 'babel-loader'
       },
       {
         test: /\.css$/,
