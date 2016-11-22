@@ -1,6 +1,6 @@
 /* global $ */
 import {View} from 'backbone';
-
+import _ from 'underscore';
 import 'bootstrap';
 import jsyaml from 'js-yaml';
 
@@ -382,7 +382,7 @@ export default class TableView extends View {
     const value = data[key];
 
     if (property === undefined) {
-      return value;
+      return _.escape(value);
     }
 
     if (value === undefined) {
@@ -417,7 +417,7 @@ export default class TableView extends View {
       console.error(error);
     }
 
-    return value;
+    return _.escape(value);
   }
 
   render() {
