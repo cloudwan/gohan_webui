@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import Spinner from 'react-spinkit';
 import {Paper} from 'material-ui';
 
-import {login, selectTenant} from './AuthActions';
+import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
@@ -19,6 +19,12 @@ const style = {
 };
 
 class Auth extends Component {
+  constructor(props) {
+    super(props);
+
+    this.props.fetchTokenData(); // its temporary :D
+  }
+
   handleDismissClick = event => {
     if (event) {
       event.preventDefault();
@@ -78,5 +84,6 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   login,
   selectTenant,
+  fetchTokenData,
   resetErrorMessage
 })(Auth);
