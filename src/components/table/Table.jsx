@@ -3,6 +3,7 @@ import {
   Paper,
   RefreshIndicator,
   Table,
+  TableHeader,
   TableBody,
   RaisedButton
 } from 'material-ui';
@@ -69,9 +70,11 @@ class TableComponent extends Component {
           onRequestClose={this.handleCloseModal} schema={this.props.schema}
           onSubmit={this.handleSubmit}
         />
-        <Table style={{tableLayout: 'auto'}} className="table">
-          <TableBody displayRowCheckbox={false} showRowHover={true}>
+        <Table fixedHeader={true}>
+          <TableHeader>
             <TableHeaderComponent schema={schema}/>
+          </TableHeader>
+          <TableBody displayRowCheckbox={false} showRowHover={true}>
             {this.props.data.map((item, index) => (
               <TableRowComponent key={index} schema={this.props.schema}
                 item={item}
