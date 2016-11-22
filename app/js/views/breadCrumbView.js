@@ -1,5 +1,5 @@
 import {View} from 'backbone';
-
+import _ from 'underscore';
 import template from '../../templates/breadcrumb.html';
 
 /**
@@ -22,7 +22,15 @@ export default class BreadCrumbView extends View {
    * @param {Object} childView
    */
   update(parents) {
-    this.$el.html(this.template({parents}));
+    const parentsEscaped = parents.map(parent => {
+      return {
+        title: _.escape(parent.title),
+        url: _.escape(parent.url)
+      };
+    });
+    this.$el.html(this.template({
+      parents: parentsEscaped
+    }));
   }
 
   /**
