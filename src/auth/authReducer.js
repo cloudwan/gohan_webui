@@ -1,12 +1,9 @@
-import {LOGIN, LOGIN_SUCCESS, TENANT_FETCH_SUCCESS} from './AuthActionTypes';
+import {LOGOUT, LOGIN_SUCCESS, TENANT_FETCH_SUCCESS} from './AuthActionTypes';
 
 export default function authReducer(state = {}, action) {
   switch (action.type) {
-    case LOGIN:
-      return {
-        ...state,
-        ...action.data
-      };
+    case LOGOUT:
+      return {};
     case LOGIN_SUCCESS:
       return {
         ...state,

@@ -1,5 +1,8 @@
+/* global window */
 import axios from 'axios';
-import {LOGIN_SUCCESS, LOGIN_ERROR, TENANT_FETCH_SUCCESS, TENANT_FETCH_FAILURE} from './AuthActionTypes';
+import {LOGIN_SUCCESS, LOGIN_ERROR, LOGOUT, TENANT_FETCH_SUCCESS, TENANT_FETCH_FAILURE} from './AuthActionTypes';
+
+const {sessionStorage} = window;
 
 function fetchTenantSuccess(data) {
   return dispatch => {
@@ -30,8 +33,41 @@ function fetchTenants() {
   };
 }
 
+export function fetchTokenData() {
+  const token = sessionStorage.getItem('token');
+  const tenant = sessionStorage.getItem('tenant');
+
+  return (dispatch, getState) => {
+    if (token) {
+      const state = getState();
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      const data = {
+        auth: {
+          token: {
+            id: token
+          }
+        }
+      };
+
+      if (tenant) {
+        data.auth.tenantName = tenant;
+      }
+      axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
+        dispatch(loginSuccess(response.data));
+      }).catch(() => {
+        dispatch(logout());
+      });
+    }
+  };
+
+}
+
 function loginSuccess(data) {
   return dispatch => {
+
+    sessionStorage.setItem('token', data.access.token.id);
     dispatch({data, type: LOGIN_SUCCESS});
     dispatch(fetchTenants());
   };
@@ -69,8 +105,21 @@ export function login(username, password) {
   };
 }
 
+export function logout() {
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('scopedToken');
+
+
+  return dispatch => {
+    dispatch({type: LOGOUT});
+  };
+}
+
 function selectTenantSuccess(data) {
   return dispatch => {
+    sessionStorage.setItem('scopedToken', data.access.token.id);
+    sessionStorage.setItem('tenant', data.access.token.tenant.name);
+
     dispatch({data, type: LOGIN_SUCCESS});
   };
 }
