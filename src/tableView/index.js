@@ -7,4 +7,3 @@ export default store => {
 
   return TableView;
 };
-
