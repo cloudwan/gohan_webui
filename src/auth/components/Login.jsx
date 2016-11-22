@@ -17,15 +17,14 @@ export default class Login extends Component {
     return (
       <form onSubmit={this.handleLoginSubmit}>
         <TextField ref={c => {this.userId = c;}} hintText="Gohan user id"
-          floatingLabelText="User id" type="text"
+          floatingLabelText="User id"
           fullWidth={true}
+          autoFocus={true}
         />
-        <br/>
         <TextField ref={c => {this.userPass = c;}} hintText="Password Field"
           floatingLabelText="Password" type="password"
           fullWidth={true}
         />
-        <br/>
         <RaisedButton primary={true} label="Login"
           fullWidth={true} type={'submit'}
         />
@@ -35,5 +34,5 @@ export default class Login extends Component {
 }
 
 Login.propTypes = {
-  login: PropTypes.func.isRequired,
+  login: PropTypes.func.isRequired
 };

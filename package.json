@@ -69,7 +69,6 @@
     "less-loader": "^2.2.2",
     "mocha": "^2.3.4",
     "node-sass": "^3.4.2",
-    "react-tap-event-plugin": "^1.0.0",
     "sass-loader": "^3.1.2",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
@@ -79,14 +78,16 @@
   },
   "dependencies": {
     "axios": "^0.15.2",
-    "material-ui": "^0.16.0",
+    "material-ui": "^0.16.3",
     "react": "^15.3.0",
-    "react-dom": "^15.3.0",
+    "react-dom": "^15.2.1",
     "react-jsonschema-form": "^0.40.0",
     "react-modal": "^1.4.0",
     "react-redux": "^4.4.5",
     "react-router": "^2.6.1",
     "react-spinkit": "^1.1.11",
+    "react-tap-event-plugin": "^2.0.0",
+    "react-ultimate-pagination-material-ui": "^0.4.1",
     "redux": "^3.5.2",
     "redux-thunk": "^2.1.0"
   }
