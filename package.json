@@ -7,7 +7,7 @@
     "test": "./node_modules/mocha/bin/mocha --compilers js:babel-register --recursive -r mock-local-storage -r jsdom-global/register",
     "test-watch": "npm test -- --watch",
     "test-cover": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover --report text --report html ./node_modules/.bin/_mocha -- --recursive -r mock-local-storage  -r jsdom-global/register",
-    "build": "rm -rf ./dist/ && ./node_modules/.bin/webpack -p --colors --progress --bail",
+    "build": "rm -rf ./dist/ && NODE_ENV=production ./node_modules/.bin/webpack --colors --progress --bail",
     "build-dev": "rm -rf ./dist/ && ./node_modules/.bin/webpack -d --colors --display-reasons --progress --bail",
     "dev-server": "rm -rf ./dist/ && ./node_modules/.bin/webpack-dev-server -d --inline --colors --progress",
     "lint": "./node_modules/.bin/eslint `find ./app/ -name '*.js'`"
@@ -59,6 +59,7 @@
     "babel-eslint": "^7.1.0",
     "babel-loader": "^6.2.3",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.11.5",
+    "babel-preset-babili": "0.0.9",
     "chai": "^3.4.1",
     "chai-as-promised": "^6.0.0",
     "chai-backbone": "^0.9.4",
