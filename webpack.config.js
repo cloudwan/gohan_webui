@@ -85,7 +85,10 @@ module.exports = {
       inject: 'body'
     }),
     new CopyWebpackPlugin([
-      { from: 'app/config.json', to: '/config.json' }
+      {
+        from: './app/config.json',
+        to: './config.json'
+      }
     ])
   ],
   devServer: {
