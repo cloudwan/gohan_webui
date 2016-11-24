@@ -33,6 +33,15 @@ class Auth extends Component {
     this.props.resetErrorMessage();
   };
 
+  handleLoginSubmit = (...params) => {
+    this.props.resetErrorMessage();
+    this.props.login(...params);
+  };
+
+  handleSelectTenantSubmit = (...params) => {
+    this.props.resetErrorMessage();
+    this.props.selectTenant(...params);
+  };
   componentWillReceiveProps(nextProps) {
     if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined) {
       this.props.onLoginSuccess();
@@ -48,9 +57,9 @@ class Auth extends Component {
         {error && <Alert message={error} dismissClick={this.handleDismissClick}/> }
         {(() => {
           if (this.props.tokenId === undefined) {
-            return (<Login login={this.props.login}/>);
+            return (<Login onLoginSubmit={this.handleLoginSubmit}/>);
           } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
-            return (<SelectTenant onTenantSubmit={this.props.selectTenant} tenants={this.props.tenants} />);
+            return (<SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants} />);
           }
           return (<Spinner spinnerName='double-bounce' />);
         })()}

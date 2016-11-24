@@ -10,7 +10,7 @@ export default class Login extends Component {
     const userId = this.userId.getValue();
     const pass = this.userPass.getValue();
 
-    this.props.login(userId, pass);
+    this.props.onLoginSubmit(userId, pass);
   };
 
   render() {
@@ -34,5 +34,5 @@ export default class Login extends Component {
 }
 
 Login.propTypes = {
-  login: PropTypes.func.isRequired
+  onLoginSubmit: PropTypes.func.isRequired
 };
