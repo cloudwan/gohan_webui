@@ -15,9 +15,23 @@ const columnStyle = {
 };
 
 class TableRowComponent extends Component {
+
+  handleRemoveClick = () => {
+    const {item} = this.props;
+
+    this.props.onRemoveClick(item.id);
+  };
+
+  handleEditClick = () => {
+    this.props.onEditClick();
+  };
+
+
   render() {
     const {schema, singular} = this.props.schema;
-    const {schema: schemaDrop, item, ...propsForChildren} = this.props; // eslint-disable-line no-unused-vars
+    const {schema: schemaDrop, onRemoveClick, onEditClick, // eslint-disable-line no-unused-vars
+      item, ...propsForChildren} = this.props;
+
     return (
       <TableRow className="row" {...propsForChildren}>
         {schema.propertiesOrder.map((key, i) => {
@@ -49,11 +63,11 @@ class TableRowComponent extends Component {
         })}
         <TableRowColumn style={{padding: 0}}>
           <IconButton tooltip="edit" tooltipPosition="bottom-right"
-            iconStyle={{color: 'rgba(0, 0, 0, 0.55)'}}>
+            iconStyle={{color: 'rgba(0, 0, 0, 0.55)'}} onClick={this.handleEditClick}>
             <EditIcon />
           </IconButton>
           <IconButton tooltip="delete" tooltipPosition="bottom-right"
-            iconStyle={{color: 'rgba(0, 0, 0, 0.55)'}}>
+            iconStyle={{color: 'rgba(0, 0, 0, 0.55)'}} onClick={this.handleRemoveClick}>
             <DeleteIcon />
           </IconButton>
         </TableRowColumn>
@@ -67,7 +81,9 @@ TableRowComponent.contextTypes = {
 };
 
 TableRowComponent.propTypes = {
-  schema: PropTypes.object.isRequired
+  schema: PropTypes.object.isRequired,
+  onRemoveClick: PropTypes.func,
+  onEditClick: PropTypes.func
 };
 
 export default TableRowComponent;
