@@ -48,6 +48,14 @@ class TableComponent extends Component {
 
   };
 
+  handleRemoveItem = id => {
+    this.props.removeData(this.props.schema.url, id);
+  };
+
+  handleEditItem = () => {
+    console.log('handleEditItem');
+  };
+
   render() {
     const {schema, singular} = this.props.schema;
 
@@ -77,7 +85,8 @@ class TableComponent extends Component {
           <TableBody displayRowCheckbox={false} showRowHover={true}>
             {this.props.data.map((item, index) => (
               <TableRowComponent key={index} schema={this.props.schema}
-                item={item}
+                item={item} onRemoveClick={this.handleRemoveItem}
+                onEditClick={this.handleEditItem}
               />
             ))}
           </TableBody>
