@@ -1,11 +1,12 @@
 import axios from 'axios';
 import {
   FETCH_SUCCESS,
-  FETCH_CHILD_SUCCESS,
   FETCH_FAILURE,
   CREATE_SUCCESS,
   CREATE_FAILURE,
-  CLEAR_DATA
+  CLEAR_DATA,
+  DELETE_SUCCESS,
+  DELETE_FAILURE
 } from './TableActionTypes';
 
 function fetchSuccess(data) {
@@ -38,30 +39,6 @@ export function fetchData(url, plural) {
   };
 }
 
-
-function fetchChildrenSuccess(data) {
-  return dispatch => {
-    dispatch({data, type: FETCH_CHILD_SUCCESS});
-  };
-}
-
-export function fetchChildrenData(url) {
-  return (dispatch, getState) => {
-    const state = getState();
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': state.authReducer.tokenId
-    };
-
-    axios.get(state.configReducer.gohan.url + url, {headers}).then(response => {
-      dispatch(fetchChildrenSuccess(response.data));
-    }).catch(error => {
-      dispatch(fetchError(error.response));
-    });
-  };
-}
-
-
 function createSuccess(data) {
   return dispatch => {
     dispatch({data, type: CREATE_SUCCESS});
@@ -90,6 +67,34 @@ export function createData(url, data, singular) {
     }).catch(error => {
       dispatch(createError(error.response));
     });
+  };
+}
+
+export function deleteData(url, id, plural) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': state.authReducer.tokenId
+    };
+
+    axios.delete(state.configReducer.gohan.url + url + '/' + id, {headers}).then(response => {
+      dispatch(deleteSuccess(url, plural, response.data));
+    }).catch(error => {
+      dispatch(deleteError(error.response));
+    });
+  };
+}
+
+function deleteSuccess(url, plural) {
+  return dispatch => {
+    dispatch(fetchData(url, plural));
+    dispatch({type: DELETE_SUCCESS});
+  };
+}
+function deleteError() {
+  return dispatch => {
+    dispatch({type: DELETE_FAILURE});
   };
 }
 
