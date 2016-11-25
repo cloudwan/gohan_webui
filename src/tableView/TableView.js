@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../components/table';
-import {fetchData, clearData, createData, deleteData} from './TableActions';
+import {initialize, fetchData, clearData, createData, deleteData} from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 class TableView extends Component {
@@ -16,7 +16,8 @@ class TableView extends Component {
         object => object.plural === splitPathname[splitPathname.length - 1]
       )
     };
-    props.fetchData(this.state.activeSchema.url, this.state.activeSchema.plural);
+    props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
+    props.fetchData();
   }
 
   componentWillUnmount() {
@@ -38,7 +39,8 @@ class TableView extends Component {
           object => object.plural === splitPathname[splitPathname.length - 1]
         )
       };
-      this.props.fetchData(this.state.activeSchema.url, this.state.activeSchema.plural);
+      this.props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
+      this.props.fetchData();
     }
   }
 
@@ -73,6 +75,7 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
+  initialize,
   fetchData,
   clearData,
   createData,
