@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../components/table';
-import {initialize, fetchData, clearData, createData, deleteData} from './TableActions';
+import {initialize, fetchData, clearData, createData, deleteData, sortData} from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 class TableView extends Component {
@@ -79,5 +79,6 @@ export default connect(mapStateToProps, {
   fetchData,
   clearData,
   createData,
-  deleteData
+  deleteData,
+  sortData
 })(TableView);
