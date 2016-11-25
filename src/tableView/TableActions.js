@@ -7,7 +7,8 @@ import {
   CREATE_FAILURE,
   CLEAR_DATA,
   DELETE_SUCCESS,
-  DELETE_FAILURE
+  DELETE_FAILURE,
+  UPDATE_SORT
 } from './TableActionTypes';
 
 /**
@@ -48,15 +49,31 @@ function fetchError(data) {
 export function fetchData() {
   return (dispatch, getState) => {
     const state = getState();
-    const {url, plural} = state.tableReducer;
+    const {
+      url,
+      plural,
+      limit,
+      offset,
+      sortKey,
+      sortOrder,
+      filters
+    } = state.tableReducer;
+    const {pageLimit} = state.configReducer;
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
     const headers = {
       'Content-Type': 'application/json',
       'X-Auth-Token': tokenId
     };
+    const params = {
+      offset,
+      limit: limit || pageLimit,
+      sort_key: sortKey,         // eslint-disable-line
+      sort_order: sortOrder,     // eslint-disable-line
+      ...filters
+    };
 
-    axios.get(gohanUrl + url, {headers}).then(response => {
+    axios.get(gohanUrl + url, {headers, params}).then(response => {
       const {headers, status, data} = response;
       const totalCount = headers['x-total-count'];
 
@@ -68,6 +85,19 @@ export function fetchData() {
     }).catch(error => {
       dispatch(fetchError(error.response));
     });
+  };
+}
+
+export function sortData(sortKey, sortOrder) {
+  if (sortOrder && sortOrder !== 'asc' && sortOrder !== 'desc') {
+    return dispatch => {
+      dispatch({type: 'error', error: 'Sort order must by asc or desc'});
+    };
+  }
+
+  return dispatch => {
+    dispatch({type: UPDATE_SORT, data: {sortKey, sortOrder}});
+    dispatch(fetchData());
   };
 }
 
