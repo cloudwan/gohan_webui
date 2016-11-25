@@ -8,7 +8,8 @@ import {
   CLEAR_DATA,
   DELETE_SUCCESS,
   DELETE_FAILURE,
-  UPDATE_SORT
+  UPDATE_SORT,
+  UPDATE_OFFSET
 } from './TableActionTypes';
 
 /**
@@ -66,7 +67,7 @@ export function fetchData() {
       'X-Auth-Token': tokenId
     };
     const params = {
-      offset,
+      offset: offset || undefined,
       limit: limit || pageLimit,
       sort_key: sortKey,         // eslint-disable-line
       sort_order: sortOrder,     // eslint-disable-line
@@ -97,6 +98,13 @@ export function sortData(sortKey, sortOrder) {
 
   return dispatch => {
     dispatch({type: UPDATE_SORT, data: {sortKey, sortOrder}});
+    dispatch(fetchData());
+  };
+}
+
+export function setOffset(offset) {
+  return dispatch => {
+    dispatch({type: UPDATE_OFFSET, data: {offset}});
     dispatch(fetchData());
   };
 }

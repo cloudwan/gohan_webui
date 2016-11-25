@@ -2,7 +2,8 @@ import {
   INIT,
   FETCH_SUCCESS,
   CLEAR_DATA,
-  UPDATE_SORT
+  UPDATE_SORT,
+  UPDATE_OFFSET
 } from './TableActionTypes';
 
 export default function tableReducer(
@@ -12,8 +13,8 @@ export default function tableReducer(
     plural: '',
     data: [],
     totalCount: 0,
+    offset: 0,
     limit: undefined,
-    offset: undefined,
     sortKey: undefined,
     sortOrder: undefined,
     filters: {}
@@ -37,11 +38,22 @@ export default function tableReducer(
     case CLEAR_DATA:
       return {
         isLoading: true,
+        url: '',
+        plural: '',
         data: [],
-        children: {},
-        polling: false
+        totalCount: 0,
+        offset: 0,
+        limit: undefined,
+        sortKey: undefined,
+        sortOrder: undefined,
+        filters: {}
       };
     case UPDATE_SORT:
+      return {
+        ...state,
+        ...data
+      };
+    case UPDATE_OFFSET:
       return {
         ...state,
         ...data

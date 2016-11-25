@@ -13,7 +13,6 @@ import TableRowComponent from './TableRowComponent.jsx';
 
 import Dialog from '../../dialog/Dialog';
 
-
 const detailStyle = {
   padding: 15
 };
@@ -44,8 +43,8 @@ class TableComponent extends Component {
   handleSubmit = data => {
     this.props.createData(data);
   };
-  handlePageClick = () => {
-
+  handlePageClick = page => {
+    this.props.handleChangePage(page);
   };
 
   handleRemoveItem = id => {
@@ -91,10 +90,16 @@ class TableComponent extends Component {
             ))}
           </TableBody>
         </Table>
-        <PaginationComponent currentPage={1}
-          totalPages={10}
-          onchange={this.handlePageClick}
-        />
+        {(() => {
+          if (this.props.pageCount > 1) {
+            return (
+              <PaginationComponent currentPage={this.props.activePage} totalPages={this.props.pageCount}
+                onChange={this.handlePageClick}
+              />
+            );
+          }
+          return null;
+        })()}
       </Paper>
     );
   }
@@ -106,6 +111,8 @@ TableComponent.contextTypes = {
 
 TableComponent.propTypes = {
   schema: PropTypes.object.isRequired,
+  pageCount: PropTypes.number,
+  activePage: PropTypes.number
 };
 
 export default TableComponent;
