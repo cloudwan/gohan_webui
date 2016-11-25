@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../components/table';
-import {initialize, fetchData, clearData, createData, deleteData, sortData} from './TableActions';
+import {initialize, fetchData, clearData, createData, deleteData, sortData, setOffset} from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 class TableView extends Component {
@@ -28,6 +28,18 @@ class TableView extends Component {
     this.props.deleteData(url, id, this.state.activeSchema.plural);
   };
 
+  handleChangePage = page => {
+    const {totalCount, limit} = this.props.tableReducer;
+    const {pageLimit} = this.props.configReducer;
+    const newOffset = (page - 1) * (limit || pageLimit);
+
+    if (newOffset > totalCount) {
+      console.error('newOffset > totalCount');
+      return;
+    }
+    this.props.setOffset(newOffset);
+  };
+
   componentWillReceiveProps(nextProps) {
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props.clearData();
@@ -45,7 +57,10 @@ class TableView extends Component {
   }
 
   render() {
-    const {isLoading, data} = this.props.tableReducer;
+    const {isLoading, data, totalCount, limit, offset} = this.props.tableReducer;
+    const {pageLimit} = this.props.configReducer;
+    const pageCount = Math.ceil(totalCount / (limit || pageLimit));
+    const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
 
     if (isLoading) {
       return (
@@ -54,7 +69,9 @@ class TableView extends Component {
     }
     return (
       <Table schema={this.state.activeSchema} data={data}
-        createData={this.props.createData} removeData={this.handleDeleteData}
+        pageCount={pageCount} activePage={activePage}
+        handleChangePage={this.handleChangePage} createData={this.props.createData}
+        removeData={this.handleDeleteData}
       />
     );
   }
@@ -69,6 +86,7 @@ TableView.propTypes = {
 
 function mapStateToProps(state) {
   return {
+    configReducer: state.configReducer,
     schemaReducer: state.schemaReducer,
     tableReducer: state.tableReducer
   };
@@ -80,5 +98,6 @@ export default connect(mapStateToProps, {
   clearData,
   createData,
   deleteData,
-  sortData
+  sortData,
+  setOffset
 })(TableView);
