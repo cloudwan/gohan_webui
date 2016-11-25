@@ -1,4 +1,9 @@
-import {INIT, FETCH_SUCCESS, CLEAR_DATA} from './TableActionTypes';
+import {
+  INIT,
+  FETCH_SUCCESS,
+  CLEAR_DATA,
+  UPDATE_SORT
+} from './TableActionTypes';
 
 export default function tableReducer(
   state = {
@@ -7,11 +12,11 @@ export default function tableReducer(
     plural: '',
     data: [],
     totalCount: 0,
-    offset: 0,
-    limit: 0,
-    sortKey: '',
-    sortOrder: '',
-    filters: [],
+    limit: undefined,
+    offset: undefined,
+    sortKey: undefined,
+    sortOrder: undefined,
+    filters: {}
   }, action) {
   const {data} = action;
   const {options} = action;
@@ -35,6 +40,11 @@ export default function tableReducer(
         data: [],
         children: {},
         polling: false
+      };
+    case UPDATE_SORT:
+      return {
+        ...state,
+        ...data
       };
     default:
       return state;
