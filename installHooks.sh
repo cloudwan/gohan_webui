@@ -1,6 +1,8 @@
 #!/bin/bash
 
 echo 'Start install hooks'
-rm .git/hooks/pre-commit
+if [ -f .git/hooks/pre-commit ]; then
+  rm .git/hooks/pre-commit
+fi
 cp ./.hooks/pre-commit ./.git/hooks/pre-commit
 echo 'Done'
