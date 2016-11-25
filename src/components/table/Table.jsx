@@ -42,7 +42,7 @@ class TableComponent extends Component {
   };
 
   handleSubmit = data => {
-    this.props.createData(this.props.schema.url, data, this.props.schema.singular);
+    this.props.createData(data);
   };
   handlePageClick = () => {
 

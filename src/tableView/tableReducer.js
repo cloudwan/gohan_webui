@@ -1,32 +1,40 @@
-import {FETCH_SUCCESS, CLEAR_DATA, CREATE_SUCCESS} from './TableActionTypes';
+import {INIT, FETCH_SUCCESS, CLEAR_DATA} from './TableActionTypes';
 
-export default function dynamicReducer(
+export default function tableReducer(
   state = {
     isLoading: true,
+    url: '',
+    plural: '',
     data: [],
-    page: 0,
-    polling: false
+    totalCount: 0,
+    offset: 0,
+    limit: 0,
+    sortKey: '',
+    sortOrder: '',
+    filters: [],
   }, action) {
   const {data} = action;
+  const {options} = action;
 
   switch (action.type) {
+    case INIT:
+      return {
+        ...state,
+        ...data
+      };
     case FETCH_SUCCESS:
       return {
         ...state,
         isLoading: false,
-        data
+        data,
+        ...options
       };
     case CLEAR_DATA:
       return {
         isLoading: true,
-        data: {},
+        data: [],
         children: {},
         polling: false
-      };
-    case CREATE_SUCCESS:
-      return {
-        ...state,
-        data: [...state.data, data]
       };
     default:
       return state;
