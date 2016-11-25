@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {
+  INIT,
   FETCH_SUCCESS,
   FETCH_FAILURE,
   CREATE_SUCCESS,
@@ -9,9 +10,24 @@ import {
   DELETE_FAILURE
 } from './TableActionTypes';
 
-function fetchSuccess(data) {
+/**
+ * Initializes resource settings like url and plural.
+ *
+ * @export
+ * @param url {string}
+ * @param plural {string}
+ * @param singular {string}
+ * @return {function}
+ */
+export function initialize(url, plural) {
   return dispatch => {
-    dispatch({data, type: FETCH_SUCCESS});
+    dispatch({data: {url, plural}, type: INIT});
+  };
+}
+
+function fetchSuccess(data, options) {
+  return dispatch => {
+    dispatch({data, options, type: FETCH_SUCCESS});
   };
 }
 
@@ -23,25 +39,42 @@ function fetchError(data) {
   };
 }
 
-export function fetchData(url, plural) {
+/**
+ * Starts fetch data for table resource.
+ *
+ * @export
+ * @return {function}
+ */
+export function fetchData() {
   return (dispatch, getState) => {
     const state = getState();
+    const {url, plural} = state.tableReducer;
+    const {url: gohanUrl} = state.configReducer.gohan;
+    const {tokenId} = state.authReducer;
     const headers = {
       'Content-Type': 'application/json',
-      'X-Auth-Token': state.authReducer.tokenId
+      'X-Auth-Token': tokenId
     };
 
-    axios.get(state.configReducer.gohan.url + url, {headers}).then(response => {
-      dispatch(fetchSuccess(response.data[plural]));
+    axios.get(gohanUrl + url, {headers}).then(response => {
+      const {headers, status, data} = response;
+      const totalCount = headers['x-total-count'];
+
+      if (status === 200) {
+        dispatch(fetchSuccess(data[plural], {totalCount}));
+      } else {
+        dispatch(fetchError('Cannot fetch data!'));
+      }
     }).catch(error => {
       dispatch(fetchError(error.response));
     });
   };
 }
 
-function createSuccess(data) {
+function createSuccess() {
   return dispatch => {
-    dispatch({data, type: CREATE_SUCCESS});
+    dispatch(fetchData());
+    dispatch({type: CREATE_SUCCESS});
   };
 }
 
@@ -53,42 +86,67 @@ function createError(data) {
   };
 }
 
-
-export function createData(url, data, singular) {
+/**
+ * Creates new resource.
+ *
+ * @export
+ * @param data {Object}
+ * @return {function}
+ */
+export function createData(data) {
   return (dispatch, getState) => {
     const state = getState();
+    const {url} = state.tableReducer;
+    const {url: gohanUrl} = state.configReducer.gohan;
+    const {tokenId} = state.authReducer;
     const headers = {
       'Content-Type': 'application/json',
-      'X-Auth-Token': state.authReducer.tokenId
+      'X-Auth-Token': tokenId
     };
 
-    axios.post(state.configReducer.gohan.url + url, data, {headers}).then(response => {
-      dispatch(createSuccess(response.data[singular]));
+    axios.post(gohanUrl + url, data, {headers}).then(response => {
+      const {status} = response;
+
+      if (status === 201) {
+        dispatch(createSuccess());
+      } else {
+        dispatch(createError('Cannot create new resource!'));
+      }
     }).catch(error => {
       dispatch(createError(error.response));
     });
   };
 }
 
-export function deleteData(url, id, plural) {
+export function deleteData(url, id) {
   return (dispatch, getState) => {
     const state = getState();
+    const {url} = state.tableReducer;
+    const {url: gohanUrl} = state.configReducer.gohan;
+    const {tokenId} = state.authReducer;
+
     const headers = {
       'Content-Type': 'application/json',
-      'X-Auth-Token': state.authReducer.tokenId
+      'X-Auth-Token': tokenId
     };
 
-    axios.delete(state.configReducer.gohan.url + url + '/' + id, {headers}).then(response => {
-      dispatch(deleteSuccess(url, plural, response.data));
+    axios.delete(gohanUrl + url + '/' + id, {headers}).then(response => {
+      const {status} = response;
+
+      if (status === 204) {
+        dispatch(deleteSuccess());
+      } else {
+        dispatch(deleteError('Cannot remove this resource!'));
+      }
     }).catch(error => {
       dispatch(deleteError(error.response));
     });
   };
 }
 
-function deleteSuccess(url, plural) {
+function deleteSuccess() {
   return dispatch => {
-    dispatch(fetchData(url, plural));
+    dispatch(fetchData());
     dispatch({type: DELETE_SUCCESS});
   };
 }
