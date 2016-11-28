@@ -41,6 +41,7 @@ export default class DialogView extends View {
     this.schema = options.schema;
     this.fields = options.fields;
     this.events = options.events;
+    this.onshown = options.onshown || (() => {});
     this.addingRelationDialog = this.unformattedSchema.addingRelationDialog || [];
     this.dialog = new BootstrapDialog({
       size: BootstrapDialog.SIZE_WIDE,
@@ -50,6 +51,7 @@ export default class DialogView extends View {
       spinicon: 'glyphicon glyphicon-refresh',
       onshown: () => {
         this.form.focus();
+        this.onshown();
       },
       onhide: this.onhide,
       onshow: this.onshow
