@@ -1,3 +1,5 @@
+/*global VERSION*/
+
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {AppBar} from 'material-ui';
@@ -21,6 +23,8 @@ class App extends Component {
 
   componentWillMount() {
     this.props.fetchSchema();
+
+    console.log('Gohan version:', VERSION.version, ', repo tag:', VERSION.tag);
   }
 
   handleDismissClick = event => {
