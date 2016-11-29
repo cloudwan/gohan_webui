@@ -1,9 +1,19 @@
 const port = 8080;
 const hostname = 'localhost';
+var gitSync = require('git-rev-sync');
+var process = require('process');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+function version() {
+  return {
+    hash: gitSync.long(),
+    tag: gitSync.tag(),
+    version: process.env.npm_package_version
+  };
+}
 
 module.exports = {
   context: __dirname,
@@ -13,7 +23,7 @@ module.exports = {
   ],
   output: {
     path: __dirname + '/dist',
-    filename: 'bundle.js',
+    filename: 'bundle.[hash].js',
     sourceMapFilename: '[file].map'
   },
   resolve: {
@@ -64,7 +74,10 @@ module.exports = {
     }),
     new CopyWebpackPlugin([
       { from: 'src/config.json', to: '/config.json' }
-    ])
+    ]),
+    new webpack.DefinePlugin({
+      VERSION: JSON.stringify(version())
+    })
   ],
   devServer: {
     host: hostname,
