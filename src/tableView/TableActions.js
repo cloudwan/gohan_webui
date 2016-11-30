@@ -9,7 +9,8 @@ import {
   DELETE_SUCCESS,
   DELETE_FAILURE,
   UPDATE_SORT,
-  UPDATE_OFFSET
+  UPDATE_OFFSET,
+  UPDATE_FAILURE
 } from './TableActionTypes';
 
 /**
@@ -152,6 +153,53 @@ export function createData(data) {
       }
     }).catch(error => {
       dispatch(createError(error.response));
+    });
+  };
+}
+
+
+function updateSuccess() {
+  return dispatch => {
+    dispatch(fetchData());
+  };
+}
+
+function updateError(data) {
+  return dispatch => {
+    const error = data.data;
+
+    dispatch({type: UPDATE_FAILURE, error});
+  };
+}
+
+/**
+ * Creates new resource.
+ *
+ * @export
+ * @param data {Object}
+ * @return {function}
+ */
+export function updateData(id, data) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const {url} = state.tableReducer;
+    const {url: gohanUrl} = state.configReducer.gohan;
+    const {tokenId} = state.authReducer;
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': tokenId
+    };
+
+    axios.put(gohanUrl + url + '/' + id, data, {headers}).then(response => {
+      const {status} = response;
+
+      if (status === 200) {
+        dispatch(updateSuccess());
+      } else {
+        dispatch(updateError('Cannot update resource!'));
+      }
+    }).catch(error => {
+      dispatch(updateError(error.response));
     });
   };
 }
