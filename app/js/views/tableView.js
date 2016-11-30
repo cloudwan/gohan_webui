@@ -382,7 +382,7 @@ export default class TableView extends View {
     const value = data[key];
 
     if (property === undefined) {
-      return _.escape(value);
+      return value;
     }
 
     if (value === undefined) {
