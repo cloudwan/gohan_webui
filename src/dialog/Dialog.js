@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Dialog, RefreshIndicator, FlatButton} from 'material-ui';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
+
 import CustomSchemaField from './formComponents/CustomSchemaField/CustomSchemaField';
 import {fetchRelationFields, clearData} from './DialogActions';
 
@@ -11,26 +12,16 @@ const loadingIndicatorStyle = {
 };
 
 class GeneratedDialog extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: {}
-    };
+  componentDidMount() {
+    this.props.fetchRelationFields(this.props.schema.schema, this.props.action);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.open !== nextProps.open) {
-      if (nextProps.open) {
-        this.props.fetchRelationFields(this.props.schema.schema, this.props.action);
-      } else {
-        this.props.clearData();
-      }
-    }
+  componentWillUnmount() {
+    this.props.clearData();
   }
 
   handleSubmit = ({formData}) => {
-    this.props.onSubmit(formData);
+    this.props.onSubmit(formData, this.props.data.id);
     this.props.onRequestClose(); // Add check success
   };
 
@@ -66,7 +57,13 @@ class GeneratedDialog extends Component {
           return (
             <div>
               <Form ref={c => {this.form = c;}} schema={this.props.dialogReducer.schema}
-                fields={{SchemaField: CustomSchemaField}}
+                fields={{SchemaField: CustomSchemaField}} formData={
+                  this.props.dialogReducer.schema.propertiesOrder.reduce(
+                    (result, item) => {
+                      result[item] = this.props.data[item];
+                      return result;
+                    }, {}
+                  )}
                 uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder}} onSubmit={this.handleSubmit}>
                 <div/>
               </Form>
