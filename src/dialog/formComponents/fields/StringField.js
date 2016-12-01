@@ -7,6 +7,7 @@ import {
   getDefaultRegistry
 } from 'react-jsonschema-form/lib/utils';
 
+import {optionsListObject} from './../utils';
 import widgets from './../widgets';
 
 import TextWidget from '../widgets/TextWidget';
@@ -43,12 +44,25 @@ function StringField(props) {
     formContext,
     autofocus,
   };
-  if (Array.isArray(schema.enum)) {
+  if (schema.options !== undefined) {
+    const enumOptions = optionsListObject(schema);
+
+    if (widget) {
+      const Widget = getAlternativeWidget(schema, widget, widgets, {enumOptions});
+
+      return <Widget {...commonProps} />;
+    }
+
+    return <SelectWidget options={{enumOptions}} {...commonProps} />;
+
+  } else if (Array.isArray(schema.enum)) {
     const enumOptions = optionsList(schema);
+
     if (widget) {
       const Widget = getAlternativeWidget(schema, widget, widgets, {enumOptions});
       return <Widget {...commonProps} />;
     }
+
     return <SelectWidget options={{enumOptions}} {...commonProps} />;
   }
   if (widget) {
