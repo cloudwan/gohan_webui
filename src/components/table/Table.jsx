@@ -27,21 +27,26 @@ class TableComponent extends Component {
     super(props);
 
     this.state = {
+      data: {},
       openModal: false,
       actionModal: 'create'
     };
   }
 
   handleOpenModal = () => {
-    this.setState({openModal: true, actionModal: 'create'});
+    this.setState({openModal: true, actionModal: 'create', data: {}});
   };
 
   handleCloseModal = () => {
     this.setState({openModal: false});
   };
 
-  handleSubmit = data => {
-    this.props.createData(data);
+  handleSubmit = (data, id) => {
+    if (this.state.actionModal === 'create') {
+      this.props.createData(data);
+    } else if (this.state.actionModal === 'update') {
+      this.props.updateData(id, data);
+    }
   };
   handlePageClick = page => {
     this.props.handleChangePage(page);
@@ -51,8 +56,20 @@ class TableComponent extends Component {
     this.props.removeData(this.props.schema.url, id);
   };
 
-  handleEditItem = () => {
-    console.log('handleEditItem');
+  handleEditItem = id => {
+    this.setState({openModal: true, actionModal: 'update', data: id});
+  };
+
+  ifShowModal = () => {
+    if (this.state.openModal) {
+      return (
+        <Dialog open={this.state.openModal} action={this.state.actionModal}
+          onRequestClose={this.handleCloseModal} schema={this.props.schema}
+          onSubmit={this.handleSubmit} data={this.state.data}
+        />
+      );
+    }
+    return null;
   };
 
   render() {
@@ -73,10 +90,7 @@ class TableComponent extends Component {
           style={{margin: '8px 8px 8px 8px', marginRight: 'auto'}}
           primary={true}
         />
-        <Dialog open={this.state.openModal} action={this.state.actionModal}
-          onRequestClose={this.handleCloseModal} schema={this.props.schema}
-          onSubmit={this.handleSubmit}
-        />
+        {this.ifShowModal()}
         <Table fixedHeader={true}>
           <TableHeader>
             <TableHeaderComponent schema={schema}/>

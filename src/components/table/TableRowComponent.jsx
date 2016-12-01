@@ -23,7 +23,9 @@ class TableRowComponent extends Component {
   };
 
   handleEditClick = () => {
-    this.props.onEditClick();
+    const {item} = this.props;
+
+    this.props.onEditClick(item);
   };
 
 

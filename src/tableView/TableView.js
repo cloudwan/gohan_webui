@@ -1,7 +1,16 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../components/table';
-import {initialize, fetchData, clearData, createData, deleteData, sortData, setOffset} from './TableActions';
+import {
+  initialize,
+  fetchData,
+  clearData,
+  createData,
+  updateData,
+  deleteData,
+  sortData,
+  setOffset
+} from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 
 class TableView extends Component {
@@ -71,7 +80,7 @@ class TableView extends Component {
       <Table schema={this.state.activeSchema} data={data}
         pageCount={pageCount} activePage={activePage}
         handleChangePage={this.handleChangePage} createData={this.props.createData}
-        removeData={this.handleDeleteData}
+        removeData={this.handleDeleteData} updateData={this.props.updateData}
       />
     );
   }
@@ -97,6 +106,7 @@ export default connect(mapStateToProps, {
   fetchData,
   clearData,
   createData,
+  updateData,
   deleteData,
   sortData,
   setOffset
