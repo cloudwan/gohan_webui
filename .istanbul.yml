@@ -1,2 +1,5 @@
 instrumentation:
-  root: ./app/
+  root: ./src/
+  extensions:
+  - '.js'
+  - '.jsx'

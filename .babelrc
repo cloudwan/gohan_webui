@@ -2,8 +2,7 @@
   "presets": [
     "es2015",
     "es2016",
-    "react",
-    "react-hmre"
+    "react"
   ],
   "plugins": [
     "transform-object-rest-spread",
@@ -11,5 +10,10 @@
     "transform-function-bind",
     "syntax-async-functions",
     "transform-regenerator"
-  ]
+  ],
+  "env": {
+    "development": {
+      "presets": ["react-hmre"]
+    }
+  }
 }
