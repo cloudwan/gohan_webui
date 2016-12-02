@@ -1,4 +1,4 @@
-/*global VERSION*/
+/* global VERSION */
 
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';

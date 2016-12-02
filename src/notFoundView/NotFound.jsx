@@ -6,9 +6,6 @@ const detailStyle = {
 };
 
 export default class NotFound extends Component {
-  componentWillUnmount() {
-  }
-
   render() {
     return (
       <Paper style={detailStyle}>

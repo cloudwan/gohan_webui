@@ -1,11 +1,5 @@
 instrumentation:
-  root: ./app/
+  root: ./src/
   extensions:
   - '.js'
-reporting:
-  print: 'summary'
-  reports:
-  - 'lcov'
-  - 'text'
-  - 'html'
-  dir: './coverage'
+  - '.jsx'
