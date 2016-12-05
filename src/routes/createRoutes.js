@@ -1,7 +1,7 @@
 import App from './../app/App';
-import TableView from '../tableView';
-import DetailView from '../detailView';
-import NotFound from '../notFoundView';
+import TableView from '../TableView';
+import DetailView from '../DetailView';
+import NotFound from '../NotFoundView';
 import components from './componentsList';
 
 export const createRoutes = store => {
