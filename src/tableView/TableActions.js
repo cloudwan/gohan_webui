@@ -10,7 +10,8 @@ import {
   DELETE_FAILURE,
   UPDATE_SORT,
   UPDATE_OFFSET,
-  UPDATE_FAILURE
+  UPDATE_FAILURE,
+  UPDATE_FILTERS
 } from './TableActionTypes';
 
 /**
@@ -106,6 +107,14 @@ export function sortData(sortKey, sortOrder) {
 export function setOffset(offset) {
   return dispatch => {
     dispatch({type: UPDATE_OFFSET, data: {offset}});
+    dispatch(fetchData());
+  };
+}
+
+export function filterData(filters) {
+  return dispatch => {
+    dispatch({type: UPDATE_OFFSET, data: {offset: 0}});
+    dispatch({type: UPDATE_FILTERS, data: {filters}});
     dispatch(fetchData());
   };
 }

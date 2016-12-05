@@ -9,7 +9,8 @@ import {
   updateData,
   deleteData,
   sortData,
-  setOffset
+  setOffset,
+  filterData
 } from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 
@@ -49,6 +50,10 @@ class TableView extends Component {
     this.props.setOffset(newOffset);
   };
 
+  handleFilterData = (property, value) => {
+    this.props.filterData(property, value);
+  };
+
   componentWillReceiveProps(nextProps) {
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props.clearData();
@@ -81,6 +86,7 @@ class TableView extends Component {
         pageCount={pageCount} activePage={activePage}
         handleChangePage={this.handleChangePage} createData={this.props.createData}
         removeData={this.handleDeleteData} updateData={this.props.updateData}
+        filterData={this.handleFilterData}
       />
     );
   }
@@ -106,8 +112,9 @@ export default connect(mapStateToProps, {
   fetchData,
   clearData,
   createData,
-  updateData,
   deleteData,
   sortData,
-  setOffset
+  setOffset,
+  filterData,
+  updateData
 })(TableView);
