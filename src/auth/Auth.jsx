@@ -7,7 +7,7 @@ import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
-import Alert from './../alert/Alert';
+import Alert from '../components/Alert';
 
 const style = {
   minWidth: 250,

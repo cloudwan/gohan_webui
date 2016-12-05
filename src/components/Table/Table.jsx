@@ -16,7 +16,7 @@ import PaginationComponent from 'react-ultimate-pagination-material-ui';
 import TableHeaderComponent from './TableHeaderComponent.jsx';
 import TableRowComponent from './TableRowComponent.jsx';
 
-import Dialog from '../../dialog/Dialog';
+import Dialog from '../../Dialog/Dialog';
 
 const detailStyle = {
   padding: 15
