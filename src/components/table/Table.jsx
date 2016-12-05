@@ -5,7 +5,12 @@ import {
   Table,
   TableHeader,
   TableBody,
-  RaisedButton
+  RaisedButton,
+  Toolbar,
+  ToolbarGroup,
+  SelectField,
+  TextField,
+  MenuItem
 } from 'material-ui';
 import PaginationComponent from 'react-ultimate-pagination-material-ui';
 import TableHeaderComponent from './TableHeaderComponent.jsx';
@@ -26,12 +31,32 @@ class TableComponent extends Component {
   constructor(props) {
     super(props);
 
+    const {schema} = props.schema;
+    const propertiesOrderLen = schema.propertiesOrder.length;
+    let filterProperty = '';
+
+    for(let i = 0; i < propertiesOrderLen; i += 1) {
+      const item = schema.propertiesOrder[i];
+      const property = schema.properties[item];
+
+      if (property && property.view && !property.view.includes('list') || item === 'id') {
+        continue;
+      }
+
+      filterProperty = item;
+      break;
+    }
+
     this.state = {
       data: {},
       openModal: false,
-      actionModal: 'create'
+      actionModal: 'create',
+      filterProperty,
+      filterValue: ''
     };
   }
+
+  filterTimeoutId = null;
 
   handleOpenModal = () => {
     this.setState({openModal: true, actionModal: 'create', data: {}});
@@ -72,6 +97,45 @@ class TableComponent extends Component {
     return null;
   };
 
+  filterData = () => {
+    let value = this.state.filterValue;
+    const property = this.state.filterProperty;
+
+    if(value === undefined || value === '') {
+      value = null;
+    }
+
+    const filters = {};
+    filters[property] = value;
+
+    this.props.filterData(filters);
+  };
+
+  handleMenuItemSelected = (event, index, filterProperty) => {
+    if(event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.setState({filterProperty}, this.filterData);
+  };
+
+  handleSearchChange = (event) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    clearTimeout(this.filterTimeoutId);
+
+    this.setState({filterValue: event.target.value});
+
+    this.filterTimeoutId = setTimeout(() => {
+      this.filterData();
+    }, 2000);
+
+  };
+
   render() {
     const {schema, singular} = this.props.schema;
 
@@ -85,11 +149,34 @@ class TableComponent extends Component {
     }
     return (
       <Paper style={detailStyle}>
-        <RaisedButton onClick={this.handleOpenModal}
-          label={'Add new ' + singular}
-          style={{margin: '8px 8px 8px 8px', marginRight: 'auto'}}
-          primary={true}
-        />
+        <Toolbar>
+          <ToolbarGroup>
+          <RaisedButton onClick={this.handleOpenModal}
+            label={'Add new ' + singular}
+            style={{margin: '8px 8px 8px 8px', marginRight: 'auto'}}
+            primary={true}
+          />
+          </ToolbarGroup>
+          <ToolbarGroup>
+            <SelectField floatingLabelText={'Filter by'} value={this.state.filterProperty} onChange={this.handleMenuItemSelected}>
+              {
+                schema.propertiesOrder.map((item, index) => {
+                  const property = schema.properties[item];
+
+                  if (property && property.view && !property.view.includes('list')) {
+                    return null;
+                  }
+                  if (item === 'id') {
+                    return null;
+                  }
+
+                  return <MenuItem key={index} value={item} primaryText={schema.properties[item].title} />;
+                })
+              }
+            </SelectField>
+            <TextField floatingLabelText={'Search'} value={this.state.filterValue} onChange={this.handleSearchChange} />
+          </ToolbarGroup>
+        </Toolbar>
         {this.ifShowModal()}
         <Table fixedHeader={true}>
           <TableHeader>
