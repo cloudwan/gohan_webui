@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import Table from '../components/table';
+import Table from '../components/Table';
 import {
   initialize,
   fetchData,

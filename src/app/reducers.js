@@ -5,7 +5,7 @@ import locationReducer from './../routes/locationReducer';
 import errorReducer from './../error/errorReducer';
 import authReducer from './../auth/authReducer';
 import schemaReducer from './../schema/schemaReducer';
-import dialogReducer from './../dialog/dialogReducer';
+import dialogReducer from '../Dialog/dialogReducer';
 
 export const makeRootReducer = asyncReducers => {
   return combineReducers({

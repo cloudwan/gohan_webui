@@ -6,7 +6,7 @@ import {AppBar} from 'material-ui';
 import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
 import SidebarMenu from './components/SidebarMenu';
-import Alert from './../alert/Alert';
+import Alert from '../components/Alert';
 
 const contentStyle = {
   paddingTop: 64,

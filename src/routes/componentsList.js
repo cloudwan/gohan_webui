@@ -1,4 +1,4 @@
-import Sample from './../sample/Sample';
+import Sample from '../SampleView';
 
 const components = Object.freeze({
   Sample
