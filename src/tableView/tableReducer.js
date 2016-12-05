@@ -3,7 +3,8 @@ import {
   FETCH_SUCCESS,
   CLEAR_DATA,
   UPDATE_SORT,
-  UPDATE_OFFSET
+  UPDATE_OFFSET,
+  UPDATE_FILTERS
 } from './TableActionTypes';
 
 export default function tableReducer(
@@ -54,6 +55,11 @@ export default function tableReducer(
         ...data
       };
     case UPDATE_OFFSET:
+      return {
+        ...state,
+        ...data
+      };
+    case UPDATE_FILTERS:
       return {
         ...state,
         ...data
