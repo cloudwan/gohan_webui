@@ -25,7 +25,7 @@ export function fetchSchema() {
     };
 
 
-    axios.get(url, {headers}).then(response => {
+    return axios.get(url, {headers}).then(response => {
       dispatch(fetchSuccess(response.data.schemas));
     }).catch(error => {
       dispatch(fetchError(error.response));
