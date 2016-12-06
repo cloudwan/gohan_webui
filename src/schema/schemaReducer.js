@@ -3,7 +3,7 @@ import {FETCH_SUCCESS} from './SchemaActionTypes';
 export default function schemaReducer(
   state = {
     isLoading: true,
-    data: {}
+    data: []
   },
   action) {
   switch (action.type) {
