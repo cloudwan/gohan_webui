@@ -47,4 +47,5 @@ export default class SelectTenant extends Component {
 
 SelectTenant.propTypes = {
   onTenantSubmit: PropTypes.func.isRequired,
+  tenants: PropTypes.array.isRequired
 };
