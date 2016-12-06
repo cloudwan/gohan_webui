@@ -9,7 +9,7 @@ import NotFound from './index';
 chai.use(chaiEnzyme());
 chai.should();
 
-describe('NotFound', function () {
+describe('< NotFound />', function () {
   it('should exist', () => {
     const wrapper = shallow(<NotFound/>);
 
