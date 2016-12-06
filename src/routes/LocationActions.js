@@ -1,6 +1,6 @@
 import {LOCATION_CHANGE} from './LocationActionsTypes';
 
-export function locationChange(location = '/') {
+function locationChange(location = '/') {
   return {
     type: LOCATION_CHANGE,
     payload: location
