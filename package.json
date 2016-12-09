@@ -4,7 +4,7 @@
   "description": "WebUI for Gohan project",
   "main": "./src/index.js",
   "scripts": {
-    "postinstall": "./installHooks.sh",
+    "postinstall": "ln -s -f ./../../.hooks/pre-commit ./.git/hooks/pre-commit",
     "test": "NODE_ENV=test ./node_modules/mocha/bin/mocha --compilers js:babel-register --compilers jsx:babel-register --require babel-polyfill --recursive ./test/helpers/dom.js ./test/helpers/material.js `find ./src/ -regextype sed -regex '.*.test.jsx\\|.*.test.js'`",
     "test-watch": "npm test -- --watch",
     "test-cover": "NODE_ENV=test ./node_modules/.bin/istanbul cover --include-all-sources -x *.test.js -x *.test.jsx --report text --report html ./node_modules/.bin/_mocha -- --compilers js:babel-register --compilers jsx:babel-register  --require babel-polyfill  --recursive ./test/helpers/dom.js ./test/helpers/material.js `find ./src/ -regextype sed -regex '.*.test.jsx\\|.*.test.js'`",
