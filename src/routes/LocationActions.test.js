@@ -1,4 +1,4 @@
-/* global it, describe, afterEach */
+/* global it, describe */
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
