@@ -29,7 +29,7 @@ import {
  * @return {function}
  */
 export function initialize(url, plural, options) {
-  if (options.sortOrder && !(options.sortOrder === 'asc' || options.sortOrder === 'desc')) {
+  if (options && options.sortOrder && !(options.sortOrder === 'asc' || options.sortOrder === 'desc')) {
     console.error('Wrong sortOrder value! Can be only asc or desc');
     options.sortOrder = undefined;
   }
