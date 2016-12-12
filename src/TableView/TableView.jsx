@@ -15,18 +15,40 @@ import {
 import LoadingIndicator from '../components/LoadingIndicator';
 
 class TableView extends Component {
-
   constructor(props) {
     super(props);
 
     const splitPathname = props.location.pathname.split('/');
+    let filters;
+
+    if (this.props.location.query.filters) {
+      try {
+        filters = JSON.parse(this.props.location.query.filters);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    const {
+      sortKey,
+      sortOrder,
+      limit,
+      offset,
+    } = this.props.location.query;
 
     this.state = {
       activeSchema: props.schemaReducer.data.find(
         object => object.plural === splitPathname[splitPathname.length - 1]
       )
     };
-    props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
+
+    props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural, {
+      sortKey,
+      sortOrder,
+      limit,
+      offset,
+      filters
+    });
     props.fetchData();
   }
 
