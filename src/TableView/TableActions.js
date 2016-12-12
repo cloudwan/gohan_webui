@@ -20,12 +20,22 @@ import {
  * @export
  * @param url {string}
  * @param plural {string}
- * @param singular {string}
+ * @param options {object}
+ * @param options.sortOrder {string}
+ * @param options.sortKey {string}
+ * @param options.limit {string}
+ * @param options.offset {string}
+ * @param options.filters {Object}
  * @return {function}
  */
-export function initialize(url, plural) {
+export function initialize(url, plural, options) {
+  if (options.sortOrder && !(options.sortOrder === 'asc' || options.sortOrder === 'desc')) {
+    console.error('Wrong sortOrder value! Can be only asc or desc');
+    options.sortOrder = undefined;
+  }
+
   return dispatch => {
-    dispatch({data: {url, plural}, type: INIT});
+    dispatch({data: {url, plural, ...options}, type: INIT});
   };
 }
 
