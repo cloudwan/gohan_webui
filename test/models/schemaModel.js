@@ -783,6 +783,7 @@ describe('SchemaModel ', () => {
       };
 
       model.toServerData(schema, data).should.be.deep.equal({
+        id: '123321123321',
         name: 'foo'
       });
     });

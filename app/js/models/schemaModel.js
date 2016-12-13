@@ -1036,9 +1036,6 @@ export default class SchemaModel extends Model {
     if (schema.properties !== undefined) {
       const result = {};
       for (let key in schema.properties) {
-        if (key === 'id') {
-          continue;
-        }
         result[key] = self.toServerData(schema.properties[key], data[key]);
       }
       return result;
