@@ -2,10 +2,11 @@
 
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {AppBar} from 'material-ui';
+import {AppBar, IconButton, FontIcon} from 'material-ui';
 import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
 import SidebarMenu from './components/SidebarMenu';
+import UserMenu from './components/UserMenu';
 import Alert from '../components/Alert';
 
 const contentStyle = {
@@ -20,6 +21,13 @@ const appBar = {
 };
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      openUserMenu: false
+    };
+  }
 
   componentWillMount() {
     this.props.fetchSchema();
@@ -32,6 +40,10 @@ class App extends Component {
       event.preventDefault();
     }
     this.props.resetErrorMessage();
+  };
+
+  handleRightDrawerRequestChange = open => {
+    this.setState({openUserMenu: open});
   };
 
   renderErrorMessage() {
@@ -48,12 +60,23 @@ class App extends Component {
 
   render() {
     const {children} = this.props;
+    const {user, tenant, tenants} = this.props.authReducer;
 
     return (
       <div>
         {this.renderErrorMessage()}
         <SidebarMenu schemaReducer={this.props.schemaReducer}/>
-        <AppBar style={appBar} title="Gohan webui" />
+        <UserMenu open={this.state.openUserMenu} onRequestChange={this.handleRightDrawerRequestChange}
+          user={user} tenant={tenant}
+          tenants={tenants}
+        />
+        <AppBar style={appBar} title="Gohan webui"
+          iconElementRight={
+            <IconButton onTouchTap={() => this.setState({openUserMenu: true})}>
+              <FontIcon className="material-icons">account_circle</FontIcon>
+            </IconButton>
+          }
+        />
         <div style={contentStyle}>
           {children}
         </div>
@@ -72,7 +95,8 @@ function mapStateToProps(state) {
   return {
     errorMessage: state.errorReducer,
     resetErrorMessage: PropTypes.func.isRequired,
-    schemaReducer: state.schemaReducer
+    schemaReducer: state.schemaReducer,
+    authReducer: state.authReducer
   };
 }
 

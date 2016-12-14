@@ -9,7 +9,8 @@ export default function authReducer(state = {}, action) {
         ...state,
         tokenId: action.data.access.token.id,
         tokenExpires: action.data.access.token.expires,
-        tenant: action.data.access.token.tenant
+        tenant: action.data.access.token.tenant,
+        user: action.data.access.user
       };
     case TENANT_FETCH_SUCCESS:
       return {
