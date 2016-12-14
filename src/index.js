@@ -1,4 +1,5 @@
 /* global window, document */
+import 'material-design-icons/iconfont/material-icons.css';
 import React from 'react';
 import {render} from 'react-dom';
 import {hashHistory} from 'react-router';
