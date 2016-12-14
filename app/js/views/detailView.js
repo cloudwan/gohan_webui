@@ -146,7 +146,7 @@ export default class DetailView extends View {
     if (property.type === 'array') {
       return '<pre>' + jsyaml.safeDump(value) + '</pre>';
     }
-    if (property.type === 'string' && property.format === 'yaml') {
+    if (property.type === 'string' && (property.format === 'yaml' || property.format === 'text')) {
       return '<pre>' + _.escape(value) + '</pre>';
     }
     return _.escape(value);

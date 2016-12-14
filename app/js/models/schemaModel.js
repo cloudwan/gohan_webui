@@ -731,7 +731,7 @@ export default class SchemaModel extends Model {
             schema[key].options = value.enum;
           }
         } else if (value.format !== undefined &&
-          (value.format === 'yaml' || value.format === 'javascript')) {
+          (value.format === 'yaml' || value.format === 'javascript' || value.format === 'text')) {
           schema[key].format = value.format;
           schema[key].type = 'CodeEditor';
         } else {
@@ -761,7 +761,7 @@ export default class SchemaModel extends Model {
               schema[key].options = value.items.enum;
             }
           } else if (value.format !== undefined &&
-            (value.format === 'yaml' || value.format === 'javascript')) {
+            (value.format === 'yaml' || value.format === 'javascript' || value.format === 'text')) {
             schema[key].format = value.format;
             schema[key].itemType = 'CodeEditor';
           } else {
@@ -779,7 +779,7 @@ export default class SchemaModel extends Model {
       } else if (value.type === 'boolean') {
         schema[key].type = 'Checkbox';
       }
-      if (value.format !== undefined) {
+      if (value.format !== undefined && value.format !== 'text') {
         schema[key].validators.push(value.format);
       }
       if (json.required !== undefined &&

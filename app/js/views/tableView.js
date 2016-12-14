@@ -416,7 +416,13 @@ export default class TableView extends View {
     } catch (error) {
       console.error(error);
     }
-
+    if (property.type === 'string' && (property.format === 'yaml' || property.format === 'text')) {
+      content = _.escape(value);
+      content = value.replace(/\'/g, '&#39;');
+      return dataPopupTemplate({
+        content: '<pre>' + content + '</pre>'
+      });
+    }
     return _.escape(value);
   }
 
