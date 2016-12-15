@@ -37,7 +37,7 @@ class GeneratedDialog extends Component {
         primary={true} onTouchTap={event => {
           this.form.onSubmit(event);
         }}
-      />,
+      />
     ];
 
     return (
