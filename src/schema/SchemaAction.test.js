@@ -22,7 +22,7 @@ describe('SchemaActions ', () => {
     axios.get = _get;
   });
 
-  it('should creates FETCH_SUCCESS when fetching config has been done', async () => {
+  it('should create FETCH_SUCCESS when fetching config has finished', async () => {
     const storeObject = {
       authReducer: {
         tokenId: 'tokenId'
@@ -63,7 +63,7 @@ describe('SchemaActions ', () => {
     ]);
   });
 
-  it('should creates FETCH_ERROR when fetching config has been done', async () => {
+  it('should create FETCH_ERROR when fetching config has been done', async () => {
     const storeObject = {
       authReducer: {
         tokenId: 'tokenId'
