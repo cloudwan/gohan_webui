@@ -21,14 +21,24 @@ export default class UserMenu extends Component {
         <Divider />
         <DropDownMenu value={this.props.tenant.id} autoWidth={false}
           style={{width: '100%', marginLeft: -8}}>
-          {this.props.tenants.map((tenant, key) => (
-            <MenuItem key={key} value={tenant.id}
-              primaryText={`Tenant: ${tenant.name}`}
-            />
-          ))}
+          {(() => {
+            if (this.props.tenants) {
+              return this.props.tenants.map((tenant, key) => (
+                <MenuItem key={key} value={tenant.id}
+                  primaryText={`Tenant: ${tenant.name}`}
+                />
+              ));
+            }
+          })()}
         </DropDownMenu>
         <Menu>
-          <MenuItem>Log out</MenuItem>
+          {(() => {
+            if (this.props.onRequestLogout) {
+              return (
+                <MenuItem onTouchTap={this.props.onRequestLogout}>Log out</MenuItem>
+              );
+            }
+          })()}
         </Menu>
       </Drawer>
     );
@@ -37,5 +47,6 @@ export default class UserMenu extends Component {
 
 UserMenu.propTypes = {
   open: PropTypes.bool.isRequired,
-  onRequestChange: PropTypes.func.isRequired
+  onRequestChange: PropTypes.func.isRequired,
+  onRequestLogout: PropTypes.func
 };

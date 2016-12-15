@@ -8,6 +8,7 @@ import {fetchSchema} from './../schema/SchemaActions';
 import SidebarMenu from './components/SidebarMenu';
 import UserMenu from './components/UserMenu';
 import Alert from '../components/Alert';
+import {logout} from '../auth/AuthActions';
 
 const contentStyle = {
   paddingTop: 64,
@@ -46,6 +47,10 @@ class App extends Component {
     this.setState({openUserMenu: open});
   };
 
+  handleRequestLogout = () => {
+    this.props.logout();
+  };
+
   renderErrorMessage() {
     const {errorMessage} = this.props;
 
@@ -68,7 +73,7 @@ class App extends Component {
         <SidebarMenu schemaReducer={this.props.schemaReducer}/>
         <UserMenu open={this.state.openUserMenu} onRequestChange={this.handleRightDrawerRequestChange}
           user={user} tenant={tenant}
-          tenants={tenants}
+          tenants={tenants} onRequestLogout={this.handleRequestLogout}
         />
         <AppBar style={appBar} title="Gohan webui"
           iconElementRight={
@@ -102,5 +107,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   resetErrorMessage,
-  fetchSchema
+  fetchSchema,
+  logout
 })(App);
