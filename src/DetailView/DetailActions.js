@@ -52,7 +52,6 @@ export function fetchData(url, plural, cancelToken, polling) {
   };
 }
 
-
 function fetchChildrenSuccess(data) {
   return dispatch => {
     dispatch({data, type: FETCH_CHILD_SUCCESS});
@@ -74,7 +73,6 @@ export function fetchChildrenData(url) {
     });
   };
 }
-
 
 function createSuccess(data) {
   return dispatch => {
