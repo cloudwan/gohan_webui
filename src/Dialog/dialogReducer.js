@@ -4,7 +4,6 @@ export default function dialogReducer(state = {isLoading: true, schema: undefine
   switch (action.type) {
     case FETCH_SUCCESS:
       return {
-        ...state,
         isLoading: false,
         schema: action.data
       };

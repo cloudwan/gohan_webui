@@ -7,7 +7,7 @@ import {
   CANCEL_POLLING_DATA
 } from './DetailActionTypes';
 
-export default function dynamicReducer(
+export default function detailReducer(
   state = {
     isLoading: true,
     data: {},
@@ -52,7 +52,6 @@ export default function dynamicReducer(
     case CANCEL_POLLING_DATA:
       return {
         ...state,
-        polling: true,
         data: {...state.data, ...data}
       };
     default:
