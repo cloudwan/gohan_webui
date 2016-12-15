@@ -1,3 +1,4 @@
+require('mock-local-storage');
 var jsdom = require('jsdom');
 
 // setup the simplest document possible
@@ -23,4 +24,5 @@ function propagateToGlobal(window) {
 
     global[key] = window[key];
   }
+  window.sessionStorage = global.sessionStorage;
 }
