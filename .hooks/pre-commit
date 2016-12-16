@@ -15,7 +15,7 @@ fi
 # Ensuring proper coding style
 if [ $RUN_ESLINT -ne 0 ]; then
      echo -e '\e[38;5;4m\e[1m'"Checking JS style errors:\e[0m"
-    echo -e '\e[38;5;4m\e[1m'$JSFILES"\e[0m"
+    echo -e '\e[38;5;4m\e[1m'$JSFILES"\e[0m" | tr " " "\n"
     OUT=`$ESLINT_PATH -c ./.eslintrc $JSFILES`
     CODE=$?
     if [ $CODE -ne 0 ]; then
