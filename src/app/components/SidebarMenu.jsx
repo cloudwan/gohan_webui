@@ -8,6 +8,10 @@ const drawerStyles = {
 };
 
 export default class SidebarMenu extends Component {
+  onLeftIconButtonTouchTap = () => {
+    this.props.onRequestChange(false);
+  };
+
   render() {
     const sidebarMenuItems = [];
 
@@ -24,8 +28,9 @@ export default class SidebarMenu extends Component {
     }
 
     return (
-      <Drawer style={drawerStyles}>
-        <AppBar title="Gohan webui" />
+      <Drawer style={drawerStyles} open={this.props.open}
+        containerStyle={{overflowX: 'hidden'}}>
+        <AppBar title="Gohan webui" onLeftIconButtonTouchTap={this.onLeftIconButtonTouchTap} />
         <Menu>
           {sidebarMenuItems}
         </Menu>
