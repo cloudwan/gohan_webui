@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import Spinner from 'react-spinkit';
 import {Paper} from 'material-ui';
 
 import {login, selectTenant, fetchTokenData} from './AuthActions';
@@ -44,7 +43,9 @@ class Auth extends Component {
   };
   componentWillReceiveProps(nextProps) {
     if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined) {
-      this.props.onLoginSuccess();
+      if (this.props.onLoginSuccess) {
+        this.props.onLoginSuccess();
+      }
     }
   }
 
@@ -61,7 +62,7 @@ class Auth extends Component {
           } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
             return (<SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants} />);
           }
-          return (<Spinner spinnerName='double-bounce' />);
+          return null;
         })()}
       </Paper>
     );
