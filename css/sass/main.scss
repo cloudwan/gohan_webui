@@ -22,6 +22,7 @@ $brand-danger:          #FF0039 !default;
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
   //padding-top: 50px;
+  margin: 0;
   background-color: #edecec;
 }
 
