@@ -13,7 +13,7 @@ import {logout} from '../auth/AuthActions';
 const contentStyle = {
   paddingTop: 64,
   minHeight: 400,
-  paddingLeft: 256
+  paddingRight: 14
 };
 
 const appBar = {
@@ -26,7 +26,9 @@ class App extends Component {
     super(props);
 
     this.state = {
-      openUserMenu: false
+      openUserMenu: false,
+      openSidebarMenu: false,
+      contentPaddingLeft: 14,
     };
   }
 
@@ -45,6 +47,10 @@ class App extends Component {
 
   handleRightDrawerRequestChange = open => {
     this.setState({openUserMenu: open});
+  };
+
+  handleSidebarMenuRequestChange = open => {
+    this.setState({openSidebarMenu: open, contentPaddingLeft: 14});
   };
 
   handleRequestLogout = () => {
@@ -70,19 +76,22 @@ class App extends Component {
     return (
       <div>
         {this.renderErrorMessage()}
-        <SidebarMenu schemaReducer={this.props.schemaReducer}/>
+        <SidebarMenu open={this.state.openSidebarMenu} schemaReducer={this.props.schemaReducer}
+          onRequestChange={this.handleSidebarMenuRequestChange}
+        />
         <UserMenu open={this.state.openUserMenu} onRequestChange={this.handleRightDrawerRequestChange}
           user={user} tenant={tenant}
           tenants={tenants} onRequestLogout={this.handleRequestLogout}
         />
         <AppBar style={appBar} title="Gohan webui"
+          onLeftIconButtonTouchTap={() => this.setState({openSidebarMenu: true, contentPaddingLeft: 270})}
           iconElementRight={
             <IconButton onTouchTap={() => this.setState({openUserMenu: true})}>
               <FontIcon className="material-icons">account_circle</FontIcon>
             </IconButton>
           }
         />
-        <div style={contentStyle}>
+        <div style={{paddingLeft: this.state.contentPaddingLeft, ...contentStyle}}>
           {children}
         </div>
       </div>
