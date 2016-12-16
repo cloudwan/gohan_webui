@@ -11,7 +11,7 @@ import Root from './app/Root';
 import createStore from './app/store';
 import {fetchConfig} from './config/ConfigActions';
 
-import {updateLocation} from './routes/LocationActions';
+import {updateLocation} from './location/LocationActions';
 
 import '../css/sass/main.scss';
 

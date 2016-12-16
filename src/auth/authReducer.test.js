@@ -8,7 +8,7 @@ chai.should();
 describe('authReducer ', () => {
 
   it('should return initial state', () => {
-    reducer(undefined, {}).should.deep.equal({});
+    reducer(undefined, {}).should.deep.equal({logged: false});
     reducer({}, {}).should.deep.equal({});
   });
 
@@ -34,6 +34,7 @@ describe('authReducer ', () => {
       }
     }).should.deep.equal(
       {
+        logged: false,
         tokenId: 'testId',
         tokenExpires: 'expires date',
         tenant: {
@@ -52,6 +53,6 @@ describe('authReducer ', () => {
   it('should handle LOGIN_SUCCESS', () => {
     reducer(undefined, {
       type: actionTypes.LOGOUT,
-    }).should.deep.equal({});
+    }).should.deep.equal({logged: false});
   });
 });
