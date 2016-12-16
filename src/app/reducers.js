@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux';
 
 import configReducer from './../config/configReducer';
-import locationReducer from './../routes/locationReducer';
+import locationReducer from '../location/locationReducer';
 import errorReducer from './../error/errorReducer';
 import authReducer from './../auth/authReducer';
 import schemaReducer from './../schema/schemaReducer';
