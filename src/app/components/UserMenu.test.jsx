@@ -11,7 +11,11 @@ chai.should();
 
 describe('< UserMenu />', function () {
   it('should exist', () => {
-    const wrapper = shallow(<UserMenu open={true} onRequestChange={() => {}}/>);
+    const wrapper = shallow(
+      <UserMenu open={true} onRequestChange={() => {}}
+        user={{username: 'test'}} tenant={{id: 'testId'}}
+      />
+    );
 
     wrapper.should.not.equal(undefined);
   });
