@@ -12,6 +12,11 @@ describe('dialogReducer ', () => {
       isLoading: true,
       schema: undefined
     });
+
+    dialogReducer({isLoading: true, schema: undefined}, {}).should.deep.equal({
+      isLoading: true,
+      schema: undefined
+    });
   });
 
   it('should handle FETCH_SUCCESS', () => {
