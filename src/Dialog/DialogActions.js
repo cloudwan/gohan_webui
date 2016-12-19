@@ -16,18 +16,12 @@ function fetchError(data) {
 }
 
 function toLocalSchema(schema, state) {
-  // Convert dict in schema to array for form generation
-  // In json schema, we can't type dict element, so gohan
-  // extend json schema using items property for object.
-  // If object type has items property, items is considered to
-  // schema for object of dict.
-  // We will transform schema here for jsonform lib.
   return new Promise((resolve, reject) => {
     const result = {...schema};
-
     if (Array.isArray(result.type)) {
       result.type = result.type[0];
     }
+
     if (result.relation !== undefined) {
       const enumValues = [];
       const options = {};
@@ -37,25 +31,28 @@ function toLocalSchema(schema, state) {
       };
 
       const relatedSchema = state.schemaReducer.data.find(item => item.id === result.relation);
+      if (relatedSchema === undefined) {
+        reject({data: 'Cannot find related schema!'});
+      }
 
       axios.get(state.configReducer.gohan.url + relatedSchema.url, {headers}).then(response => {
         const data = response.data;
 
         for (let key in data) {
-          for (let value of data[key]) {
+          data[key].forEach(value => {
             enumValues.push(value.id);
             options[value.id] = value.name;
-          }
+          });
         }
         result.enum = enumValues;
         result.options = options;
         resolve(result);
       }).catch(error => {
-        reject(error);
+        reject(error.response);
       });
     } else if (result.type === 'array') {
-
       const promise = toLocalSchema(result.items, state);
+
       promise.then(data => {
         result.items = data;
         resolve(result);
@@ -63,6 +60,7 @@ function toLocalSchema(schema, state) {
     } else if (result.type !== 'object') {
       resolve(result);
     } else if (result.properties !== undefined) {
+
       const promises = [];
 
       for (let key in result.properties) {
@@ -107,15 +105,24 @@ function toLocalSchema(schema, state) {
   });
 }
 
+/**
+ *
+ * @param schema
+ * @param action
+ * @return {function(*, *)}
+ */
 export function fetchRelationFields(schema, action) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const state = getState();
 
-    toLocalSchema(schema, state).then(data => {
+    try {
+      const localSchema = await toLocalSchema(schema, state);
       let required = [];
       const propertiesOrder = [];
-      const properties = data.propertiesOrder.reduce((result, key) => {
-        const property = data.properties[key];
+
+      const properties = localSchema.propertiesOrder.reduce((result, key) => {
+        const property = localSchema.properties[key];
+
         if ((key === 'id' && property.format === 'uuid') ||
           property.permission === null ||
           property.permission === undefined ||
@@ -130,8 +137,8 @@ export function fetchRelationFields(schema, action) {
         return result;
       }, {});
 
-      if (data.required !== null) {
-        required = data.required.filter(property => {
+      if (localSchema.required !== null) {
+        required = localSchema.required.filter(property => {
           return properties.hasOwnProperty(property);
         });
       }
@@ -142,9 +149,9 @@ export function fetchRelationFields(schema, action) {
         propertiesOrder,
         required
       }));
-    }).catch(error => {
+    } catch (error) {
       dispatch(fetchError(error));
-    });
+    }
   };
 }
 
