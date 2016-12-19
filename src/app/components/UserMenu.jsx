@@ -9,6 +9,12 @@ const iconStyles = {
 };
 
 export default class UserMenu extends Component {
+  handleSwitchTenant = (event, key, payload) => {
+    const tenantName = this.props.tenants.find(tenant => tenant.id === payload).name;
+
+    this.props.onRequestChangeTenant(tenantName);
+  };
+
   render() {
     return (
       <Drawer style={drawerStyles} openSecondary={true}
@@ -20,7 +26,7 @@ export default class UserMenu extends Component {
         </div>
         <Divider />
         <DropDownMenu value={this.props.tenant.id} autoWidth={false}
-          style={{width: '100%', marginLeft: -8}}>
+          style={{width: '100%', marginLeft: -8}} onChange={this.handleSwitchTenant}>
           {(() => {
             if (this.props.tenants) {
               return this.props.tenants.map((tenant, key) => (
