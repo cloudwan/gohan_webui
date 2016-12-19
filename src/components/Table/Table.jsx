@@ -68,6 +68,17 @@ class TableComponent extends Component {
     return null;
   };
 
+  buildTableBody = () => {
+    return this.props.data.map((item, index) => {
+      return (
+        <TableRowComponent key={index} schema={this.props.schema}
+          item={item} onRemoveClick={this.handleRemoveItem}
+          onEditClick={this.handleEditItem}
+        />
+      );
+    });
+  };
+
 
   render() {
     const {schema, singular} = this.props.schema;
@@ -79,17 +90,13 @@ class TableComponent extends Component {
           filterData={this.props.filterData}
         />
         {this.ifShowModal()}
+
         <Table fixedHeader={true}>
           <TableHeader>
             <TableHeaderComponent schema={schema}/>
           </TableHeader>
           <TableBody displayRowCheckbox={false} showRowHover={true}>
-            {this.props.data.map((item, index) => (
-              <TableRowComponent key={index} schema={this.props.schema}
-                item={item} onRemoveClick={this.handleRemoveItem}
-                onEditClick={this.handleEditItem}
-              />
-              ))}
+            {this.buildTableBody()}
           </TableBody>
         </Table>
 

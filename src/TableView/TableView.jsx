@@ -92,11 +92,44 @@ class TableView extends Component {
     }
   }
 
+  buildTableHeaders() {
+
+  }
+
+  buildTableBodyRows() {
+
+  }
+
+  setVisibleColumns(schema, exclude) {
+    let headers = [];
+    const schemaProperties = schema.properties;
+    const schemaPropertiesOrder = schema.propertiesOrder;
+
+    schemaPropertiesOrder.forEach(item => {
+      const property = schemaProperties[item];
+
+      if (property && property.view && !property.view.includes('list')) {
+        return;
+      }
+
+      if (exclude && exclude.length) {
+        if (exclude.includes(item)) {
+          return;
+        }
+      }
+
+      headers.push(property);
+    });
+
+    return headers;
+  }
+
   render() {
     const {isLoading, data, totalCount, limit, offset} = this.props.tableReducer;
     const {pageLimit} = this.props.configReducer;
     const pageCount = Math.ceil(totalCount / (limit || pageLimit));
     const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
+    const headers = this.setVisibleColumns(this.state.activeSchema.schema, ['id']);
 
     if (isLoading) {
       return (
@@ -108,7 +141,7 @@ class TableView extends Component {
         pageCount={pageCount} activePage={activePage}
         handleChangePage={this.handleChangePage} createData={this.props.createData}
         removeData={this.handleDeleteData} updateData={this.props.updateData}
-        filterData={this.handleFilterData}
+        filterData={this.handleFilterData} visibleColumns={headers}
       />
     );
   }
