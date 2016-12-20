@@ -26,12 +26,10 @@ class TableToolbarComponent extends Component {
       break;
     }
 
-
     this.state = {
       filterProperty,
       filterValue: ''
     };
-
   }
 
   filterTimeoutId = null;

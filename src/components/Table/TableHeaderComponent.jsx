@@ -26,7 +26,6 @@ class TableHeaderComponent extends Component {
   };
 
   render() {
-
     return (
       <TableRow selectable={false}>
         {this.buildTableHeaders()}
@@ -41,7 +40,8 @@ TableHeaderComponent.contextTypes = {
 };
 
 TableHeaderComponent.propTypes = {
-
+  visibleColumns: PropTypes.array.isRequired,
+  properties: PropTypes.object.isRequired
 };
 
 export default TableHeaderComponent;

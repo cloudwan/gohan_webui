@@ -14,8 +14,11 @@ const columnStyle = {
   whiteSpace: 'normal'
 };
 
-class TableRowComponent extends Component {
+const iconStyle = {
+  color: 'rgba(0, 0, 0, 0.55)'
+};
 
+class TableRowComponent extends Component {
   handleRemoveClick = () => {
     const {rowItem} = this.props;
 
@@ -65,11 +68,11 @@ class TableRowComponent extends Component {
         {this.buildTableRow()}
         <TableRowColumn style={{padding: 0}}>
           <IconButton tooltip="edit" tooltipPosition="bottom-right"
-            iconStyle={{color: 'rgba(0, 0, 0, 0.55)'}} onClick={this.handleEditClick}>
+            iconStyle={iconStyle} onClick={this.handleEditClick}>
             <EditIcon />
           </IconButton>
           <IconButton tooltip="delete" tooltipPosition="bottom-right"
-            iconStyle={{color: 'rgba(0, 0, 0, 0.55)'}} onClick={this.handleRemoveClick}>
+            iconStyle={iconStyle} onClick={this.handleRemoveClick}>
             <DeleteIcon />
           </IconButton>
         </TableRowColumn>
@@ -84,6 +87,8 @@ TableRowComponent.contextTypes = {
 
 TableRowComponent.propTypes = {
   schema: PropTypes.object.isRequired,
+  visibleColumns: PropTypes.array.isRequired,
+  rowItem: PropTypes.object.isRequired,
   onRemoveClick: PropTypes.func,
   onEditClick: PropTypes.func
 };

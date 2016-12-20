@@ -17,17 +17,14 @@ const detailStyle = {
 };
 
 class TableComponent extends Component {
-
   constructor(props) {
     super(props);
-
 
     this.state = {
       data: {},
       openModal: false,
       actionModal: 'create'
     };
-
   }
 
   handleOpenModal = () => {
@@ -115,8 +112,11 @@ TableComponent.contextTypes = {
 
 TableComponent.propTypes = {
   schema: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
+  visibleColumns: PropTypes.array.isRequired,
   pageCount: PropTypes.number,
-  activePage: PropTypes.number
+  activePage: PropTypes.number,
+  filterData: PropTypes.func
 };
 
 export default TableComponent;
