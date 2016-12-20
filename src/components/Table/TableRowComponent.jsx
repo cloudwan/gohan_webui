@@ -17,52 +17,52 @@ const columnStyle = {
 class TableRowComponent extends Component {
 
   handleRemoveClick = () => {
-    const {item} = this.props;
+    const {rowItem} = this.props;
 
-    this.props.onRemoveClick(item.id);
+    this.props.onRemoveClick(rowItem.id);
   };
 
   handleEditClick = () => {
-    const {item} = this.props;
+    const {rowItem} = this.props;
 
-    this.props.onEditClick(item);
+    this.props.onEditClick(rowItem);
+  };
+
+  buildTableRow = () => {
+    const {visibleColumns, rowItem} = this.props;
+    const {singular} = this.props.schema;
+
+    return visibleColumns.map((item, index) => {
+      const data = rowItem[item];
+
+      if (typeof data === 'object') {
+        return (
+          <TableRowColumn key={index} style={columnStyle}>
+            {JSON.stringify(data)}
+          </TableRowColumn>
+        );
+      }
+      if (item === 'name') {
+        return (
+          <TableRowColumn key={index} style={columnStyle}>
+            <Link to={'/' + singular + '/' + rowItem.id}>{data}</Link>
+          </TableRowColumn>
+        );
+      }
+
+      return (
+        <TableRowColumn key={index} style={columnStyle}>
+          {data}
+        </TableRowColumn>
+      );
+    });
   };
 
 
   render() {
-    const {schema, singular} = this.props.schema;
-    const {schema: schemaDrop, onRemoveClick, onEditClick, visibleColumns, // eslint-disable-line no-unused-vars
-      item, ...propsForChildren} = this.props;
-
     return (
-      <TableRow className="row" {...propsForChildren}>
-        {schema.propertiesOrder.map((key, i) => {
-          const data = item[key];
-          const property = schema.properties[key];
-
-          if (property && property.view && !property.view.includes('list')) {
-            return null;
-          }
-
-          if (key === 'id') {
-            return null;
-          }
-          if (typeof data === 'object') {
-            return (
-              <TableRowColumn key={i} style={columnStyle}>{JSON.stringify(data)}</TableRowColumn>
-            );
-          }
-          if (key === 'name') {
-            return (
-              <TableRowColumn key={i} style={columnStyle}>
-                <Link to={'/' + singular + '/' + item.id}>{data}</Link>
-              </TableRowColumn>
-            );
-          }
-          return (
-            <TableRowColumn key={i} style={columnStyle}>{data}</TableRowColumn>
-          );
-        })}
+      <TableRow className="row">
+        {this.buildTableRow()}
         <TableRowColumn style={{padding: 0}}>
           <IconButton tooltip="edit" tooltipPosition="bottom-right"
             iconStyle={{color: 'rgba(0, 0, 0, 0.55)'}} onClick={this.handleEditClick}>

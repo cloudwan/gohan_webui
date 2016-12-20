@@ -73,7 +73,7 @@ class TableComponent extends Component {
     return this.props.data.map((item, index) => {
       return (
         <TableRowComponent key={index} schema={this.props.schema}
-          item={item} onRemoveClick={this.handleRemoveItem}
+          rowItem={item} onRemoveClick={this.handleRemoveItem}
           onEditClick={this.handleEditItem} visibleColumns={this.props.visibleColumns}
         />
       );
