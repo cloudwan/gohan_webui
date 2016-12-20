@@ -31,7 +31,7 @@ class TableRowComponent extends Component {
 
   render() {
     const {schema, singular} = this.props.schema;
-    const {schema: schemaDrop, onRemoveClick, onEditClick, // eslint-disable-line no-unused-vars
+    const {schema: schemaDrop, onRemoveClick, onEditClick, visibleColumns, // eslint-disable-line no-unused-vars
       item, ...propsForChildren} = this.props;
 
     return (

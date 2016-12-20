@@ -27,6 +27,7 @@ class TableComponent extends Component {
       openModal: false,
       actionModal: 'create'
     };
+
   }
 
   handleOpenModal = () => {
@@ -73,7 +74,7 @@ class TableComponent extends Component {
       return (
         <TableRowComponent key={index} schema={this.props.schema}
           item={item} onRemoveClick={this.handleRemoveItem}
-          onEditClick={this.handleEditItem}
+          onEditClick={this.handleEditItem} visibleColumns={this.props.visibleColumns}
         />
       );
     });
@@ -93,7 +94,7 @@ class TableComponent extends Component {
 
         <Table fixedHeader={true}>
           <TableHeader>
-            <TableHeaderComponent schema={schema}/>
+            <TableHeaderComponent visibleColumns={this.props.visibleColumns} properties={schema.properties}/>
           </TableHeader>
           <TableBody displayRowCheckbox={false} showRowHover={true}>
             {this.buildTableBody()}

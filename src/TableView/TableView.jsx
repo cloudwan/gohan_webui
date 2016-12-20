@@ -92,14 +92,6 @@ class TableView extends Component {
     }
   }
 
-  buildTableHeaders() {
-
-  }
-
-  buildTableBodyRows() {
-
-  }
-
   setVisibleColumns(schema, exclude) {
     let headers = [];
     const schemaProperties = schema.properties;
@@ -118,7 +110,7 @@ class TableView extends Component {
         }
       }
 
-      headers.push(property);
+      headers.push(item);
     });
 
     return headers;
