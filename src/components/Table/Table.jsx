@@ -15,10 +15,6 @@ const detailStyle = {
 };
 
 class TableComponent extends Component {
-  handlePageClick = page => {
-    this.props.handleChangePage(page);
-  };
-
   buildTableBody = () => {
     return this.props.data.map((item, index) => {
       return (
@@ -51,7 +47,7 @@ class TableComponent extends Component {
         </Table>
 
         <TablePaginationComponent activePage={this.props.activePage} pageCount={this.props.pageCount}
-          handlePageClick={this.handlePageClick}
+          handlePageClick={this.props.handleChangePage}
         />
       </Paper>
     );
@@ -71,7 +67,8 @@ TableComponent.propTypes = {
   filterData: PropTypes.func.isRequired,
   editData: PropTypes.func.isRequired,
   removeData: PropTypes.func.isRequired,
-  openModal: PropTypes.func.isRequired
+  openModal: PropTypes.func.isRequired,
+  handleChangePage: PropTypes.func.isRequired
 };
 
 export default TableComponent;
