@@ -3,3 +3,14 @@ instrumentation:
   extensions:
   - '.js'
   - '.jsx'
+  include-all-sources: true
+  excludes:
+  - '*.test.js'
+  - '*.test.jsx'
+reporting:
+  print: 'summary'
+  reports:
+  - 'lcov'
+  - 'text'
+  - 'html'
+  dir: './coverage'
