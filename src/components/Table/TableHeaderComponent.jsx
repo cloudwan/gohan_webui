@@ -10,27 +10,25 @@ const columnStyle = {
 };
 
 class TableHeaderComponent extends Component {
-  render() {
-    const schema = this.props.schema;
+  buildTableHeaders = () => {
+    const {properties, visibleColumns} = this.props;
 
+    return visibleColumns.map((item, index) => {
+      const property = properties[item];
+
+      return (
+        <TableHeaderColumn key={index} tooltip={property.description}
+          style={columnStyle}>
+          {property.title}
+        </TableHeaderColumn>
+      );
+    });
+  };
+
+  render() {
     return (
       <TableRow selectable={false}>
-        {schema.propertiesOrder.map((item, index) => {
-          const property = schema.properties[item];
-
-          if (property && property.view && !property.view.includes('list')) {
-            return null;
-          }
-          if (item === 'id') {
-            return null;
-          }
-          return (
-            <TableHeaderColumn key={index}
-              tooltip={property.description}
-              style={columnStyle}>{property.title}
-            </TableHeaderColumn>
-          );
-        })}
+        {this.buildTableHeaders()}
         <TableHeaderColumn >{'Options'}</TableHeaderColumn>
       </TableRow>
     );
@@ -42,7 +40,8 @@ TableHeaderComponent.contextTypes = {
 };
 
 TableHeaderComponent.propTypes = {
-  schema: PropTypes.object.isRequired
+  visibleColumns: PropTypes.array.isRequired,
+  properties: PropTypes.object.isRequired
 };
 
 export default TableHeaderComponent;

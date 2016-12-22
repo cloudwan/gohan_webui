@@ -16,9 +16,7 @@ class TablePaginationComponent extends Component {
         {pagination}
       </div>
     );
-
   }
-
 }
 
 export default TablePaginationComponent;
