@@ -13,6 +13,7 @@ import {
   filterData
 } from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
+import Dialog from '../Dialog/Dialog';
 
 class TableView extends Component {
   constructor(props) {
@@ -39,7 +40,10 @@ class TableView extends Component {
     this.state = {
       activeSchema: props.schemaReducer.data.find(
         object => object.plural === splitPathname[splitPathname.length - 1]
-      )
+      ),
+      openModal: false,
+      actionModal: 'create',
+      dialogData: {}
     };
 
     props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural, {
@@ -52,12 +56,28 @@ class TableView extends Component {
     props.fetchData();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.location.pathname !== nextProps.location.pathname) {
+      this.props.clearData();
+
+      const splitPathname = nextProps.location.pathname.split('/');
+
+      this.state = {
+        activeSchema: this.props.schemaReducer.data.find(
+          object => object.plural === splitPathname[splitPathname.length - 1]
+        )
+      };
+      this.props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
+      this.props.fetchData();
+    }
+  }
+
   componentWillUnmount() {
     this.props.clearData();
   }
 
-  handleDeleteData = (url, id) => {
-    this.props.deleteData(url, id, this.state.activeSchema.plural);
+  handleDeleteData = id => {
+    this.props.deleteData(this.state.activeSchema.url, id, this.state.activeSchema.plural);
   };
 
   handleChangePage = page => {
@@ -76,20 +96,65 @@ class TableView extends Component {
     this.props.filterData(property, value);
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.location.pathname !== nextProps.location.pathname) {
-      this.props.clearData();
+  handleOpenModal = () => {
+    this.setState({openModal: true, actionModal: 'create', dialogData: {}});
+  };
 
-      const splitPathname = nextProps.location.pathname.split('/');
+  handleCloseModal = () => {
+    this.setState({openModal: false});
+  };
 
-      this.state = {
-        activeSchema: this.props.schemaReducer.data.find(
-          object => object.plural === splitPathname[splitPathname.length - 1]
-        )
-      };
-      this.props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
-      this.props.fetchData();
+  handleSubmit = (data, id) => {
+    switch (this.state.actionModal) {
+      case 'create':
+        this.props.createData(data);
+        break;
+      case 'update':
+        this.props.updateData(id, data);
+        break;
     }
+  };
+
+  handleEditItem = id => {
+    this.setState({openModal: true, actionModal: 'update', dialogData: id});
+  };
+
+  showModal = () => {
+    if (this.state.openModal) {
+      return (
+        <Dialog open={this.state.openModal} action={this.state.actionModal}
+          data={this.state.dialogData} onRequestClose={this.handleCloseModal}
+          onSubmit={this.handleSubmit} schema={this.state.activeSchema}
+        />
+      );
+    }
+
+    return null;
+  };
+
+
+  setVisibleColumns(schema, exclude) {
+    let headers = [];
+    const schemaProperties = schema.properties;
+    const schemaPropertiesOrder = schema.propertiesOrder;
+
+    schemaPropertiesOrder.forEach(item => {
+      const property = schemaProperties[item];
+
+      if (property && property.view && !property.view.includes('list')) {
+        return;
+      }
+
+      if (exclude && exclude.length) {
+        if (exclude.includes(item)) {
+          return;
+        }
+      }
+
+      headers.push(item);
+    });
+
+    return headers;
   }
 
   render() {
@@ -97,6 +162,7 @@ class TableView extends Component {
     const {pageLimit} = this.props.configReducer;
     const pageCount = Math.ceil(totalCount / (limit || pageLimit));
     const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
+    const headers = this.setVisibleColumns(this.state.activeSchema.schema, ['id']);
 
     if (isLoading) {
       return (
@@ -104,12 +170,17 @@ class TableView extends Component {
       );
     }
     return (
-      <Table schema={this.state.activeSchema} data={data}
-        pageCount={pageCount} activePage={activePage}
-        handleChangePage={this.handleChangePage} createData={this.props.createData}
-        removeData={this.handleDeleteData} updateData={this.props.updateData}
-        filterData={this.handleFilterData}
-      />
+      <div>
+        {this.showModal()}
+        <Table schema={this.state.activeSchema} data={data}
+          pageCount={pageCount} activePage={activePage}
+          handleChangePage={this.handleChangePage} createData={this.props.createData}
+          removeData={this.handleDeleteData} updateData={this.props.updateData}
+          filterData={this.handleFilterData} visibleColumns={headers}
+          openModal={this.handleOpenModal} closeModal={this.handleCloseModal}
+          editData={this.handleEditItem}
+        />
+      </div>
     );
   }
 }

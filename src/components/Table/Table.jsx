@@ -10,62 +10,20 @@ import TableToolbarComponent from './TableToolbarComponent';
 import TableHeaderComponent from './TableHeaderComponent.jsx';
 import TableRowComponent from './TableRowComponent.jsx';
 
-import Dialog from '../../Dialog/Dialog';
-
 const detailStyle = {
   padding: 15
 };
 
 class TableComponent extends Component {
-
-  constructor(props) {
-    super(props);
-
-
-    this.state = {
-      data: {},
-      openModal: false,
-      actionModal: 'create'
-    };
-  }
-
-  handleOpenModal = () => {
-    this.setState({openModal: true, actionModal: 'create', data: {}});
-  };
-
-  handleCloseModal = () => {
-    this.setState({openModal: false});
-  };
-
-  handleSubmit = (data, id) => {
-    if (this.state.actionModal === 'create') {
-      this.props.createData(data);
-    } else if (this.state.actionModal === 'update') {
-      this.props.updateData(id, data);
-    }
-  };
-  handlePageClick = page => {
-    this.props.handleChangePage(page);
-  };
-
-  handleRemoveItem = id => {
-    this.props.removeData(this.props.schema.url, id);
-  };
-
-  handleEditItem = id => {
-    this.setState({openModal: true, actionModal: 'update', data: id});
-  };
-
-  ifShowModal = () => {
-    if (this.state.openModal) {
+  buildTableBody = () => {
+    return this.props.data.map((item, index) => {
       return (
-        <Dialog open={this.state.openModal} action={this.state.actionModal}
-          onRequestClose={this.handleCloseModal} schema={this.props.schema}
-          onSubmit={this.handleSubmit} data={this.state.data}
+        <TableRowComponent key={index} schema={this.props.schema}
+          rowItem={item} onRemoveClick={this.props.removeData}
+          onEditClick={this.props.editData} visibleColumns={this.props.visibleColumns}
         />
       );
-    }
-    return null;
+    });
   };
 
 
@@ -74,27 +32,22 @@ class TableComponent extends Component {
 
     return (
       <Paper style={detailStyle}>
-        <TableToolbarComponent handleOpenModal={this.handleOpenModal} singular={singular}
+        <TableToolbarComponent handleOpenModal={this.props.openModal} singular={singular}
           options={schema.propertiesOrder} properties={schema.properties}
           filterData={this.props.filterData}
         />
-        {this.ifShowModal()}
+
         <Table fixedHeader={true}>
           <TableHeader>
-            <TableHeaderComponent schema={schema}/>
+            <TableHeaderComponent visibleColumns={this.props.visibleColumns} properties={schema.properties}/>
           </TableHeader>
           <TableBody displayRowCheckbox={false} showRowHover={true}>
-            {this.props.data.map((item, index) => (
-              <TableRowComponent key={index} schema={this.props.schema}
-                item={item} onRemoveClick={this.handleRemoveItem}
-                onEditClick={this.handleEditItem}
-              />
-              ))}
+            {this.buildTableBody()}
           </TableBody>
         </Table>
 
         <TablePaginationComponent activePage={this.props.activePage} pageCount={this.props.pageCount}
-          handlePageClick={this.handlePageClick}
+          handlePageClick={this.props.handleChangePage}
         />
       </Paper>
     );
@@ -107,8 +60,15 @@ TableComponent.contextTypes = {
 
 TableComponent.propTypes = {
   schema: PropTypes.object.isRequired,
-  pageCount: PropTypes.number,
-  activePage: PropTypes.number
+  data: PropTypes.array.isRequired,
+  visibleColumns: PropTypes.array.isRequired,
+  pageCount: PropTypes.number.isRequired,
+  activePage: PropTypes.number.isRequired,
+  filterData: PropTypes.func.isRequired,
+  editData: PropTypes.func.isRequired,
+  removeData: PropTypes.func.isRequired,
+  openModal: PropTypes.func.isRequired,
+  handleChangePage: PropTypes.func.isRequired
 };
 
 export default TableComponent;
