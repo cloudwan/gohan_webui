@@ -1,0 +1,7 @@
+--require babel-register
+--require babel-polyfill
+--compilers jsx:babel-register
+--compilers js:babel-register
+--require ./test/helpers/dom.js
+--require ./test/helpers/material.js
+--reporter spec
