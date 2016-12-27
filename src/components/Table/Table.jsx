@@ -34,7 +34,7 @@ class TableComponent extends Component {
       <Paper style={detailStyle}>
         <TableToolbarComponent handleOpenModal={this.props.openModal} singular={singular}
           options={schema.propertiesOrder} properties={schema.properties}
-          filterData={this.props.filterData}
+          filterData={this.props.filterData} filterProperties={this.props.visibleColumns}
         />
 
         <Table fixedHeader={true}>
