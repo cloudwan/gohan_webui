@@ -41,7 +41,7 @@ class TableRowComponent extends Component {
       if (typeof data === 'object') {
         return (
           <TableRowColumn key={index} style={columnStyle}>
-            {JSON.stringify(data)}
+            {data === null ? '' : JSON.stringify(data)}
           </TableRowColumn>
         );
       }
