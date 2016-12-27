@@ -15,7 +15,7 @@ chai.should();
 const _get = axios.get;
 
 const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
+const mockStore = configureMockStore(middlewares); // eslint-disable-line no-unused-vars
 
 describe('DetailActions', () => {
   afterEach(() => {
