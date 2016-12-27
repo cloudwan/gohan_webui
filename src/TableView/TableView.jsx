@@ -132,7 +132,6 @@ class TableView extends Component {
     return null;
   };
 
-
   setVisibleColumns(schema, exclude) {
     let headers = [];
     const schemaProperties = schema.properties;

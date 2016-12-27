@@ -10,24 +10,8 @@ class TableToolbarComponent extends Component {
   constructor(props) {
     super(props);
 
-    const {options, properties} = props;
-    const optionsLen = options.length;
-    let filterProperty = '';
-
-    for (let i = 0; i < optionsLen; i += 1) {
-      const item = options[i];
-      const property = properties[item];
-
-      if (property && property.view && !property.view.includes('list') || item === 'id') {
-        continue;
-      }
-
-      filterProperty = item;
-      break;
-    }
-
     this.state = {
-      filterProperty,
+      filterProperty: props.filterProperties[0],
       filterValue: ''
     };
   }
@@ -73,9 +57,17 @@ class TableToolbarComponent extends Component {
 
   };
 
-  render() {
-    const {options, properties} = this.props;
+  buildSelectOptions = () => {
+    const {filterProperties, properties} = this.props;
 
+    return filterProperties.map((item, index) => {
+      return <MenuItem key={index} value={item}
+        primaryText={properties[item].title}
+      />;
+    });
+  };
+
+  render() {
     return (
       <Toolbar>
         <ToolbarGroup>
@@ -88,23 +80,7 @@ class TableToolbarComponent extends Component {
         <ToolbarGroup>
           <SelectField floatingLabelText={'Filter by'} value={this.state.filterProperty}
             onChange={this.handleMenuItemSelected}>
-            {
-             options.map((item, index) => {
-               const property = properties[item];
-
-               if (property && property.view && !property.view.includes('list') || property.type !== 'string') {
-                 return null;
-               }
-               if (item === 'id') {
-                 return null;
-               }
-
-               return <MenuItem key={index} value={item}
-                 primaryText={properties[item].title}
-               />;
-             })
-
-            }
+            {this.buildSelectOptions()}
           </SelectField>
           <TextField floatingLabelText={'Search'} value={this.state.filterValue}
             onChange={this.handleSearchChange}
