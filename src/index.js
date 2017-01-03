@@ -15,6 +15,8 @@ import {updateLocation} from './location/LocationActions';
 
 import '../css/sass/main.scss';
 
+import '@blueprintjs/core/dist/blueprint.css';
+
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
 store.unsubscribeHistory = hashHistory.listen(updateLocation(store));
 
