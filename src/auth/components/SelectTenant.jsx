@@ -1,10 +1,14 @@
 import React, {Component, PropTypes} from 'react';
-import {SelectField, MenuItem, RaisedButton} from 'material-ui';
+import {Button} from '@blueprintjs/core';
+
+const submitStyle = {
+  width: '100%',
+  textTransform: 'uppercase'
+};
 
 export default class SelectTenant extends Component {
-
-  constructor(params) {
-    super(params);
+  constructor(props) {
+    super(props);
 
     this.state = {
       value: null
@@ -12,34 +16,51 @@ export default class SelectTenant extends Component {
   }
 
   handleSelectTenantSubmit = event => {
-    event.preventDefault();
-    event.stopPropagation();
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     this.props.onTenantSubmit(this.state.value);
   };
 
-  handleTenantChange = (event, index, value) => this.setState({value});
+  handleTenantChange = event => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    this.setState({value: event.target.value});
+  };
+
+  buildSelectOptions = () => {
+    return this.props.tenants.map(
+      (tenant, key) => {
+        return <option value={tenant.name} key={key}>{tenant.name}</option>;
+      }
+    );
+  };
+
 
   render() {
     return (
       <form onSubmit={this.handleSelectTenantSubmit}>
-        <SelectField floatingLabelText="Select tenant" value={this.state.value}
-          onChange={this.handleTenantChange} fullWidth={true}>
-          {
-            this.props.tenants.map(
-              (tenant, key) => (
-                <MenuItem value={tenant.name} key={key}
-                  primaryText={tenant.name}
-                />
-              )
-            )
-          }
-        </SelectField>
-        <br/>
-        <RaisedButton primary={true} label="Select Tenant"
-          fullWidth={true} type={'submit'}
-          disabled={!this.state.value}
-        />
+        <label className="pt-label">
+            Select tenant
+            <div className="pt-select pt-large">
+              <select onChange={this.handleTenantChange} defaultValue={''}>
+                <option value={''} />
+                {
+                this.buildSelectOptions()
+              }
+              </select>
+            </div>
+        </label>
+
+        <Button type="submit" className="pt-intent-primary"
+          style={submitStyle} disabled={!this.state.value}>
+          Select tenant
+        </Button>
       </form>
     );
   }
