@@ -1,5 +1,4 @@
-/* global window, document */
-import 'material-design-icons/iconfont/material-icons.css';
+/* global window, document, VERSION */
 import React from 'react';
 import {render} from 'react-dom';
 import {hashHistory} from 'react-router';
@@ -39,6 +38,8 @@ const muiTheme = getMuiTheme({
     tooltip: 3000
   }
 });
+
+console.log(`Gohan version: ${VERSION.gohanWebUI.version}, repo tag: ${VERSION.gohanWebUI.tag}`);
 
 injectTapEventPlugin();
 store.dispatch(fetchConfig()).then(() => {
