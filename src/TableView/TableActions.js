@@ -223,6 +223,18 @@ export function updateData(id, data) {
   };
 }
 
+function deleteSuccess() {
+  return dispatch => {
+    dispatch(fetchData());
+    dispatch({type: DELETE_SUCCESS});
+  };
+}
+function deleteError() {
+  return dispatch => {
+    dispatch({type: DELETE_FAILURE});
+  };
+}
+
 export function deleteData(url, id) {
   return (dispatch, getState) => {
     const state = getState();
@@ -246,18 +258,6 @@ export function deleteData(url, id) {
     }).catch(error => {
       dispatch(deleteError(error.response));
     });
-  };
-}
-
-function deleteSuccess() {
-  return dispatch => {
-    dispatch(fetchData());
-    dispatch({type: DELETE_SUCCESS});
-  };
-}
-function deleteError() {
-  return dispatch => {
-    dispatch({type: DELETE_FAILURE});
   };
 }
 
