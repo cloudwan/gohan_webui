@@ -5,7 +5,7 @@ import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import SelectTenant from './components/SelectTenant';
 import Alert from '../components/Alert';
-import LoginBp from './components/LoginBp';
+import Login from './components/Login';
 
 const style = {
   minWidth: 250,
@@ -58,7 +58,7 @@ class Auth extends Component {
         {error && <Alert message={error} dismissClick={this.handleDismissClick}/> }
         {(() => {
           if (this.props.tokenId === undefined) {
-            return (<LoginBp onLoginSubmit={this.handleLoginSubmit}/>);
+            return (<Login onLoginSubmit={this.handleLoginSubmit}/>);
           } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
             return (<SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}/>);
           }
