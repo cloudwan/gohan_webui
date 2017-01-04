@@ -12,7 +12,7 @@ const style = {
   maxWidth: 450,
   padding: 20,
   margin: 'auto',
-  textAlign: 'center',
+  textAlign: 'left',
   display: 'block',
 };
 

@@ -1,6 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import {Button} from '@blueprintjs/core';
 
+const inputStyle = {
+  width: '100%'
+};
+
+const submitStyle = {
+  width: '100%',
+  textTransform: 'uppercase'
+};
+
 export default class LoginBp extends Component {
   handleLoginSubmit = event => {
     if (event) {
@@ -22,6 +31,7 @@ export default class LoginBp extends Component {
           User id
           <input className="pt-input" type="text"
             ref={c => {this.userId = c;}} placeholder="Gohan user id"
+            style={inputStyle}
           />
         </label>
 
@@ -29,9 +39,13 @@ export default class LoginBp extends Component {
           Password
           <input className="pt-input" type="password"
             ref={c => {this.userPass = c;}} placeholder="Password field"
+            style={inputStyle}
           />
         </label>
-        <Button type="submit">Login</Button>
+        <Button type="submit" className="pt-intent-primary"
+          style={submitStyle}>
+          Login
+        </Button>
       </form>
     );
   }
