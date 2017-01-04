@@ -1,11 +1,15 @@
-const port = 8080;
-const hostname = 'localhost';
-var gitSync = require('git-rev-sync');
-var process = require('process');
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var CopyWebpackPlugin = require('copy-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+const path = require('path');
+const gitSync = require('git-rev-sync');
+const process = require('process');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const devServerPort = 8080;
+const devServerHostname = 'localhost';
+const sourcePath = path.join(__dirname, '/src');
+const outputPath = path.join(__dirname, '/dist');
 
 function version() {
   return {
@@ -22,65 +26,108 @@ module.exports = {
     './src/index'
   ],
   output: {
-    path: __dirname + '/dist',
+    path: outputPath,
     filename: 'bundle.[hash].js',
     sourceMapFilename: '[file].map'
   },
-  resolve: {
-    extensions: ['', '.js', '.jsx']
-  },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js(x?)$/,
         exclude: /node_modules/,
         include: __dirname,
-        loader: 'babel-loader'
+        use: 'babel-loader'
       },
       {
         test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap')
+        exclude: /node_modules/,
+        loader: ExtractTextPlugin.extract({
+          loader: [
+            {
+              loader: 'css-loader',
+              query: {
+                sourceMap: true
+              }
+            }
+          ]
+        })
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap!sass?sourceMap')
+        loader: ExtractTextPlugin.extract({
+          loader: [
+            {
+              loader: 'css-loader',
+            },
+            {
+              loader: 'sass-loader',
+            }
+          ]
+        })
       },
       {
-        test: /\.less$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader?sourceMap!less?sourceMap')
-      },
-      {
-        test: /\.(woff|svg|ttf|eot)([\?]?.*)$/,
-        loader: 'file-loader?name=[name].[ext]'
-      },
-      {
-        test: /\.json$/,
-        loader: 'json-loader'
+        test: /\.(woff|woff2|svg|ttf|eot)([\?]?.*)$/,
+        use: {
+          loader: 'file-loader',
+          query: {
+            name: '[name].[ext]'
+          }
+        }
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/i,
-        loaders: [
+        use: [
           'file?hash=sha512&digest=hex&name=[hash].[ext]',
           'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
       }
     ]
   },
+  resolve: {
+    extensions: ['.js', '.jsx'],
+    modules: [
+      path.resolve(__dirname, 'node_modules'),
+      sourcePath
+    ]
+  },
   plugins: [
-    new ExtractTextPlugin('styles.css'),
+    new ExtractTextPlugin({
+      filename: 'bundle.[contenthash].css',
+      allChunks: true
+    }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       inject: 'body'
     }),
     new CopyWebpackPlugin([
-      { from: 'src/config.json', to: '/config.json' }
+      {
+        from: 'src/config.json',
+        to: 'config.json'
+      }
     ]),
     new webpack.DefinePlugin({
-      VERSION: JSON.stringify(version())
+      VERSION: {
+        gohanWebUI: JSON.stringify(version())
+      }
     })
   ],
+  performance: {
+    hints: false
+  },
   devServer: {
-    host: hostname,
-    port: port
+    host: devServerHostname,
+    port: devServerPort,
+    hot: true,
+    stats: {
+      assets: true,
+      children: false,
+      chunks: false,
+      hash: false,
+      modules: false,
+      publicPath: false,
+      timings: true,
+      version: true,
+      warnings: true
+    },
   }
 };
