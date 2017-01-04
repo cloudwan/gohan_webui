@@ -1,12 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {Paper} from 'material-ui';
 
 import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
-import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
 import Alert from '../components/Alert';
+import LoginBp from './components/LoginBp';
 
 const style = {
   minWidth: 250,
@@ -41,6 +40,7 @@ class Auth extends Component {
     this.props.resetErrorMessage();
     this.props.selectTenant(...params);
   };
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined) {
       if (this.props.onLoginSuccess) {
@@ -54,17 +54,18 @@ class Auth extends Component {
     let error = errorMessage ? errorMessage : '';
 
     return (
-      <Paper style={style} zDepth={2}>
+      <div className="pt-card pt-elevation-3" style={style}>
         {error && <Alert message={error} dismissClick={this.handleDismissClick}/> }
         {(() => {
           if (this.props.tokenId === undefined) {
-            return (<Login onLoginSubmit={this.handleLoginSubmit}/>);
+            return (<LoginBp onLoginSubmit={this.handleLoginSubmit}/>);
           } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
-            return (<SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants} />);
+            return (<SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}/>);
           }
           return null;
         })()}
-      </Paper>
+
+      </div>
     );
   }
 }
