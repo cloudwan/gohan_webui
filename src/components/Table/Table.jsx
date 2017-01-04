@@ -9,6 +9,7 @@ import TablePaginationComponent from './TablePaginationComponent';
 import TableToolbarComponent from './TableToolbarComponent';
 import TableHeaderComponent from './TableHeaderComponent.jsx';
 import TableRowComponent from './TableRowComponent.jsx';
+import Breadcrumb from '../Breadcrumb';
 
 const detailStyle = {
   padding: 15
@@ -29,9 +30,9 @@ class TableComponent extends Component {
 
   render() {
     const {schema, singular} = this.props.schema;
-
     return (
       <Paper style={detailStyle}>
+        <Breadcrumb breadcrumbs={[singular]}/>
         <TableToolbarComponent handleOpenModal={this.props.openModal} singular={singular}
           options={schema.propertiesOrder} properties={schema.properties}
           filterData={this.props.filterData} filterProperties={this.props.visibleColumns}
