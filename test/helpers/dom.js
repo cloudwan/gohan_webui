@@ -24,5 +24,11 @@ function propagateToGlobal(window) {
 
     global[key] = window[key];
   }
+  for (let key in window._core) {
+    if (!window.hasOwnProperty(key)) continue;
+    if (key in global) continue;
+
+    global[key] = window[key];
+  }
   window.sessionStorage = global.sessionStorage;
 }
