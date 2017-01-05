@@ -1,20 +1,12 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Paper} from 'material-ui';
-
-const detailStyle = {
-  padding: 15
-};
 
 class Sample extends Component {
-  componentWillUnmount() {
-  }
-
   render() {
     return (
-      <Paper style={detailStyle}>
-        test
-      </Paper>
+      <div className="pt-card pt-elevation-3 detail">
+        <h2>Sample Gohan webUI Component.</h2>
+      </div>
     );
   }
 }
