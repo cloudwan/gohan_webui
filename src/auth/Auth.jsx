@@ -7,15 +7,6 @@ import Alert from '../components/Alert';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
 
-const style = {
-  minWidth: 250,
-  maxWidth: 450,
-  padding: 20,
-  margin: 'auto',
-  textAlign: 'left',
-  display: 'block',
-};
-
 class Auth extends Component {
   constructor(props) {
     super(props);
@@ -54,7 +45,7 @@ class Auth extends Component {
     let error = errorMessage ? errorMessage : '';
 
     return (
-      <div className="pt-card pt-elevation-3" style={style}>
+      <div className="pt-card pt-elevation-3 auth-card">
         {error && <Alert message={error} dismissClick={this.handleDismissClick}/> }
         {(() => {
           if (this.props.tokenId === undefined) {

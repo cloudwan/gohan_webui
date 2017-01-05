@@ -40,3 +40,25 @@ body {
   }
 }
 
+/*
+ * Auth component
+ */
+
+.auth-input {
+  width: 100%;
+}
+
+.auth-submit {
+  width: 100%;
+  text-transform: uppercase;
+}
+
+.auth-card {
+  min-width: 250px;
+  max-width: 450px;
+  padding: 20px;
+  margin: auto;
+  text-align: left;
+  display: block;
+}
+
