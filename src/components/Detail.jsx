@@ -1,24 +1,12 @@
 import React, {Component, PropTypes} from 'react';
-import {Paper} from 'material-ui';
-
-const detailStyle = {
-  padding: 15
-};
 
 export default class Detail extends Component {
-
-  componentWillUnmount() {
-  }
-
   render() {
     const {schema} = this.props.schema;
     const {data} = this.props;
-    const titleStyle = {
-      fontWeight: 'bold'
-    };
 
     return (
-      <Paper style={detailStyle}>
+      <div className="pt-card pt-elevation-3 detail">
         {schema.propertiesOrder.map((key, index) => {
           const property = schema.properties[key];
           const propertyValue = data[key];
@@ -29,12 +17,12 @@ export default class Detail extends Component {
 
           return (
             <p key={index}>
-              <span style={titleStyle}>{property.title}: </span>
+              <span className="property-title">{property.title}: </span>
               <span>{typeof propertyValue === 'object' ? JSON.stringify(propertyValue) : propertyValue}</span>
             </p>
           );
         })}
-      </Paper>
+      </div>
     );
   }
 }

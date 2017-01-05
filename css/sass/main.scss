@@ -21,22 +21,15 @@ $brand-danger:          #FF0039 !default;
 /*
  * Base structure
  */
-
-/* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  //padding-top: 50px;
   margin: 0;
   background-color: #edecec;
 }
 
-.pagination {
-  user-select: none;
-  cursor: pointer;
-}
-
-.table {
-  .row {
-
+.detail {
+  span.property-title {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.9);
   }
 }
 
