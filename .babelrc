@@ -21,6 +21,18 @@
       "presets": [
         "react-hmre"
       ]
+    },
+    "test": {
+      "presets": [
+        "es2015"
+      ],
+      "plugins": [
+        "transform-object-rest-spread",
+        "transform-class-properties",
+        "transform-function-bind",
+        "syntax-async-functions",
+        "transform-regenerator"
+      ]
     }
   }
 }
