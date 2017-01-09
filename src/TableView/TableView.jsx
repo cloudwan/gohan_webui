@@ -122,8 +122,8 @@ class TableView extends Component {
   showModal = () => {
     if (this.state.openModal) {
       return (
-        <Dialog open={this.state.openModal} action={this.state.actionModal}
-          data={this.state.dialogData} onRequestClose={this.handleCloseModal}
+        <Dialog isOpen={this.state.openModal} action={this.state.actionModal}
+          data={this.state.dialogData} onClose={this.handleCloseModal}
           onSubmit={this.handleSubmit} schema={this.state.activeSchema}
         />
       );
