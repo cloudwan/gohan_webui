@@ -45,7 +45,12 @@ class Auth extends Component {
     const {errorMessage} = nextProps;
 
     if (errorMessage) {
-      this.toaster.show({message: errorMessage, className: 'pt-intent-danger', timeout: 0});
+      this.toaster.show({
+        message: errorMessage,
+        className: 'pt-intent-danger',
+        timeout: 0,
+        onDismiss: this.handleDismissClick
+      });
     }
   }
 
