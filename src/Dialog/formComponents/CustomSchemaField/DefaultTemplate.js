@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react';
 
+import Label from './Label';
+
 function DefaultTemplate(props) {
   const {
     id,          // eslint-disable-line
@@ -18,8 +20,11 @@ function DefaultTemplate(props) {
   }
   return (
     <div>
+      {displayLabel ? <Label label={label} required={required}
+        id={id}
+      /> : null}
+      {displayLabel && description ? description : null}
       {children}
-      {description}
       {errors}
       {help}
     </div>

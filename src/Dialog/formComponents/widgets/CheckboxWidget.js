@@ -1,30 +1,28 @@
 import React, {PropTypes} from 'react';
 
-
 function CheckboxWidget({
   schema,  // eslint-disable-line
   id,
   value,
   required,
-  disabled,
+  disabled,// eslint-disable-line
   label,
   autofocus,
   onChange,
 }) {
   return (
-    <div className={`checkbox ${disabled ? 'disabled' : ''}`}>
-      <label>
-        <input type='checkbox'
-          id={id}
-          checked={typeof value === 'undefined' ? false : value}
-          required={required}
-          disabled={disabled}
-          autoFocus={autofocus}
-          onChange={event => onChange(event.target.checked)}
-        />
-        <strong>{label}</strong>
-      </label>
-    </div>
+    <label className={'pt-control pt-checkbox'}>
+      <input type='checkbox'
+        id={id}
+        checked={typeof value === 'undefined' ? false : value}
+        required={required}
+        disabled={disabled}
+        autoFocus={autofocus}
+        onChange={event => onChange(event.target.checked)}
+      />
+      <span className="pt-control-indicator"/>
+      {label}
+    </label>
   );
 }
 
