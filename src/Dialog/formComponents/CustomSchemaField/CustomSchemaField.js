@@ -14,7 +14,6 @@ import StringField from '../fields/StringField';
 import UnsupportedField from '../fields/UnsupportedField';
 import DescriptionField from '../fields/DescriptionField';
 
-// import Label from './Label';
 import Help from './Help';
 import ErrorList from './ErrorList';
 import DefaultTemplate from './DefaultTemplate';
