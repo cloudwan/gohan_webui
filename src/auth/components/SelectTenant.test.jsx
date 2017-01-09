@@ -3,7 +3,7 @@ import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow} from 'enzyme';
-import {SelectField, RaisedButton} from 'material-ui';
+import {Button} from '@blueprintjs/core';
 
 import SelectTenant from './SelectTenant';
 
@@ -20,12 +20,12 @@ describe('< SelectTenant />', function () {
   it('should render 1 select', () => {
     const wrapper = shallow(<SelectTenant tenants={['sample1', 'sample2']} onTenantSubmit={() => {}}/>);
 
-    wrapper.find(SelectField).should.have.length(1);
+    wrapper.find('select').should.have.length(1);
   });
 
   it('should render 1 button', () => {
     const wrapper = shallow(<SelectTenant tenants={['sample1', 'sample2']} onTenantSubmit={() => {}}/>);
-    wrapper.find(RaisedButton).should.have.length(1);
+    wrapper.find(Button).should.have.length(1);
   });
 });
 

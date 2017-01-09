@@ -5,7 +5,6 @@ import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
-
 import {Toaster, Position} from '@blueprintjs/core';
 
 class Auth extends Component {
