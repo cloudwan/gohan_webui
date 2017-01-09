@@ -1,3 +1,3 @@
-import TableComponent from './Table.jsx';
+import Table from './Table';
 
-export default TableComponent;
+export default Table;

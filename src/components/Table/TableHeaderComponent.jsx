@@ -1,15 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import {
-  TableRow,
-  TableHeaderColumn
-} from 'material-ui';
 
-const columnStyle = {
-  wordWrap: 'break-word',
-  whiteSpace: 'normal'
-};
-
-class TableHeaderComponent extends Component {
+class TableHeader extends Component {
   buildTableHeaders = () => {
     const {properties, visibleColumns} = this.props;
 
@@ -17,31 +8,30 @@ class TableHeaderComponent extends Component {
       const property = properties[item];
 
       return (
-        <TableHeaderColumn key={index} tooltip={property.description}
-          style={columnStyle}>
+        <th key={index}>
           {property.title}
-        </TableHeaderColumn>
+        </th>
       );
     });
   };
 
   render() {
     return (
-      <TableRow selectable={false}>
+      <tr>
         {this.buildTableHeaders()}
-        <TableHeaderColumn >{'Options'}</TableHeaderColumn>
-      </TableRow>
+        <th >{'Options'}</th>
+      </tr>
     );
   }
 }
 
-TableHeaderComponent.contextTypes = {
+TableHeader.contextTypes = {
   router: PropTypes.object
 };
 
-TableHeaderComponent.propTypes = {
+TableHeader.propTypes = {
   visibleColumns: PropTypes.array.isRequired,
   properties: PropTypes.object.isRequired
 };
 
-export default TableHeaderComponent;
+export default TableHeader;

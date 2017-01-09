@@ -1,21 +1,11 @@
 import React, {Component, PropTypes} from 'react';
-import {
-  Paper,
-  Table,
-  TableHeader,
-  TableBody
-} from 'material-ui';
 import TablePaginationComponent from './TablePaginationComponent';
 import TableToolbarComponent from './TableToolbarComponent';
 import TableHeaderComponent from './TableHeaderComponent.jsx';
 import TableRowComponent from './TableRowComponent.jsx';
 import Breadcrumb from '../Breadcrumb';
 
-const detailStyle = {
-  padding: 15
-};
-
-class TableComponent extends Component {
+class Table extends Component {
   buildTableBody = () => {
     return this.props.data.map((item, index) => {
       return (
@@ -31,35 +21,35 @@ class TableComponent extends Component {
   render() {
     const {schema, singular} = this.props.schema;
     return (
-      <Paper style={detailStyle}>
+      <div className={'pt-card pt-elevation-3'}>
         <Breadcrumb breadcrumbs={[singular]}/>
         <TableToolbarComponent handleOpenModal={this.props.openModal} singular={singular}
           options={schema.propertiesOrder} properties={schema.properties}
           filterData={this.props.filterData} filterProperties={this.props.visibleColumns}
         />
 
-        <Table fixedHeader={true}>
-          <TableHeader>
+        <table className={'table pt-table pt-interactive'}>
+          <thead>
             <TableHeaderComponent visibleColumns={this.props.visibleColumns} properties={schema.properties}/>
-          </TableHeader>
-          <TableBody displayRowCheckbox={false} showRowHover={true}>
+          </thead>
+          <tbody>
             {this.buildTableBody()}
-          </TableBody>
-        </Table>
+          </tbody>
+        </table>
 
         <TablePaginationComponent activePage={this.props.activePage} pageCount={this.props.pageCount}
           handlePageClick={this.props.handleChangePage}
         />
-      </Paper>
+      </div>
     );
   }
 }
 
-TableComponent.contextTypes = {
+Table.contextTypes = {
   router: PropTypes.object
 };
 
-TableComponent.propTypes = {
+Table.propTypes = {
   schema: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,
   visibleColumns: PropTypes.array.isRequired,
@@ -72,4 +62,4 @@ TableComponent.propTypes = {
   handleChangePage: PropTypes.func.isRequired
 };
 
-export default TableComponent;
+export default Table;

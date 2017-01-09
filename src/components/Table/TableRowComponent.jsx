@@ -1,24 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
-import EditIcon from 'material-ui/svg-icons/editor/mode-edit';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 
-import {
-  TableRow,
-  TableRowColumn,
-  IconButton
-} from 'material-ui';
+import {Tooltip} from '@blueprintjs/core';
 
-const columnStyle = {
-  wordWrap: 'break-word',
-  whiteSpace: 'normal'
-};
-
-const iconStyle = {
-  color: 'rgba(0, 0, 0, 0.55)'
-};
-
-class TableRowComponent extends Component {
+class TableRow extends Component {
   handleRemoveClick = () => {
     const {rowItem} = this.props;
 
@@ -40,23 +25,23 @@ class TableRowComponent extends Component {
 
       if (typeof data === 'object') {
         return (
-          <TableRowColumn key={index} style={columnStyle}>
+          <td key={index}>
             {data === null ? '' : JSON.stringify(data)}
-          </TableRowColumn>
+          </td>
         );
       }
       if (item === 'name') {
         return (
-          <TableRowColumn key={index} style={columnStyle}>
+          <td key={index}>
             <Link to={'/' + singular + '/' + rowItem.id}>{data}</Link>
-          </TableRowColumn>
+          </td>
         );
       }
 
       return (
-        <TableRowColumn key={index} style={columnStyle}>
+        <td key={index}>
           {data}
-        </TableRowColumn>
+        </td>
       );
     });
   };
@@ -64,28 +49,28 @@ class TableRowComponent extends Component {
 
   render() {
     return (
-      <TableRow className="row">
+      <tr className="row">
         {this.buildTableRow()}
-        <TableRowColumn style={{padding: 0}}>
-          <IconButton tooltip="edit" tooltipPosition="bottom-right"
-            iconStyle={iconStyle} onClick={this.handleEditClick}>
-            <EditIcon />
-          </IconButton>
-          <IconButton tooltip="delete" tooltipPosition="bottom-right"
-            iconStyle={iconStyle} onClick={this.handleRemoveClick}>
-            <DeleteIcon />
-          </IconButton>
-        </TableRowColumn>
-      </TableRow>
+        <td>
+          <Tooltip content='Edit' hoverOpenDelay={50}>
+            <span className="pt-icon-standard pt-icon-edit" onClick={this.handleEditClick}/>
+          </Tooltip>
+          <Tooltip content='Delete' hoverOpenDelay={50}>
+            <span className="pt-icon-standard pt-icon-trash" onClick={this.handleRemoveClick}
+              style={{marginLeft: '15px'}}
+            />
+          </Tooltip>
+        </td>
+      </tr>
     );
   }
 }
 
-TableRowComponent.contextTypes = {
+TableRow.contextTypes = {
   router: PropTypes.object
 };
 
-TableRowComponent.propTypes = {
+TableRow.propTypes = {
   schema: PropTypes.object.isRequired,
   visibleColumns: PropTypes.array.isRequired,
   rowItem: PropTypes.object.isRequired,
@@ -93,4 +78,4 @@ TableRowComponent.propTypes = {
   onEditClick: PropTypes.func
 };
 
-export default TableRowComponent;
+export default TableRow;

@@ -1,12 +1,7 @@
 import React, {Component} from 'react';
-import {Toolbar, ToolbarGroup, RaisedButton, SelectField, TextField, MenuItem} from 'material-ui';
+import {Button} from '@blueprintjs/core';
 
-const raisedButtonStyle = {
-  margin: '8px 8px 8px 8px',
-  marginRight: 'auto'
-};
-
-class TableToolbarComponent extends Component {
+class TableToolbar extends Component {
   constructor(props) {
     super(props);
 
@@ -32,13 +27,13 @@ class TableToolbarComponent extends Component {
     this.props.filterData(filters);
   };
 
-  handleMenuItemSelected = (event, index, filterProperty) => {
+  handleMenuItemSelected = event => {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
 
-    this.setState({filterProperty}, this.filterData);
+    this.setState({filterProperty: event.target.value}, this.filterData);
   };
 
   handleSearchChange = event => {
@@ -53,7 +48,7 @@ class TableToolbarComponent extends Component {
 
     this.filterTimeoutId = setTimeout(() => {
       this.filterData();
-    }, 2000);
+    }, 500);
 
   };
 
@@ -61,34 +56,38 @@ class TableToolbarComponent extends Component {
     const {filterProperties, properties} = this.props;
 
     return filterProperties.map((item, index) => {
-      return <MenuItem key={index} value={item}
-        primaryText={properties[item].title}
-      />;
+      return <option key={index} value={item}>{properties[item].title}</option>;
     });
   };
 
   render() {
     return (
-      <Toolbar>
-        <ToolbarGroup>
-          <RaisedButton onClick={this.props.handleOpenModal}
-            label={'Add new ' + this.props.singular}
-            style={raisedButtonStyle}
-            primary={true}
+      <div>
+        <div className="pt-navbar-group pt-align-left">
+          <Button className="pt-intent-primary" iconName="add"
+            text={'New ' + this.props.singular}
+            onClick={this.props.handleOpenModal}
           />
-        </ToolbarGroup>
-        <ToolbarGroup>
-          <SelectField floatingLabelText={'Filter by'} value={this.state.filterProperty}
-            onChange={this.handleMenuItemSelected}>
-            {this.buildSelectOptions()}
-          </SelectField>
-          <TextField floatingLabelText={'Search'} value={this.state.filterValue}
-            onChange={this.handleSearchChange}
-          />
-        </ToolbarGroup>
-      </Toolbar>
+        </div>
+        <div className="pt-navbar-group pt-align-right">
+          <div className="pt-control-group">
+            <div className="pt-select">
+              <select value={this.state.filterProperty}
+                onChange={this.handleMenuItemSelected}>
+                {this.buildSelectOptions()}
+              </select>
+            </div>
+            <div className="pt-input-group">
+              <span className="pt-icon pt-icon-search"/>
+              <input type="text" className="pt-input"
+                placeholder="Search" onChange={this.handleSearchChange}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 }
 
-export default TableToolbarComponent;
+export default TableToolbar;

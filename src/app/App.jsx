@@ -1,8 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {AppBar, IconButton, FontIcon} from 'material-ui';
+
 import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
+
+import Navbar from './components/Navbar';
+
 import SidebarMenu from './components/SidebarMenu';
 import UserMenu from './components/UserMenu';
 import {logout, selectTenant} from '../auth/AuthActions';
@@ -12,11 +15,6 @@ const contentStyle = {
   paddingTop: 64,
   minHeight: 400,
   paddingRight: 14
-};
-
-const appBar = {
-  position: 'fixed',
-  top: 0
 };
 
 class App extends Component {
@@ -60,10 +58,6 @@ class App extends Component {
     this.props.resetErrorMessage();
   };
 
-  handleRightDrawerRequestChange = open => {
-    this.setState({openUserMenu: open});
-  };
-
   handleSidebarMenuRequestChange = open => {
     this.setState({openSidebarMenu: open, contentPaddingLeft: 14});
   };
@@ -76,27 +70,21 @@ class App extends Component {
     this.props.selectTenant(tenantId);
   };
 
+  handleRequestShowMenu = () => {
+    this.setState({openSidebarMenu: true, contentPaddingLeft: 270});
+  };
   render() {
     const {children} = this.props;
     const {user, tenant, tenants} = this.props.authReducer;
 
     return (
       <div>
+        <Navbar userName={user.username} tenants={tenants}
+          activeTenant={tenant.name} onRequestLogout={this.handleRequestLogout}
+          onRequestChangeTenant={this.handleRequestChangeTenant} onRequestShowMenu={this.handleRequestShowMenu}
+        />
         <SidebarMenu open={this.state.openSidebarMenu} schemaReducer={this.props.schemaReducer}
           onRequestChange={this.handleSidebarMenuRequestChange}
-        />
-        <UserMenu open={this.state.openUserMenu} onRequestChange={this.handleRightDrawerRequestChange}
-          user={user} tenant={tenant}
-          tenants={tenants} onRequestLogout={this.handleRequestLogout}
-          onRequestChangeTenant={this.handleRequestChangeTenant}
-        />
-        <AppBar style={appBar} title="Gohan webui"
-          onLeftIconButtonTouchTap={() => this.setState({openSidebarMenu: true, contentPaddingLeft: 270})}
-          iconElementRight={
-            <IconButton onTouchTap={() => this.setState({openUserMenu: true})}>
-              <FontIcon className="material-icons">account_circle</FontIcon>
-            </IconButton>
-          }
         />
         <div style={{paddingLeft: this.state.contentPaddingLeft, ...contentStyle}}>
           {children}
