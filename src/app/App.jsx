@@ -3,11 +3,8 @@ import {connect} from 'react-redux';
 
 import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
-
 import Navbar from './components/Navbar';
-
 import SidebarMenu from './components/SidebarMenu';
-import UserMenu from './components/UserMenu';
 import {logout, selectTenant} from '../auth/AuthActions';
 import {Toaster, Position} from '@blueprintjs/core';
 
