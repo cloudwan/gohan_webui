@@ -5,8 +5,8 @@ import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
 import SidebarMenu from './components/SidebarMenu';
 import UserMenu from './components/UserMenu';
-import Alert from '../components/Alert';
 import {logout, selectTenant} from '../auth/AuthActions';
+import {Toaster, Position} from '@blueprintjs/core';
 
 const contentStyle = {
   paddingTop: 64,
@@ -34,6 +34,25 @@ class App extends Component {
     this.props.fetchSchema();
   }
 
+  componentDidMount() {
+    this.toaster = Toaster.create({
+      position: Position.TOP
+    });
+  }
+
+  componentWillUpdate(nextProps) {
+    const {errorMessage} = nextProps;
+
+    if (errorMessage) {
+      this.toaster.show({
+        message: errorMessage,
+        className: 'pt-intent-danger',
+        timeout: 0,
+        onDismiss: this.handleDismissClick
+      });
+    }
+  }
+
   handleDismissClick = event => {
     if (event) {
       event.preventDefault();
@@ -57,25 +76,12 @@ class App extends Component {
     this.props.selectTenant(tenantId);
   };
 
-  renderErrorMessage() {
-    const {errorMessage} = this.props;
-
-    if (!errorMessage) {
-      return null;
-    }
-
-    return (
-      <Alert message={errorMessage} dismissClick={this.handleDismissClick} />
-    );
-  }
-
   render() {
     const {children} = this.props;
     const {user, tenant, tenants} = this.props.authReducer;
 
     return (
       <div>
-        {this.renderErrorMessage()}
         <SidebarMenu open={this.state.openSidebarMenu} schemaReducer={this.props.schemaReducer}
           onRequestChange={this.handleSidebarMenuRequestChange}
         />
