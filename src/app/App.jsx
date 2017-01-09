@@ -7,8 +7,9 @@ import {fetchSchema} from './../schema/SchemaActions';
 import Navbar from './components/Navbar';
 
 import SidebarMenu from './components/SidebarMenu';
-import Alert from '../components/Alert';
+import UserMenu from './components/UserMenu';
 import {logout, selectTenant} from '../auth/AuthActions';
+import {Toaster, Position} from '@blueprintjs/core';
 
 const contentStyle = {
   paddingTop: 64,
@@ -29,6 +30,25 @@ class App extends Component {
 
   componentWillMount() {
     this.props.fetchSchema();
+  }
+
+  componentDidMount() {
+    this.toaster = Toaster.create({
+      position: Position.TOP
+    });
+  }
+
+  componentWillUpdate(nextProps) {
+    const {errorMessage} = nextProps;
+
+    if (errorMessage) {
+      this.toaster.show({
+        message: errorMessage,
+        className: 'pt-intent-danger',
+        timeout: 0,
+        onDismiss: this.handleDismissClick
+      });
+    }
   }
 
   handleDismissClick = event => {
@@ -53,26 +73,12 @@ class App extends Component {
   handleRequestShowMenu = () => {
     this.setState({openSidebarMenu: true, contentPaddingLeft: 270});
   };
-
-  renderErrorMessage() {
-    const {errorMessage} = this.props;
-
-    if (!errorMessage) {
-      return null;
-    }
-
-    return (
-      <Alert message={errorMessage} dismissClick={this.handleDismissClick} />
-    );
-  }
-
   render() {
     const {children} = this.props;
     const {user, tenant, tenants} = this.props.authReducer;
 
     return (
       <div>
-        {this.renderErrorMessage()}
         <Navbar userName={user.username} tenants={tenants}
           activeTenant={tenant.name} onRequestLogout={this.handleRequestLogout}
           onRequestChangeTenant={this.handleRequestChangeTenant} onRequestShowMenu={this.handleRequestShowMenu}
