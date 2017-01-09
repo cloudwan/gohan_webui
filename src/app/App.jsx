@@ -9,9 +9,8 @@ import {logout, selectTenant} from '../auth/AuthActions';
 import {Toaster, Position} from '@blueprintjs/core';
 
 const contentStyle = {
-  paddingTop: 64,
-  minHeight: 400,
-  paddingRight: 14
+  padding: '64px 14px 14px 270px',
+  minHeight: 400
 };
 
 class App extends Component {
@@ -21,7 +20,7 @@ class App extends Component {
     this.state = {
       openUserMenu: false,
       openSidebarMenu: false,
-      contentPaddingLeft: 14,
+      contentPaddingLeft: 14
     };
   }
 

@@ -33,12 +33,20 @@ body {
 }
 
 .detail {
-  span.property-title {
+  >span.property-title {
     font-weight: bold;
     color: rgba(0, 0, 0, 0.9);
   }
 }
 
+.sidebar {
+  position: fixed;
+  top: 50px;
+  height: 100%;
+  width: 260px;
+  float: left;
+  overflow-x: hidden;
+}
 /*
  * Auth component
  */

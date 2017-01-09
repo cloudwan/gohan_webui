@@ -1,17 +1,7 @@
 import React, {Component, PropTypes} from 'react';
-import {AppBar, Drawer, Menu} from 'material-ui';
-import SidebarMenuItem from '../components/SidebarMenuItem';
-
-const drawerStyles = {
-  width: 260,
-  float: 'left'
-};
+import {Menu, MenuItem} from '@blueprintjs/core';
 
 export default class SidebarMenu extends Component {
-  onLeftIconButtonTouchTap = () => {
-    this.props.onRequestChange(false);
-  };
-
   render() {
     const sidebarMenuItems = [];
 
@@ -19,8 +9,11 @@ export default class SidebarMenu extends Component {
       this.props.schemaReducer.data.forEach((item, index) => {
         if (!item.parent && item.metadata.type !== 'metaschema') {
           sidebarMenuItems.push(
-            <SidebarMenuItem item={item}
+            <MenuItem item={item}
               key={index}
+              text={item.title}
+              href={'#/' + item.plural}
+              className="item"
             />
           );
         }
@@ -28,13 +21,9 @@ export default class SidebarMenu extends Component {
     }
 
     return (
-      <Drawer style={drawerStyles} open={this.props.open}
-        containerStyle={{overflowX: 'hidden'}}>
-        <AppBar title="Gohan webui" onLeftIconButtonTouchTap={this.onLeftIconButtonTouchTap} />
-        <Menu>
-          {sidebarMenuItems}
-        </Menu>
-      </Drawer>
+      <Menu className="pt-menu pt-large pt-elevation-2 pt-fixed-top sidebar">
+        {sidebarMenuItems}
+      </Menu>
     );
   }
 }

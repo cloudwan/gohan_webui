@@ -29,7 +29,7 @@ export default class Navbar extends Component {
     );
 
     return (
-      <nav className="pt-navbar">
+      <nav className="pt-navbar pt-fixed-top">
         <div className="pt-navbar-group pt-align-left">
           <Button className="pt-button pt-minimal pt-icon-menu-closed"
             onClick={this.handleShowMenuClick}>
