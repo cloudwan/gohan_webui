@@ -1,15 +1,10 @@
 import React, {Component} from 'react';
-import {Dialog, RefreshIndicator, FlatButton} from 'material-ui';
+import {Dialog, Button, ProgressBar, Intent} from '@blueprintjs/core';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
 
 import CustomSchemaField from './formComponents/CustomSchemaField/CustomSchemaField';
 import {fetchRelationFields, clearData} from './DialogActions';
-
-const loadingIndicatorStyle = {
-  margin: 'auto',
-  position: 'relative'
-};
 
 class GeneratedDialog extends Component {
   componentDidMount() {
@@ -22,7 +17,7 @@ class GeneratedDialog extends Component {
 
   handleSubmit = ({formData}) => {
     this.props.onSubmit(formData, this.props.data.id);
-    this.props.onRequestClose(); // Add check success
+    this.props.onClose(); // Add check success
   };
 
   render() {
@@ -30,46 +25,49 @@ class GeneratedDialog extends Component {
     const title = `${action[0].toUpperCase() + action.slice(1)} new ${schema.singular}`;
 
     const actions = [
-      <FlatButton key={0} label="Cancel"
-        primary={true} onTouchTap={this.props.onRequestClose}
+      <Button key={0} text="Cancel"
+        onClick={this.props.onClose}
       />,
-      <FlatButton key={1} label="Submit"
-        primary={true} onTouchTap={event => {
+      <Button key={1} text="Submit"
+        intent={Intent.PRIMARY} onClick={event => {
           this.form.onSubmit(event);
         }}
       />
     ];
-
     return (
       <Dialog title={title} actions={actions}
         autoScrollBodyContent={true}
         {...this.props}>
-        {(() => {
-          if (this.props.dialogReducer.isLoading) {
-            return (
-              <RefreshIndicator size={60} left={0}
-                top={0} status="loading"
-                style={loadingIndicatorStyle}
-              />
-            );
-          }
+        <div className="pt-dialog-body">
+          {(() => {
+            if (this.props.dialogReducer.isLoading) {
+              return (
+                <ProgressBar/>
+              );
+            }
 
-          return (
-            <div>
-              <Form ref={c => {this.form = c;}} schema={this.props.dialogReducer.schema}
-                fields={{SchemaField: CustomSchemaField}} formData={
-                  this.props.dialogReducer.schema.propertiesOrder.reduce(
-                    (result, item) => {
-                      result[item] = this.props.data[item];
-                      return result;
-                    }, {}
-                  )}
-                uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder}} onSubmit={this.handleSubmit}>
-                <div/>
-              </Form>
-            </div>
-          );
-        })()}
+            return (
+              <div>
+                <Form ref={c => {this.form = c;}} schema={this.props.dialogReducer.schema}
+                  fields={{SchemaField: CustomSchemaField}} formData={
+                    this.props.dialogReducer.schema.propertiesOrder.reduce(
+                      (result, item) => {
+                        result[item] = this.props.data[item];
+                        return result;
+                      }, {}
+                    )}
+                  uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder}} onSubmit={this.handleSubmit}>
+                  <div/>
+                </Form>
+              </div>
+            );
+          })()}
+        </div>
+        <div className="pt-dialog-footer">
+          <div className="pt-dialog-footer-actions">
+            {actions}
+          </div>
+        </div>
       </Dialog>
     );
   }

@@ -1,15 +1,14 @@
 import React, {PropTypes} from 'react';
-import {TextField} from 'material-ui';
 
 function BaseInput(props) {
   // Note: since React 15.2.0 we can't forward unknown element attributes, so we
   // exclude the 'options' and 'schema' ones here.
   const {
-    label,
     value,
     placeholder,
-    required,
     onChange,
+    label,        // eslint-disable-line
+    required,     // eslint-disable-line
     readonly,     // eslint-disable-line
     autofocus,    // eslint-disable-line
     options,      // eslint-disable-line
@@ -19,9 +18,9 @@ function BaseInput(props) {
   } = props;
 
   return (
-    <TextField hintText={placeholder} defaultValue={value === undefined ? '' : value}
-      floatingLabelText={label + (required ? '*' : '')} onChange={event => onChange(event.target.value)}
-      fullWidth={true}
+    <input className="pt-input pt-fill" type="text"
+      placeholder={placeholder} dir="auto"
+      value={value === undefined ? '' : value} onChange={event => onChange(event.target.value)}
     />
   );
 }

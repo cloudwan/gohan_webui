@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react';
-import {SelectField, MenuItem} from 'material-ui';
 
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 
@@ -20,11 +19,11 @@ function processValue({type, items}, value) {
 
 function SelectWidget({
   schema,
-  label,
+  label,      // eslint-disable-line
   options,
-  value,
-  required,
-  disabled,
+  value,      // eslint-disable-line
+  required,   // eslint-disable-line
+  disabled,   // eslint-disable-line
   readonly,   // eslint-disable-line
   multiple,   // eslint-disable-line
   autofocus,  // eslint-disable-line
@@ -35,25 +34,25 @@ function SelectWidget({
   const items = enumOptions.map(({value, label}, i) => {
     if (value === null) {
       return (
-        <MenuItem key={i} value={value}
-          primaryText={''}
-        />
+        <option key={i} value={''}>
+          Choose an item...
+        </option>
       );
     }
     return (
-      <MenuItem key={i} value={value}
-        primaryText={label}
-      />
+      <option key={i} value={value}>
+        {label}
+      </option>
     );
   });
 
   return (
-    <SelectField floatingLabelText={label + (required ? '*' : '')} value={value}
-      disabled={disabled} onChange={(event, key, newValue) => {
-        onChange(processValue(schema, newValue));
-      }} fullWidth={true}>
-      {items}
-    </SelectField>
+    <div className="pt-select pt-fill">
+      <select disabled={disabled} onChange={(event) => onChange(processValue(schema, event.target.value))}
+        defaultValue={value}>
+        {items}
+      </select>
+    </div>
   );
 }
 
