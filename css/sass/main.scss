@@ -21,9 +21,15 @@ $brand-danger:          #FF0039 !default;
 /*
  * Base structure
  */
+
 body {
+  //padding-top: 50px;
   margin: 0;
   background-color: #edecec;
+}
+
+.table {
+  width: 100%;
 }
 
 .detail {
@@ -54,4 +60,3 @@ body {
   text-align: left;
   display: block;
 }
-
