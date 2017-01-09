@@ -14,7 +14,6 @@ export default class Login extends Component {
     this.props.onLoginSubmit(userId, pass);
   };
 
-
   render() {
     return (
       <form onSubmit={this.handleLoginSubmit}>

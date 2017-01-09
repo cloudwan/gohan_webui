@@ -3,9 +3,10 @@ import {connect} from 'react-redux';
 
 import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
-import Alert from '../components/Alert';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
+
+import {Toaster, Position} from '@blueprintjs/core';
 
 class Auth extends Component {
   constructor(props) {
@@ -40,13 +41,28 @@ class Auth extends Component {
     }
   }
 
-  render() {
-    const {errorMessage} = this.props;
-    let error = errorMessage ? errorMessage : '';
+  componentWillUpdate(nextProps) {
+    const {errorMessage} = nextProps;
 
+    if (errorMessage) {
+      this.toaster.show({
+        message: errorMessage,
+        className: 'pt-intent-danger',
+        timeout: 0,
+        onDismiss: this.handleDismissClick
+      });
+    }
+  }
+
+  componentDidMount() {
+    this.toaster = Toaster.create({
+      position: Position.TOP
+    });
+  }
+
+  render() {
     return (
       <div className="pt-card pt-elevation-3 auth-card">
-        {error && <Alert message={error} dismissClick={this.handleDismissClick}/> }
         {(() => {
           if (this.props.tokenId === undefined) {
             return (<Login onLoginSubmit={this.handleLoginSubmit}/>);
