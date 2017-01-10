@@ -10,7 +10,8 @@ import {
   deleteData,
   sortData,
   setOffset,
-  filterData
+  filterData,
+  deleteMultipleResources
 } from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Dialog from '../Dialog/Dialog';
@@ -45,7 +46,13 @@ class TableView extends Component {
       modalOpen: false,
       alertOpen: false,
       actionModal: 'create',
-      dialogData: {}
+      dialogData: {},
+      checkedRowsIds: [],
+      checkedAll: {
+        checked: false,
+        changedByRow: false
+      },
+      buttonDeleteSelectedDisabled: true
     };
 
     props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural, {
@@ -78,6 +85,15 @@ class TableView extends Component {
       this.props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
       this.props.fetchData();
     }
+
+    if (nextProps.tableReducer.deletedMultipleResources === true &&
+      nextProps.tableReducer.deletedMultipleResources !== this.props.tableReducer.deletedMultipleResources) {
+      this.setState({
+        checkedRowsIds: [],
+        buttonDeleteSelectedDisabled: true,
+        checkedAll: {checked: false, changedByRow: false}
+      });
+    }
   }
 
   componentWillUpdate(nextProps) {
@@ -91,6 +107,7 @@ class TableView extends Component {
         onDismiss: () => {}
       });
     }
+
   }
 
   componentWillUnmount() {
@@ -117,9 +134,14 @@ class TableView extends Component {
     });
 
     this.props.setOffset(newOffset);
+    this.setState({
+      checkedRowsIds: [],
+      buttonDeleteSelectedDisabled: true,
+      checkedAll: {checked: false, changedByRow: false}
+    });
   };
 
-  handleFilterData = (property) => {
+  handleFilterData = property => {
     this.context.router.replace({
       pathname: this.props.location.pathname,
       query: {
@@ -179,6 +201,67 @@ class TableView extends Component {
   handleEditItem = id => {
     this.setState({modalOpen: true, actionModal: 'update', dialogData: id});
   };
+
+  handleCheckAllChange = checkedAll => {
+    let {checkedRowsIds} = this.state;
+    const {data} = this.props.tableReducer;
+
+    if (checkedAll.checked === true && checkedAll.changedByRow === false) {
+      if (data.length > 0) {
+        data.forEach(item => {
+          const itemId = item.id;
+          if (checkedRowsIds.includes(itemId) === false) {
+            checkedRowsIds.push(itemId);
+          }
+        });
+      } else {
+        checkedAll.checked = false;
+      }
+    } else {
+      checkedRowsIds = [];
+      checkedAll.checked = false;
+    }
+
+    this.setState({checkedAll, checkedRowsIds, buttonDeleteSelectedDisabled: !checkedAll.checked});
+  };
+
+  handleRowCheckboxChange = id => {
+    let {checkedRowsIds, checkedAll} = this.state;
+    const idIndex = checkedRowsIds.indexOf(id);
+
+    if (idIndex > -1) {
+      checkedRowsIds.splice(idIndex, 1);
+      checkedAll = {
+        checked: false,
+        changedByRow: true
+      };
+    } else {
+      checkedRowsIds.push(id);
+    }
+
+    if (checkedRowsIds.length > 0) {
+      this.setState({buttonDeleteSelectedDisabled: false, checkedAll, checkedRowsIds});
+    } else {
+      this.setState({
+        buttonDeleteSelectedDisabled: true,
+        checkedAll: {
+          checked: false,
+          changedByRow: true
+        },
+        checkedRowsIds}
+      );
+    }
+
+  };
+
+  handleDeleteMultipleResources = () => {
+    const {checkedRowsIds} = this.state;
+
+    if (checkedRowsIds.length > 0) {
+      this.props.deleteMultipleResources(checkedRowsIds);
+    }
+  };
+
 
   showModal = () => {
     if (this.state.modalOpen) {
@@ -261,9 +344,11 @@ class TableView extends Component {
           handlePageChange={this.handlePageChange} createData={this.props.createData}
           removeData={this.handleDeleteData} updateData={this.props.updateData}
           filterData={this.handleFilterData} visibleColumns={headers}
-          sortData={this.handleSortData} openModal={this.handleOpenModal}
-          closeModal={this.handleCloseModal} editData={this.handleEditItem}
-          openAlert={this.handleOpenAlert}
+          openModal={this.handleOpenModal} closeModal={this.handleCloseModal}
+          editData={this.handleEditItem} rowCheckboxChange={this.handleRowCheckboxChange}
+          sortData={this.handleSortData} deleteMultipleResources={this.handleDeleteMultipleResources}
+          buttonDeleteSelectedDisabled={this.state.buttonDeleteSelectedDisabled} checkedAll={this.state.checkedAll}
+          handleCheckAll={this.handleCheckAllChange} openAlert={this.handleOpenAlert}
         />
       </div>
     );
@@ -299,5 +384,6 @@ export default connect(mapStateToProps, {
   sortData,
   setOffset,
   filterData,
-  updateData
+  updateData,
+  deleteMultipleResources
 })(TableView);

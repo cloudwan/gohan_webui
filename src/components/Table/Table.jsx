@@ -7,11 +7,12 @@ import Breadcrumb from '../Breadcrumb';
 
 class Table extends Component {
   buildTableBody = () => {
-    return this.props.data.map((item, index) => {
+    return this.props.data.map(item => {
       return (
-        <TableRowComponent key={index} schema={this.props.schema}
+        <TableRowComponent key={item.id} schema={this.props.schema}
           rowItem={item} onRemoveClick={this.props.openAlert}
           onEditClick={this.props.editData} visibleColumns={this.props.visibleColumns}
+          onCheckboxChange={this.props.rowCheckboxChange} checkedAll={this.props.checkedAll}
         />
       );
     });
@@ -27,13 +28,16 @@ class Table extends Component {
           handleOpenModal={this.props.openModal} singular={singular}
           options={schema.propertiesOrder} properties={schema.properties}
           filterData={this.props.filterData} filterProperties={this.props.visibleColumns}
+          deleteMultipleResources={this.props.deleteMultipleResources}
+          buttonDeleteSelectedDisabled={this.props.buttonDeleteSelectedDisabled}
         />
 
         <table className={'table pt-table pt-interactive'}>
           <thead>
             <TableHeaderComponent visibleColumns={this.props.visibleColumns} properties={schema.properties}
               sortData={this.props.sortData} sortKey={this.props.sortKey}
-              sortOrder={this.props.sortOrder}
+              sortOrder={this.props.sortOrder} checkedAll={this.props.checkedAll}
+              handleCheckAll={this.props.handleCheckAll}
             />
           </thead>
           <tbody>
@@ -62,9 +66,14 @@ Table.propTypes = {
   filterData: PropTypes.func.isRequired,
   sortData: PropTypes.func.isRequired,
   editData: PropTypes.func.isRequired,
-  removeData: PropTypes.func.isRequired,
   openModal: PropTypes.func.isRequired,
-  handlePageChange: PropTypes.func.isRequired
+  handlePageChange: PropTypes.func.isRequired,
+  rowCheckboxChange: PropTypes.func.isRequired,
+  deleteMultipleResources: PropTypes.func.isRequired,
+  buttonDeleteSelectedDisabled: PropTypes.bool.isRequired,
+  openAlert: PropTypes.func.isRequired,
+  checkedAll: PropTypes.object.isRequired,
+  handleCheckAll: PropTypes.func.isRequired
 };
 
 export default Table;

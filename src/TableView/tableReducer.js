@@ -4,7 +4,8 @@ import {
   CLEAR_DATA,
   UPDATE_SORT,
   UPDATE_OFFSET,
-  UPDATE_FILTERS
+  UPDATE_FILTERS,
+  DELETE_MULTIPLE_RESOURCES_SUCCESS
 } from './TableActionTypes';
 
 export default function tableReducer(
@@ -18,7 +19,8 @@ export default function tableReducer(
     limit: undefined,
     sortKey: undefined,
     sortOrder: undefined,
-    filters: {}
+    filters: {},
+    deletedMultipleResources: undefined
   }, action) {
   const {data} = action;
   const {options} = action;
@@ -34,7 +36,8 @@ export default function tableReducer(
         ...state,
         isLoading: false,
         data,
-        ...options
+        ...options,
+        deletedMultipleResources: undefined
       };
     case CLEAR_DATA:
       return {
@@ -47,22 +50,32 @@ export default function tableReducer(
         limit: undefined,
         sortKey: undefined,
         sortOrder: undefined,
-        filters: {}
+        filters: {},
+        deletedMultipleResources: undefined
       };
     case UPDATE_SORT:
       return {
         ...state,
-        ...data
+        ...data,
+        deletedMultipleResources: undefined
       };
     case UPDATE_OFFSET:
       return {
         ...state,
-        ...data
+        ...data,
+        deletedMultipleResources: undefined
       };
     case UPDATE_FILTERS:
       return {
         ...state,
-        ...data
+        ...data,
+        deletedMultipleResources: undefined
+      };
+    case DELETE_MULTIPLE_RESOURCES_SUCCESS:
+      return {
+        ...state,
+        ...data,
+        deletedMultipleResources: true
       };
     default:
       return state;
