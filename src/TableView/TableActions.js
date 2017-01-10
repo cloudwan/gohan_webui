@@ -11,7 +11,8 @@ import {
   UPDATE_SORT,
   UPDATE_OFFSET,
   UPDATE_FAILURE,
-  UPDATE_FILTERS
+  UPDATE_FILTERS,
+  DELETE_MULTIPLE_RESOURCES_SUCCESS
 } from './TableActionTypes';
 
 /**
@@ -272,6 +273,39 @@ export function deleteData(url, id) {
     }).catch(error => {
       dispatch(deleteError(error));
     });
+  };
+}
+
+function deleteMultipleResourcesSuccess() {
+  return dispatch => {
+    dispatch(fetchData());
+    dispatch({type: DELETE_MULTIPLE_RESOURCES_SUCCESS});
+  };
+}
+
+export function deleteMultipleResources(ids) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const {url} = state.tableReducer;
+    const {url: gohanUrl} = state.configReducer.gohan;
+    const {tokenId} = state.authReducer;
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': tokenId
+    };
+    let requests = [];
+
+    ids.forEach((id) => {
+      requests.push(axios.delete(gohanUrl + url + '/' + id, {headers}));
+    });
+
+    axios.all(requests)
+      .then(() => {
+        dispatch(deleteMultipleResourcesSuccess());
+      })
+      .catch((error) => {
+        dispatch(deleteError(error));
+      });
   };
 }
 

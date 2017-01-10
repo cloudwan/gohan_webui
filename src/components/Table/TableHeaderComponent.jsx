@@ -8,9 +8,29 @@ class TableHeader extends Component {
 
     this.state = {
       sortKey: this.props.sortKey,
-      sortOrder: this.props.sortOrder
+      sortOrder: this.props.sortOrder,
+      checkedAll: false
     };
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.checkedAll.checked === false) {
+      this.setState({checkedAll: nextProps.checkedAll.checked});
+    }
+
+  }
+
+  handleCheckedRowsInputChange = () => {
+    const checkedAll = this.state.checkedAll;
+    const checkedAllRows = {
+      checked: !checkedAll,
+      changedByRow: false
+    };
+
+    this.setState({checkedAll: !checkedAll}, () => {
+      this.props.handleCheckAll(checkedAllRows);
+    });
+  };
 
   handleHeaderClick = event => {
     let sortKey = event.currentTarget.dataset.gohan;
@@ -30,8 +50,7 @@ class TableHeader extends Component {
 
   buildTableHeaders = () => {
     const {properties, visibleColumns} = this.props;
-
-    return visibleColumns.map((item, index) => {
+    let mappedVisibleColumns = visibleColumns.map((item, index) => {
       const property = properties[item];
       let sortIcon = <Tooltip content="Sort by this property." position={Position.RIGHT}>
         <span className={'hidden pt-icon-small pt-icon-sort'}/>
@@ -55,6 +74,16 @@ class TableHeader extends Component {
         </th>
       );
     });
+
+    mappedVisibleColumns.unshift(
+      <th key={-1}>
+        <input type="checkbox" onChange={this.handleCheckedRowsInputChange}
+          checked={this.state.checkedAll}
+        />
+      </th>
+    );
+
+    return mappedVisibleColumns;
   };
 
   render() {
@@ -73,7 +102,9 @@ TableHeader.contextTypes = {
 
 TableHeader.propTypes = {
   visibleColumns: PropTypes.array.isRequired,
-  properties: PropTypes.object.isRequired
+  properties: PropTypes.object.isRequired,
+  checkedAll: PropTypes.object.isRequired,
+  handleCheckAll: PropTypes.func.isRequired
 };
 
 export default TableHeader;

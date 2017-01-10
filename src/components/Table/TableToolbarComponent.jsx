@@ -53,6 +53,10 @@ class TableToolbar extends Component {
 
   };
 
+  handleRemoveClick = () => {
+    this.props.deleteMultipleResources();
+  };
+
   buildSelectOptions = () => {
     const {filterProperties, properties} = this.props;
 
@@ -68,6 +72,9 @@ class TableToolbar extends Component {
           <Button className="pt-intent-primary" iconName="add"
             text={'New ' + this.props.singular}
             onClick={this.props.handleOpenModal}
+          />
+          <Button iconName="trash" text={'Delete selected'}
+            onClick={this.handleRemoveClick} disabled={this.props.buttonDeleteSelectedDisabled}
           />
         </div>
         <div className="pt-navbar-group pt-align-right">
