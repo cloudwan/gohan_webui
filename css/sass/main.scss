@@ -30,6 +30,30 @@ body {
 
 .table {
   width: 100%;
+  th {
+    a {
+      cursor: pointer;
+      user-select: none;
+      text-decoration: none;
+      span {
+        padding-left: 8px;
+      }
+      span.hidden {
+        visibility: hidden;
+      }
+      &:hover {
+        color: #103f69;
+        span.hidden {
+          visibility: visible;
+          color: rgba(16, 63, 105, 0.71);
+        }
+      }
+    }
+  }
+  th.options {
+    cursor: default;
+    user-select: none;
+  }
 }
 
 .detail {
