@@ -33,8 +33,8 @@ class TableView extends Component {
     const {
       sortKey,
       sortOrder,
-      limit,
-      offset,
+      limit = 0,
+      offset = 0,
     } = this.props.location.query;
 
     this.state = {
@@ -83,7 +83,7 @@ class TableView extends Component {
   handleChangePage = page => {
     const {totalCount, limit} = this.props.tableReducer;
     const {pageLimit} = this.props.configReducer;
-    const newOffset = (page - 1) * (limit || pageLimit);
+    const newOffset = page * (limit || pageLimit);
 
     if (newOffset > totalCount) {
       console.error('newOffset > totalCount');
@@ -162,9 +162,7 @@ class TableView extends Component {
 
   render() {
     const {isLoading, data, totalCount, limit, offset} = this.props.tableReducer;
-    const {pageLimit} = this.props.configReducer;
-    const pageCount = Math.ceil(totalCount / (limit || pageLimit));
-    const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
+
     const headers = this.getVisibleColumns(this.state.activeSchema.schema, ['id']);
 
     if (isLoading) {
@@ -172,6 +170,10 @@ class TableView extends Component {
         <LoadingIndicator />
       );
     }
+
+    const {pageLimit} = this.props.configReducer;
+    const pageCount = Math.ceil(totalCount / (limit || pageLimit));
+    const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
     return (
       <div>
         {this.showModal()}
