@@ -30,7 +30,10 @@ class Table extends Component {
 
         <table className={'table pt-table pt-interactive'}>
           <thead>
-            <TableHeaderComponent visibleColumns={this.props.visibleColumns} properties={schema.properties}/>
+            <TableHeaderComponent visibleColumns={this.props.visibleColumns} properties={schema.properties}
+              sortData={this.props.sortData} sortKey={this.props.sortKey}
+              sortOrder={this.props.sortOrder}
+            />
           </thead>
           <tbody>
             {this.buildTableBody()}
@@ -56,6 +59,7 @@ Table.propTypes = {
   pageCount: PropTypes.number.isRequired,
   activePage: PropTypes.number.isRequired,
   filterData: PropTypes.func.isRequired,
+  sortData: PropTypes.func.isRequired,
   editData: PropTypes.func.isRequired,
   removeData: PropTypes.func.isRequired,
   openModal: PropTypes.func.isRequired,

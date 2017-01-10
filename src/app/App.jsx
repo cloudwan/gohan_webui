@@ -39,7 +39,7 @@ class App extends Component {
 
     if (errorMessage) {
       this.toaster.show({
-        message: errorMessage,
+        message: errorMessage.error,
         className: 'pt-intent-danger',
         timeout: 0,
         onDismiss: this.handleDismissClick
@@ -91,7 +91,6 @@ class App extends Component {
 }
 
 App.propTypes = {
-  errorMessage: PropTypes.string,
   schemaReducer: PropTypes.object,
   children: PropTypes.node
 };
