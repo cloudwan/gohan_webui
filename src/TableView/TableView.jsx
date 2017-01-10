@@ -96,6 +96,10 @@ class TableView extends Component {
     this.props.filterData(property, value);
   };
 
+  handleSortData = (sortKey, sortOrder) => {
+    this.props.sortData(sortKey, sortOrder);
+  };
+
   handleOpenModal = () => {
     this.setState({openModal: true, actionModal: 'create', dialogData: {}});
   };
@@ -132,7 +136,7 @@ class TableView extends Component {
     return null;
   };
 
-  setVisibleColumns(schema, exclude) {
+  getVisibleColumns(schema, exclude) {
     let headers = [];
     const schemaProperties = schema.properties;
     const schemaPropertiesOrder = schema.propertiesOrder;
@@ -161,7 +165,7 @@ class TableView extends Component {
     const {pageLimit} = this.props.configReducer;
     const pageCount = Math.ceil(totalCount / (limit || pageLimit));
     const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
-    const headers = this.setVisibleColumns(this.state.activeSchema.schema, ['id']);
+    const headers = this.getVisibleColumns(this.state.activeSchema.schema, ['id']);
 
     if (isLoading) {
       return (
@@ -173,11 +177,12 @@ class TableView extends Component {
         {this.showModal()}
         <Table schema={this.state.activeSchema} data={data}
           pageCount={pageCount} activePage={activePage}
+          sortKey={this.props.sortKey} sortOrder={this.props.sortOrder}
           handleChangePage={this.handleChangePage} createData={this.props.createData}
           removeData={this.handleDeleteData} updateData={this.props.updateData}
           filterData={this.handleFilterData} visibleColumns={headers}
-          openModal={this.handleOpenModal} closeModal={this.handleCloseModal}
-          editData={this.handleEditItem}
+          sortData={this.handleSortData} openModal={this.handleOpenModal}
+          closeModal={this.handleCloseModal} editData={this.handleEditItem}
         />
       </div>
     );

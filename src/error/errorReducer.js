@@ -7,7 +7,7 @@ export default function errorMessage(state = null, action) {
     return null;
 
   } else if (error) {
-    return action.error;
+    return error;
   }
 
   return state;
