@@ -4,6 +4,24 @@ import {Link} from 'react-router';
 import {Tooltip} from '@blueprintjs/core';
 
 class TableRow extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      checkedRow: false
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.rowItem.id !== nextProps.rowItem.id) {
+      this.setState({checkedRow: false});
+    }
+
+    if (this.props.checkedAll.checked !== nextProps.checkedAll.checked && nextProps.checkedAll.changedByRow === false) {
+      this.setState({checkedRow: nextProps.checkedAll.checked});
+    }
+  }
+
   handleRemoveClick = () => {
     const {rowItem} = this.props;
 
@@ -16,11 +34,18 @@ class TableRow extends Component {
     this.props.onEditClick(rowItem);
   };
 
+  handleCheckboxChange = () => {
+    const {rowItem} = this.props;
+
+    this.setState({checkedRow: !this.state.checkedRow}, () => {
+      this.props.onCheckboxChange(rowItem.id, this.state.checkedRow);
+    });
+  };
+
   buildTableRow = () => {
     const {visibleColumns, rowItem} = this.props;
     const {singular} = this.props.schema;
-
-    return visibleColumns.map((item, index) => {
+    let mappedVisibleColumns = visibleColumns.map((item, index) => {
       const data = rowItem[item];
 
       if (typeof data === 'object') {
@@ -44,6 +69,16 @@ class TableRow extends Component {
         </td>
       );
     });
+
+    mappedVisibleColumns.unshift(
+      <td key={rowItem.id}>
+        <input type="checkbox" onChange={this.handleCheckboxChange}
+          checked={this.state.checkedRow}
+        />
+      </td>
+    );
+
+    return mappedVisibleColumns;
   };
 
 
@@ -74,8 +109,10 @@ TableRow.propTypes = {
   schema: PropTypes.object.isRequired,
   visibleColumns: PropTypes.array.isRequired,
   rowItem: PropTypes.object.isRequired,
-  onRemoveClick: PropTypes.func,
-  onEditClick: PropTypes.func
+  onRemoveClick: PropTypes.func.isRequired,
+  onEditClick: PropTypes.func.isRequired,
+  onCheckboxChange: PropTypes.func.isRequired,
+  checkedAll: PropTypes.object.isRequired
 };
 
 export default TableRow;
