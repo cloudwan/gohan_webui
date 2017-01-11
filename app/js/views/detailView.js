@@ -134,7 +134,7 @@ export default class DetailView extends View {
 
     if (relatedObject !== undefined) {
       if (relatedObject.name !== undefined) {
-        return relatedObject.name;
+        return _.escape(relatedObject.name);
       }
     }
 
