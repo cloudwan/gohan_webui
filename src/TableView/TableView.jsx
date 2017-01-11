@@ -175,7 +175,7 @@ class TableView extends Component {
     const pageCount = Math.ceil(totalCount / (limit || pageLimit));
     const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
     return (
-      <div>
+      <div className="table-container">
         {this.showModal()}
         <Table schema={this.state.activeSchema} data={data}
           pageCount={pageCount} activePage={activePage}

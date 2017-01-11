@@ -26,7 +26,6 @@ body {
   margin: 0;
   background-color: #edecec;
 }
-
 .table {
   width: 100%;
   th {
@@ -115,5 +114,11 @@ body {
 
   .break a {
     cursor: default;
+  }
+}
+
+@media (max-width: 1200px) {
+  .table-container > .pt-card {
+    overflow-x: scroll;
   }
 }
