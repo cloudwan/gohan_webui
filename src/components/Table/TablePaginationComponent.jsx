@@ -14,7 +14,7 @@ class TablePaginationComponent extends Component {
       pagination = (
         <ReactPaginate className="pagination" previousLabel={'previous'}
           nextLabel={'next'} breakLabel={<span>...</span>}
-          breakClassName={'break-me'} initialPage={this.props.activPage}
+          breakClassName={'break-me'} initialPage={this.props.activePage}
           pageCount={this.props.pageCount} marginPagesDisplayed={2}
           pageRangeDisplayed={5} onPageChange={this.handlePageChange}
           containerClassName={'pagination'} subContainerClassName={'pages pagination'}
