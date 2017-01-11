@@ -393,7 +393,7 @@ export default class TableView extends View {
 
     if (relatedObject !== undefined) {
       if (relatedObject.name !== undefined) {
-        return relatedObject.name;
+        return _.escape(relatedObject.name);
       }
     }
     try {
