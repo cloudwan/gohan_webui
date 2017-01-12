@@ -41,7 +41,7 @@ class Table extends Component {
         </table>
 
         <TablePaginationComponent activePage={this.props.activePage} pageCount={this.props.pageCount}
-          handlePageClick={this.props.handleChangePage}
+          handlePageClick={this.props.handlePageChange}
         />
       </div>
     );
@@ -63,7 +63,7 @@ Table.propTypes = {
   editData: PropTypes.func.isRequired,
   removeData: PropTypes.func.isRequired,
   openModal: PropTypes.func.isRequired,
-  handleChangePage: PropTypes.func.isRequired
+  handlePageChange: PropTypes.func.isRequired
 };
 
 export default Table;
