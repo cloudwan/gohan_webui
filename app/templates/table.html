@@ -132,7 +132,7 @@ const selectedResource =
 %>
           <td><a href="<%- d[key] %>"> link </a></td>
 <%
-          } else if (title === 'name' || title === 'title') { 
+          } else if (title === 'name' || title === 'title' || title === 'id') { 
 %>
           <td><a data-id="<%= d[key] %>" href="#/<%= fragment %>/<%= d.id %>"><%= d[key] %></a></td>
 <%
@@ -153,7 +153,7 @@ const selectedResource =
 <%
           } else {
 %>
-          <a class="action-icon" data-id="<%- d['id']%>" data-gohan="update" data-toggle="tooltip" data-placement="top" title="Edit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a><a class="action-icon" data-id="<%- d['id']%>" data-gohan="delete" data-toggle="tooltip" data-placement="top" title="Delete"><span class="glyphicon glyphicon-trash" aria-label="Delete"></span></a>
+          <a href="#/<%= fragment %>/<%= d.id %>" class="action-icon" data-toggle="tooltip" data-placement="top" title="Detail"><span class="glyphicon glyphicon-link" aria-label="Detail"></span></a><a class="action-icon" data-id="<%- d['id']%>" data-gohan="update" data-toggle="tooltip" data-placement="top" title="Edit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a><a class="action-icon" data-id="<%- d['id']%>" data-gohan="delete" data-toggle="tooltip" data-placement="top" title="Delete"><span class="glyphicon glyphicon-trash" aria-label="Delete"></span></a>
 <%
           }
 %>
