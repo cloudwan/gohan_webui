@@ -12,13 +12,16 @@ class TablePaginationComponent extends Component {
 
     if (this.props.pageCount > 1) {
       pagination = (
-        <ReactPaginate className="pagination" previousLabel={'previous'}
-          nextLabel={'next'} breakLabel={<span>...</span>}
-          breakClassName={'break-me'} initialPage={this.props.activePage}
+        <ReactPaginate className="pagination" previousLabel={''}
+          nextLabel={''} breakLabel={<a>...</a>}
+          breakClassName={'pt-button pt-disabled'} initialPage={this.props.activePage}
           pageCount={this.props.pageCount} marginPagesDisplayed={2}
           pageRangeDisplayed={5} onPageChange={this.handlePageChange}
-          containerClassName={'pagination'} subContainerClassName={'pages pagination'}
-          activeClassName={'active'}
+          containerClassName={'pagination pt-button-group'}
+          activeClassName={'pt-active'} pageClassName={'pt-button'}
+          previousClassName={'pt-button'} nextClassName={'pt-button'}
+          previousLinkClassName={'pt-icon-chevron-left'} nextLinkClassName={'pt-icon-chevron-right'}
+          disabledClassName={'pt-disabled'}
         />
       );
     }
