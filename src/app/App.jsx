@@ -6,7 +6,9 @@ import {fetchSchema} from './../schema/SchemaActions';
 import Navbar from './components/Navbar';
 import SidebarMenu from './components/SidebarMenu';
 import {logout, selectTenant} from '../auth/AuthActions';
-import {Toaster, Position} from '@blueprintjs/core';
+import {FocusStyleManager, Toaster, Position} from '@blueprintjs/core';
+
+FocusStyleManager.onlyShowFocusOnTabs();
 
 const contentStyle = {
   padding: '64px 14px 14px 270px',

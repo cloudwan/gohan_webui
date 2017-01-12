@@ -101,19 +101,18 @@ body {
 
 .pagination {
   padding-left: 0;
-
+  user-select: none;
   ul {
-    display: inline-block;
     padding-left: 15px;
     padding-right: 15px;
   }
-
   li {
-    display: inline-block;
+    padding: 0;
   }
-
-  .break a {
-    cursor: default;
+  a {
+    padding: 0 10px;
+    text-decoration: none;
+    display: block;
   }
 }
 

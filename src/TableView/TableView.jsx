@@ -80,7 +80,7 @@ class TableView extends Component {
     this.props.deleteData(this.state.activeSchema.url, id, this.state.activeSchema.plural);
   };
 
-  handleChangePage = page => {
+  handlePageChange = page => {
     const {totalCount, limit} = this.props.tableReducer;
     const {pageLimit} = this.props.configReducer;
     const newOffset = page * (limit || pageLimit);
@@ -180,7 +180,7 @@ class TableView extends Component {
         <Table schema={this.state.activeSchema} data={data}
           pageCount={pageCount} activePage={activePage}
           sortKey={this.props.sortKey} sortOrder={this.props.sortOrder}
-          handleChangePage={this.handleChangePage} createData={this.props.createData}
+          handlePageChange={this.handlePageChange} createData={this.props.createData}
           removeData={this.handleDeleteData} updateData={this.props.updateData}
           filterData={this.handleFilterData} visibleColumns={headers}
           sortData={this.handleSortData} openModal={this.handleOpenModal}
