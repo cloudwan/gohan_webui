@@ -6,3 +6,5 @@ dist/*
 .sass-cache
 coverage
 .idea
+test-results.xml
+lint-results.xml

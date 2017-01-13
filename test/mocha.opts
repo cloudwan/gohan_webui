@@ -1,0 +1,7 @@
+--require babel-register
+--require babel-polyfill
+--require mock-local-storage
+--require jsdom-global/register
+--compilers js:babel-register
+--reporter spec
+--recursive
