@@ -6,8 +6,8 @@ class TableToolbar extends Component {
     super(props);
 
     this.state = {
-      filterProperty: props.filterProperties[0],
-      filterValue: ''
+      filterProperty: props.filterBy || props.filterProperties[0],
+      filterValue: props.filterValue || ''
     };
   }
 
@@ -18,7 +18,8 @@ class TableToolbar extends Component {
     const property = this.state.filterProperty;
 
     if (value === undefined || value === '') {
-      value = null;
+      this.props.filterData(undefined);
+      return;
     }
 
     const filters = {};
@@ -81,6 +82,7 @@ class TableToolbar extends Component {
               <span className="pt-icon pt-icon-search"/>
               <input type="text" className="pt-input"
                 placeholder="Search" onChange={this.handleSearchChange}
+                value={this.state.filterValue}
               />
             </div>
           </div>
