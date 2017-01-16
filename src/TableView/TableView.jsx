@@ -89,14 +89,40 @@ class TableView extends Component {
       console.error('newOffset > totalCount');
       return;
     }
+
+    this.context.router.replace({
+      pathname: this.props.location.pathname,
+      query: {
+        ...this.props.location.query,
+        offset: newOffset
+      }
+    });
+
     this.props.setOffset(newOffset);
   };
 
-  handleFilterData = (property, value) => {
-    this.props.filterData(property, value);
+  handleFilterData = (property) => {
+    this.context.router.replace({
+      pathname: this.props.location.pathname,
+      query: {
+        ...this.props.location.query,
+        filters: JSON.stringify(property)
+      }
+    });
+
+    this.props.filterData(property);
   };
 
   handleSortData = (sortKey, sortOrder) => {
+    this.context.router.replace({
+      pathname: this.props.location.pathname,
+      query: {
+        ...this.props.location.query,
+        sortKey,
+        sortOrder,
+      }
+    });
+
     this.props.sortData(sortKey, sortOrder);
   };
 
@@ -170,17 +196,20 @@ class TableView extends Component {
         <LoadingIndicator />
       );
     }
-    const {data, totalCount, limit, offset} = this.props.tableReducer;
+    const {data, totalCount, limit, offset, filters} = this.props.tableReducer;
     const {pageLimit} = this.props.configReducer;
     const pageCount = Math.ceil(totalCount / (limit || pageLimit));
     const activePage = Math.ceil(offset / (limit || pageLimit));
+    const filterValue = filters ? filters[Object.keys(filters)[0]] : '';
+    const filterBy = filters ? Object.keys(filters)[0] : '';
 
     return (
       <div className="table-container">
         {this.showModal()}
         <Table schema={this.state.activeSchema} data={data}
           pageCount={pageCount} activePage={activePage}
-          sortKey={this.props.sortKey} sortOrder={this.props.sortOrder}
+          filterBy={filterBy} filterValue={filterValue}
+          sortKey={this.props.tableReducer.sortKey} sortOrder={this.props.tableReducer.sortOrder}
           handlePageChange={this.handlePageChange} createData={this.props.createData}
           removeData={this.handleDeleteData} updateData={this.props.updateData}
           filterData={this.handleFilterData} visibleColumns={headers}
@@ -191,6 +220,10 @@ class TableView extends Component {
     );
   }
 }
+
+TableView.contextTypes = {
+  router: PropTypes.object
+};
 
 TableView.propTypes = {
   schemaReducer: PropTypes.object.isRequired,
