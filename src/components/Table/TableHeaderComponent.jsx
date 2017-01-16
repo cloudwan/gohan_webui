@@ -7,8 +7,8 @@ class TableHeader extends Component {
     super(props);
 
     this.state = {
-      sortKey: this.props.sortKey || '',
-      sortOrder: this.props.sortOrder || ''
+      sortKey: this.props.sortKey,
+      sortOrder: this.props.sortOrder
     };
   }
 
@@ -19,7 +19,8 @@ class TableHeader extends Component {
     if (sortKey === this.state.sortKey && this.state.sortOrder === 'asc') {
       sortOrder = 'desc';
     } else if (sortKey === this.state.sortKey && this.state.sortOrder === 'desc') {
-      sortKey = '';
+      sortKey = undefined;
+      sortOrder = undefined;
     }
 
     this.setState({sortKey, sortOrder});
@@ -36,7 +37,7 @@ class TableHeader extends Component {
         <span className={'hidden pt-icon-small pt-icon-sort'}/>
       </Tooltip>;
 
-      if (this.state.sortKey === property.title.toLowerCase()) {
+      if (this.state.sortKey === item) {
         sortIcon = <Tooltip content={this.state.sortOrder === 'asc' ?
           'Sorted in ascending order.' :
           'Sorted in descending order.'}
