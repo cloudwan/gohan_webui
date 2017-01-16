@@ -13,7 +13,7 @@ class TableHeader extends Component {
   }
 
   handleHeaderClick = event => {
-    let sortKey = event.currentTarget.innerText.toLowerCase();
+    let sortKey = event.currentTarget.dataset.gohan;
     let sortOrder = 'asc';
 
     if (sortKey === this.state.sortKey && this.state.sortOrder === 'asc') {
@@ -47,7 +47,7 @@ class TableHeader extends Component {
 
       return (
         <th key={index}>
-          <a onClick={this.handleHeaderClick}>
+          <a onClick={this.handleHeaderClick} data-gohan={item}>
             <Tooltip content={property.description}><span>{property.title}</span></Tooltip>
             {sortIcon}
           </a>
