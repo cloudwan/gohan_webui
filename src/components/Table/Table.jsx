@@ -23,7 +23,8 @@ class Table extends Component {
     return (
       <div className={'pt-card pt-elevation-3'}>
         <Breadcrumb breadcrumbs={[singular]}/>
-        <TableToolbarComponent handleOpenModal={this.props.openModal} singular={singular}
+        <TableToolbarComponent filterBy={this.props.filterBy} filterValue={this.props.filterValue}
+          handleOpenModal={this.props.openModal} singular={singular}
           options={schema.propertiesOrder} properties={schema.properties}
           filterData={this.props.filterData} filterProperties={this.props.visibleColumns}
         />
