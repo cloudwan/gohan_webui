@@ -54,6 +54,12 @@ body {
   }
 }
 
+.table-container {
+  [type=button], select {
+    user-select: none;
+  }
+}
+
 .detail {
   >span.property-title {
     font-weight: bold;
