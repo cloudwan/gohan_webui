@@ -10,7 +10,7 @@ instrumentation:
 reporting:
   print: 'summary'
   reports:
-  - 'lcov'
+  - 'cobertura'
   - 'text'
   - 'html'
   dir: './coverage'
