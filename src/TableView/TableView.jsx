@@ -161,7 +161,7 @@ class TableView extends Component {
   }
 
   render() {
-    const {isLoading, data, totalCount, limit, offset} = this.props.tableReducer;
+    const {isLoading} = this.props.tableReducer;
 
     const headers = this.getVisibleColumns(this.state.activeSchema.schema, ['id']);
 
@@ -170,10 +170,11 @@ class TableView extends Component {
         <LoadingIndicator />
       );
     }
-
+    const {data, totalCount, limit, offset} = this.props.tableReducer;
     const {pageLimit} = this.props.configReducer;
     const pageCount = Math.ceil(totalCount / (limit || pageLimit));
-    const activePage = Math.ceil(offset / (limit || pageLimit)) + 1;
+    const activePage = Math.ceil(offset / (limit || pageLimit));
+
     return (
       <div className="table-container">
         {this.showModal()}
