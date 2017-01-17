@@ -1,0 +1,23 @@
+{
+    "authUrl": "http://__HOST__:9091/v2.0",
+    "gohan": {
+        "schema": "/gohan/v0.1/schemas",
+        "url": "http://__HOST__:9091"
+    },
+    "routes": [
+        {
+            "path": "",
+            "viewClass": "topView",
+            "name": "top_view"
+        }
+    ],
+    "errorMessages": {
+        "tokenExpire": "The token is expired. Please re-login."
+    },
+    "addingRelationDialog": [
+        "Pet"
+    ],
+    "pageLimit": 25,
+    "loginRequestTimeout": 30000,
+    "extendTokenTime": 300000
+}
