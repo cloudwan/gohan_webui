@@ -73,10 +73,17 @@ function loginSuccess(data) {
   };
 }
 
-function loginFailure() {
-  return dispatch => {
-    const error = 'Wrong user name or password!';
+function loginFailure(error) {
+  if (error.response) {
+    switch (error.response.status) {
+      case 401:
+        error = 'Wrong username or password!';
+    }
+  } else {
+    error = error.toString();
+  }
 
+  return dispatch => {
     dispatch({type: LOGIN_ERROR, error});
   };
 }
@@ -99,7 +106,7 @@ export function login(username, password) {
     axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
       dispatch(loginSuccess(response.data));
     }).catch(error => {
-      dispatch(loginFailure(error.response));
+      dispatch(loginFailure(error));
     });
 
   };

@@ -7,7 +7,7 @@ class TableRow extends Component {
   handleRemoveClick = () => {
     const {rowItem} = this.props;
 
-    this.props.onRemoveClick(rowItem.id);
+    this.props.onRemoveClick(rowItem);
   };
 
   handleEditClick = () => {
