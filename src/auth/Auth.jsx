@@ -59,6 +59,12 @@ class Auth extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.toaster.getToasts().forEach(toast => {
+      this.toaster.dismiss(toast.key);
+    });
+  }
+
   render() {
     return (
       <div className="pt-card pt-elevation-3 auth-card">
