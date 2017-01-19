@@ -14,6 +14,7 @@ import {
 } from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Dialog from '../Dialog/Dialog';
+import {Toaster, Position, Alert, Intent} from '@blueprintjs/core';
 
 class TableView extends Component {
   constructor(props) {
@@ -41,7 +42,8 @@ class TableView extends Component {
       activeSchema: props.schemaReducer.data.find(
         object => object.plural === splitPathname[splitPathname.length - 1]
       ),
-      openModal: false,
+      modalOpen: false,
+      alertOpen: false,
       actionModal: 'create',
       dialogData: {}
     };
@@ -54,6 +56,12 @@ class TableView extends Component {
       filters
     });
     props.fetchData();
+  }
+
+  componentDidMount() {
+    this.toaster = Toaster.create({
+      position: Position.TOP
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,13 +80,23 @@ class TableView extends Component {
     }
   }
 
-  componentWillUnmount() {
-    this.props.clearData();
+  componentWillUpdate(nextProps) {
+    const {errorMessage} = nextProps;
+
+    if (errorMessage) {
+      this.toaster.show({
+        message: errorMessage,
+        className: 'pt-intent-danger',
+        timeout: 0,
+        onDismiss: () => {}
+      });
+    }
   }
 
-  handleDeleteData = id => {
-    this.props.deleteData(this.state.activeSchema.url, id, this.state.activeSchema.plural);
-  };
+  componentWillUnmount() {
+    this.toaster.getToasts().forEach(toast => this.toaster.dismiss(toast.key));
+    this.props.clearData();
+  }
 
   handlePageChange = page => {
     const {totalCount, limit} = this.props.tableReducer;
@@ -119,7 +137,7 @@ class TableView extends Component {
       query: {
         ...this.props.location.query,
         sortKey,
-        sortOrder,
+        sortOrder
       }
     });
 
@@ -127,11 +145,24 @@ class TableView extends Component {
   };
 
   handleOpenModal = () => {
-    this.setState({openModal: true, actionModal: 'create', dialogData: {}});
+    this.setState({modalOpen: true, actionModal: 'create', dialogData: {}});
   };
 
   handleCloseModal = () => {
-    this.setState({openModal: false});
+    this.setState({modalOpen: false});
+  };
+
+  handleOpenAlert = (item) => {
+    this.setState({alertOpen: true, markedForDeletion: item});
+  };
+
+  handleCloseAlert = () => {
+    this.setState({alertOpen: false});
+  };
+
+  handleDeleteData = () => {
+    this.props.deleteData(this.state.activeSchema.url, this.state.markedForDeletion.id, this.state.activeSchema.plural);
+    this.handleCloseAlert();
   };
 
   handleSubmit = (data, id) => {
@@ -146,16 +177,32 @@ class TableView extends Component {
   };
 
   handleEditItem = id => {
-    this.setState({openModal: true, actionModal: 'update', dialogData: id});
+    this.setState({modalOpen: true, actionModal: 'update', dialogData: id});
   };
 
   showModal = () => {
-    if (this.state.openModal) {
+    if (this.state.modalOpen) {
       return (
-        <Dialog isOpen={this.state.openModal} action={this.state.actionModal}
+        <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
           data={this.state.dialogData} onClose={this.handleCloseModal}
           onSubmit={this.handleSubmit} schema={this.state.activeSchema}
         />
+      );
+    }
+
+    return null;
+  };
+  showAlert = () => {
+    if (this.state.alertOpen) {
+      return (
+        <Alert intent={Intent.PRIMARY}
+          isOpen={this.state.alertOpen}
+          confirmButtonText='Delete'
+          cancelButtonText='Cancel'
+          onConfirm={this.handleDeleteData}
+          onCancel={this.handleCloseAlert}>
+          <p>Delete {this.state.markedForDeletion.name} ?</p>
+        </Alert>
       );
     }
 
@@ -206,6 +253,7 @@ class TableView extends Component {
     return (
       <div className="table-container">
         {this.showModal()}
+        {this.showAlert()}
         <Table schema={this.state.activeSchema} data={data}
           pageCount={pageCount} activePage={activePage}
           filterBy={filterBy} filterValue={filterValue}
@@ -215,6 +263,7 @@ class TableView extends Component {
           filterData={this.handleFilterData} visibleColumns={headers}
           sortData={this.handleSortData} openModal={this.handleOpenModal}
           closeModal={this.handleCloseModal} editData={this.handleEditItem}
+          openAlert={this.handleOpenAlert}
         />
       </div>
     );
@@ -226,6 +275,7 @@ TableView.contextTypes = {
 };
 
 TableView.propTypes = {
+  errorMessage: PropTypes.string,
   schemaReducer: PropTypes.object.isRequired,
   tableReducer: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,

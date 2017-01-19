@@ -41,7 +41,7 @@ class App extends Component {
 
     if (errorMessage) {
       this.toaster.show({
-        message: errorMessage.error,
+        message: errorMessage,
         className: 'pt-intent-danger',
         timeout: 0,
         onDismiss: this.handleDismissClick
