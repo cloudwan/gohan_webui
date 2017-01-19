@@ -229,9 +229,23 @@ function deleteSuccess() {
     dispatch({type: DELETE_SUCCESS});
   };
 }
-function deleteError() {
+function deleteError(error) {
+  if (error.response) {
+    switch (error.response.status) {
+      case 400:
+        error = 'Invalid request.';
+        break;
+      case 404:
+        error = 'Resource has not been found.';
+        break;
+      case 409:
+        error = 'Conflict.';
+    }
+  } else {
+    error = error.toString();
+  }
   return dispatch => {
-    dispatch({type: DELETE_FAILURE});
+    dispatch({type: DELETE_FAILURE, error});
   };
 }
 
@@ -253,10 +267,10 @@ export function deleteData(url, id) {
       if (status === 204) {
         dispatch(deleteSuccess());
       } else {
-        dispatch(deleteError('Cannot remove this resource!'));
+        dispatch(deleteError(response));
       }
     }).catch(error => {
-      dispatch(deleteError(error.response));
+      dispatch(deleteError(error));
     });
   };
 }
