@@ -33,7 +33,7 @@ body {
       cursor: pointer;
       user-select: none;
       text-decoration: none;
-      span {
+      span:nth-child(2) {
         padding-left: 8px;
       }
       span.hidden {
