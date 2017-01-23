@@ -50,13 +50,13 @@ class TableHeader extends Component {
 
   buildTableHeaders = () => {
     const {properties, visibleColumns} = this.props;
-    let mappedVisibleColumns = visibleColumns.map((item, index) => {
-      const property = properties[item];
+    return visibleColumns.map((column, index) => {
+      const property = properties[column];
       let sortIcon = <Tooltip content="Sort by this property." position={Position.RIGHT}>
         <span className={'hidden pt-icon-small pt-icon-sort'}/>
       </Tooltip>;
 
-      if (this.state.sortKey === item) {
+      if (this.state.sortKey === column) {
         sortIcon = <Tooltip content={this.state.sortOrder === 'asc' ?
           'Sorted in ascending order.' :
           'Sorted in descending order.'}
@@ -67,7 +67,7 @@ class TableHeader extends Component {
 
       return (
         <th key={index}>
-          <a onClick={this.handleHeaderClick} data-gohan={item}>
+          <a onClick={this.handleHeaderClick} data-gohan={column}>
             <Tooltip content={property.description}><span>{property.title}</span></Tooltip>
             {sortIcon}
           </a>
@@ -75,20 +75,16 @@ class TableHeader extends Component {
       );
     });
 
-    mappedVisibleColumns.unshift(
-      <th key={-1}>
-        <input type="checkbox" onChange={this.handleCheckedRowsInputChange}
-          checked={this.state.checkedAll}
-        />
-      </th>
-    );
-
-    return mappedVisibleColumns;
   };
 
   render() {
     return (
       <tr>
+        <th key={-1}>
+          <input type="checkbox" onChange={this.handleCheckedRowsInputChange}
+            checked={this.state.checkedAll}
+          />
+        </th>
         {this.buildTableHeaders()}
         <th className="options">{'Options'}</th>
       </tr>
