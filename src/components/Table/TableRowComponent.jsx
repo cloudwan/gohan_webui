@@ -45,8 +45,8 @@ class TableRow extends Component {
   buildTableRow = () => {
     const {visibleColumns, rowItem} = this.props;
     const {singular} = this.props.schema;
-    let mappedVisibleColumns = visibleColumns.map((item, index) => {
-      const data = rowItem[item];
+    return visibleColumns.map((column, index) => {
+      const data = rowItem[column];
 
       if (typeof data === 'object') {
         return (
@@ -55,7 +55,7 @@ class TableRow extends Component {
           </td>
         );
       }
-      if (item === 'name') {
+      if (column === 'name') {
         return (
           <td key={index}>
             <Link to={'/' + singular + '/' + rowItem.id}>{data}</Link>
@@ -69,22 +69,17 @@ class TableRow extends Component {
         </td>
       );
     });
-
-    mappedVisibleColumns.unshift(
-      <td key={rowItem.id}>
-        <input type="checkbox" onChange={this.handleCheckboxChange}
-          checked={this.state.checkedRow}
-        />
-      </td>
-    );
-
-    return mappedVisibleColumns;
   };
 
 
   render() {
     return (
       <tr className="row">
+        <td key={this.props.rowItem.id}>
+          <input type="checkbox" onChange={this.handleCheckboxChange}
+            checked={this.state.checkedRow}
+          />
+        </td>
         {this.buildTableRow()}
         <td>
           <Tooltip content='Edit' hoverOpenDelay={50}>
