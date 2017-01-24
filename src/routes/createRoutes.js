@@ -12,12 +12,14 @@ export const createRoutes = store => {
   const schemaRoutes = data.reduce((result, item) => {
     const singular = {
       path: /* item.prefix + '/' + */ item.singular + '/:id',
+      singular: item.singular,
       getComponent(nextState, cb) {
         return cb(null, DetailView(store));
       }
     };
     const plural = {
       path: /* item.prefix + '/' + */ item.plural,
+      plural: item.plural,
       getComponent(nextState, cb) {
         return cb(null, TableView(store));
       }
