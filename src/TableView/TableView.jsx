@@ -2,6 +2,11 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import Table from '../components/Table';
 import {
+  getActiveSchema,
+  getHeaders,
+  getPageCount,
+  getActivePage} from './TableSelectors';
+import {
   initialize,
   fetchData,
   clearData,
@@ -21,7 +26,7 @@ class TableView extends Component {
   constructor(props) {
     super(props);
 
-    const splitPathname = props.location.pathname.split('/');
+    const {plural} = this.props.route;
     let filters;
 
     if (this.props.location.query.filters) {
@@ -41,7 +46,7 @@ class TableView extends Component {
 
     this.state = {
       activeSchema: props.schemaReducer.data.find(
-        object => object.plural === splitPathname[splitPathname.length - 1]
+        object => object.plural === plural
       ),
       modalOpen: false,
       alertOpen: false,
@@ -80,7 +85,13 @@ class TableView extends Component {
       this.state = {
         activeSchema: this.props.schemaReducer.data.find(
           object => object.plural === splitPathname[splitPathname.length - 1]
-        )
+        ),
+        checkedRowsIds: [],
+        checkedAll: {
+          checked: false,
+          changedByRow: false
+        },
+        buttonDeleteSelectedDisabled: true
       };
       this.props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
       this.props.fetchData();
@@ -292,44 +303,15 @@ class TableView extends Component {
     return null;
   };
 
-  getVisibleColumns(schema, exclude) {
-    let headers = [];
-    const schemaProperties = schema.properties;
-    const schemaPropertiesOrder = schema.propertiesOrder;
-
-    schemaPropertiesOrder.forEach(item => {
-      const property = schemaProperties[item];
-
-      if (property && property.view && !property.view.includes('list')) {
-        return;
-      }
-
-      if (exclude && exclude.length) {
-        if (exclude.includes(item)) {
-          return;
-        }
-      }
-
-      headers.push(item);
-    });
-
-    return headers;
-  }
-
   render() {
     const {isLoading} = this.props.tableReducer;
-
-    const headers = this.getVisibleColumns(this.state.activeSchema.schema, ['id']);
 
     if (isLoading) {
       return (
         <LoadingIndicator />
       );
     }
-    const {data, totalCount, limit, offset, filters} = this.props.tableReducer;
-    const {pageLimit} = this.props.configReducer;
-    const pageCount = Math.ceil(totalCount / (limit || pageLimit));
-    const activePage = Math.ceil(offset / (limit || pageLimit));
+    const {data, filters} = this.props.tableReducer;
     const filterValue = filters ? filters[Object.keys(filters)[0]] : '';
     const filterBy = filters ? Object.keys(filters)[0] : '';
 
@@ -337,13 +319,13 @@ class TableView extends Component {
       <div className="table-container">
         {this.showModal()}
         {this.showAlert()}
-        <Table schema={this.state.activeSchema} data={data}
-          pageCount={pageCount} activePage={activePage}
+        <Table schema={this.props.activeSchema} data={data}
+          pageCount={this.props.pageCount} activePage={this.props.activePage}
           filterBy={filterBy} filterValue={filterValue}
           sortKey={this.props.tableReducer.sortKey} sortOrder={this.props.tableReducer.sortOrder}
           handlePageChange={this.handlePageChange} createData={this.props.createData}
           removeData={this.handleDeleteData} updateData={this.props.updateData}
-          filterData={this.handleFilterData} visibleColumns={headers}
+          filterData={this.handleFilterData} visibleColumns={this.props.headers}
           openModal={this.handleOpenModal} closeModal={this.handleCloseModal}
           editData={this.handleEditItem} rowCheckboxChange={this.handleRowCheckboxChange}
           sortData={this.handleSortData} deleteMultipleResources={this.handleDeleteMultipleResources}
@@ -369,6 +351,10 @@ TableView.propTypes = {
 
 function mapStateToProps(state) {
   return {
+    activeSchema: getActiveSchema(state),
+    headers: getHeaders(state),
+    pageCount: getPageCount(state),
+    activePage: getActivePage(state),
     configReducer: state.configReducer,
     schemaReducer: state.schemaReducer,
     tableReducer: state.tableReducer
