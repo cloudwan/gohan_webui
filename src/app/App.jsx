@@ -10,19 +10,13 @@ import {FocusStyleManager, Toaster, Position} from '@blueprintjs/core';
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
-const contentStyle = {
-  padding: '64px 14px 14px 270px',
-  minHeight: 400
-};
-
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       openUserMenu: false,
-      openSidebarMenu: false,
-      contentPaddingLeft: 14
+      openSidebarMenu: false
     };
   }
 
@@ -84,7 +78,7 @@ class App extends Component {
         <SidebarMenu open={this.state.openSidebarMenu} schemaReducer={this.props.schemaReducer}
           onRequestChange={this.handleSidebarMenuRequestChange}
         />
-        <div style={{paddingLeft: this.state.contentPaddingLeft, ...contentStyle}}>
+        <div className="view-content">
           {children}
         </div>
       </div>
