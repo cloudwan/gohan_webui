@@ -2,7 +2,7 @@ import App from './../app/App';
 import TableView from '../TableView';
 import DetailView from '../DetailView';
 import NotFound from '../NotFoundView';
-import reguestAuth from '../auth/requestAuth';
+import requestAuth from '../auth/requestAuth';
 import components from './componentsList';
 
 export const createRoutes = store => {
@@ -56,7 +56,7 @@ export const createRoutes = store => {
   return [
     {
       path: '/',
-      component: reguestAuth(App),
+      component: requestAuth(App),
       childRoutes: [
         ...prepareRoutes(routes),
         ...schemaRoutes,
