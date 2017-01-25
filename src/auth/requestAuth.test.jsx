@@ -12,7 +12,7 @@ chai.should();
 
 const mockStore = configureStore();
 
-describe('reguestAuth', function () {
+describe('requestAuth', function () {
   let MockComponent;
 
   beforeEach(() => {
