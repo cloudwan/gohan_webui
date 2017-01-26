@@ -114,6 +114,7 @@ module.exports = {
   performance: {
     hints: false
   },
+  devtool: 'source-map',
   devServer: {
     host: devServerHostname,
     port: devServerPort,
