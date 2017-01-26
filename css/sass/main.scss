@@ -1,4 +1,5 @@
 @import "~@blueprintjs/core/dist/blueprint.css";
+@import '~codemirror/lib/codemirror.css';
 
 /*
  * Colors
@@ -30,7 +31,6 @@ body {
   padding: 64px 14px 14px 270px;
   min-height: 400px;
 }
-
 .table {
   width: 100%;
   th {
@@ -66,7 +66,7 @@ body {
 }
 
 .detail {
-  >span.property-title {
+  span.property-title {
     font-weight: bold;
     color: rgba(0, 0, 0, 0.9);
   }
@@ -130,5 +130,13 @@ body {
 @media (max-width: 1200px) {
   .table-container > .pt-card {
     overflow-x: scroll;
+  }
+}
+
+.CodeMirror {
+  height: auto;
+  border: 1px solid #ccc;
+  pre {
+    box-shadow: none;
   }
 }
