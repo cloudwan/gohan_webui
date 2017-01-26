@@ -192,13 +192,6 @@ function updateError(data) {
   };
 }
 
-/**
- * Creates new resource.
- *
- * @export
- * @param data {Object}
- * @return {function}
- */
 export function updateData(id, data) {
   return (dispatch, getState) => {
     const state = getState();

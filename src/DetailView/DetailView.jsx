@@ -1,23 +1,33 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import axios from 'axios';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Detail from '../components/Detail';
-import {fetchData, clearData, pollData, cancelPollData} from './DetailActions';
-import axios from 'axios';
+import Dialog from '../Dialog/Dialog';
+import {
+  initialize,
+  fetchData,
+  clearData,
+  pollData,
+  cancelPollData,
+  deleteData,
+  updateData
+} from './DetailActions';
+import {Alert, Intent} from '@blueprintjs/core';
 
 class DetailView extends Component {
 
   constructor(props) {
     super(props);
 
-    const splitSplat = props.location.pathname.split('/');
+    const splitPathname = props.location.pathname.split('/');
     const activeSchema = props.schemaReducer.data.find(
-      object => object.singular === splitSplat[splitSplat.length - 2]
+      object => object.singular === splitPathname[splitPathname.length - 2]
     );
     const childSchemas = props.schemaReducer.data.filter(
       object => object.parent === activeSchema.id
     );
-    const detail = splitSplat[splitSplat.length - 1];
+    const detail = splitPathname[splitPathname.length - 1];
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
 
@@ -25,9 +35,16 @@ class DetailView extends Component {
       activeSchema,
       childSchemas,
       detail,
-      source
+      source,
+      modalOpen: false,
+      alertOpen: false,
+      actionModal: 'update',
+      dialogData: {}
     };
-    this.props.fetchData(activeSchema.url + '/' + detail, activeSchema.singular);
+
+    props.initialize(activeSchema.url + '/' + detail, activeSchema.singular);
+
+    props.fetchData();
   }
 
   componentDidMount() {
@@ -43,6 +60,70 @@ class DetailView extends Component {
     this.props.clearData();
   }
 
+  handleEdit = id => {
+    this.setState({modalOpen: true, actionModal: 'update', dialogData: id});
+  };
+
+  handleDelete = () => {
+    this.props.deleteData();
+    this.handleCloseAlert();
+  };
+
+  handleOpenModal = () => {
+    this.setState({modalOpen: true, actionModal: 'create', dialogData: {}});
+  };
+
+  handleCloseModal = () => {
+    this.setState({modalOpen: false});
+  };
+
+  handleOpenAlert = () => {
+    this.setState({alertOpen: true});
+  };
+
+  handleCloseAlert = () => {
+    this.setState({alertOpen: false});
+  };
+
+  handleSubmit = (data) => {
+    switch (this.state.actionModal) {
+      case 'create':
+        this.props.createData(data);
+        break;
+      case 'update':
+        this.props.updateData(data);
+        break;
+    }
+  };
+
+  showModal = () => {
+    if (this.state.modalOpen) {
+      return (
+        <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
+          data={this.state.dialogData} onClose={this.handleCloseModal}
+          onSubmit={this.handleSubmit} schema={this.state.activeSchema}
+        />
+      );
+    }
+
+    return null;
+  };
+
+  showAlert = () => {
+    if (this.state.alertOpen) {
+      return (
+        <Alert intent={Intent.PRIMARY}
+          isOpen={this.state.alertOpen}
+          confirmButtonText='Delete'
+          cancelButtonText='Cancel'
+          onConfirm={this.handleDelete}
+          onCancel={this.handleCloseAlert}>
+          <p>Delete?</p>
+        </Alert>
+      );
+    }
+  };
+
   render() {
     const {data, isLoading} = this.props.detailReducer;
 
@@ -53,7 +134,13 @@ class DetailView extends Component {
     }
 
     return (
-      <Detail schema={this.state.activeSchema} data={data}/>
+      <div>
+        {this.showModal()}
+        {this.showAlert()}
+        <Detail schema={this.state.activeSchema} data={data}
+          onEdit={this.handleEdit} onDelete={this.handleOpenAlert}
+        />
+      </div>
     );
   }
 
@@ -82,8 +169,11 @@ function mapStateToProps(state) {
 
 
 export default connect(mapStateToProps, {
+  initialize,
   fetchData,
   clearData,
   pollData,
-  cancelPollData
+  cancelPollData,
+  deleteData,
+  updateData
 })(DetailView);

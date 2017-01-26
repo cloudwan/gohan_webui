@@ -2,14 +2,37 @@ import React, {Component, PropTypes} from 'react';
 import jsyaml from 'js-yaml';
 import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/yaml/yaml';
+import {Tooltip, Position} from '@blueprintjs/core';
 
 export default class Detail extends Component {
+  handleEditClick = () => {
+    this.props.onEdit(this.props.data);
+  };
+
+  handleRemoveClick = () => {
+    this.props.onDelete(this.props.data);
+  };
+
+
   render() {
     const {schema} = this.props.schema;
     const {data} = this.props;
 
     return (
       <div className="pt-card pt-elevation-3 detail">
+        <h2>{schema.title}schema title</h2>
+        <div className='icons'>
+          <Tooltip content='Edit' hoverOpenDelay={50}
+            position={Position.BOTTOM}>
+            <span className="pt-icon-standard pt-icon-edit" onClick={this.handleEditClick}/>
+          </Tooltip>
+          <Tooltip content='Delete' hoverOpenDelay={50}
+            position={Position.BOTTOM}>
+            <span className="pt-icon-standard pt-icon-trash delete" onClick={this.handleRemoveClick}
+              style={{marginLeft: '15px'}}
+            />
+          </Tooltip>
+        </div>
         {schema.propertiesOrder.map((key, index) => {
           const property = schema.properties[key];
           const propertyValue = data[key];
