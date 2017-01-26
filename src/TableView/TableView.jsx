@@ -299,8 +299,6 @@ class TableView extends Component {
         </Alert>
       );
     }
-
-    return null;
   };
 
   render() {
