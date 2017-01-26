@@ -1,7 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import {Link} from 'react-router';
+import jsyaml from 'js-yaml';
+import CodeMirror from 'react-codemirror';
+import 'codemirror/mode/yaml/yaml';
 
-import {Tooltip} from '@blueprintjs/core';
+import {Tooltip, Popover, PopoverInteractionKind, Position} from '@blueprintjs/core';
 
 class TableRow extends Component {
   constructor(props) {
@@ -42,6 +45,26 @@ class TableRow extends Component {
     });
   };
 
+  buildPopover = data => {
+    const popoverContent = <CodeMirror value={jsyaml.safeDump(data)}
+      options={{
+        mode: 'yaml',
+        lineNumbers: true,
+        readOnly: true,
+        cursorBlinkRate: -1
+      }}
+    />;
+    return (
+      data === null ? 'null' : <Popover content={popoverContent}
+        interactionKind={PopoverInteractionKind.CLICK}
+        popoverClassName="pt-popover-content-sizing"
+        position={Position.RIGHT}
+        useSmartPositioning={true}>
+        <button className="pt-button">view</button>
+      </Popover>
+    );
+  };
+
   buildTableRow = () => {
     const {visibleColumns, rowItem} = this.props;
     const {singular} = this.props.schema;
@@ -49,9 +72,11 @@ class TableRow extends Component {
       const data = rowItem[column];
 
       if (typeof data === 'object') {
+        const popover = this.buildPopover(data);
+
         return (
           <td key={index}>
-            {data === null ? '' : JSON.stringify(data)}
+            {popover}
           </td>
         );
       }
