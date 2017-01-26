@@ -4,7 +4,9 @@ import {
   CLEAR_DATA,
   CREATE_SUCCESS,
   POLLING_DATA,
-  CANCEL_POLLING_DATA
+  CANCEL_POLLING_DATA,
+  DELETE_SUCCESS,
+  INIT
 } from './DetailActionTypes';
 
 export default function detailReducer(
@@ -17,6 +19,11 @@ export default function detailReducer(
   const {data} = action;
 
   switch (action.type) {
+    case INIT:
+      return {
+        ...state,
+        ...data
+      };
     case FETCH_SUCCESS:
       return {
         ...state,
@@ -50,6 +57,11 @@ export default function detailReducer(
         data: {...state.data, ...data}
       };
     case CANCEL_POLLING_DATA:
+      return {
+        ...state,
+        data: {...state.data, ...data}
+      };
+    case DELETE_SUCCESS:
       return {
         ...state,
         data: {...state.data, ...data}
