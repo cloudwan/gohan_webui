@@ -31,6 +31,7 @@ body {
   padding: 64px 14px 14px 270px;
   min-height: 400px;
 }
+
 .table {
   width: 100%;
   th {
@@ -66,9 +67,19 @@ body {
 }
 
 .detail {
-  span.property-title {
+  h2 {
+    display: inline-block;
+  }
+  >span.property-title {
     font-weight: bold;
     color: rgba(0, 0, 0, 0.9);
+  }
+  .icons {
+    display: inline-block;
+    float: right;
+    &.delete {
+      margin-left: 15px;
+    }
   }
 }
 
