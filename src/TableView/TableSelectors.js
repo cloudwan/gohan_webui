@@ -1,50 +1,66 @@
 import {createSelector} from 'reselect';
 
 const schemaReducer = (state) => state.schemaReducer.data;
-const plural = (state) => state.tableReducer.plural;
+const plural = (state, props) => props.route.plural;
 const pageLimit = (state) => state.configReducer.pageLimit;
-const totalCount = (state) => state.tableReducer.totalCount;
-const limit = (state) => state.tableReducer.limit;
-const offset = (state) => state.tableReducer.offset;
+const totalCount = (state, props) => {
+  if (state.tableReducer[props.route.plural]) {
+    return state.tableReducer[props.route.plural].totalCount;
+  }
+  return 0;
+};
+const limit = (state, props) => {
+  if (state.tableReducer[props.route.plural]) {
+    return state.tableReducer[props.route.plural].limit;
+  }
+  return 0;
+};
+const offset = (state, props) => {
+  if (state.tableReducer[props.route.plural]) {
+    return state.tableReducer[props.route.plural].offset;
+  }
+  return 0;
+};
 
 export const getActiveSchema = createSelector(
   [schemaReducer, plural],
-  (schemas, name) => {
-
+  (schemas, plural) => {
     return schemas.find(
-      object => object.plural === name
+      object => object.plural === plural
     );
   }
 );
 
 export const getHeaders = createSelector(
-  [state => getActiveSchema(state)],
+  [(state, props) => getActiveSchema(state, props)],
   (schema) => {
     if (schema) {
-      let exclude = ['id'];
-      let headers = [];
       const schemaProperties = schema.schema.properties;
       const schemaPropertiesOrder = schema.schema.propertiesOrder;
+      let exclude = ['id'];
 
-      schemaPropertiesOrder.forEach(item => {
+      return schemaPropertiesOrder.reduce((result, item) => {
         const property = schemaProperties[item];
 
+        if (exclude.includes(item)) {
+          return result;
+        }
+
+        if (property === undefined) {
+          return result;
+        }
+
         if (property && property.view && !property.view.includes('list')) {
-          return;
+          return result;
         }
 
-        if (exclude && exclude.length) {
-          if (exclude.includes(item)) {
-            return;
-          }
-        }
+        result.push(item);
 
-        headers.push(item);
-      });
-
-      return headers;
+        return result;
+      }, []);
     }
-    return null;
+
+    return [];
   }
 );
 
