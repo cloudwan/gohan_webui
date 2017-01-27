@@ -744,7 +744,11 @@ export default class SchemaModel extends Model {
         schema[key].default = this.defaultValue(value.items);
         if (value.items.type === 'object') {
           schema[key].itemType = 'Object';
-          schema[key].order = value.items.propertiesOrder;
+          if (value.items.propertiesOrder) {
+            schema[key].order = value.items.propertiesOrder.filter(
+              item => Object.keys(value.items.properties).includes(item)
+            );
+          }
           schema[key].subSchema = this.toFormJSON(value.items);
         } else if (value.items.type === 'boolean') {
           schema[key].itemType = 'Checkbox';
@@ -1050,6 +1054,75 @@ export default class SchemaModel extends Model {
     return jsyaml.safeLoad(data);
   }
 
+
+  filterSchema(schema, action, parentProperty) {
+    let result = {};
+
+    if (schema.properties === undefined) {
+      return schema;
+    }
+    for (let key in schema.properties) {
+      const property = schema.properties[key];
+
+      if (key === 'id' && property.format === 'uuid') {
+        continue;
+      }
+
+      if (key === parentProperty) {
+        continue;
+      }
+
+      const view = property.view;
+
+      if (view) {
+        if (view.indexOf(action) < 0) {
+          continue;
+        }
+      }
+
+      if (property.permission === null ||
+        property.permission === undefined) {
+        result[key] = property;
+        if (property.type.indexOf('array') >= 0) {
+          result[key].items = this.filterSchema(property.items, action, parentProperty);
+        } else if (property.type.indexOf('object') >= 0) {
+          result[key] = this.filterSchema(property, action, parentProperty);
+        }
+        continue;
+      }
+      if (property.permission && property.permission.indexOf(action) >= 0) {
+        result[key] = property;
+        if (property.type.indexOf('array') >= 0) {
+          result[key].items = this.filterSchema(property.items, action, parentProperty);
+        } else if (property.type.indexOf('object') >= 0) {
+          result[key] = this.filterSchema(property, action, parentProperty);
+        }
+      }
+    }
+    let required = [];
+
+    if (schema.required) {
+      required = schema.required.filter(property => {
+        return result.hasOwnProperty(property);
+      });
+    }
+
+    result = Object.assign(
+      {},
+      schema,
+      {
+        type: 'object',
+        properties: result,
+        propertiesOrder: schema.propertiesOrder,
+        required
+      }
+    );
+
+    return result;
+  }
+
+
+
   /**
    * Filters schema by action.
    * @param {string} action
@@ -1058,54 +1131,10 @@ export default class SchemaModel extends Model {
    */
   filterByAction(action, parentProperty) {
     return new Promise((resolve, reject) => {
-      let result = {};
       const schema = this.toJSON();
 
       this.toLocalSchema(schema.schema).then(localSchema => {
-        for (let key in localSchema.properties) {
-          const property = localSchema.properties[key];
-
-          if (key === 'id' && property.format === 'uuid') {
-            continue;
-          }
-
-          if (key === parentProperty) {
-            continue;
-          }
-
-          if (property.permission === null ||
-            property.permission === undefined) {
-            continue;
-          }
-
-          const view = property.view;
-
-          if (view) {
-            if (view.indexOf(action) < 0) {
-              continue;
-            }
-          }
-
-          if (property.permission.indexOf(action) >= 0) {
-            result[key] = property;
-          }
-        }
-        let required = [];
-
-        if (schema.schema.required) {
-          required = schema.schema.required.filter(property => {
-            return result.hasOwnProperty(property);
-          });
-        }
-
-        result = {
-          type: 'object',
-          properties: result,
-          propertiesOrder: schema.schema.propertiesOrder,
-          required
-        };
-
-        resolve(result);
+        resolve(this.filterSchema(localSchema, action, parentProperty));
       }, error => {
         reject(error);
         console.error(error);
