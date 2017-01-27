@@ -9,7 +9,9 @@ import {
   DELETE_SUCCESS,
   DELETE_FAILURE,
   UPDATE_SORT,
+  UPDATE_SORT_ERROR,
   UPDATE_OFFSET,
+  UPDATE_SUCCESS,
   UPDATE_FAILURE,
   UPDATE_FILTERS,
   DELETE_MULTIPLE_RESOURCES_SUCCESS
@@ -32,7 +34,7 @@ import {
 export function initialize(url, plural, options) {
   if (options && options.sortOrder && !(options.sortOrder === 'asc' || options.sortOrder === 'desc')) {
     console.error('Wrong sortOrder value! Can be only asc or desc');
-    options.sortOrder = undefined;
+    delete options.sortOrder;
   }
 
   return dispatch => {
@@ -58,20 +60,20 @@ function fetchError(data) {
  * Starts fetch data for table resource.
  *
  * @export
+ * @param {string} plural
  * @return {function}
  */
-export function fetchData() {
+export function fetchData(plural) {
   return (dispatch, getState) => {
     const state = getState();
     const {
       url,
-      plural,
       limit,
       offset,
       sortKey,
       sortOrder,
       filters
-    } = state.tableReducer;
+    } = state.tableReducer[plural];
     const {pageLimit} = state.configReducer;
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
@@ -89,50 +91,75 @@ export function fetchData() {
 
     axios.get(gohanUrl + url, {headers, params}).then(response => {
       const {headers, status, data} = response;
-      const totalCount = headers['x-total-count'];
 
       if (status === 200) {
-        dispatch(fetchSuccess(data[plural], {totalCount}));
+        const totalCount = headers['x-total-count'];
+        dispatch(fetchSuccess(data, {totalCount}));
       } else {
-        dispatch(fetchError('Cannot fetch data!'));
+        dispatch(fetchError({data: 'Cannot fetch data!'}));
       }
     }).catch(error => {
-      dispatch(fetchError(error.response));
+      dispatch(fetchError(error));
     });
   };
 }
 
-export function sortData(sortKey, sortOrder) {
+/**
+ * Sets sort options and fetches data.
+ *
+ * @export
+ * @param {string} sortKey
+ * @param {string} sortOrder - asc or desc
+ * @param {string} plural
+ * @return {function(*)}
+ */
+export function sortData(sortKey, sortOrder, plural) {
   if (sortOrder && sortOrder !== 'asc' && sortOrder !== 'desc') {
     return dispatch => {
-      dispatch({type: 'error', error: 'Sort order must by asc or desc'});
+      dispatch({type: UPDATE_SORT_ERROR, error: 'Sort order must by asc or desc!'});
     };
   }
 
   return dispatch => {
-    dispatch({type: UPDATE_SORT, data: {sortKey, sortOrder}});
-    dispatch(fetchData());
+    dispatch({type: UPDATE_SORT, data: {plural, sortKey, sortOrder}});
+    dispatch(fetchData(plural));
   };
 }
 
-export function setOffset(offset) {
+/**
+ * Sets offset and fetches data.
+ *
+ * @export
+ * @param {number} offset
+ * @param {string} plural
+ * @return {function(*)}
+ */
+export function setOffset(offset, plural) {
   return dispatch => {
-    dispatch({type: UPDATE_OFFSET, data: {offset}});
-    dispatch(fetchData());
+    dispatch({type: UPDATE_OFFSET, data: {plural, offset}});
+    dispatch(fetchData(plural));
   };
 }
 
-export function filterData(filters) {
+/**
+ * Filters data by specified property and value.
+ *
+ * @export
+ * @param {{[string]: string}}filters
+ * @param {string} plural
+ * @return {function(*)}
+ */
+export function filterData(filters, plural) {
   return dispatch => {
-    dispatch({type: UPDATE_OFFSET, data: {offset: 0}});
-    dispatch({type: UPDATE_FILTERS, data: {filters}});
-    dispatch(fetchData());
+    dispatch({type: UPDATE_OFFSET, data: {plural, offset: 0}});
+    dispatch({type: UPDATE_FILTERS, data: {plural, filters}});
+    dispatch(fetchData(plural));
   };
 }
 
-function createSuccess() {
+function createSuccess(plural) {
   return dispatch => {
-    dispatch(fetchData());
+    dispatch(fetchData(plural));
     dispatch({type: CREATE_SUCCESS});
   };
 }
@@ -150,12 +177,12 @@ function createError(data) {
  *
  * @export
  * @param data {Object}
- * @return {function}
+ * @return {function(*)}
  */
-export function createData(data) {
+export function createData(data, plural) {
   return (dispatch, getState) => {
     const state = getState();
-    const {url} = state.tableReducer;
+    const {url} = state.tableReducer[plural];
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
     const headers = {
@@ -167,9 +194,9 @@ export function createData(data) {
       const {status} = response;
 
       if (status === 201) {
-        dispatch(createSuccess());
+        dispatch(createSuccess(plural));
       } else {
-        dispatch(createError('Cannot create new resource!'));
+        dispatch(createError({data: 'Cannot create new resource!'}));
       }
     }).catch(error => {
       dispatch(createError(error.response));
@@ -178,9 +205,11 @@ export function createData(data) {
 }
 
 
-function updateSuccess() {
+function updateSuccess(plural) {
   return dispatch => {
-    dispatch(fetchData());
+    dispatch(fetchData(plural));
+    dispatch({type: UPDATE_SUCCESS});
+
   };
 }
 
@@ -192,10 +221,17 @@ function updateError(data) {
   };
 }
 
-export function updateData(id, data) {
+/**
+ * Creates new resource.
+ *
+ * @export
+ * @param data {Object}
+ * @return {function}
+ */
+export function updateData(id, data, plural) {
   return (dispatch, getState) => {
     const state = getState();
-    const {url} = state.tableReducer;
+    const {url} = state.tableReducer[plural];
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
     const headers = {
@@ -207,9 +243,9 @@ export function updateData(id, data) {
       const {status} = response;
 
       if (status === 200) {
-        dispatch(updateSuccess());
+        dispatch(updateSuccess(plural));
       } else {
-        dispatch(updateError('Cannot update resource!'));
+        dispatch(updateError({data: 'Cannot update resource!'}));
       }
     }).catch(error => {
       dispatch(updateError(error.response));
@@ -217,9 +253,9 @@ export function updateData(id, data) {
   };
 }
 
-function deleteSuccess() {
+function deleteSuccess(plural) {
   return dispatch => {
-    dispatch(fetchData());
+    dispatch(fetchData(plural));
     dispatch({type: DELETE_SUCCESS});
   };
 }
@@ -243,10 +279,18 @@ function deleteError(error) {
   };
 }
 
-export function deleteData(url, id) {
+/**
+ * Removes resource and fetches data.
+ *
+ * @export
+ * @param {string} id
+ * @param {string} plural
+ * @return {function(*, *)}
+ */
+export function deleteData(id, plural) {
   return (dispatch, getState) => {
     const state = getState();
-    const {url} = state.tableReducer;
+    const {url} = state.tableReducer[plural];
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
 
@@ -259,7 +303,7 @@ export function deleteData(url, id) {
       const {status} = response;
 
       if (status === 204) {
-        dispatch(deleteSuccess());
+        dispatch(deleteSuccess(plural));
       } else {
         dispatch(deleteError(response));
       }
@@ -269,17 +313,23 @@ export function deleteData(url, id) {
   };
 }
 
-function deleteMultipleResourcesSuccess() {
+function deleteMultipleResourcesSuccess(plural) {
   return dispatch => {
-    dispatch(fetchData());
-    dispatch({type: DELETE_MULTIPLE_RESOURCES_SUCCESS});
+    dispatch(fetchData(plural));
+    dispatch({type: DELETE_MULTIPLE_RESOURCES_SUCCESS, data: {plural}});
   };
 }
 
-export function deleteMultipleResources(ids) {
+/**
+ * Removes array of resources.
+ *
+ * @param {string} plural
+ * @return {function(*)}
+ */
+export function deleteMultipleResources(ids, plural) {
   return (dispatch, getState) => {
     const state = getState();
-    const {url} = state.tableReducer;
+    const {url} = state.tableReducer[plural];
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
     const headers = {
@@ -294,16 +344,23 @@ export function deleteMultipleResources(ids) {
 
     axios.all(requests)
       .then(() => {
-        dispatch(deleteMultipleResourcesSuccess());
+        dispatch(deleteMultipleResourcesSuccess(plural));
       })
       .catch((error) => {
         dispatch(deleteError(error));
+        dispatch(fetchData(plural));
       });
   };
 }
 
-export function clearData() {
+/**
+ * Clears date in state.
+ *
+ * @param {string} plural
+ * @return {function(*)}
+ */
+export function clearData(plural) {
   return dispatch => {
-    dispatch({type: CLEAR_DATA});
+    dispatch({type: CLEAR_DATA, data: {plural}});
   };
 }

@@ -5,7 +5,8 @@ import {
   getActiveSchema,
   getHeaders,
   getPageCount,
-  getActivePage} from './TableSelectors';
+  getActivePage
+} from './TableSelectors';
 import {
   initialize,
   fetchData,
@@ -26,28 +27,7 @@ class TableView extends Component {
   constructor(props) {
     super(props);
 
-    const {plural} = this.props.route;
-    let filters;
-
-    if (this.props.location.query.filters) {
-      try {
-        filters = JSON.parse(this.props.location.query.filters);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    const {
-      sortKey,
-      sortOrder,
-      limit = 0,
-      offset = 0,
-    } = this.props.location.query;
-
     this.state = {
-      activeSchema: props.schemaReducer.data.find(
-        object => object.plural === plural
-      ),
       modalOpen: false,
       alertOpen: false,
       actionModal: 'create',
@@ -59,15 +39,6 @@ class TableView extends Component {
       },
       buttonDeleteSelectedDisabled: true
     };
-
-    props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural, {
-      sortKey,
-      sortOrder,
-      limit,
-      offset,
-      filters
-    });
-    props.fetchData();
   }
 
   componentDidMount() {
@@ -80,12 +51,7 @@ class TableView extends Component {
     if (this.props.location.pathname !== nextProps.location.pathname) {
       this.props.clearData();
 
-      const splitPathname = nextProps.location.pathname.split('/');
-
       this.state = {
-        activeSchema: this.props.schemaReducer.data.find(
-          object => object.plural === splitPathname[splitPathname.length - 1]
-        ),
         checkedRowsIds: [],
         checkedAll: {
           checked: false,
@@ -93,8 +59,6 @@ class TableView extends Component {
         },
         buttonDeleteSelectedDisabled: true
       };
-      this.props.initialize(this.state.activeSchema.url, this.state.activeSchema.plural);
-      this.props.fetchData();
     }
 
     if (nextProps.tableReducer.deletedMultipleResources === true &&
@@ -123,7 +87,6 @@ class TableView extends Component {
 
   componentWillUnmount() {
     this.toaster.getToasts().forEach(toast => this.toaster.dismiss(toast.key));
-    this.props.clearData();
   }
 
   handlePageChange = page => {
@@ -143,8 +106,9 @@ class TableView extends Component {
         offset: newOffset
       }
     });
+    const {plural} = this.props.route;
 
-    this.props.setOffset(newOffset);
+    this.props.setOffset(newOffset, plural);
     this.setState({
       checkedRowsIds: [],
       buttonDeleteSelectedDisabled: true,
@@ -160,8 +124,9 @@ class TableView extends Component {
         filters: JSON.stringify(property)
       }
     });
+    const {plural} = this.props.route;
 
-    this.props.filterData(property);
+    this.props.filterData(property, plural);
   };
 
   handleSortData = (sortKey, sortOrder) => {
@@ -173,8 +138,9 @@ class TableView extends Component {
         sortOrder
       }
     });
+    const {plural} = this.props.route;
 
-    this.props.sortData(sortKey, sortOrder);
+    this.props.sortData(sortKey, sortOrder, plural);
   };
 
   handleOpenModal = () => {
@@ -194,17 +160,19 @@ class TableView extends Component {
   };
 
   handleDeleteData = () => {
-    this.props.deleteData(this.state.activeSchema.url, this.state.markedForDeletion.id, this.state.activeSchema.plural);
+    this.props.deleteData(this.state.markedForDeletion.id, this.props.activeSchema.plural);
     this.handleCloseAlert();
   };
 
   handleSubmit = (data, id) => {
+    const {plural} = this.props.route;
+
     switch (this.state.actionModal) {
       case 'create':
-        this.props.createData(data);
+        this.props.createData(data, plural);
         break;
       case 'update':
-        this.props.updateData(id, data);
+        this.props.updateData(id, data, plural);
         break;
     }
   };
@@ -267,9 +235,10 @@ class TableView extends Component {
 
   handleDeleteMultipleResources = () => {
     const {checkedRowsIds} = this.state;
+    const {plural} = this.props.route;
 
     if (checkedRowsIds.length > 0) {
-      this.props.deleteMultipleResources(checkedRowsIds);
+      this.props.deleteMultipleResources(checkedRowsIds, plural);
     }
   };
 
@@ -279,7 +248,7 @@ class TableView extends Component {
       return (
         <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
           data={this.state.dialogData} onClose={this.handleCloseModal}
-          onSubmit={this.handleSubmit} schema={this.state.activeSchema}
+          onSubmit={this.handleSubmit} schema={this.props.activeSchema}
         />
       );
     }
@@ -302,13 +271,12 @@ class TableView extends Component {
   };
 
   render() {
-    const {isLoading} = this.props.tableReducer;
-
-    if (isLoading) {
+    if (!this.props.tableReducer || this.props.tableReducer.isLoading) {
       return (
         <LoadingIndicator />
       );
     }
+
     const {data, filters} = this.props.tableReducer;
     const filterValue = filters ? filters[Object.keys(filters)[0]] : '';
     const filterBy = filters ? Object.keys(filters)[0] : '';
@@ -342,20 +310,20 @@ TableView.contextTypes = {
 TableView.propTypes = {
   errorMessage: PropTypes.string,
   schemaReducer: PropTypes.object.isRequired,
-  tableReducer: PropTypes.object.isRequired,
+  tableReducer: PropTypes.object,
   fetchData: PropTypes.func.isRequired,
   clearData: PropTypes.func.isRequired
 };
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
-    activeSchema: getActiveSchema(state),
-    headers: getHeaders(state),
-    pageCount: getPageCount(state),
-    activePage: getActivePage(state),
+    activeSchema: getActiveSchema(state, props),
+    headers: getHeaders(state, props),
+    pageCount: getPageCount(state, props),
+    activePage: getActivePage(state, props),
     configReducer: state.configReducer,
     schemaReducer: state.schemaReducer,
-    tableReducer: state.tableReducer
+    tableReducer: state.tableReducer[props.route.plural]
   };
 }
 
