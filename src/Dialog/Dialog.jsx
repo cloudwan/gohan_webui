@@ -6,7 +6,8 @@ import Form from 'react-jsonschema-form';
 import CustomSchemaField from './formComponents/CustomSchemaField/CustomSchemaField';
 import {fetchRelationFields, clearData} from './DialogActions';
 
-class GeneratedDialog extends Component {
+export class GeneratedDialog extends Component {
+// class GeneratedDialog extends Component {
   componentDidMount() {
     this.props.fetchRelationFields(this.props.schema.schema, this.props.action);
   }
