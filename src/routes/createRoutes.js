@@ -1,5 +1,5 @@
 import App from './../app/App';
-import TableView from '../TableView';
+import TableView, {onTableEnter} from '../TableView';
 import DetailView from '../DetailView';
 import NotFound from '../NotFoundView';
 import requestAuth from '../auth/requestAuth';
@@ -21,7 +21,10 @@ export const createRoutes = store => {
       path: /* item.prefix + '/' + */ item.plural,
       plural: item.plural,
       getComponent(nextState, cb) {
-        return cb(null, TableView(store));
+        return cb(null, TableView);
+      },
+      onEnter: (...params) => {
+        onTableEnter(store, item.plural, ...params);
       }
     };
     result.push(singular, plural);
