@@ -1,23 +1,23 @@
 import {createSelector} from 'reselect';
 
 const schemaReducer = (state) => state.schemaReducer.data;
-const plural = (state, props) => props.route.plural;
+const plural = (state, props) => props.plural;
 const pageLimit = (state) => state.configReducer.pageLimit;
 const totalCount = (state, props) => {
-  if (state.tableReducer[props.route.plural]) {
-    return state.tableReducer[props.route.plural].totalCount;
+  if (state.tableReducer[props.plural]) {
+    return state.tableReducer[props.plural].totalCount;
   }
   return 0;
 };
 const limit = (state, props) => {
-  if (state.tableReducer[props.route.plural]) {
-    return state.tableReducer[props.route.plural].limit;
+  if (state.tableReducer[props.plural]) {
+    return state.tableReducer[props.plural].limit;
   }
   return 0;
 };
 const offset = (state, props) => {
-  if (state.tableReducer[props.route.plural]) {
-    return state.tableReducer[props.route.plural].offset;
+  if (state.tableReducer[props.plural]) {
+    return state.tableReducer[props.plural].offset;
   }
   return 0;
 };

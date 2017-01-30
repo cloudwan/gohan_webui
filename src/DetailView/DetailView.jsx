@@ -134,7 +134,7 @@ class DetailView extends Component {
     }
 
     return (
-      <div>
+      <div className="detail-container">
         {this.showModal()}
         {this.showAlert()}
         <Detail schema={this.state.activeSchema} data={data}

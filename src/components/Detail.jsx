@@ -15,12 +15,12 @@ export default class Detail extends Component {
 
 
   render() {
-    const {schema} = this.props.schema;
+    const {schema, title} = this.props.schema;
     const {data} = this.props;
 
     return (
       <div className="pt-card pt-elevation-3 detail">
-        <h2>{schema.title}schema title</h2>
+        <h2>{title}</h2>
         <div className='icons'>
           <Tooltip content='Edit' hoverOpenDelay={50}
             position={Position.BOTTOM}>
@@ -60,7 +60,7 @@ export default class Detail extends Component {
           return (
             <p key={index}>
               <span className="property-title">{property.title}: </span>
-              <div>{typeof propertyValue === 'object' ? JSON.stringify(propertyValue) : propertyValue}</div>
+              <span>{typeof propertyValue === 'object' ? JSON.stringify(propertyValue) : propertyValue}</span>
             </p>
           );
         })}

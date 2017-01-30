@@ -21,9 +21,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test1'
-          }
+          plural: 'test1'
         }
       ).should.deep.equal({
         plural: 'test1'
@@ -51,9 +49,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test1'
-          }
+          plural: 'test1'
         }
       ).should.deep.equal([]);
 
@@ -75,9 +71,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test1'
-          }
+          plural: 'test1'
         }
       ).should.deep.equal([]);
     });
@@ -111,9 +105,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test1'
-          }
+          plural: 'test1'
         }
       ).should.deep.equal([
         'name'
@@ -147,9 +139,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test1'
-          }
+          plural: 'test1'
         }
       ).should.deep.equal([
         'name',
@@ -187,9 +177,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test1'
-          }
+          plural: 'test1'
         }
       ).should.deep.equal([
         'name',
@@ -213,9 +201,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test'
-          }
+          plural: 'test'
         }
       ).should.equal(0);
 
@@ -228,9 +214,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test'
-          }
+          plural: 'test'
         }
       ).should.equal(0);
     });
@@ -249,9 +233,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test'
-          }
+          plural: 'test'
         }
       ).should.equal(1);
     });
@@ -271,9 +253,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test'
-          }
+          plural: 'test'
         }
       ).should.equal(0);
 
@@ -286,9 +266,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test'
-          }
+          plural: 'test'
         }
       ).should.equal(0);
     });
@@ -306,9 +284,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test'
-          }
+          plural: 'test'
         }
       ).should.equal(1);
     });
@@ -327,9 +303,7 @@ describe('TableSelectors ', () => {
           }
         },
         {
-          route: {
-            plural: 'test'
-          }
+          plural: 'test'
         }
       ).should.equal(2);
     });
