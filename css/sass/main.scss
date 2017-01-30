@@ -28,8 +28,11 @@ body {
   background-color: #edecec;
 }
 .view-content {
-  padding: 64px 14px 14px 270px;
+  padding: 50px 0 0 260px;;
   min-height: 400px;
+}
+.table-container, .detail-container, .loading-container {
+  margin: 15px
 }
 
 .table {
@@ -140,7 +143,7 @@ body {
 
 @media (max-width: 1200px) {
   .table-container > .pt-card {
-    overflow-x: scroll;
+    overflow-x: auto;
   }
 }
 

@@ -1,6 +1,7 @@
+import React from 'react';
 import App from './../app/App';
 import TableView, {onTableEnter} from '../TableView';
-import DetailView from '../DetailView';
+import DetailView, {onDetailEnter} from '../DetailView';
 import NotFound from '../NotFoundView';
 import requestAuth from '../auth/requestAuth';
 import components from './componentsList';
@@ -10,18 +11,49 @@ export const createRoutes = store => {
   const {data} = store.getState().schemaReducer;
 
   const schemaRoutes = data.reduce((result, item) => {
+    const schemaChilds = data.filter(childSchema => childSchema.parent === item.singular);
     const singular = {
       path: /* item.prefix + '/' + */ item.singular + '/:id',
       singular: item.singular,
       getComponent(nextState, cb) {
-        return cb(null, DetailView(store));
+
+        return cb(null,
+          params => {
+            return (
+              <div>
+                <DetailView {...params}/>
+                {
+                  schemaChilds.map(child => (
+                    <TableView key={child.id} plural={child.plural} />
+                    )
+                  )
+                }
+              </div>
+            );
+          }
+        );
+      },
+      onEnter: (...params) => {
+        onDetailEnter(store);
+        schemaChilds.forEach(child => {
+          onTableEnter(store, child.plural, ...params);
+        });
       }
     };
     const plural = {
       path: /* item.prefix + '/' + */ item.plural,
       plural: item.plural,
       getComponent(nextState, cb) {
-        return cb(null, TableView);
+        return cb(null,
+          params => {
+            const {plural} = item;
+            const {location} = params;
+
+            return (
+              <TableView location={location} plural={plural}/>
+            );
+          }
+        );
       },
       onEnter: (...params) => {
         onTableEnter(store, item.plural, ...params);
