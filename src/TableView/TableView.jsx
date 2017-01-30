@@ -48,19 +48,6 @@ class TableView extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.location.pathname !== nextProps.location.pathname) {
-      this.props.clearData();
-
-      this.state = {
-        checkedRowsIds: [],
-        checkedAll: {
-          checked: false,
-          changedByRow: false
-        },
-        buttonDeleteSelectedDisabled: true
-      };
-    }
-
     if (nextProps.tableReducer.deletedMultipleResources === true &&
       nextProps.tableReducer.deletedMultipleResources !== this.props.tableReducer.deletedMultipleResources) {
       this.setState({
@@ -99,14 +86,16 @@ class TableView extends Component {
       return;
     }
 
-    this.context.router.replace({
-      pathname: this.props.location.pathname,
-      query: {
-        ...this.props.location.query,
-        offset: newOffset
-      }
-    });
-    const {plural} = this.props.route;
+    if (this.props.location) {
+      this.context.router.replace({
+        pathname: this.props.location.pathname,
+        query: {
+          ...this.props.location.query,
+          offset: newOffset
+        }
+      });
+    }
+    const {plural} = this.props;
 
     this.props.setOffset(newOffset, plural);
     this.setState({
@@ -117,28 +106,32 @@ class TableView extends Component {
   };
 
   handleFilterData = property => {
-    this.context.router.replace({
-      pathname: this.props.location.pathname,
-      query: {
-        ...this.props.location.query,
-        filters: JSON.stringify(property)
-      }
-    });
-    const {plural} = this.props.route;
+    if (this.props.location) {
+      this.context.router.replace({
+        pathname: this.props.location.pathname,
+        query: {
+          ...this.props.location.query,
+          filters: JSON.stringify(property)
+        }
+      });
+    }
+    const {plural} = this.props;
 
     this.props.filterData(property, plural);
   };
 
   handleSortData = (sortKey, sortOrder) => {
-    this.context.router.replace({
-      pathname: this.props.location.pathname,
-      query: {
-        ...this.props.location.query,
-        sortKey,
-        sortOrder
-      }
-    });
-    const {plural} = this.props.route;
+    if (this.props.location) {
+      this.context.router.replace({
+        pathname: this.props.location.pathname,
+        query: {
+          ...this.props.location.query,
+          sortKey,
+          sortOrder
+        }
+      });
+    }
+    const {plural} = this.props;
 
     this.props.sortData(sortKey, sortOrder, plural);
   };
@@ -165,7 +158,7 @@ class TableView extends Component {
   };
 
   handleSubmit = (data, id) => {
-    const {plural} = this.props.route;
+    const {plural} = this.props;
 
     switch (this.state.actionModal) {
       case 'create':
@@ -235,7 +228,7 @@ class TableView extends Component {
 
   handleDeleteMultipleResources = () => {
     const {checkedRowsIds} = this.state;
-    const {plural} = this.props.route;
+    const {plural} = this.props;
 
     if (checkedRowsIds.length > 0) {
       this.props.deleteMultipleResources(checkedRowsIds, plural);
@@ -323,7 +316,7 @@ function mapStateToProps(state, props) {
     activePage: getActivePage(state, props),
     configReducer: state.configReducer,
     schemaReducer: state.schemaReducer,
-    tableReducer: state.tableReducer[props.route.plural]
+    tableReducer: state.tableReducer[props.plural]
   };
 }
 
