@@ -103,7 +103,7 @@ export default class DetailView extends View {
     const onsubmit = values => {
       values = this.toServer(values);
 
-      model.save(values).then(
+      model.save(values, {wait: true}).then(
         () => {
           this.dialog.close();
           this.render();
