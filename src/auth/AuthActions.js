@@ -1,6 +1,13 @@
 /* global window */
 import axios from 'axios';
-import {LOGIN_SUCCESS, LOGIN_ERROR, LOGOUT, TENANT_FETCH_SUCCESS, TENANT_FETCH_FAILURE} from './AuthActionTypes';
+import {
+  LOGIN_SUCCESS,
+  LOGIN_ERROR,
+  LOGOUT,
+  TENANT_FETCH,
+  TENANT_FETCH_SUCCESS,
+  TENANT_FETCH_FAILURE
+} from './AuthActionTypes';
 
 const {sessionStorage} = window;
 
@@ -54,6 +61,9 @@ export function fetchTokenData() {
       if (tenant) {
         data.auth.tenantName = tenant;
       }
+
+      dispatch({type: TENANT_FETCH});
+
       axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
         dispatch(loginSuccess(response.data));
       }).catch(() => {
