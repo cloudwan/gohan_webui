@@ -3,15 +3,14 @@ import {connect} from 'react-redux';
 
 import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
+import LoadingIndicator from '../components/LoadingIndicator';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
 import {Toaster, Position} from '@blueprintjs/core';
 
 class Auth extends Component {
-  constructor(props) {
-    super(props);
-
-    this.props.fetchTokenData(); // its temporary :D
+  componentWillMount() {
+    this.props.fetchTokenData();
   }
 
   handleDismissClick = event => {
@@ -64,20 +63,20 @@ class Auth extends Component {
   }
 
   render() {
-    return (
-      <div className="pt-card pt-elevation-3 auth-card">
-        {(() => {
-          if (this.props.tokenId === undefined) {
-            return (<Login onLoginSubmit={this.handleLoginSubmit}/>);
-          } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
-            return (
-              <SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}/>
-            );
-          }
-          return null;
-        })()}
-      </div>
-    );
+    if (!this.props.inProgress && this.props.tokenId === undefined) {
+      return (
+        <div className="pt-card pt-elevation-3 auth-card">
+          <Login onLoginSubmit={this.handleLoginSubmit}/>
+        </div>
+      );
+    } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
+      return (
+        <div className="pt-card pt-elevation-3 auth-card">
+          <SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}/>
+        </div>
+      );
+    }
+    return <LoadingIndicator/>;
   }
 }
 
@@ -99,6 +98,7 @@ function mapStateToProps(state) {
     tokenExpires: state.authReducer.tokenExpires,
     tenant: state.authReducer.tenant,
     tenants: state.authReducer.tenants,
+    inProgress: state.authReducer.inProgress,
     errorMessage: state.errorReducer
   };
 }

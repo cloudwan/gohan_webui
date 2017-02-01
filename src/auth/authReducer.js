@@ -1,22 +1,36 @@
-import {LOGOUT, LOGIN_SUCCESS, TENANT_FETCH_SUCCESS} from './AuthActionTypes';
+import {LOGOUT, LOGIN_SUCCESS, TENANT_FETCH, TENANT_FETCH_SUCCESS} from './AuthActionTypes';
 
-export default function authReducer(state = {logged: false}, action) {
+export default function authReducer(state = {
+  inProgress: false,
+  logged: false
+}, action) {
   switch (action.type) {
     case LOGOUT:
-      return {logged: false};
+      return {
+        inProgress: false,
+        logged: false
+      };
     case LOGIN_SUCCESS:
       return {
         ...state,
         tokenId: action.data.access.token.id,
         tokenExpires: action.data.access.token.expires,
         tenant: action.data.access.token.tenant,
-        user: action.data.access.user
+        user: action.data.access.user,
+        inProgress: false
+      };
+    case TENANT_FETCH:
+      return {
+        ...state,
+        inProgress: true
       };
     case TENANT_FETCH_SUCCESS:
       return {
         ...state,
         ...action.data,
+        inProgress: false,
         logged: true
+
       };
     default:
       return state;
