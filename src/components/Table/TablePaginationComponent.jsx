@@ -21,7 +21,7 @@ class TablePaginationComponent extends Component {
           activeClassName={'pt-active'} pageClassName={'pt-button'}
           previousClassName={'pt-button'} nextClassName={'pt-button'}
           previousLinkClassName={'pt-icon-chevron-left'} nextLinkClassName={'pt-icon-chevron-right'}
-          disabledClassName={'pt-disabled'}
+          disabledClassName={'pt-disabled'} disableInitialCallback={true}
         />
       );
     }
