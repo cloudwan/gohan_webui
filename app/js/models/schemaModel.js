@@ -1058,7 +1058,7 @@ export default class SchemaModel extends Model {
   filterSchema(schema, action, parentProperty) {
     let result = {};
 
-    if (schema.properties === undefined) {
+    if (schema.enum !== undefined || schema.options !== undefined || schema.properties === undefined) {
       return schema;
     }
     for (let key in schema.properties) {
