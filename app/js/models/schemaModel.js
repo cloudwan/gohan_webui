@@ -2,6 +2,7 @@
 import 'whatwg-fetch';
 import jsyaml from 'js-yaml';
 import {Model, Collection} from 'backbone';
+import _ from 'underscore';
 
 /**
  * Class contains logic of schema model in application.
@@ -918,7 +919,7 @@ export default class SchemaModel extends Model {
    */
   defaultValue(schema) {
     if (schema.type === 'object') {
-      if (schema.default === undefined && schema.properties !== undefined) {
+      if ((schema.default === undefined || _.isEmpty(schema.default)) && schema.properties !== undefined) {
         const result = {};
 
         for (let key in schema.properties) {
