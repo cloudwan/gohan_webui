@@ -9,7 +9,7 @@ import {fetchRelationFields, clearData} from './DialogActions';
 export class GeneratedDialog extends Component {
 // class GeneratedDialog extends Component {
   componentDidMount() {
-    this.props.fetchRelationFields(this.props.schema.schema, this.props.action);
+    this.props.fetchRelationFields(this.props.schema.schema, this.props.action, this.props.schema.parent);
   }
 
   componentWillUnmount() {

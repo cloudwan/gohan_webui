@@ -20,7 +20,7 @@ function BaseInput(props) {
   return (
     <input className="pt-input pt-fill" type="text"
       placeholder={placeholder} dir="auto"
-      value={value === undefined ? '' : value} onChange={event => onChange(event.target.value)}
+      value={value ? value : ''} onChange={event => onChange(event.target.value)}
     />
   );
 }

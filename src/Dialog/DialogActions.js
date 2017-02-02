@@ -111,7 +111,7 @@ function toLocalSchema(schema, state) {
  * @param action
  * @return {function(*, *)}
  */
-export function fetchRelationFields(schema, action) {
+export function fetchRelationFields(schema, action, parentProperty) {
   return async (dispatch, getState) => {
     const state = getState();
 
@@ -122,6 +122,10 @@ export function fetchRelationFields(schema, action) {
 
       const properties = localSchema.propertiesOrder.reduce((result, key) => {
         const property = localSchema.properties[key];
+
+        if (key === `${parentProperty}_id`) {
+          return result;
+        }
 
         if ((key === 'id' && property.format === 'uuid') ||
           property.permission === null ||
