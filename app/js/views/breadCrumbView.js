@@ -28,6 +28,7 @@ export default class BreadCrumbView extends View {
         url: _.escape(parent.url)
       };
     });
+
     this.$el.html(this.template({
       parents: parentsEscaped
     }));

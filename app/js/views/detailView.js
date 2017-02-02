@@ -177,10 +177,11 @@ export default class DetailView extends View {
     this.app.router.changeTitle(this.model.get('name') || this.model.get('id'));
     this.model.getAncestors(ancestors => {
       ancestors.unshift(this.model);
-      const parents = ancestors.reduce((result, ancestor) => {
+      const parents = ancestors.reduce((result, ancestor, index) => {
         const fragment = ancestor.schema.get('url');
         let modelFragment;
         let schemaFragment;
+
         if (ancestor.schema.hasParent()) {
           modelFragment = ancestor.schema.parent().get('url') +
           '/' + ancestor.parentId() + '/' + ancestor.schema.get('plural') + '/' + ancestor.get('id');
@@ -193,11 +194,13 @@ export default class DetailView extends View {
         result.push({
           title: ancestor.get('name'),
           url: modelFragment
-        },
-          {
+        });
+        if (ancestors.length === index + 1) {
+          result.push({
             title: ancestor.schema.get('title'),
             url: schemaFragment
           });
+        }
         return result;
       },
       []);
