@@ -33,10 +33,12 @@ export const createRoutes = store => {
           }
         );
       },
-      onEnter: (...params) => {
+      onEnter: (nextState) => {
         onDetailEnter(store);
         schemaChilds.forEach(child => {
-          onTableEnter(store, child.plural, ...params);
+          const parentUrl = `/${item.plural}/${nextState.params.id}`;
+
+          onTableEnter(store, child.plural, nextState, parentUrl);
         });
       }
     };
@@ -55,8 +57,8 @@ export const createRoutes = store => {
           }
         );
       },
-      onEnter: (...params) => {
-        onTableEnter(store, item.plural, ...params);
+      onEnter: (nextState) => {
+        onTableEnter(store, item.plural, nextState);
       }
     };
     result.push(singular, plural);

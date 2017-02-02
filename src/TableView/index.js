@@ -6,7 +6,7 @@ import {initialize, fetchData, clearData} from './TableActions';
 
 export default TableView;
 
-export function onTableEnter(store, plural, nextState) {
+export function onTableEnter(store, plural, nextState, parentUrl = '') {
   injectReducer(store, {key: 'tableReducer', reducer});
   const state = store.getState();
   const activeSchema = state.schemaReducer.data.find(
@@ -31,7 +31,7 @@ export function onTableEnter(store, plural, nextState) {
 
   store.dispatch(
     initialize(
-      activeSchema.url, plural,
+      `${activeSchema.prefix}${parentUrl}/${plural}`, plural,
       {
         sortKey,
         sortOrder,
