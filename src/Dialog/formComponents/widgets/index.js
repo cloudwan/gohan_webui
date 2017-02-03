@@ -3,8 +3,12 @@ import CidrWidget from './CidrWidget';
 import MacWidget from './MacWidget';
 import UuidWidget from './UuidWidget';
 import Ipv4Widget from './Ipv4Widget';
+import TextWidget from './TextWidget';
+import SelectWidget from './SelectWidget';
 
 export default Object.freeze({
+  select: SelectWidget,
+  text: TextWidget,
   email: EmailWidget,
   cidr: CidrWidget,
   mac: MacWidget,
