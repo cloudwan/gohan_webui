@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 
 import Label from './Label';
 
-function DefaultTemplate(props) {
+function Template(props) {
   const {
     id,          // eslint-disable-line
     classNames,  // eslint-disable-line
@@ -31,7 +31,7 @@ function DefaultTemplate(props) {
   );
 }
 
-DefaultTemplate.propTypes = {
+Template.propTypes = {
   id: PropTypes.string,
   classNames: PropTypes.string,
   label: PropTypes.string,
@@ -46,11 +46,11 @@ DefaultTemplate.propTypes = {
   formContext: PropTypes.object,
 };
 
-DefaultTemplate.defaultProps = {
+Template.defaultProps = {
   hidden: false,
   readonly: false,
   required: false,
   displayLabel: true,
 };
 
-export default DefaultTemplate;
+export default Template;
