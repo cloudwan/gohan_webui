@@ -8,6 +8,7 @@ import BootstrapDialog from 'bootstrap-dialog';
 import DialogView from './dialogView';
 import ErrorView from './errorView';
 import TableView from './tableView';
+import CustomActionsView from './customActionsView';
 
 import loaderTemplate from './../../templates/loader.html';
 import detailTemplate from './../../templates/detail.html';
@@ -45,6 +46,15 @@ export default class DetailView extends View {
       () => this.render(),
       error => this.errorView.render(...error)
     );
+
+    if (this.schema.hasActions()) {
+      this.customActionsView = new CustomActionsView({
+        app: this.app,
+        schema: this.schema,
+        resourceId: this.model.get('id'),
+        collection: this.schema.get('actions')
+      });
+    }
   }
   dialogForm(action, formTitle, data, onsubmit, onhide) {
     this.schema.filterByAction(action, this.parentProperty).then(schema => {
@@ -152,6 +162,8 @@ export default class DetailView extends View {
     return _.escape(value);
   }
   render() {
+    const hasActions = this.schema.hasActions();
+
     const data = this.model.toJSON();
     const result = Object.assign({}, data);
 
@@ -171,8 +183,13 @@ export default class DetailView extends View {
     this.$el.html(this.template({
       data: result,
       schema: this.schema.toJSON(),
-      children
+      children,
+      hasActions
     }));
+
+    if (hasActions) {
+      this.customActionsView.setElement(this.$('[data-gohan="actions"]')).render();
+    }
     $('[data-gohan="error"]', this.el).append(this.errorView.el);
     this.app.router.changeTitle(this.model.get('name') || this.model.get('id'));
     this.model.getAncestors(ancestors => {
