@@ -90,6 +90,7 @@
     "axios": "^0.15.2",
     "flexboxgrid": "^6.3.1",
     "js-yaml": "^3.7.0",
+    "lodash": "^4.17.4",
     "react": "^15.3.0",
     "react-addons-create-fragment": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.1",
