@@ -962,11 +962,7 @@ describe('SchemaModel ', () => {
       );
       model.filterByAction('create').should.be.eventually.deep.equal(
         {
-          properties: {
-            name: {
-              type: 'string'
-            }
-          },
+          properties: {},
           propertiesOrder: undefined,
           required: [],
           type: 'object'
