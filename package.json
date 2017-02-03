@@ -97,7 +97,7 @@
     "react-codemirror": "^0.3.0",
     "react-dom": "^15.2.1",
     "react-flexbox-grid": "^0.10.2",
-    "react-jsonschema-form": "^0.40.0",
+    "react-jsonschema-form": "^0.42.0",
     "react-modal": "^1.4.0",
     "react-paginate": "^4.1.0",
     "react-redux": "^4.4.5",

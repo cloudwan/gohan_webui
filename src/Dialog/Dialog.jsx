@@ -2,8 +2,10 @@ import React, {Component} from 'react';
 import {Dialog, Button, ProgressBar, Intent} from '@blueprintjs/core';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
+import widgets from './formComponents/widgets';
+import fields from './formComponents/fields';
+import Template from './formComponents/Template';
 
-import CustomSchemaField from './formComponents/CustomSchemaField/CustomSchemaField';
 import {fetchRelationFields, clearData} from './DialogActions';
 
 export class GeneratedDialog extends Component {
@@ -50,14 +52,16 @@ export class GeneratedDialog extends Component {
             return (
               <div>
                 <Form ref={c => {this.form = c;}} schema={this.props.dialogReducer.schema}
-                  fields={{SchemaField: CustomSchemaField}} formData={
+                  fields={fields} widgets={widgets}
+                  FieldTemplate={Template} formData={
                     this.props.dialogReducer.schema.propertiesOrder.reduce(
                       (result, item) => {
                         result[item] = this.props.data[item];
                         return result;
                       }, {}
                     )}
-                  uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder}} onSubmit={this.handleSubmit}>
+                  uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder}} onSubmit={this.handleSubmit}
+                  showErrorList={false}>
                   <div/>
                 </Form>
               </div>
