@@ -50,7 +50,7 @@ function fetchSuccess(data, options) {
 
 function fetchError(data) {
   return dispatch => {
-    const error = data.data;
+    const {error} = data;
 
     dispatch({type: FETCH_FAILURE, error});
   };
@@ -96,10 +96,14 @@ export function fetchData(plural) {
         const totalCount = headers['x-total-count'];
         dispatch(fetchSuccess(data, {totalCount}));
       } else {
-        dispatch(fetchError({data: 'Cannot fetch data!'}));
+        dispatch(fetchError({error: 'Cannot fetch data!'}));
       }
     }).catch(error => {
-      dispatch(fetchError(error));
+      if (error.response) {
+        dispatch(fetchError({error: error.response.data}));
+      } else {
+        dispatch(fetchError({error: error.message}));
+      }
     });
   };
 }
