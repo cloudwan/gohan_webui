@@ -6,20 +6,12 @@ import {resetErrorMessage} from './../error/ErrorActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
-import {Toaster, Position} from '@blueprintjs/core';
+import {Toast} from '@blueprintjs/core';
 
 class Auth extends Component {
   componentWillMount() {
     this.props.fetchTokenData();
   }
-
-  handleDismissClick = event => {
-    if (event) {
-      event.preventDefault();
-    }
-
-    this.props.resetErrorMessage();
-  };
 
   handleLoginSubmit = (...params) => {
     this.props.resetErrorMessage();
@@ -39,39 +31,29 @@ class Auth extends Component {
     }
   }
 
-  componentWillUpdate(nextProps) {
-    const {errorMessage} = nextProps;
-
-    if (errorMessage) {
-      this.toaster.show({
-        message: errorMessage,
-        className: 'pt-intent-danger',
-        timeout: 0,
-        onDismiss: this.handleDismissClick
-      });
+  renderErrors = () => {
+    if (this.props.errorMessage) {
+      return (
+        <Toast message={this.props.errorMessage} className={'pt-intent-danger'}
+          iconName={'error'} onDismiss={this.props.resetErrorMessage}
+        />
+      );
     }
-  }
-
-  componentDidMount() {
-    this.toaster = Toaster.create({
-      position: Position.TOP
-    });
-  }
-
-  componentWillUnmount() {
-    this.toaster.getToasts().forEach(toast => this.toaster.dismiss(toast.key));
-  }
+    return null;
+  };
 
   render() {
     if (!this.props.inProgress && this.props.tokenId === undefined) {
       return (
         <div className="pt-card pt-elevation-3 auth-card">
+          {this.renderErrors()}
           <Login onLoginSubmit={this.handleLoginSubmit}/>
         </div>
       );
     } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
       return (
         <div className="pt-card pt-elevation-3 auth-card">
+          {this.renderErrors()}
           <SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}/>
         </div>
       );
