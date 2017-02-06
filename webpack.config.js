@@ -10,6 +10,7 @@ const devServerPort = 8080;
 const devServerHostname = 'localhost';
 const sourcePath = path.join(__dirname, '/src');
 const outputPath = path.join(__dirname, '/dist');
+const ENV = process.env.NODE_ENV;
 
 function version() {
   return {
@@ -106,6 +107,12 @@ module.exports = {
       }
     ]),
     new webpack.DefinePlugin({
+      process: {
+        env: {
+          ENV: JSON.stringify(ENV),
+          NODE_ENV: JSON.stringify(ENV)
+        }
+      },
       VERSION: {
         gohanWebUI: JSON.stringify(version())
       }
