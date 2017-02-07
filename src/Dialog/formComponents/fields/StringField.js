@@ -42,8 +42,9 @@ function StringField(props) {
     disabled,
     readonly,
     formContext,
-    autofocus,
+    autofocus
   };
+
   if (schema.options !== undefined) {
     const enumOptions = optionsListObject(schema);
 
