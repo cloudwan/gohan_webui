@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 
 import {
-  getAlternativeWidget,
+  getWidget,
   getDefaultFormState,
   isMultiSelect,
   isFilesArray,
@@ -196,7 +196,7 @@ class ArrayField extends Component {
     const {widgets, definitions} = this.props.registry;
     const itemsSchema = retrieveSchema(schema.items, definitions);
 
-    const Widget = getAlternativeWidget(schema, uiSchema['ui:widget'] || 'select', widgets);
+    const Widget = getWidget(schema, uiSchema['ui:widget'] || 'select', widgets);
     return (
       <Widget id={idSchema && idSchema.$id}
         multiple={true}
