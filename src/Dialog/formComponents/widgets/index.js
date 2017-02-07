@@ -5,6 +5,7 @@ import UuidWidget from './UuidWidget';
 import Ipv4Widget from './Ipv4Widget';
 import TextWidget from './TextWidget';
 import SelectWidget from './SelectWidget';
+import CodeWidget from './CodeWidget.jsx';
 
 export default Object.freeze({
   select: SelectWidget,
@@ -13,5 +14,7 @@ export default Object.freeze({
   cidr: CidrWidget,
   mac: MacWidget,
   uuid: UuidWidget,
-  ipv4: Ipv4Widget
+  ipv4: Ipv4Widget,
+  js: CodeWidget,
+  yaml: CodeWidget
 });
