@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 
 import {
   defaultFieldValue,
-  getAlternativeWidget,
+  getWidget,
   optionsList,
   getDefaultRegistry,
   isObject,
@@ -55,7 +55,7 @@ function BooleanField(props) {
     autofocus,
   };
   if (widget) {
-    const Widget = getAlternativeWidget(schema, widget, widgets);
+    const Widget = getWidget(schema, widget, widgets);
     return <Widget options={buildOptions(schema, uiSchema['ui:widget'])} {...commonProps} />;
   }
   return <CheckboxWidget {...commonProps} />;

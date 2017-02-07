@@ -2,7 +2,7 @@ import React, {PropTypes} from 'react';
 
 import {
   defaultFieldValue,
-  getAlternativeWidget,
+  getWidget,
   optionsList,
   getDefaultRegistry
 } from 'react-jsonschema-form/lib/utils';
@@ -48,7 +48,7 @@ function StringField(props) {
     const enumOptions = optionsListObject(schema);
 
     if (widget) {
-      const Widget = getAlternativeWidget(schema, widget, widgets, {enumOptions});
+      const Widget = getWidget(schema, widget, widgets, {enumOptions});
 
       return <Widget {...commonProps} />;
     }
@@ -59,14 +59,14 @@ function StringField(props) {
     const enumOptions = optionsList(schema);
 
     if (widget) {
-      const Widget = getAlternativeWidget(schema, widget, widgets, {enumOptions});
+      const Widget = getWidget(schema, widget, widgets, {enumOptions});
       return <Widget {...commonProps} />;
     }
 
     return <SelectWidget options={{enumOptions}} {...commonProps} />;
   }
   if (widget) {
-    const Widget = getAlternativeWidget(schema, widget, widgets);
+    const Widget = getWidget(schema, widget, widgets);
     return <Widget {...commonProps} placeholder={placeholder} />;
   }
   return <TextWidget {...commonProps} placeholder={placeholder} />;
