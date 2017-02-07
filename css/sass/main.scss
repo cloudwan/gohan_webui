@@ -93,6 +93,12 @@ body {
   width: 260px;
   float: left;
   overflow-x: hidden;
+  background-color: #fff;
+  padding-top: 10px;
+
+  .sidebar-search {
+    padding-left: 10px;
+  }
 }
 /*
  * Auth component
