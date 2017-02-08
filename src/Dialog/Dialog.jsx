@@ -8,8 +8,7 @@ import Template from './formComponents/Template';
 
 import {fetchRelationFields, clearData} from './DialogActions';
 
-export class GeneratedDialog extends Component {
-// class GeneratedDialog extends Component {
+class GeneratedDialog extends Component {
   componentDidMount() {
     this.props.fetchRelationFields(this.props.schema.schema, this.props.action, this.props.schema.parent);
   }
@@ -60,8 +59,8 @@ export class GeneratedDialog extends Component {
                         return result;
                       }, {}
                     )}
-                  uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder}} onSubmit={this.handleSubmit}
-                  showErrorList={false}>
+                  uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder, ...this.props.uiSchema}}
+                  onSubmit={this.handleSubmit} showErrorList={false}>
                   <div/>
                 </Form>
               </div>
@@ -80,6 +79,10 @@ export class GeneratedDialog extends Component {
 
 GeneratedDialog.contextTypes = {
   router: React.PropTypes.object
+};
+
+GeneratedDialog.defaultProps = {
+  uiSchema: {}
 };
 
 function mapStateToProps(state) {
