@@ -1,5 +1,6 @@
 /* global window */
 import axios from 'axios';
+
 import {
   LOGIN_SUCCESS,
   LOGIN_ERROR,
@@ -17,7 +18,27 @@ function fetchTenantSuccess(data) {
   };
 }
 
-function fetchTenantFailure() {
+function fetchTenantFailure(data) {
+  const {response} = data;
+
+  if (response) {
+    const {status} = response;
+
+    if (status === 401) {
+      return dispatch => {
+        dispatch({type: TENANT_FETCH_FAILURE, error: 'Please login again!'});
+      };
+    }
+
+    return dispatch => {
+      dispatch({type: TENANT_FETCH_FAILURE, error: `Status: ${status}. Something got wrong please, try again!`});
+    };
+  } else if (data.message) {
+    return dispatch => {
+      dispatch({type: TENANT_FETCH_FAILURE, error: `${data.message}!`});
+    };
+  }
+
   return dispatch => {
     const error = 'Cannot fetch tenant list!';
     dispatch({type: TENANT_FETCH_FAILURE, error});
@@ -35,7 +56,7 @@ function fetchTenants() {
     axios.get(state.configReducer.authUrl + '/tenants', {headers}).then(response => {
       dispatch(fetchTenantSuccess(response.data));
     }).catch(error => {
-      dispatch(fetchTenantFailure(error.response));
+      dispatch(fetchTenantFailure(error));
     });
   };
 }
@@ -83,18 +104,33 @@ function loginSuccess(data) {
   };
 }
 
-function loginFailure(error) {
-  if (error.response) {
-    switch (error.response.status) {
-      case 401:
-        error = 'Wrong username or password!';
+function loginFailure(data) {
+  const {response} = data;
+
+  if (response) {
+    const {status} = response;
+
+    if (status === 400) {
+      return dispatch => {
+        dispatch({type: LOGIN_ERROR, error: 'Please enter login and password!'});
+      };
+    } else if (status === 401) {
+      return dispatch => {
+        dispatch({type: LOGIN_ERROR, error: 'Please enter correct login and password!'});
+      };
     }
-  } else {
-    error = error.toString();
+
+    return dispatch => {
+      dispatch({type: LOGIN_ERROR, error: `Status: ${status}. Something got wrong please, try again!`});
+    };
+  } else if (data.message) {
+    return dispatch => {
+      dispatch({type: LOGIN_ERROR, error: `${data.message}!`});
+    };
   }
 
   return dispatch => {
-    dispatch({type: LOGIN_ERROR, error});
+    dispatch({type: LOGIN_ERROR, error: 'Unknown Error!'});
   };
 }
 
@@ -125,6 +161,7 @@ export function login(username, password) {
 export function logout() {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('scopedToken');
+  sessionStorage.removeItem('tenant');
 
 
   return dispatch => {
@@ -141,10 +178,29 @@ function selectTenantSuccess(data) {
   };
 }
 
-function selectTenantFailure() {
+function selectTenantFailure(data) {
+  const {response} = data;
+
+  if (response) {
+    const {status} = response;
+
+    if (status === 401) {
+      return dispatch => {
+        dispatch({type: LOGIN_ERROR, error: 'Cannot select tenant!'});
+      };
+    }
+    return dispatch => {
+      dispatch({type: LOGIN_ERROR, error: `Status: ${status}. Something got wrong please, try again!`});
+    };
+
+  } else if (data.message) {
+    return dispatch => {
+      dispatch({type: LOGIN_ERROR, error: `${data.message}!`});
+    };
+  }
+
   return dispatch => {
-    const error = 'Cannot select tenant!';
-    dispatch({type: LOGIN_ERROR, error});
+    dispatch({type: LOGIN_ERROR, error: 'Unknown Error!'});
   };
 }
 
@@ -167,7 +223,7 @@ export function selectTenant(tenantName) {
     axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
       dispatch(selectTenantSuccess(response.data));
     }).catch(error => {
-      dispatch(selectTenantFailure(error.response));
+      dispatch(selectTenantFailure(error));
     });
   };
 }
