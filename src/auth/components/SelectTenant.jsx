@@ -6,7 +6,7 @@ export default class SelectTenant extends Component {
     super(props);
 
     this.state = {
-      value: null
+      value: ''
     };
   }
 
