@@ -17,28 +17,25 @@ export default class SidebarMenu extends Component {
   };
 
   buildMenuItems() {
-    if (this.props.schemaReducer !== undefined) {
-      const {data} = this.props.schemaReducer;
+    if (this.props.menuItems !== undefined) {
+      const {menuItems} = this.props;
       const {searchQuery} = this.state;
       const searchQueryRE = new RegExp(searchQuery, 'i');
-      const menuItems = [];
+      const filteredMenuItems = [];
 
-      data.forEach((item, index) => {
-        if (!item.parent && item.metadata.type !== 'metaschema') {
-          if (searchQuery === '' || searchQueryRE.test(item.title)) {
-            menuItems.push(
-              <MenuItem item={item}
-                key={index}
-                text={item.title}
-                href={'#/' + item.plural}
-                className="item"
-              />
-            );
-          }
+      menuItems.forEach((item) => {
+        if (searchQuery === '' || searchQueryRE.test(item.title)) {
+          filteredMenuItems.push(
+            <MenuItem key={item.index}
+              text={item.title}
+              href={item.path}
+              className="item"
+            />
+          );
         }
       });
 
-      return menuItems;
+      return filteredMenuItems;
     }
   }
 
@@ -61,5 +58,5 @@ export default class SidebarMenu extends Component {
 }
 
 SidebarMenu.propTypes = {
-  schemaReducer: PropTypes.object
+  menuItems: PropTypes.array
 };

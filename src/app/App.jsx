@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import SidebarMenu from './components/SidebarMenu';
 import {logout, selectTenant} from '../auth/AuthActions';
 import {FocusStyleManager, Toaster, Position} from '@blueprintjs/core';
+import {getSidebarMenuItems} from './components/SidebarSelectors';
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
@@ -75,7 +76,7 @@ class App extends Component {
           activeTenant={tenant.name} onRequestLogout={this.handleRequestLogout}
           onRequestChangeTenant={this.handleRequestChangeTenant} onRequestShowMenu={this.handleRequestShowMenu}
         />
-        <SidebarMenu open={this.state.openSidebarMenu} schemaReducer={this.props.schemaReducer}
+        <SidebarMenu open={this.state.openSidebarMenu} menuItems={this.props.sidebarMenuItems}
           onRequestChange={this.handleSidebarMenuRequestChange}
         />
         <div className="view-content">
@@ -93,6 +94,7 @@ App.propTypes = {
 
 function mapStateToProps(state) {
   return {
+    sidebarMenuItems: getSidebarMenuItems(state),
     errorMessage: state.errorReducer,
     resetErrorMessage: PropTypes.func.isRequired,
     schemaReducer: state.schemaReducer,
