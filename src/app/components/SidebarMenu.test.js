@@ -46,65 +46,26 @@ describe('< SidebarMenu />', function () {
   });
 
   it('should contain list of 2 MenuItems', () => {
-    const schemaReducer = {
-      data: [
-        {
-          title: 'title1',
-          plural: 'plural1',
-          metadata: {
-            type: 'type1'
-          }
-        },
-        {
-          title: 'title2',
-          plural: 'plural2',
-          metadata: {
-            type: 'type2'
-          }
-        }
-      ]
-    };
+    const menuItems = [
+      {
+        title: 'title1',
+        path: '#/plural1',
+        index: 1
+      },
+      {
+        title: 'title2',
+        path: '#/plural2',
+        index: 2
+      }
+    ];
     const wrapper = mount(
-      <SidebarMenu schemaReducer={schemaReducer}/>
+      <SidebarMenu menuItems={menuItems}/>
     );
 
     wrapper.update();
     wrapper.find(MenuItem).should.have.length(2);
   });
 
-  it('should contain list of 2 MenuItems and omit 1 item in data array', () => {
-    const schemaReducer = {
-      data: [
-        {
-          title: 'title1',
-          plural: 'plural1',
-          metadata: {
-            type: 'type1'
-          }
-        },
-        {
-          title: 'title2',
-          plural: 'plural2',
-          metadata: {
-            type: 'type2'
-          }
-        },
-        {
-          title: 'title3',
-          plural: 'plural3',
-          metadata: {
-            type: 'metaschema'
-          }
-        }
-      ]
-    };
-    const wrapper = mount(
-      <SidebarMenu schemaReducer={schemaReducer}/>
-    );
-
-    wrapper.update();
-    wrapper.find(MenuItem).should.have.length(2);
-  });
 
   it('should have initial state', () => {
     const wrapper = shallow(
@@ -126,33 +87,20 @@ describe('< SidebarMenu />', function () {
   });
 
   it('should have initial menu items when search string is empty', () => {
-    const schemaReducer = {
-      data: [
-        {
-          title: 'title1',
-          plural: 'plural1',
-          metadata: {
-            type: 'type1'
-          }
-        },
-        {
-          title: 'title2',
-          plural: 'plural2',
-          metadata: {
-            type: 'type2'
-          }
-        },
-        {
-          title: 'title3',
-          plural: 'plural3',
-          metadata: {
-            type: 'metaschema'
-          }
-        }
-      ]
-    };
+    const menuItems = [
+      {
+        title: 'title1',
+        path: '#/plural1',
+        index: 1
+      },
+      {
+        title: 'title2',
+        path: '#/plural2',
+        index: 2
+      }
+    ];
     const wrapper = mount(
-      <SidebarMenu schemaReducer={schemaReducer}/>
+      <SidebarMenu menuItems={menuItems}/>
     );
 
     wrapper.update();
@@ -162,33 +110,20 @@ describe('< SidebarMenu />', function () {
   });
 
   it('should have filtered menu items when search string is not empty', () => {
-    const schemaReducer = {
-      data: [
-        {
-          title: 'title1',
-          plural: 'plural1',
-          metadata: {
-            type: 'type1'
-          }
-        },
-        {
-          title: 'title2',
-          plural: 'plural2',
-          metadata: {
-            type: 'type2'
-          }
-        },
-        {
-          title: 'title3',
-          plural: 'plural3',
-          metadata: {
-            type: 'metaschema'
-          }
-        }
-      ]
-    };
+    const menuItems = [
+      {
+        title: 'title1',
+        path: '#/plural1',
+        index: 1
+      },
+      {
+        title: 'title2',
+        path: '#/plural2',
+        index: 2
+      }
+    ];
     const wrapper = mount(
-      <SidebarMenu schemaReducer={schemaReducer}/>
+      <SidebarMenu menuItems={menuItems}/>
     );
 
     wrapper.update();
@@ -198,33 +133,20 @@ describe('< SidebarMenu />', function () {
   });
 
   it('should have 0 menu items when search string does not match any item', () => {
-    const schemaReducer = {
-      data: [
-        {
-          title: 'title1',
-          plural: 'plural1',
-          metadata: {
-            type: 'type1'
-          }
-        },
-        {
-          title: 'title2',
-          plural: 'plural2',
-          metadata: {
-            type: 'type2'
-          }
-        },
-        {
-          title: 'title3',
-          plural: 'plural3',
-          metadata: {
-            type: 'metaschema'
-          }
-        }
-      ]
-    };
+    const menuItems = [
+      {
+        title: 'title1',
+        path: '#/plural1',
+        index: 1
+      },
+      {
+        title: 'title2',
+        path: '#/plural2',
+        index: 2
+      }
+    ];
     const wrapper = mount(
-      <SidebarMenu schemaReducer={schemaReducer}/>
+      <SidebarMenu menuItems={menuItems}/>
     );
 
     wrapper.update();
