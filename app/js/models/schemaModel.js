@@ -806,6 +806,11 @@ export default class SchemaModel extends Model {
         if (value.properties) {
           schema[key].type = 'Object';
           schema[key].subSchema = this.toFormJSON(value);
+          if (value.propertiesOrder) {
+            schema[key].order = value.propertiesOrder.filter(
+              item => Object.keys(value.properties).includes(item)
+            );
+          }
         } else {
           schema[key].type = 'CodeEditor';
           schema[key].format = value.format;
