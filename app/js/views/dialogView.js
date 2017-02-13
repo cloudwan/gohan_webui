@@ -8,6 +8,7 @@ import ErrorView from './errorView';
 import 'backbone-forms';
 import 'backbone-forms/distribution/adapters/backbone.bootstrap-modal';
 import './formsEditors/listEditor';
+import './formsEditors/objectEditor';
 import './formsEditors/codeEditor';
 import './formsEditors/template';
 import './formsEditors/validators';
