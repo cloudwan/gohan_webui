@@ -100,7 +100,7 @@ class ObjectField extends Component {
     let orderedProperties;
     try {
       const properties = Object.keys(schema.properties);
-      orderedProperties = orderProperties(properties, uiSchema['ui:order']);
+      orderedProperties = orderProperties(properties, schema.propertiesOrder || uiSchema['ui:order']);
     } catch (err) {
       return (
         <div>
