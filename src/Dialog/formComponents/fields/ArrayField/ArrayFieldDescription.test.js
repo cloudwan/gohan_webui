@@ -9,7 +9,7 @@ import ArrayFieldDescription from './ArrayFieldDescription';
 chai.use(chaiEnzyme());
 chai.should();
 
-describe('< ArrayFieldDescription />', function () {
+describe('< ArrayFieldDescription />', () => {
   it('should exist', () => {
     const wrapper = shallow(
       <ArrayFieldDescription/>
@@ -25,5 +25,4 @@ describe('< ArrayFieldDescription />', function () {
 
     wrapper.find('div').should.have.length(1);
   });
-
 });
