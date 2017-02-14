@@ -100,7 +100,8 @@ TableHeader.propTypes = {
   visibleColumns: PropTypes.array.isRequired,
   properties: PropTypes.object.isRequired,
   checkedAll: PropTypes.object.isRequired,
-  handleCheckAll: PropTypes.func.isRequired
+  handleCheckAll: PropTypes.func.isRequired,
+  sortData: PropTypes.func.isRequired
 };
 
 export default TableHeader;
