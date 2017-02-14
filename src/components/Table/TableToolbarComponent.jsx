@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {Button} from '@blueprintjs/core';
 
 class TableToolbar extends Component {
@@ -98,5 +98,18 @@ class TableToolbar extends Component {
     );
   }
 }
+
+TableToolbar.propTypes = {
+  handleOpenModal: PropTypes.func.isRequired,
+  filterValue: PropTypes.string.isRequired,
+  filterBy: PropTypes.string.isRequired,
+  singular: PropTypes.string.isRequired,
+  options: PropTypes.array.isRequired,
+  filterData: PropTypes.func.isRequired,
+  filterProperties: PropTypes.array.isRequired,
+  deleteMultipleResources: PropTypes.func.isRequired,
+  buttonDeleteSelectedDisabled: PropTypes.bool.isRequired,
+  properties: PropTypes.object.isRequired
+};
 
 export default TableToolbar;
