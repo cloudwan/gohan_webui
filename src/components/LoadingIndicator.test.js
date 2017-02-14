@@ -1,0 +1,37 @@
+/* global it, describe */
+import React from 'react';
+import chai from 'chai';
+import chaiEnzyme from 'chai-enzyme';
+import {shallow} from 'enzyme';
+
+import {Spinner} from '@blueprintjs/core';
+import LoadingIndicator from './LoadingIndicator';
+
+chai.use(chaiEnzyme());
+chai.should();
+
+describe('< LoadingIndicator />', () => {
+  it('should exist', () => {
+    const wrapper = shallow(
+      <LoadingIndicator/>
+    );
+
+    wrapper.should.not.equal(undefined);
+  });
+
+  it('should contain 1 div', () => {
+    const wrapper = shallow(
+      <LoadingIndicator/>
+    );
+
+    wrapper.find('div').should.have.length(1);
+  });
+
+  it('should contain 1 Spinner', () => {
+    const wrapper = shallow(
+      <LoadingIndicator/>
+    );
+
+    wrapper.find(Spinner).should.have.length(1);
+  });
+});
