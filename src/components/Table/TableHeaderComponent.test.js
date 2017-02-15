@@ -20,7 +20,7 @@ describe('< TableHeaderComponent />', () => {
     wrapper.should.not.equal(undefined);
   });
 
-  it('should contain 1 table row', () => {
+  it('should contain particular elements', () => {
     const wrapper = shallow(
       <TableHeaderComponent visibleColumns={[]} properties={{}}
         checkedAll={{}} handleCheckAll={() => {}}
@@ -28,27 +28,10 @@ describe('< TableHeaderComponent />', () => {
     );
 
     wrapper.find('tr').should.have.length(1);
-  });
-
-  it('should contain 2 table header cells', () => {
-    const wrapper = shallow(
-      <TableHeaderComponent visibleColumns={[]} properties={{}}
-        checkedAll={{}} handleCheckAll={() => {}}
-      />
-    );
-
     wrapper.find('th').should.have.length(2);
-  });
-
-  it('should contain 1 input', () => {
-    const wrapper = shallow(
-      <TableHeaderComponent visibleColumns={[]} properties={{}}
-        checkedAll={{}} handleCheckAll={() => {}}
-      />
-    );
-
     wrapper.find('input').should.have.length(1);
   });
+
 
   it('should contain 4 table header cells', () => {
     const properties = {
