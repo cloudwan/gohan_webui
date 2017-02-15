@@ -1,6 +1,6 @@
 import {View} from 'backbone';
 import _ from 'underscore';
-import template from '../../templates/breadcrumb.html';
+import defaultTemplate from '../../templates/breadcrumb.html';
 
 /**
  * Class contains logic of bread crumb view in application.
@@ -12,8 +12,10 @@ export default class BreadCrumbView extends View {
     return 'bread-crumb';
   }
 
-  get template() {
-    return template;
+  constructor(options = {}) {
+    super(options);
+
+    this.template = options.template || defaultTemplate;
   }
 
   /**
