@@ -26,7 +26,7 @@ describe('< TableToolbarComponent />', () => {
     wrapper.should.not.equal(undefined);
   });
 
-  it('should contain 2 Buttons', () => {
+  it('should contain particular elements', () => {
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
         filterBy={''} singular={''}
@@ -37,57 +37,9 @@ describe('< TableToolbarComponent />', () => {
     );
 
     wrapper.find(Button).should.have.length(2);
-  });
-
-  it('should contain 4 divs', () => {
-    const wrapper = shallow(
-      <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
-        options={[]} filterData={() => {}}
-        filterProperties={[]} deleteMultipleResources={() => {}}
-        buttonDeleteSelectedDisabled={false} properties={{}}
-      />
-    );
-
     wrapper.find('div').should.have.length(6);
-  });
-
-  it('should contain 1 select', () => {
-    const wrapper = shallow(
-      <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
-        options={[]} filterData={() => {}}
-        filterProperties={[]} deleteMultipleResources={() => {}}
-        buttonDeleteSelectedDisabled={false} properties={{}}
-      />
-    );
-
     wrapper.find('select').should.have.length(1);
-  });
-
-  it('should contain 1 span', () => {
-    const wrapper = shallow(
-      <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
-        options={[]} filterData={() => {}}
-        filterProperties={[]} deleteMultipleResources={() => {}}
-        buttonDeleteSelectedDisabled={false} properties={{}}
-      />
-    );
-
     wrapper.find('span').should.have.length(1);
-  });
-
-  it('should contain 1 input', () => {
-    const wrapper = shallow(
-      <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
-        options={[]} filterData={() => {}}
-        filterProperties={[]} deleteMultipleResources={() => {}}
-        buttonDeleteSelectedDisabled={false} properties={{}}
-      />
-    );
-
     wrapper.find('input').should.have.length(1);
   });
 
