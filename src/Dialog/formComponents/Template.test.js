@@ -21,7 +21,7 @@ describe('< Template />', () => {
     wrapper.should.not.equal(undefined);
   });
 
-  it('should contain 1 div', () => {
+  it('should contain particular elements', () => {
     const wrapper = shallow(
       <Template>
         <span />
@@ -29,15 +29,6 @@ describe('< Template />', () => {
     );
 
     wrapper.find('div').should.have.length(1);
-  });
-
-  it('should contain 1 Label', () => {
-    const wrapper = shallow(
-      <Template>
-        <span />
-      </Template>
-    );
-
     wrapper.find(Label).should.have.length(1);
   });
 

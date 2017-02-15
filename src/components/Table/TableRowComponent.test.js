@@ -24,7 +24,7 @@ describe('< TableRowComponent />', () => {
     wrapper.should.not.equal(undefined);
   });
 
-  it('should contain 1 table row', () => {
+  it('should contain particular elements', () => {
     const wrapper = shallow(
       <TableRowComponent schema={{}} visibleColumns={[]}
         rowItem={{}} onRemoveClick={() => {}}
@@ -34,53 +34,9 @@ describe('< TableRowComponent />', () => {
     );
 
     wrapper.find('tr').should.have.length(1);
-  });
-
-  it('should contain 2 table cells', () => {
-    const wrapper = shallow(
-      <TableRowComponent schema={{}} visibleColumns={[]}
-        rowItem={{}} onRemoveClick={() => {}}
-        onEditClick={() => {}} onCheckboxChange={() => {}}
-        checkedAll={{}}
-      />
-    );
-
     wrapper.find('td').should.have.length(2);
-  });
-
-  it('should contain 2 Tooltips', () => {
-    const wrapper = shallow(
-      <TableRowComponent schema={{}} visibleColumns={[]}
-        rowItem={{}} onRemoveClick={() => {}}
-        onEditClick={() => {}} onCheckboxChange={() => {}}
-        checkedAll={{}}
-      />
-    );
-
     wrapper.find(Tooltip).should.have.length(2);
-  });
-
-  it('should contain 2 spans', () => {
-    const wrapper = shallow(
-      <TableRowComponent schema={{}} visibleColumns={[]}
-        rowItem={{}} onRemoveClick={() => {}}
-        onEditClick={() => {}} onCheckboxChange={() => {}}
-        checkedAll={{}}
-      />
-    );
-
     wrapper.find('span').should.have.length(2);
-  });
-
-  it('should contain 1 input', () => {
-    const wrapper = shallow(
-      <TableRowComponent schema={{}} visibleColumns={[]}
-        rowItem={{}} onRemoveClick={() => {}}
-        onEditClick={() => {}} onCheckboxChange={() => {}}
-        checkedAll={{}}
-      />
-    );
-
     wrapper.find('input').should.have.length(1);
   });
 
