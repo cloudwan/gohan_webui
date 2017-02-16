@@ -10,6 +10,14 @@ describe('SidebarSelectors', () => {
     it('should return appropriate menu items', () => {
       selectors.getSidebarMenuItems(
         {
+          configReducer: {
+            sidebar: [
+              {
+                title: 'sampleTest',
+                path: 'foo/bar/baz'
+              }
+            ]
+          },
           schemaReducer: {
             data: [
               {
@@ -54,16 +62,21 @@ describe('SidebarSelectors', () => {
       ).should.deep.equal([
         {
           index: 0,
+          title: 'sampleTest',
+          path: '#/foo/bar/baz'
+        },
+        {
+          index: 1,
           title: 'test1 title',
           path: '#/test1_plural'
         },
         {
-          index: 1,
+          index: 2,
           title: 'test2 title',
           path: '#/test2_plural'
         },
         {
-          index: 4,
+          index: 3,
           title: 'test5 title',
           path: '#/test5_plural'
         }
@@ -72,7 +85,8 @@ describe('SidebarSelectors', () => {
 
     it('should return empty menu items array', () => {
       selectors.getSidebarMenuItems({
-        schemaReducer: {}
+        schemaReducer: {},
+        configReducer: {},
       }).should.deep.equal([]);
     });
   });
