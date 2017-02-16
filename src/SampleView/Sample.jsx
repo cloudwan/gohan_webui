@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
-class Sample extends Component {
+export class Sample extends Component {
   render() {
     return (
       <div className="pt-card pt-elevation-3 detail">
