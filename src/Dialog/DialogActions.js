@@ -1,9 +1,9 @@
 import axios from 'axios';
-import {FETCH_SUCCESS, FETCH_FAILURE, CLEAR_DATA} from './DialogActionTypes';
+import {PREPARE_SUCCESS, PREPARE_FAILURE, CLEAR_DATA} from './DialogActionTypes';
 
 function fetchSuccess(data) {
   return dispatch => {
-    dispatch({data, type: FETCH_SUCCESS});
+    dispatch({data, type: PREPARE_SUCCESS});
   };
 }
 
@@ -11,7 +11,7 @@ function fetchError(data) {
   return dispatch => {
     const error = data.data;
 
-    dispatch({type: FETCH_FAILURE, error});
+    dispatch({type: PREPARE_FAILURE, error});
   };
 }
 
@@ -104,58 +104,85 @@ function toLocalSchema(schema, state) {
     }
   });
 }
+function filterSchema(schema, action, parentProperty) {
+  let result = {};
 
-/**
- *
- * @param schema
- * @param action
- * @return {function(*, *)}
- */
-export function fetchRelationFields(schema, action, parentProperty) {
+  if (schema.enum !== undefined || schema.options !== undefined || schema.properties === undefined) {
+    return schema;
+  }
+  for (let key in schema.properties) {
+    const property = schema.properties[key];
+
+    if (key === 'id' && property.format === 'uuid') {
+      continue;
+    }
+
+    if (key === parentProperty) {
+      continue;
+    }
+
+    const view = property.view;
+
+    if (view) {
+      if (view.indexOf(action) < 0) {
+        continue;
+      }
+    }
+
+    if (property.permission === null ||
+      property.permission === undefined) {
+      result[key] = property;
+      if (property.type.indexOf('array') >= 0) {
+        result[key].items = filterSchema(property.items, action, parentProperty);
+      } else if (property.type.indexOf('object') >= 0) {
+        result[key] = filterSchema(property, action, parentProperty);
+      }
+      continue;
+    }
+    if (property.permission && property.permission.indexOf(action) >= 0) {
+      result[key] = property;
+      if (property.type.indexOf('array') >= 0) {
+        result[key].items = filterSchema(property.items, action, parentProperty);
+      } else if (property.type.indexOf('object') >= 0) {
+        result[key] = filterSchema(property, action, parentProperty);
+      }
+    }
+  }
+  let required = [];
+
+  if (schema.required) {
+    required = schema.required.filter(property => {
+      return result.hasOwnProperty(property);
+    });
+  }
+
+  result = Object.assign(
+    {},
+    schema,
+    {
+      type: 'object',
+      properties: result,
+      propertiesOrder: schema.propertiesOrder.filter(item => Object.keys(result).includes(item)),
+      required
+    }
+  );
+
+  return result;
+}
+
+export function prepareSchema(schema, action) {
   return async (dispatch, getState) => {
     const state = getState();
 
     try {
-      const localSchema = await toLocalSchema(schema, state);
-      let required = [];
-      const propertiesOrder = [];
+      const resultSchema = await toLocalSchema(schema, state);
 
-      const properties = localSchema.propertiesOrder.reduce((result, key) => {
-        const property = localSchema.properties[key];
-
-        if (key === `${parentProperty}_id`) {
-          return result;
-        }
-
-        if ((key === 'id' && property.format === 'uuid') ||
-          property.permission === null ||
-          property.permission === undefined ||
-          (property.view && !property.view.includes(action))) {
-          return result;
-        }
-
-        if (property.permission.includes(action)) {
-          propertiesOrder.push(key);
-          result[key] = property;
-        }
-        return result;
-      }, {});
-
-      if (localSchema.required !== null) {
-        required = localSchema.required.filter(property => {
-          return properties.hasOwnProperty(property);
-        });
-      }
-
-      dispatch(fetchSuccess({
-        type: 'object',
-        properties,
-        propertiesOrder,
-        required
-      }));
+      dispatch(fetchSuccess(filterSchema(resultSchema, action)));
     } catch (error) {
+      console.error(error);
       dispatch(fetchError(error));
     }
+
   };
 }
 
