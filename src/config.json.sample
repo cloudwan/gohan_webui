@@ -4,6 +4,12 @@
         "schema": "/gohan/v0.1/schemas",
         "url": "http://__HOST__:9091"
     },
+    "sidebar": [
+        {
+            "path": "sample",
+            "title": "Sample"
+        }
+    ],
     "routes": {
         "path": "/",
         "childRoutes": [
