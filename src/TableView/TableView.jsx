@@ -241,7 +241,7 @@ class TableView extends Component {
       return (
         <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
           data={this.state.dialogData} onClose={this.handleCloseModal}
-          onSubmit={this.handleSubmit} schema={this.props.activeSchema}
+          onSubmit={this.handleSubmit} baseSchema={this.props.activeSchema}
         />
       );
     }

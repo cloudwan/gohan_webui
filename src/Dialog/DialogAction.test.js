@@ -35,7 +35,7 @@ describe('DialogActions ', () => {
     ]);
   });
 
-  it('should create FETCH_SUCCESS when fetching config has been done', async () => {
+  it('should create PREPARE_SUCCESS when fetching config has been done', async () => {
     const schema = {
       properties: {
         petId: {
@@ -169,11 +169,11 @@ describe('DialogActions ', () => {
         }
       });
     });
-    await store.dispatch(actions.fetchRelationFields(schema, 'create'));
+    await store.dispatch(actions.prepareSchema(schema, 'create'));
 
     store.getActions().should.deep.equal([
       {
-        type: actionTypes.FETCH_SUCCESS,
+        type: actionTypes.PREPARE_SUCCESS,
         data: {
           properties: {
             name: {
@@ -217,7 +217,7 @@ describe('DialogActions ', () => {
     ]);
   });
 
-  it('should create FETCH_FAILURE when fetching config has been done', async () => {
+  it('should create PREPARE_FAILURE when fetching config has been done', async () => {
     const schema = {
       properties: {
         petId: {
@@ -347,11 +347,11 @@ describe('DialogActions ', () => {
         }
       });
     });
-    await store.dispatch(actions.fetchRelationFields(schema, 'create'));
+    await store.dispatch(actions.prepareSchema(schema, 'create'));
 
     store.getActions().should.deep.equal([
       {
-        type: actionTypes.FETCH_FAILURE,
+        type: actionTypes.PREPARE_FAILURE,
         error: 'Cannot fetch data.'
       }
     ]);
@@ -403,11 +403,11 @@ describe('DialogActions ', () => {
       type: 'object'
     };
 
-    await store.dispatch(actions.fetchRelationFields(schema2, 'create'));
+    await store.dispatch(actions.prepareSchema(schema2, 'create'));
 
     store.getActions().should.deep.equal([
       {
-        type: actionTypes.FETCH_FAILURE,
+        type: actionTypes.PREPARE_FAILURE,
         error: 'Cannot find related schema!'
       }
     ]);

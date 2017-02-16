@@ -14,10 +14,10 @@ describe('dialogReducer ', () => {
     });
   });
 
-  it('should handle FETCH_SUCCESS', () => {
+  it('should handle PREPARE_SUCCESS', () => {
     dialogReducer(
       undefined, {
-        type: actionTypes.FETCH_SUCCESS,
+        type: actionTypes.PREPARE_SUCCESS,
         data: [
           {
             path: 'sample1'

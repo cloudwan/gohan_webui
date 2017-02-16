@@ -1,8 +1,8 @@
-import {FETCH_SUCCESS, CLEAR_DATA} from './DialogActionTypes';
+import {PREPARE_SUCCESS, CLEAR_DATA} from './DialogActionTypes';
 
 export default function dialogReducer(state = {isLoading: true, schema: undefined}, action) {
   switch (action.type) {
-    case FETCH_SUCCESS:
+    case PREPARE_SUCCESS:
       return {
         isLoading: false,
         schema: action.data
