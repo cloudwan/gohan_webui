@@ -1,48 +1,88 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {Dialog, Button, ProgressBar, Intent} from '@blueprintjs/core';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
+import {getSchema, getLoadingState} from './DialogSelectors';
 import widgets from './formComponents/widgets';
 import fields from './formComponents/fields';
 import Template from './formComponents/Template';
 
-import {fetchRelationFields, clearData} from './DialogActions';
+import {prepareSchema, clearData} from './DialogActions';
 
-class GeneratedDialog extends Component {
-  componentDidMount() {
-    this.props.fetchRelationFields(this.props.schema.schema, this.props.action, this.props.schema.parent);
+/**
+ * Dialog component for creating and editing resources.
+ *
+ * @class GeneratedDialog
+ */
+export class GeneratedDialog extends Component {
+  /**
+   * Reference to Form component.
+   * @type {ReactElement}
+   */
+  form = null;
+
+  /**
+   * Prepares schema to before shows dialog.
+   * @override
+   */
+  componentWillMount() {
+    const {baseSchema, action} = this.props;
+
+    this.props.prepareSchema(baseSchema.schema, action);
   }
 
+  /**
+   * Clears all data from store.
+   * @override
+   */
   componentWillUnmount() {
     this.props.clearData();
   }
 
+
+  /**
+   * Handles submit event.
+   * Calls onSubmit and onClose property callback.
+   *
+   * @param formData
+   */
   handleSubmit = ({formData}) => {
     this.props.onSubmit(formData, this.props.data.id);
     this.props.onClose(); // Add check success
   };
 
+  /**
+   * Renders dialog component.
+   * @override
+   * @return {ReactElement} markup
+   */
   render() {
-    const {action, schema} = this.props;
-    const title = `${action[0].toUpperCase() + action.slice(1)} new ${schema.singular}`;
+    const {action, baseSchema} = this.props;
+    const title = `${action[0].toUpperCase() + action.slice(1)} new ${baseSchema.singular}`;
+    const actions = [];
 
-    const actions = [
-      <Button key={0} text="Cancel"
-        onClick={this.props.onClose}
-      />,
-      <Button key={1} text="Submit"
+    if (this.props.onClose) {
+      actions.push(
+        <Button key={actions.length} text="Cancel"
+          onClick={this.props.onClose}
+        />
+      );
+    }
+    actions.push(
+      <Button key={actions.length} text="Submit"
         intent={Intent.PRIMARY} onClick={event => {
           this.form.onSubmit(event);
         }}
       />
-    ];
+    );
+
     return (
       <Dialog title={title} actions={actions}
         autoScrollBodyContent={true}
         {...this.props}>
         <div className="pt-dialog-body">
           {(() => {
-            if (this.props.dialogReducer.isLoading) {
+            if (this.props.isLoading || this.props.schema === undefined) {
               return (
                 <ProgressBar/>
               );
@@ -50,16 +90,16 @@ class GeneratedDialog extends Component {
 
             return (
               <div>
-                <Form ref={c => {this.form = c;}} schema={this.props.dialogReducer.schema}
+                <Form ref={c => {this.form = c;}} schema={this.props.schema}
                   fields={fields} widgets={widgets}
                   FieldTemplate={Template} formData={
-                    this.props.dialogReducer.schema.propertiesOrder.reduce(
+                    this.props.schema.propertiesOrder.reduce(
                       (result, item) => {
                         result[item] = this.props.data[item];
                         return result;
                       }, {}
                     )}
-                  uiSchema={{'ui:order': this.props.dialogReducer.schema.propertiesOrder, ...this.props.uiSchema}}
+                  uiSchema={{'ui:order': this.props.schema.propertiesOrder, ...this.props.uiSchema}}
                   onSubmit={this.handleSubmit} showErrorList={false}>
                   <div/>
                 </Form>
@@ -77,20 +117,41 @@ class GeneratedDialog extends Component {
   }
 }
 
-GeneratedDialog.contextTypes = {
-  router: React.PropTypes.object
-};
-
 GeneratedDialog.defaultProps = {
+  action: 'create',
+  formData: {},
+  onSubmit: () => {},
   uiSchema: {}
 };
 
+if (process.env.NODE_ENV !== 'production') {
+  GeneratedDialog.propTypes = {
+    prepareSchema: PropTypes.func.isRequired,
+    clearData: PropTypes.func.isRequired,
+    isOpen: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    schema: PropTypes.object,
+    baseSchema: PropTypes.object.isRequired,
+    action: PropTypes.oneOf([
+      'create',
+      'update'
+    ]),
+    formData: PropTypes.oneOfType([
+      PropTypes.object,
+      PropTypes.array
+    ]),
+    onClose: PropTypes.func,
+    onSubmit: PropTypes.func
+  };
+}
+
 function mapStateToProps(state) {
   return {
-    dialogReducer: state.dialogReducer
+    schema: getSchema(state),
+    isLoading: getLoadingState(state)
   };
 }
 export default connect(mapStateToProps, {
-  fetchRelationFields,
+  prepareSchema,
   clearData
 })(GeneratedDialog);
