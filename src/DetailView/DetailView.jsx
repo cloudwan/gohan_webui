@@ -101,7 +101,7 @@ class DetailView extends Component {
       return (
         <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
           data={this.state.dialogData} onClose={this.handleCloseModal}
-          onSubmit={this.handleSubmit} schema={this.state.activeSchema}
+          onSubmit={this.handleSubmit} baseSchema={this.state.activeSchema}
         />
       );
     }
