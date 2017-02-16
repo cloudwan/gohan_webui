@@ -117,6 +117,7 @@ export class GeneratedDialog extends Component {
   }
 }
 
+
 GeneratedDialog.defaultProps = {
   action: 'create',
   formData: {},
