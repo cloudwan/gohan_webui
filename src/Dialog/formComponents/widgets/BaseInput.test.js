@@ -43,4 +43,16 @@ describe('< BaseInput />', function () {
 
     wrapper.find('input').get(0).props.value.should.equal('test');
   });
+
+  it('should call onChange event', () => {
+    const onChange = chai.spy();
+    const wrapper = shallow(
+      <BaseInput id={'0'} value={'test'}
+        onChange={onChange}
+      />
+    );
+
+    wrapper.find('input').at(0).simulate('change', {target: {value: 'newValue'}});
+    onChange.should.have.been.called.once; // eslint-disable-line no-unused-expressions
+  });
 });
