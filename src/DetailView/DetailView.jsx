@@ -20,14 +20,13 @@ class DetailView extends Component {
   constructor(props) {
     super(props);
 
-    const splitPathname = props.location.pathname.split('/');
     const activeSchema = props.schemaReducer.data.find(
-      object => object.singular === splitPathname[splitPathname.length - 2]
+      object => object.singular === this.props.singular
     );
     const childSchemas = props.schemaReducer.data.filter(
       object => object.parent === activeSchema.id
     );
-    const detail = splitPathname[splitPathname.length - 1];
+    const detail = props.params.id;
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
 

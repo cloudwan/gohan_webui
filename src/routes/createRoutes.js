@@ -21,7 +21,7 @@ export const createRoutes = store => {
           params => {
             return (
               <div>
-                <DetailView {...params}/>
+                <DetailView singular={item.singular} {...params}/>
                 {
                   schemaChilds.map(child => (
                     <TableView key={child.id} plural={child.plural} />
