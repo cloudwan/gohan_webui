@@ -67,7 +67,7 @@ class TableRow extends Component {
 
   buildTableRow = () => {
     const {visibleColumns, rowItem} = this.props;
-    const {singular} = this.props.schema;
+    const {url} = this.props.schema;
     return visibleColumns.map((column, index) => {
       const data = rowItem[column];
 
@@ -83,7 +83,7 @@ class TableRow extends Component {
       if (column === 'name') {
         return (
           <td key={index}>
-            <Link to={'/' + singular + '/' + rowItem.id}>{data}</Link>
+            <Link to={`${url}/${rowItem.id}`}>{data}</Link>
           </td>
         );
       }
