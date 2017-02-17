@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import _ from 'lodash';
 
 import {deepEquals} from 'react-jsonschema-form/lib/utils';
 
@@ -36,11 +37,11 @@ class ObjectField extends Component {
     required: false,
     disabled: false,
     readonly: false,
-  }
+  };
 
   constructor(props) {
     super(props);
-    this.state = this.getStateFromProps(props);
+    this.state = {...this.getStateFromProps(props)};
   }
 
   componentWillReceiveProps(nextProps) {
@@ -79,8 +80,30 @@ class ObjectField extends Component {
 
   onPropertyChange = name => {
     return (value, options) => {
-      this.asyncSetState({[name]: value}, options);
+      this.filterSchemaProperties(name, value, options);
     };
+  };
+
+  filterSchemaProperties = (name, value, options) => {
+    const {definitions} = this.props.registry;
+    const baseSchema = retrieveSchema(this.props.schema, definitions);
+    const {propertiesLogic = {}} = baseSchema;
+    const newState = {[name]: value};
+    const logic = propertiesLogic[name];
+
+    if (logic) {
+      if (logic[value]) {
+        const {hide} = logic[value];
+
+        if (hide) {
+          hide.forEach(property => {
+            newState[property] = undefined;
+          });
+        }
+      }
+    }
+
+    this.asyncSetState(newState, options);
   };
 
   render() {
@@ -95,12 +118,32 @@ class ObjectField extends Component {
     } = this.props;
     const {definitions, fields, formContext} = this.props.registry;
     const {SchemaField, TitleField, DescriptionField} = fields;
-    const schema = retrieveSchema(this.props.schema, definitions);
-    const title = (schema.title === undefined) ? name : schema.title;
+    const baseSchema = retrieveSchema(this.props.schema, definitions);
+    const title = (baseSchema.title === undefined) ? name : baseSchema.title;
+    const {propertiesLogic = {}} = baseSchema;
+    const schema = _.cloneDeep(baseSchema);
+
+    Object.keys(propertiesLogic).forEach(key => {
+      const property = propertiesLogic[key];
+
+      Object.keys(property).forEach(value => {
+        const actions = property[value];
+        const {hide} = actions;
+
+        hide.forEach(propertyKey => {
+          if (this.state[key] === value) {
+            delete schema.properties[propertyKey];
+          }
+        });
+      });
+    });
+
     let orderedProperties;
     try {
       const properties = Object.keys(schema.properties);
-      orderedProperties = orderProperties(properties, schema.propertiesOrder || uiSchema['ui:order']);
+      orderedProperties = orderProperties(
+        properties, schema.propertiesOrder.filter(item => properties.includes(item)) || uiSchema['ui:order']
+      );
     } catch (err) {
       return (
         <div>
