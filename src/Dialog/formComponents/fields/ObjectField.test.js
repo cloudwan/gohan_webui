@@ -46,7 +46,8 @@ describe('< ObjectField />', () => {
   it('should contain 1 fieldset', () => {
     const schema = {
       title: 'test title',
-      properties: {}
+      properties: {},
+      propertiesOrder: []
     };
     const wrapper = shallow(
       <ObjectField schema={schema} onChange={() => {}} />
@@ -58,7 +59,8 @@ describe('< ObjectField />', () => {
   it('should contain 1 TitleField', () => {
     const schema = {
       title: 'test title',
-      properties: {}
+      properties: {},
+      propertiesOrder: []
     };
     const wrapper = shallow(
       <ObjectField schema={schema} onChange={() => {}} />
@@ -71,7 +73,8 @@ describe('< ObjectField />', () => {
     const schema = {
       title: 'test title',
       description: 'test description',
-      properties: {}
+      properties: {},
+      propertiesOrder: []
     };
     const idSchema = {
       $id: '0'
@@ -95,6 +98,7 @@ describe('< ObjectField />', () => {
           title: 'title'
         }
       },
+      propertiesOrder: ['test'],
       required: ['test']
     };
     const wrapper = mount(
