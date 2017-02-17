@@ -72,4 +72,16 @@ describe('< CheckboxWidget />', function () {
     wrapper.find('[type="checkbox"]').get(0).props.checked.should.equal(false);
   });
 
+  it('should call onChange event', () => {
+    const onChange = chai.spy();
+    const wrapper = shallow(
+      <CheckboxWidget schema={{}} id={'0'}
+        value={false} onChange={onChange}
+      />
+    );
+
+    wrapper.find('input').at(0).simulate('change', {target: {checked: true}});
+    onChange.should.have.been.called.once; // eslint-disable-line no-unused-expressions
+  });
+
 });
