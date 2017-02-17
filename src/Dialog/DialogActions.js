@@ -15,14 +15,14 @@ function fetchError(data) {
   };
 }
 
-function toLocalSchema(schema, state) {
+function toLocalSchema(schema, state, parentProperty) {
   return new Promise((resolve, reject) => {
     const result = {...schema};
+
     if (Array.isArray(result.type)) {
       result.type = result.type[0];
     }
-
-    if (result.relation !== undefined) {
+    if (result.relation !== undefined && result.relation !== parentProperty) {
       const enumValues = [];
       const options = {};
       const headers = {
@@ -51,7 +51,7 @@ function toLocalSchema(schema, state) {
         reject(error.response);
       });
     } else if (result.type === 'array') {
-      const promise = toLocalSchema(result.items, state);
+      const promise = toLocalSchema(result.items, state, parentProperty);
 
       promise.then(data => {
         result.items = data;
@@ -64,7 +64,7 @@ function toLocalSchema(schema, state) {
       const promises = [];
 
       for (let key in result.properties) {
-        const promise = toLocalSchema(result.properties[key], state);
+        const promise = toLocalSchema(result.properties[key], state, parentProperty);
         promises.push(promise);
         promise.then(data => {
           result.properties[key] = data;
@@ -78,9 +78,10 @@ function toLocalSchema(schema, state) {
     } else if (result.items !== undefined) {
       result.type = 'array';
 
-      toLocalSchema(result.items, state).then(items => {
+      toLocalSchema(result.items, state, parentProperty).then(items => {
         if (items.title === undefined) {
           items.title = 'value';
+          items.type = 'object';
         }
         result.items = {
           type: 'object',
@@ -107,9 +108,12 @@ function toLocalSchema(schema, state) {
 function filterSchema(schema, action, parentProperty) {
   let result = {};
 
-  if (schema.enum !== undefined || schema.options !== undefined || schema.properties === undefined) {
+  if (schema.enum !== undefined ||
+    schema.options !== undefined ||
+    schema.properties === undefined) {
     return schema;
   }
+
   for (let key in schema.properties) {
     const property = schema.properties[key];
 
@@ -117,7 +121,7 @@ function filterSchema(schema, action, parentProperty) {
       continue;
     }
 
-    if (key === parentProperty) {
+    if (parentProperty && key === `${parentProperty}_id`) {
       continue;
     }
 
@@ -156,13 +160,17 @@ function filterSchema(schema, action, parentProperty) {
     });
   }
 
+  const propertiesOrder = schema.propertiesOrder ?
+    schema.propertiesOrder.filter(item => Object.keys(result).includes(item)) :
+    Object.keys(result);
+
   result = Object.assign(
     {},
     schema,
     {
       type: 'object',
       properties: result,
-      propertiesOrder: schema.propertiesOrder.filter(item => Object.keys(result).includes(item)),
+      propertiesOrder,
       required
     }
   );
@@ -170,14 +178,14 @@ function filterSchema(schema, action, parentProperty) {
   return result;
 }
 
-export function prepareSchema(schema, action) {
+export function prepareSchema(schema, action, parentProperty) {
   return async (dispatch, getState) => {
     const state = getState();
 
     try {
-      const resultSchema = await toLocalSchema(schema, state);
+      const resultSchema = await toLocalSchema(schema, state, parentProperty);
 
-      dispatch(fetchSuccess(filterSchema(resultSchema, action)));
+      dispatch(fetchSuccess(filterSchema(resultSchema, action, parentProperty)));
     } catch (error) {
       console.error(error);
       dispatch(fetchError(error));
