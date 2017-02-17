@@ -28,7 +28,7 @@ export const getSidebarMenuItems = createSelector(
             {
               index: menuItems.length,
               title: item.title,
-              path: '#/' + item.plural
+              path: '#' + item.url
             }
           );
         }
