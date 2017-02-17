@@ -13,7 +13,7 @@ export const createRoutes = store => {
   const schemaRoutes = data.reduce((result, item) => {
     const schemaChilds = data.filter(childSchema => childSchema.parent === item.singular);
     const singular = {
-      path: /* item.prefix + '/' + */ item.singular + '/:id',
+      path: `${item.url}/:id`,
       singular: item.singular,
       getComponent(nextState, cb) {
 
@@ -43,7 +43,7 @@ export const createRoutes = store => {
       }
     };
     const plural = {
-      path: /* item.prefix + '/' + */ item.plural,
+      path: item.url,
       plural: item.plural,
       getComponent(nextState, cb) {
         return cb(null,
