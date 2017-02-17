@@ -22,21 +22,21 @@ describe('SidebarSelectors', () => {
             data: [
               {
                 title: 'test1 title',
-                plural: 'test1_plural',
+                url: '/test1_url',
                 metadata: {
                   type: 'test1_type'
                 }
               },
               {
                 title: 'test2 title',
-                plural: 'test2_plural',
+                url: '/test2_url',
                 metadata: {
                   type: 'test2_type'
                 }
               },
               {
                 title: 'test3 title',
-                plural: 'test3_plural',
+                url: '/test3_url',
                 parent: 'parent',
                 metadata: {
                   type: 'test3_type'
@@ -44,14 +44,14 @@ describe('SidebarSelectors', () => {
               },
               {
                 title: 'test4 title',
-                plural: 'test4_plural',
+                url: '/test4_url',
                 metadata: {
                   type: 'metaschema'
                 }
               },
               {
                 title: 'test5 title',
-                plural: 'test5_plural',
+                url: '/test5_url',
                 metadata: {
                   type: 'test5_type'
                 }
@@ -68,17 +68,17 @@ describe('SidebarSelectors', () => {
         {
           index: 1,
           title: 'test1 title',
-          path: '#/test1_plural'
+          path: '#/test1_url'
         },
         {
           index: 2,
           title: 'test2 title',
-          path: '#/test2_plural'
+          path: '#/test2_url'
         },
         {
           index: 3,
           title: 'test5 title',
-          path: '#/test5_plural'
+          path: '#/test5_url'
         }
       ]);
     });
