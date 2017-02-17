@@ -28,7 +28,7 @@ export class GeneratedDialog extends Component {
   componentWillMount() {
     const {baseSchema, action} = this.props;
 
-    this.props.prepareSchema(baseSchema.schema, action);
+    this.props.prepareSchema(baseSchema.schema, action, baseSchema.parent);
   }
 
   /**

@@ -71,6 +71,33 @@ describe('DialogActions ', () => {
           title: 'Name',
           type: 'string'
         },
+        petToys: {
+          description: 'Array of pet toys ',
+          permission: [
+            'create',
+            'update'
+          ],
+          title: 'Pet toys',
+          type: 'array',
+          items: {
+            name: {
+              title: 'Name',
+              description: 'Toy name.',
+              type: 'string'
+            }
+          }
+        },
+        parts: {
+          title: 'Parts',
+          description: 'Parts of toy',
+          type: 'object',
+          items: {
+            name: {
+              title: 'Name',
+              type: 'string'
+            }
+          }
+        }
       }, propertiesOrder: [
         'id',
         'name',
@@ -204,7 +231,51 @@ describe('DialogActions ', () => {
               relation_property: 'pet',  // eslint-disable-line camelcase
               title: 'pet',
               type: 'string'
+            },
+            petToys: {
+              description: 'Array of pet toys ',
+              permission: [
+                'create',
+                'update'
+              ],
+              title: 'Pet toys',
+              type: 'array',
+              items: {
+                name: {
+                  title: 'Name',
+                  description: 'Toy name.',
+                  type: 'string'
+                }
+              }
+            },
+            parts: {
+              description: 'Parts of toy',
+              items: {
+                properties: {
+                  id: {
+                    title: 'key',
+                    type: 'string'
+                  },
+                  value: {
+                    name: {
+                      title: 'Name',
+                      type: 'string'
+                    },
+                    title: 'value',
+                    type: 'object'
+                  }
+                },
+                propertiesOrder: [
+                  'id',
+                  'value'
+                ],
+                required: [],
+                type: 'object'
+              },
+              title: 'Parts',
+              type: 'array'
             }
+
           },
           propertiesOrder: [
             'name',
