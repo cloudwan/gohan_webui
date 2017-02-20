@@ -53,7 +53,6 @@ export default class AppRouter extends Router {
   }
 
   setQueryParams(params) {
-
     let queryStrings = '';
 
     for (let x in params) {
@@ -66,7 +65,7 @@ export default class AppRouter extends Router {
         queryStrings += x + '=' + params[x];
       }
     }
-    window.history.replaceState({},'','/' + queryStrings + window.location.hash);
+    window.history.replaceState({}, '', `${window.location.pathname}${queryStrings}${window.location.hash}`);
   }
 
   getQueryParams() {
