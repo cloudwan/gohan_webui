@@ -195,32 +195,29 @@ export default class DetailView extends View {
     this.model.getAncestors(ancestors => {
       ancestors.unshift(this.model);
       const parents = ancestors.reduce((result, ancestor, index) => {
-        const fragment = ancestor.schema.get('url');
-        let modelFragment;
-        let schemaFragment;
+        const url = ancestors.reduceRight((url, item, i) => {
+          if (i < index) {
+            return url;
+          }
+          if (i === ancestors.length - 1) {
+            url += item.schema.get('prefix');
+          }
+          url += `/${item.schema.get('plural')}/${item.get('id')}`;
+          return url;
+        }, '');
 
-        if (ancestor.schema.hasParent()) {
-          modelFragment = ancestor.schema.parent().get('url') +
-          '/' + ancestor.parentId() + '/' + ancestor.schema.get('plural') + '/' + ancestor.get('id');
-          schemaFragment = ancestor.schema.parent().get('url') +
-          '/' + ancestor.parentId() + '/' + ancestor.schema.get('plural');
-        } else {
-          modelFragment = ancestor.schema.get('url') + '/' + ancestor.get('id');
-          schemaFragment = fragment;
-        }
         result.push({
           title: ancestor.get('name'),
-          url: modelFragment
+          url
         });
         if (ancestors.length === index + 1) {
           result.push({
             title: ancestor.schema.get('title'),
-            url: schemaFragment
+            url: ancestor.schema.get('url')
           });
         }
         return result;
-      },
-      []);
+      }, []);
       parents.reverse();
       this.app.breadCrumb.update(parents);
     });
