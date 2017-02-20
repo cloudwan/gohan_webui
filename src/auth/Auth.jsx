@@ -8,7 +8,7 @@ import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
 import {Toast} from '@blueprintjs/core';
 
-class Auth extends Component {
+export class Auth extends Component {
   componentWillMount() {
     this.props.fetchTokenData();
   }

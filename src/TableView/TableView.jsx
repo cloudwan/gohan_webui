@@ -23,7 +23,7 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import Dialog from '../Dialog/Dialog';
 import {Toaster, Position, Alert, Intent} from '@blueprintjs/core';
 
-class TableView extends Component {
+export class TableView extends Component {
   constructor(props) {
     super(props);
 
