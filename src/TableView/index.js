@@ -7,12 +7,9 @@ import {initialize, fetchData, clearData} from './TableActions';
 export default TableView;
 
 export function onTableEnter(store, plural, nextState, parentUrl = '') {
-  injectReducer(store, {key: 'tableReducer', reducer});
-  const state = store.getState();
-  const activeSchema = state.schemaReducer.data.find(
-    object => object.plural === plural
-  );
   let filters;
+
+  injectReducer(store, {key: 'tableReducer', reducer});
 
   if (nextState.location.query.filters) {
     try {
@@ -31,7 +28,7 @@ export function onTableEnter(store, plural, nextState, parentUrl = '') {
 
   store.dispatch(
     initialize(
-      `${activeSchema.prefix}${parentUrl}/${plural}`, plural,
+      `${parentUrl}/${plural}`, plural,
       {
         sortKey,
         sortOrder,
