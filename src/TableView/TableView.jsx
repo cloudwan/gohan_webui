@@ -278,7 +278,10 @@ class TableView extends Component {
       <div className="table-container">
         {this.showModal()}
         {this.showAlert()}
-        <Table schema={this.props.activeSchema} data={data}
+        <Table schema={{
+          ...this.props.activeSchema,
+          url: (this.props.parentUrl || this.props.activeSchema.prefix) + '/' + this.props.activeSchema.plural
+        }} data={data}
           pageCount={this.props.pageCount} activePage={this.props.activePage}
           filterBy={filterBy} filterValue={filterValue}
           sortKey={this.props.tableReducer.sortKey} sortOrder={this.props.tableReducer.sortOrder}
