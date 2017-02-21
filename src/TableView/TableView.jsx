@@ -106,6 +106,9 @@ export class TableView extends Component {
   };
 
   handleFilterData = property => {
+    const {plural} = this.props;
+
+    this.props.filterData(property, plural);
     if (this.props.location) {
       this.context.router.replace({
         pathname: this.props.location.pathname,
@@ -115,9 +118,6 @@ export class TableView extends Component {
         }
       });
     }
-    const {plural} = this.props;
-
-    this.props.filterData(property, plural);
   };
 
   handleSortData = (sortKey, sortOrder) => {
