@@ -115,7 +115,7 @@ export function fetchData(plural) {
  * @param {string} sortKey
  * @param {string} sortOrder - asc or desc
  * @param {string} plural
- * @return {function(*)}
+ * @return {function}
  */
 export function sortData(sortKey, sortOrder, plural) {
   if (sortOrder && sortOrder !== 'asc' && sortOrder !== 'desc') {
@@ -136,7 +136,7 @@ export function sortData(sortKey, sortOrder, plural) {
  * @export
  * @param {number} offset
  * @param {string} plural
- * @return {function(*)}
+ * @return {function}
  */
 export function setOffset(offset, plural) {
   return dispatch => {
@@ -149,9 +149,9 @@ export function setOffset(offset, plural) {
  * Filters data by specified property and value.
  *
  * @export
- * @param {{[string]: string}}filters
+ * @param {{[string]: string}} filters
  * @param {string} plural
- * @return {function(*)}
+ * @return {function}
  */
 export function filterData(filters, plural) {
   return dispatch => {
@@ -181,7 +181,8 @@ function createError(data) {
  *
  * @export
  * @param data {Object}
- * @return {function(*)}
+ * @param plural {string}
+ * @return {function}
  */
 export function createData(data, plural) {
   return (dispatch, getState) => {
@@ -229,7 +230,9 @@ function updateError(data) {
  * Creates new resource.
  *
  * @export
+ * @param id {string}
  * @param data {Object}
+ * @param plural {string}
  * @return {function}
  */
 export function updateData(id, data, plural) {
@@ -289,7 +292,7 @@ function deleteError(error) {
  * @export
  * @param {string} id
  * @param {string} plural
- * @return {function(*, *)}
+ * @return {function}
  */
 export function deleteData(id, plural) {
   return (dispatch, getState) => {
@@ -327,8 +330,9 @@ function deleteMultipleResourcesSuccess(plural) {
 /**
  * Removes array of resources.
  *
+ * @param {[string]} ids
  * @param {string} plural
- * @return {function(*)}
+ * @return {function}
  */
 export function deleteMultipleResources(ids, plural) {
   return (dispatch, getState) => {
@@ -361,7 +365,7 @@ export function deleteMultipleResources(ids, plural) {
  * Clears date in state.
  *
  * @param {string} plural
- * @return {function(*)}
+ * @return {function}
  */
 export function clearData(plural) {
   return dispatch => {
