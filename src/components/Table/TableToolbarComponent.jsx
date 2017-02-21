@@ -34,7 +34,11 @@ class TableToolbar extends Component {
       event.stopPropagation();
     }
 
-    this.setState({filterProperty: event.target.value}, this.filterData);
+    this.setState({filterProperty: event.target.value}, () => {
+      if (this.state.filterValue) {
+        this.filterData();
+      }
+    });
   };
 
   handleSearchChange = event => {
@@ -70,7 +74,7 @@ class TableToolbar extends Component {
       <div>
         <div className="pt-navbar-group pt-align-left">
           <Button className="pt-intent-primary" iconName="add"
-            text={'New ' + this.props.singular}
+            text={'New ' + this.props.newResourceTitle}
             onClick={this.props.handleOpenModal}
           />
           <Button iconName="trash" text={'Delete selected'}
@@ -103,7 +107,7 @@ TableToolbar.propTypes = {
   handleOpenModal: PropTypes.func.isRequired,
   filterValue: PropTypes.string.isRequired,
   filterBy: PropTypes.string.isRequired,
-  singular: PropTypes.string.isRequired,
+  newResourceTitle: PropTypes.string.isRequired,
   options: PropTypes.array.isRequired,
   filterData: PropTypes.func.isRequired,
   filterProperties: PropTypes.array.isRequired,
