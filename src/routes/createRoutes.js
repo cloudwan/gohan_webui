@@ -6,63 +6,145 @@ import NotFound from '../NotFoundView';
 import requestAuth from '../auth/requestAuth';
 import components from './componentsList';
 
+/**
+ * Returns parents of specified schema.
+ *
+ * @param schemas {Array} - Array of all schemas.
+ * @param schema {Object} - Child schema
+ * @return {Array}
+ */
+export const getParents = (schemas, schema) => {
+  const result = [];
+  let parentSchema = schemas.find(item => item.id === schema.parent);
+
+  result.push(parentSchema);
+
+  while (parentSchema.parent) {
+    parentSchema = schemas.find(item => item.id === parentSchema.parent);
+    result.push(parentSchema);
+  }
+
+  return result;
+};
+
+/**
+ * Creates array of routes based on config.json and array of schemas.
+ *
+ * @param store {Object} - Store of application
+ * @return {Array}
+ */
 export const createRoutes = store => {
   const {routes} = store.getState().configReducer;
-  const {data} = store.getState().schemaReducer;
+  const schemas = store.getState().schemaReducer.data;
 
-  const schemaRoutes = data.reduce((result, item) => {
-    const schemaChilds = data.filter(childSchema => childSchema.parent === item.singular);
-    const singular = {
-      path: `${item.url}/:id`,
-      singular: item.singular,
-      getComponent(nextState, cb) {
+  const schemaRoutes = schemas.reduce((result, schema) => {
+    const schemaChilds = schemas.filter(childSchema => childSchema.parent === schema.singular);
 
-        return cb(null,
-          params => {
-            return (
-              <div>
-                <DetailView singular={item.singular} {...params}/>
-                {
-                  schemaChilds.map(child => (
-                    <TableView key={child.id} plural={child.plural} />
-                    )
-                  )
-                }
-              </div>
-            );
-          }
-        );
-      },
-      onEnter: (nextState) => {
-        onDetailEnter(store);
-        schemaChilds.forEach(child => {
-          const parentUrl = `/${item.plural}/${nextState.params.id}`;
+    if (schema.parent) {
+      const parents = getParents(schemas, schema);
+      const singularPath = `${parents.reverse().reduce((result, parent, i) => {
+        if (i === 0) {
+          result += parent.prefix;
+        }
 
-          onTableEnter(store, child.plural, nextState, parentUrl);
-        });
-      }
-    };
-    const plural = {
-      path: item.url,
-      plural: item.plural,
-      getComponent(nextState, cb) {
-        return cb(null,
-          params => {
-            const {plural} = item;
-            const {location} = params;
+        result += `/${parent.plural}/:${parent.id}Id`;
 
-            return (
-              <TableView location={location} plural={plural}/>
-            );
-          }
-        );
-      },
-      onEnter: (nextState) => {
-        onTableEnter(store, item.plural, nextState);
-      }
-    };
-    result.push(singular, plural);
+        return result;
+      }, '')}/${schema.plural}/:id`;
+      const singular = {
+        path: singularPath,
+        singular: schema.singular,
+        getComponent(nextState, cb) {
+          let parentUrl = Object.keys(nextState.params).reduce((result, key) => {
+            return result.replace(`:${key}`, nextState.params[key]);
+          }, singularPath);
 
+          return cb(
+            null,
+            params => {
+              return (
+                <div>
+                  <DetailView singular={schema.singular} {...params}/>
+                  {
+                    schemaChilds.map(child => (
+                      <TableView key={child.id} plural={child.plural}
+                        parentUrl={parentUrl}
+                      />
+                    ))
+                  }
+                </div>
+              );
+            }
+          );
+        },
+        onEnter: (nextState) => {
+          let url = Object.keys(nextState.params).reduce((result, key) => {
+            return result.replace(`:${key}`, nextState.params[key]);
+          }, singularPath);
+
+          onDetailEnter(store);
+          schemaChilds.forEach(child => {
+            onTableEnter(store, child.plural, nextState, url);
+          });
+        }
+      };
+
+      result.push(singular);
+    } else {
+      const singular = {
+        path: `${schema.url}/:id`,
+        singular: schema.singular,
+        getComponent(nextState, cb) {
+          return cb(
+            null,
+            params => {
+              const parentUrl = `${schema.prefix}/${schema.plural}/${nextState.params.id}`;
+
+              return (
+                <div>
+                  <DetailView singular={schema.singular} {...params}/>
+                  {
+                    schemaChilds.map(child => (
+                      <TableView key={child.id} plural={child.plural}
+                        parentUrl={parentUrl}
+                      />
+                    ))
+                  }
+                </div>
+              );
+            }
+          );
+        },
+        onEnter: (nextState) => {
+          const parentUrl = `${schema.prefix}/${schema.plural}/${nextState.params.id}`;
+
+          onDetailEnter(store);
+          schemaChilds.forEach(child => {
+            onTableEnter(store, child.plural, nextState, parentUrl);
+          });
+        }
+      };
+      const plural = {
+        path: schema.url,
+        plural: schema.plural,
+        getComponent(nextState, cb) {
+          return cb(null,
+            params => {
+              const {plural} = schema;
+              const {location} = params;
+
+              return (
+                <TableView location={location} plural={plural}/>
+              );
+            }
+          );
+        },
+        onEnter: (nextState) => {
+          onTableEnter(store, schema.plural, nextState, schema.prefix);
+        }
+      };
+      result.push(singular, plural);
+    }
     return result;
   }, []);
 
