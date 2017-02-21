@@ -34,7 +34,11 @@ class TableToolbar extends Component {
       event.stopPropagation();
     }
 
-    this.setState({filterProperty: event.target.value}, this.filterData);
+    this.setState({filterProperty: event.target.value}, () => {
+      if (this.state.filterValue) {
+        this.filterData();
+      }
+    });
   };
 
   handleSearchChange = event => {

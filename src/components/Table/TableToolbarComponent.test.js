@@ -16,7 +16,7 @@ describe('< TableToolbarComponent />', () => {
   it('should exist', () => {
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
+        filterBy={''} newResourceTitle={''}
         options={[]} filterData={() => {}}
         filterProperties={[]} deleteMultipleResources={() => {}}
         buttonDeleteSelectedDisabled={false} properties={{}}
@@ -29,7 +29,7 @@ describe('< TableToolbarComponent />', () => {
   it('should contain particular elements', () => {
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
+        filterBy={''} newResourceTitle={''}
         options={[]} filterData={() => {}}
         filterProperties={[]} deleteMultipleResources={() => {}}
         buttonDeleteSelectedDisabled={false} properties={{}}
@@ -55,7 +55,7 @@ describe('< TableToolbarComponent />', () => {
     };
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
+        filterBy={''} newResourceTitle={''}
         options={[]} filterData={() => {}}
         filterProperties={filterProperties} deleteMultipleResources={() => {}}
         buttonDeleteSelectedDisabled={false} properties={properties}
@@ -69,7 +69,7 @@ describe('< TableToolbarComponent />', () => {
     const filterData = chai.spy(() => {done();});
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
+        filterBy={''} newResourceTitle={''}
         options={[]} filterData={filterData}
         filterProperties={[]} deleteMultipleResources={() => {}}
         buttonDeleteSelectedDisabled={false} properties={{}}
@@ -87,7 +87,7 @@ describe('< TableToolbarComponent />', () => {
     const filterData = chai.spy(() => {done();});
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
+        filterBy={''} newResourceTitle={''}
         options={[]} filterData={filterData}
         filterProperties={[]} deleteMultipleResources={() => {}}
         buttonDeleteSelectedDisabled={false} properties={{}}
@@ -103,7 +103,7 @@ describe('< TableToolbarComponent />', () => {
     const deleteMultipleResources = chai.spy();
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
+        filterBy={''} newResourceTitle={''}
         options={[]} filterData={() => {}}
         filterProperties={[]} deleteMultipleResources={deleteMultipleResources}
         buttonDeleteSelectedDisabled={false} properties={{}}
@@ -126,8 +126,8 @@ describe('< TableToolbarComponent />', () => {
       }
     };
     const wrapper = shallow(
-      <TableToolbar handleOpenModal={() => {}} filterValue={''}
-        filterBy={''} singular={''}
+      <TableToolbar handleOpenModal={() => {}} filterValue={'title'}
+        filterBy={''} newResourceTitle={''}
         options={[]} filterData={filterData}
         filterProperties={filterProperties} deleteMultipleResources={() => {}}
         buttonDeleteSelectedDisabled={false} properties={properties}
@@ -137,5 +137,32 @@ describe('< TableToolbarComponent />', () => {
     wrapper.find('select').at(0).simulate('change', {
       preventDefault: () => {}, stopPropagation: () => {}, target: {value: 'test'}
     });
+  });
+
+  it('should not call filterData from handleMenuItemSelected when filterValue is empty', () => {
+    const filterData = chai.spy(() => {});
+    const filterProperties = ['item1', 'item2'];
+    const properties = {
+      item1: {
+        title: 'item1 title'
+      },
+      item2: {
+        title: 'item2 title'
+      }
+    };
+    const wrapper = shallow(
+      <TableToolbar handleOpenModal={() => {}} filterValue={''}
+        filterBy={''} newResourceTitle={''}
+        options={[]} filterData={filterData}
+        filterProperties={filterProperties} deleteMultipleResources={() => {}}
+        buttonDeleteSelectedDisabled={false} properties={properties}
+      />
+    );
+
+    wrapper.find('select').at(0).simulate('change', {
+      preventDefault: () => {}, stopPropagation: () => {}, target: {value: 'test'}
+    });
+
+    filterData.should.not.have.been.called();
   });
 });
