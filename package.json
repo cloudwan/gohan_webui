@@ -11,7 +11,8 @@
     "build": "rm -rf ./dist/ && NODE_ENV=production ./node_modules/.bin/webpack -p --colors --progress --bail",
     "build-dev": "rm -rf NODE_ENV=development ./dist/ && ./node_modules/.bin/webpack -d --colors --display-reasons --progress --bail",
     "dev-server": "rm -rf ./dist/ && NODE_ENV=development ./node_modules/.bin/webpack-dev-server --hot --inline --colors --progress",
-    "lint": "./node_modules/.bin/eslint `find ./src/ -regextype sed -regex '.*.jsx\\|.*.js'`"
+    "lint": "./node_modules/.bin/eslint `find ./src/ -regextype sed -regex '.*.jsx\\|.*.js'`",
+    "doc": "./node_modules/.bin/esdoc -c .esdoc.json"
   },
   "repository": {
     "type": "git",
@@ -60,6 +61,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "enzyme": "^2.6.0",
+    "esdoc": "^0.5.2",
     "eslint": "^3.12.2",
     "eslint-plugin-babel": "^4.0.0",
     "eslint-plugin-react": "^6.0.0",
