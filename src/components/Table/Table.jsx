@@ -20,12 +20,12 @@ class Table extends Component {
 
 
   render() {
-    const {schema, singular} = this.props.schema;
+    const {schema, singular, title} = this.props.schema;
     return (
       <div className={'pt-card pt-elevation-3'}>
         <Breadcrumb breadcrumbs={[singular]}/>
         <TableToolbarComponent filterBy={this.props.filterBy} filterValue={this.props.filterValue}
-          handleOpenModal={this.props.openModal} singular={singular}
+          handleOpenModal={this.props.openModal} newResourceTitle={title}
           options={schema.propertiesOrder} properties={schema.properties}
           filterData={this.props.filterData} filterProperties={this.props.visibleColumns}
           deleteMultipleResources={this.props.deleteMultipleResources}
