@@ -56,7 +56,7 @@ describe('< TableView />', () => {
       <TableView schemaReducer={{}} fetchData={() => {}}
         clearData={() => {}} tableReducer={{isLoading: false}}
         schema={{}} data={[]}
-        visibleColumns={[]}
+        visibleColumns={[]} activeSchema={{prefix: '/v1.0', plural: 'test'}}
       />
     );
 
