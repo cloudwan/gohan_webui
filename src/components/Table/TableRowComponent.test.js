@@ -62,7 +62,7 @@ describe('< TableRowComponent />', () => {
     }).should.have.length(2);
   });
 
-  it('should contain 1 table cell with null', () => {
+  it('should contain 1 table cell with empty string', () => {
     const visibleColumns = ['nullable'];
     const rowItem = {
       nullable: null
@@ -77,7 +77,7 @@ describe('< TableRowComponent />', () => {
 
     wrapper.find('td').filterWhere(item => {
       const itemContent = item.node.props.children;
-      return itemContent === 'null';
+      return itemContent === '';
     }).should.have.length(1);
   });
 

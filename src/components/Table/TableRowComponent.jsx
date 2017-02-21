@@ -55,7 +55,7 @@ class TableRow extends Component {
       }}
     />;
     return (
-      data === null ? 'null' : <Popover content={popoverContent}
+      data === null ? '' : <Popover content={popoverContent}
         interactionKind={PopoverInteractionKind.CLICK}
         popoverClassName="pt-popover-content-sizing"
         position={Position.RIGHT}
