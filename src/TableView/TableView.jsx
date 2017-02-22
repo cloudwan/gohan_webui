@@ -30,6 +30,7 @@ export class TableView extends Component {
     this.state = {
       modalOpen: false,
       alertOpen: false,
+      alertDeleteSelectedOpen: false,
       actionModal: 'create',
       dialogData: {},
       checkedRowsIds: [],
@@ -69,7 +70,6 @@ export class TableView extends Component {
         onDismiss: () => {}
       });
     }
-
   }
 
   componentWillUnmount() {
@@ -150,6 +150,14 @@ export class TableView extends Component {
 
   handleCloseAlert = () => {
     this.setState({alertOpen: false});
+  };
+
+  handleOpenDeleteSelectedAlert = () => {
+    this.setState({alertDeleteSelectedOpen: true});
+  };
+
+  handleCloseDeleteSelectedAlert = () => {
+    this.setState({alertDeleteSelectedOpen: false});
   };
 
   handleDeleteData = () => {
@@ -233,8 +241,26 @@ export class TableView extends Component {
     if (checkedRowsIds.length > 0) {
       this.props.deleteMultipleResources(checkedRowsIds, plural);
     }
+
+    if (this.state.alertDeleteSelectedOpen) {
+      this.handleCloseDeleteSelectedAlert();
+    }
   };
 
+  showDeleteSelectedAlert = () => {
+    if (this.state.alertDeleteSelectedOpen) {
+      return (
+        <Alert isOpen={this.state.alertDeleteSelectedOpen}
+          onConfirm={this.handleDeleteMultipleResources}
+          onCancel={this.handleCloseDeleteSelectedAlert}
+          intent={Intent.PRIMARY}
+          confirmButtonText={'Delete'}
+          cancelButtonText={'Cancel'}>
+          <p>Delete selected rows?</p>
+        </Alert>
+      );
+    }
+  };
 
   showModal = () => {
     if (this.state.modalOpen) {
@@ -278,6 +304,7 @@ export class TableView extends Component {
       <div className="table-container">
         {this.showModal()}
         {this.showAlert()}
+        {this.showDeleteSelectedAlert()}
         <Table schema={{
           ...this.props.activeSchema,
           url: (this.props.parentUrl || this.props.activeSchema.prefix) + '/' + this.props.activeSchema.plural
@@ -290,7 +317,7 @@ export class TableView extends Component {
           filterData={this.handleFilterData} visibleColumns={this.props.headers}
           openModal={this.handleOpenModal} closeModal={this.handleCloseModal}
           editData={this.handleEditItem} rowCheckboxChange={this.handleRowCheckboxChange}
-          sortData={this.handleSortData} deleteMultipleResources={this.handleDeleteMultipleResources}
+          sortData={this.handleSortData} openDeleteSelectedAlert={this.handleOpenDeleteSelectedAlert}
           buttonDeleteSelectedDisabled={this.state.buttonDeleteSelectedDisabled} checkedAll={this.state.checkedAll}
           handleCheckAll={this.handleCheckAllChange} openAlert={this.handleOpenAlert}
         />
