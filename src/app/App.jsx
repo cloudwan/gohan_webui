@@ -17,7 +17,8 @@ class App extends Component {
 
     this.state = {
       openUserMenu: false,
-      openSidebarMenu: false
+      openSidebar: true,
+      contentClassNames: ''
     };
   }
 
@@ -51,10 +52,6 @@ class App extends Component {
     this.props.resetErrorMessage();
   };
 
-  handleSidebarMenuRequestChange = open => {
-    this.setState({openSidebarMenu: open, contentPaddingLeft: 14});
-  };
-
   handleRequestLogout = () => {
     this.props.logout();
   };
@@ -63,9 +60,20 @@ class App extends Component {
     this.props.selectTenant(tenantId);
   };
 
-  handleRequestShowMenu = () => {
-    this.setState({openSidebarMenu: true, contentPaddingLeft: 270});
+  handleToggleSidebar = () => {
+    if (this.state.openSidebar) {
+      this.setState({
+        openSidebar: false,
+        contentClassNames: 'sidebar-hidden'
+      });
+    } else {
+      this.setState({
+        openSidebar: true,
+        contentClassNames: ''
+      });
+    }
   };
+
   render() {
     const {children} = this.props;
     const {user, tenant, tenants} = this.props.authReducer;
@@ -74,12 +82,11 @@ class App extends Component {
       <div>
         <Navbar userName={user.username} tenants={tenants}
           activeTenant={tenant.name} onRequestLogout={this.handleRequestLogout}
-          onRequestChangeTenant={this.handleRequestChangeTenant} onRequestShowMenu={this.handleRequestShowMenu}
+          onRequestChangeTenant={this.handleRequestChangeTenant}
+          onToggleSidebar={this.handleToggleSidebar} openSidebar={this.state.openSidebar}
         />
-        <SidebarMenu open={this.state.openSidebarMenu} menuItems={this.props.sidebarMenuItems}
-          onRequestChange={this.handleSidebarMenuRequestChange}
-        />
-        <div className="view-content">
+        <SidebarMenu menuItems={this.props.sidebarMenuItems} open={this.state.openSidebar}/>
+        <div className={`view-content ${this.state.contentClassNames}`}>
           {children}
         </div>
       </div>

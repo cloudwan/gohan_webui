@@ -40,8 +40,10 @@ export default class SidebarMenu extends Component {
   }
 
   render() {
+    const sidebarOpenClass = this.props.open ? '' : 'sidebar-hidden';
+
     return (
-      <div className="pt-elevation-2 pt-fixed-top sidebar">
+      <div className={`pt-elevation-2 pt-fixed-top sidebar ${sidebarOpenClass}`}>
         <div className="sidebar-search">
           <label className="pt-label">
             <input type="text" className="pt-input"
@@ -58,5 +60,6 @@ export default class SidebarMenu extends Component {
 }
 
 SidebarMenu.propTypes = {
-  menuItems: PropTypes.array
+  menuItems: PropTypes.array,
+  open: PropTypes.bool
 };
