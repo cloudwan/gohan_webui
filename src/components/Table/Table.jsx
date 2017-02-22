@@ -28,7 +28,7 @@ class Table extends Component {
           handleOpenModal={this.props.openModal} newResourceTitle={title}
           options={schema.propertiesOrder} properties={schema.properties}
           filterData={this.props.filterData} filterProperties={this.props.visibleColumns}
-          deleteMultipleResources={this.props.deleteMultipleResources}
+          deleteMultipleResources={this.props.openDeleteSelectedAlert}
           buttonDeleteSelectedDisabled={this.props.buttonDeleteSelectedDisabled}
         />
 
@@ -69,11 +69,11 @@ Table.propTypes = {
   openModal: PropTypes.func.isRequired,
   handlePageChange: PropTypes.func.isRequired,
   rowCheckboxChange: PropTypes.func.isRequired,
-  deleteMultipleResources: PropTypes.func.isRequired,
   buttonDeleteSelectedDisabled: PropTypes.bool.isRequired,
   openAlert: PropTypes.func.isRequired,
   checkedAll: PropTypes.object.isRequired,
-  handleCheckAll: PropTypes.func.isRequired
+  handleCheckAll: PropTypes.func.isRequired,
+  openDeleteSelectedAlert: PropTypes.func.isRequired
 };
 
 export default Table;
