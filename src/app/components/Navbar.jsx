@@ -9,8 +9,9 @@ import {
 } from '@blueprintjs/core';
 
 export default class Navbar extends Component {
-  handleShowMenuClick = () => {
-    this.props.onRequestShowMenu();
+
+  handleMenuButtonClick = () => {
+    this.props.onToggleSidebar();
   };
 
   handleTenantClick = tenantId => {
@@ -18,6 +19,7 @@ export default class Navbar extends Component {
   };
 
   render() {
+    const iconMenuMode = this.props.openSidebar ? 'closed' : 'open';
     let popoverContent = (
       <Menu>
         {this.props.tenants.map(item => (
@@ -31,8 +33,8 @@ export default class Navbar extends Component {
     return (
       <nav className="pt-navbar pt-fixed-top">
         <div className="pt-navbar-group pt-align-left">
-          <Button className="pt-button pt-minimal pt-icon-menu-closed"
-            onClick={this.handleShowMenuClick}>
+          <Button className={`pt-button pt-minimal pt-icon-menu-${iconMenuMode}`}
+            onClick={this.handleMenuButtonClick}>
             Gohan WebUI
           </Button>
         </div>
@@ -61,5 +63,6 @@ Navbar.propTypes = {
   userName: PropTypes.string.isRequired,
   onRequestLogout: PropTypes.func.isRequired,
   onRequestChangeTenant: PropTypes.func.isRequired,
-  onRequestShowMenu: PropTypes.func.isRequired
+  onToggleSidebar: PropTypes.func,
+  openSidebar: PropTypes.bool
 };

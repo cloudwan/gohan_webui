@@ -17,7 +17,7 @@ describe('< Navbar />', function () {
     const wrapper = shallow(
       <Navbar activeTenant="demo" tenants={[{name: 'demo', id: '1'}]}
         userName="admin" onRequestChangeTenant={() => {}}
-        onRequestLogout={() => {}} onRequestShowMenu={() => {}}
+        onRequestLogout={() => {}} onToggleSidebar={() => {}}
       />
     );
 
@@ -45,7 +45,7 @@ describe('< Navbar />', function () {
     const wrapper = shallow(
       <Navbar activeTenant={activeTenant} tenants={tenants}
         userName={userName} onRequestChangeTenant={() => {}}
-        onRequestLogout={() => {}} onRequestShowMenu={() => {}}
+        onRequestLogout={() => {}} onToggleSidebar={() => {}}
       />
     );
 
@@ -76,7 +76,7 @@ describe('< Navbar />', function () {
     const wrapper = shallow(
       <Navbar activeTenant={activeTenant} tenants={tenants}
         userName={userName} onRequestChangeTenant={() => {}}
-        onRequestLogout={handleRequestLogout} onRequestShowMenu={() => {}}
+        onRequestLogout={handleRequestLogout} onToggleSidebar={() => {}}
       />
     );
 
@@ -84,7 +84,7 @@ describe('< Navbar />', function () {
     handleRequestLogout.should.called();
   });
 
-  it('should call onRequestShowMenu callback', () => {
+  it('should call handleToggleSidebar callback', () => {
     const userName = 'testUserName';
     const activeTenant = 'testTenantName';
     const tenants = [
@@ -101,20 +101,20 @@ describe('< Navbar />', function () {
         name: 'sampleTenant12'
       }
     ];
-    const handleRequestShowMenu = chai.spy();
+    const handleToggleSidebar = chai.spy();
 
     const wrapper = shallow(
       <Navbar activeTenant={activeTenant} tenants={tenants}
         userName={userName} onRequestChangeTenant={() => {}}
-        onRequestLogout={() => {}} onRequestShowMenu={handleRequestShowMenu}
+        onRequestLogout={() => {}} onToggleSidebar={handleToggleSidebar}
       />
     );
 
-    wrapper.find('.pt-icon-menu-closed').simulate('click');
-    handleRequestShowMenu.should.called();
+    wrapper.find('Button').at(0).simulate('click');
+    handleToggleSidebar.should.called();
   });
 
-  it('should call onRequestShowMenu callback', () => {
+  it('should call handleRequestChangeTenant callback', () => {
     const userName = 'testUserName';
     const activeTenant = 'testTenantName';
     const tenants = [
@@ -136,7 +136,7 @@ describe('< Navbar />', function () {
     const wrapper = shallow(
       <Navbar activeTenant={activeTenant} tenants={tenants}
         userName={userName} onRequestChangeTenant={handleRequestChangeTenant}
-        onRequestLogout={() => {}} onRequestShowMenu={() => {}}
+        onRequestLogout={() => {}} onToggleSidebar={() => {}}
       />
     );
 

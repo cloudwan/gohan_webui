@@ -23,13 +23,21 @@ $brand-danger:          #FF0039 !default;
  */
 
 body {
-  //padding-top: 50px;
   margin: 0;
   background-color: #edecec;
 }
 .view-content {
-  padding: 50px 0 0 260px;;
+  padding-top: 50px;
+  padding-right: 0;
+  padding-bottom: 0;
+  padding-left: 260px;
   min-height: 400px;
+  transition: padding-left 250ms ease-in;
+
+  &.sidebar-hidden {
+    padding-left: 0;
+    transition: padding-left 250ms ease-out;
+  }
 }
 .table-container, .detail-container, .loading-container {
   margin: 15px
@@ -95,9 +103,16 @@ body {
   overflow-x: hidden;
   background-color: #fff;
   padding-top: 10px;
+  margin-left: 0;
+  transition: margin-left 250ms ease-in;
 
   .sidebar-search {
     padding-left: 10px;
+  }
+
+  &.sidebar-hidden {
+    margin-left: -260px;
+    transition: margin-left 250ms ease-out;
   }
 }
 /*
