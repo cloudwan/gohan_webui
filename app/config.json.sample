@@ -19,5 +19,6 @@
     ],
     "pageLimit": 25,
     "loginRequestTimeout": 30000,
-    "extendTokenTime": 300000
+    "extendTokenTime": 300000,
+    "storagePrefix": "gohan-webui"
 }

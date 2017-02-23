@@ -49,7 +49,12 @@ describe('UserModel ', () => {
     let user = {};
 
     beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
+      user = new UserModel({
+        url: 'http://foo.bar',
+        config: {
+          get: () => undefined
+        }
+      });
     });
 
     it('returns defaults values', () => {
@@ -63,7 +68,9 @@ describe('UserModel ', () => {
         new UserModel();
       }).to.throw(Error);
       chai.expect(() => {
-        new UserModel({url: 'http://foo.bar/'});
+        new UserModel({url: 'http://foo.bar/', config: {
+          get: () => undefined
+        }});
       }).to.not.throw(Error);
     });
   });
@@ -72,7 +79,9 @@ describe('UserModel ', () => {
     let user = {};
 
     beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
+      user = new UserModel({url: 'http://foo.bar', config: {
+        get: () => undefined
+      }});
     });
 
     it('sets auth data.', () => {
@@ -98,7 +107,9 @@ describe('UserModel ', () => {
     let user = {};
 
     beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
+      user = new UserModel({url: 'http://foo.bar', config: {
+        get: () => undefined
+      }});
     });
 
     it('calls super sync() method with parameters.', () => {
@@ -187,7 +198,9 @@ describe('UserModel ', () => {
 
     beforeEach(() => {
       sessionStorage.clear();
-      user = new UserModel({url: 'http://foo.bar'});
+      user = new UserModel({url: 'http://foo.bar', config: {
+        get: () => undefined
+      }});
     });
 
     it('calls loginTenant with parameters.', () => {
@@ -216,7 +229,9 @@ describe('UserModel ', () => {
     let user = {};
 
     beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
+      user = new UserModel({url: 'http://foo.bar', config: {
+        get: () => undefined
+      }});
     });
 
     it('calls setItem and getItem', () => {
@@ -232,7 +247,9 @@ describe('UserModel ', () => {
     let user = {};
 
     beforeEach(() => {
-      user = new UserModel({url: 'http://foo.bar'});
+      user = new UserModel({url: 'http://foo.bar', config: {
+        get: () => undefined
+      }});
       user.saveUnscopedToken({
         access: {
           user: {
