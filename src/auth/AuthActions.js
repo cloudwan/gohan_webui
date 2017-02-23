@@ -2,10 +2,10 @@
 import axios from 'axios';
 
 import {
+  LOGIN_INPROGRESS,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   LOGOUT,
-  TENANT_FETCH,
   TENANT_FETCH_SUCCESS,
   TENANT_FETCH_FAILURE
 } from './AuthActionTypes';
@@ -83,8 +83,6 @@ export function fetchTokenData() {
         data.auth.tenantName = tenant;
       }
 
-      dispatch({type: TENANT_FETCH});
-
       axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
         dispatch(loginSuccess(response.data));
       }).catch(() => {
@@ -94,6 +92,13 @@ export function fetchTokenData() {
   };
 
 }
+
+function inProgress() {
+  return dispatch => {
+    dispatch({type: LOGIN_INPROGRESS});
+  };
+}
+
 
 function loginSuccess(data) {
   return dispatch => {
@@ -149,6 +154,7 @@ export function login(username, password) {
       }
     };
 
+    dispatch(inProgress());
     axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
       dispatch(loginSuccess(response.data));
     }).catch(error => {
@@ -219,7 +225,7 @@ export function selectTenant(tenantName) {
         }
       }
     };
-
+    dispatch(inProgress());
     axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
       dispatch(selectTenantSuccess(response.data));
     }).catch(error => {
