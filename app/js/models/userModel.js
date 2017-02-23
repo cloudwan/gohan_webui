@@ -25,6 +25,7 @@ export default class UserModel extends Model {
     this.url = options.url + '/tokens';
     this.tenantURL = options.url + '/tenants';
     this.config = options.config;
+    this.storagePrefix = this.config.get('storagePrefix') ? `${this.config.get('storagePrefix')}_` : '';
 
     window.addEventListener('storage', this.sessionStorageTransfer.bind(this), false);
 
@@ -217,7 +218,7 @@ export default class UserModel extends Model {
    * @param {Object} data
    */
   setItem(key, value) {
-    sessionStorage.setItem(key, JSON.stringify(value));
+    sessionStorage.setItem(`${this.storagePrefix}${key}`, JSON.stringify(value));
   }
 
   /**
@@ -225,7 +226,7 @@ export default class UserModel extends Model {
    * @param {Object} data
    */
   getItem(key) {
-    const value = sessionStorage.getItem(key);
+    const value = sessionStorage.getItem(`${this.storagePrefix}${key}`);
     if (value) {
       return JSON.parse(value);
     }
@@ -278,10 +279,10 @@ export default class UserModel extends Model {
     setTimeout(() => {
       localStorage.removeItem('clearSessionStorage');
     }, 0);
-    sessionStorage.removeItem('scopedToken');
-    sessionStorage.removeItem('unscopedToken');
-    sessionStorage.removeItem('tenant');
-    sessionStorage.removeItem('tenants');
+    sessionStorage.removeItem(`${this.storagePrefix}scopedToken`);
+    sessionStorage.removeItem(`${this.storagePrefix}unscopedToken`);
+    sessionStorage.removeItem(`${this.storagePrefix}tenant`);
+    sessionStorage.removeItem(`${this.storagePrefix}tenants`);
   }
 
   /**
