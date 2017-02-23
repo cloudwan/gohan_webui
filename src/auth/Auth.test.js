@@ -61,7 +61,7 @@ describe('< Auth />', () => {
     const wrapper = mount(
       <Provider store={localStore}>
         <Auth fetchTokenData={() => {}} inProgress={true}
-          tenants={['tenant1']}
+          tenants={['tenant1']} user={{username: 'test'}}
         />
       </Provider>
     );

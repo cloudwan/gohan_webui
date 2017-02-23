@@ -43,36 +43,53 @@ export class Auth extends Component {
   };
 
   render() {
+    const {Login, SelectTenant, Loading} = this.props;
+
     if (!this.props.inProgress && this.props.tokenId === undefined) {
       return (
-        <div className="pt-card pt-elevation-3 auth-card">
-          {this.renderErrors()}
-          <Login onLoginSubmit={this.handleLoginSubmit}/>
-        </div>
+        <Login onLoginSubmit={this.handleLoginSubmit} Error={this.renderErrors()}/>
       );
     } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
       return (
-        <div className="pt-card pt-elevation-3 auth-card">
-          {this.renderErrors()}
-          <SelectTenant onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}/>
-        </div>
+        <SelectTenant username={this.props.user.name} onTenantSubmit={this.handleSelectTenantSubmit}
+          tenants={this.props.tenants} Error={this.renderErrors()}
+        />
       );
     }
-    return <LoadingIndicator/>;
+    return (
+      <Loading/>
+    );
   }
 }
+
+Auth.defaultProps = {
+  Login,
+  SelectTenant,
+  Loading: LoadingIndicator
+};
 
 Auth.contextTypes = {
   router: PropTypes.object
 };
 
-Auth.propTypes = {
-  tokenId: PropTypes.string,
-  tokenExpires: PropTypes.string,
-  tenant: PropTypes.object,
-  tenants: PropTypes.array,
-  errorMessage: PropTypes.string
-};
+if (process.env.NODE_ENV !== 'production') {
+  Auth.propTypes = {
+    Login: PropTypes.oneOfType([
+      PropTypes.func
+    ]),
+    SelectTenant: PropTypes.oneOfType([
+      PropTypes.func
+    ]),
+    Loading: PropTypes.oneOfType([
+      PropTypes.func
+    ]),
+    tokenId: PropTypes.string,
+    tokenExpires: PropTypes.string,
+    tenant: PropTypes.object,
+    tenants: PropTypes.array,
+    errorMessage: PropTypes.string
+  };
+}
 
 function mapStateToProps(state) {
   return {
@@ -80,6 +97,7 @@ function mapStateToProps(state) {
     tokenExpires: state.authReducer.tokenExpires,
     tenant: state.authReducer.tenant,
     tenants: state.authReducer.tenants,
+    user: state.authReducer.user,
     inProgress: state.authReducer.inProgress,
     errorMessage: state.errorReducer
   };
