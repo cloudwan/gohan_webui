@@ -63,4 +63,43 @@ describe('authReducer ', () => {
       logged: false
     });
   });
+
+  it('should handle LOGIN_INPROGRESS', () => {
+    reducer(undefined, {
+      type: actionTypes.LOGIN_INPROGRESS,
+    }).should.deep.equal({
+      inProgress: true,
+      logged: false
+    });
+  });
+
+  it('should handle LOGIN_ERROR', () => {
+    reducer(undefined, {
+      type: actionTypes.LOGIN_ERROR,
+    }).should.deep.equal({
+      inProgress: false,
+      logged: false
+    });
+  });
+
+  it('should handle LOGIN_ERROR', () => {
+    reducer(undefined, {
+      data: {
+        tenants: [
+          {
+            name: 'test tenant'
+          }
+        ]
+      },
+      type: actionTypes.TENANT_FETCH_SUCCESS,
+    }).should.deep.equal({
+      tenants: [
+        {
+          name: 'test tenant'
+        }
+      ],
+      inProgress: false,
+      logged: true
+    });
+  });
 });
