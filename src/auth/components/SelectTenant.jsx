@@ -39,24 +39,25 @@ export default class SelectTenant extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSelectTenantSubmit}>
-        <label className="pt-label">
-            Select tenant
-            <div className="pt-select pt-large">
-              <select onChange={this.handleTenantChange} defaultValue={''}>
-                <option value={''} />
-                {
-                this.buildSelectOptions()
-              }
-              </select>
-            </div>
-        </label>
+      <div className="pt-card pt-elevation-3 auth-card">
+        {this.props.Error}
+        <form onSubmit={this.handleSelectTenantSubmit}>
+          <label className="pt-label">
+              Select tenant
+              <div className="pt-select pt-large">
+                <select onChange={this.handleTenantChange} defaultValue={''}>
+                  <option value={''} />
+                  {this.buildSelectOptions()}
+                </select>
+              </div>
+          </label>
 
-        <Button type="submit" className="pt-intent-primary auth-submit"
-          disabled={!this.state.value}>
-          Select tenant
-        </Button>
-      </form>
+          <Button type="submit" className="pt-intent-primary auth-submit"
+            disabled={!this.state.value}>
+            Select tenant
+          </Button>
+        </form>
+      </div>
     );
   }
 }

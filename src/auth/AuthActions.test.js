@@ -82,6 +82,9 @@ describe('AuthActions ', () => {
 
       store.getActions().should.deep.equal([
         {
+          type: 'AUTH_LOGIN_INPROGRESS'
+        },
+        {
           data: {
             access: {
               token: {

@@ -1,4 +1,10 @@
-import {LOGOUT, LOGIN_SUCCESS, TENANT_FETCH, TENANT_FETCH_SUCCESS} from './AuthActionTypes';
+import {
+  LOGOUT,
+  LOGIN_INPROGRESS,
+  LOGIN_SUCCESS,
+  LOGIN_ERROR,
+  TENANT_FETCH_SUCCESS
+} from './AuthActionTypes';
 
 export default function authReducer(state = {
   inProgress: false,
@@ -10,6 +16,12 @@ export default function authReducer(state = {
         inProgress: false,
         logged: false
       };
+    case LOGIN_INPROGRESS:
+      return {
+        ...state,
+        inProgress: true,
+        logged: false
+      };
     case LOGIN_SUCCESS:
       return {
         ...state,
@@ -19,10 +31,11 @@ export default function authReducer(state = {
         user: action.data.access.user,
         inProgress: false
       };
-    case TENANT_FETCH:
+    case LOGIN_ERROR:
       return {
         ...state,
-        inProgress: true
+        inProgress: false,
+        logged: false
       };
     case TENANT_FETCH_SUCCESS:
       return {
