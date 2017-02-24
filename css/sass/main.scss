@@ -119,6 +119,23 @@ body {
  * Auth component
  */
 
+.gohan-auth-enter {
+  opacity: 0.01;
+
+}
+.gohan-auth-enter-active {
+  opacity: 1;
+  transition: opacity 100ms 100ms ease-in;
+}
+
+.gohan-auth-leave {
+  opacity: 1;
+
+}
+.gohan-auth-leave-active {
+  opacity: 0;
+  transition: opacity 100ms ease-out;
+}
 .auth-input {
   width: 100%;
 }
@@ -132,7 +149,12 @@ body {
   min-width: 250px;
   max-width: 450px;
   padding: 20px;
-  margin: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   text-align: left;
   display: block;
 }

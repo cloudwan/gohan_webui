@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import {login, selectTenant, fetchTokenData} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
@@ -42,22 +43,34 @@ export class Auth extends Component {
     return null;
   };
 
-  render() {
+  getActiveStep() {
     const {Login, SelectTenant, Loading} = this.props;
 
     if (!this.props.inProgress && this.props.tokenId === undefined) {
       return (
-        <Login onLoginSubmit={this.handleLoginSubmit} Error={this.renderErrors()}/>
+        <Login key={0} onLoginSubmit={this.handleLoginSubmit}
+          Error={this.renderErrors()}
+        />
       );
     } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
       return (
-        <SelectTenant username={this.props.user.name} onTenantSubmit={this.handleSelectTenantSubmit}
-          tenants={this.props.tenants} Error={this.renderErrors()}
+        <SelectTenant key={1} username={this.props.user.name}
+          onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}
+          Error={this.renderErrors()}
         />
       );
     }
     return (
-      <Loading/>
+      <Loading key={2}/>
+    );
+  }
+  render() {
+    return (
+      <ReactCSSTransitionGroup transitionName="gohan-auth"
+        transitionEnter={true} transitionEnterTimeout={200}
+        transitionLeave={true} transitionLeaveTimeout={100}>
+        {this.getActiveStep()}
+      </ReactCSSTransitionGroup>
     );
   }
 }
