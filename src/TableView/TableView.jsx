@@ -21,7 +21,7 @@ import {
 } from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Dialog from '../Dialog/Dialog';
-import {Toaster, Position, Alert, Intent} from '@blueprintjs/core';
+import {Alert, Intent} from '@blueprintjs/core';
 
 export class TableView extends Component {
   constructor(props) {
@@ -42,12 +42,6 @@ export class TableView extends Component {
     };
   }
 
-  componentDidMount() {
-    this.toaster = Toaster.create({
-      position: Position.TOP
-    });
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.tableReducer.deletedMultipleResources === true &&
       nextProps.tableReducer.deletedMultipleResources !== this.props.tableReducer.deletedMultipleResources) {
@@ -57,23 +51,6 @@ export class TableView extends Component {
         checkedAll: {checked: false, changedByRow: false}
       });
     }
-  }
-
-  componentWillUpdate(nextProps) {
-    const {errorMessage} = nextProps;
-
-    if (errorMessage) {
-      this.toaster.show({
-        message: errorMessage,
-        className: 'pt-intent-danger',
-        timeout: 0,
-        onDismiss: () => {}
-      });
-    }
-  }
-
-  componentWillUnmount() {
-    this.toaster.getToasts().forEach(toast => this.toaster.dismiss(toast.key));
   }
 
   handlePageChange = page => {
