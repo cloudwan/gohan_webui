@@ -1,8 +1,9 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Router} from 'react-router';
-import Auth from '../auth/Auth';
 
+import Auth from '../auth/Auth';
+import components from './componentsList';
 import createRoutes from './createRoutes';
 
 import {fetchSchema} from './../schema/SchemaActions';
@@ -20,7 +21,7 @@ class Routes extends Component {
 
   render() {
     if (this.props.schemaReducer.data.length !== 0) {
-      const routes = createRoutes(this.props.store);
+      const routes = createRoutes(this.props.store, components);
 
       return (
         <Router history={this.props.history} routes={routes} />
