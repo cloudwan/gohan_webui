@@ -6,36 +6,24 @@
     },
     "sidebar": [
         {
-            "path": "sample",
+            "path": "",
             "title": "Sample"
         }
     ],
-    "routes": {
-        "path": "/",
-        "childRoutes": [
-            {
-                "path": "sample",
-                "componentName": "Sample"
-            },
-            {
-                "path": "sample1",
-                "componentName": "Sample",
-                "childRoutes": [
-                    {
-                        "path": "sampleChild",
-                        "componentName": "Sample"
-                    }
-                ]
-            }
-        ]
-    },
+    "routes": [
+        {
+            "path": "",
+            "viewClass": "Sample",
+            "name": "Sample"
+        }
+    ],
     "errorMessages": {
         "tokenExpire": "The token is expired. Please re-login."
     },
     "addingRelationDialog": [
         "Pet"
     ],
-    "pageLimit": 25,
+    "pageLimit": 5,
     "loginRequestTimeout": 30000,
     "polling:": true
 }
