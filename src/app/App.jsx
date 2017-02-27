@@ -1,12 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {FocusStyleManager} from '@blueprintjs/core';
 
-import {resetErrorMessage} from './../error/ErrorActions';
 import {fetchSchema} from './../schema/SchemaActions';
 import Navbar from './components/Navbar';
 import SidebarMenu from './components/SidebarMenu';
+import ErrorToaster from './../error/ErrorToaster';
 import {logout, selectTenant} from '../auth/AuthActions';
-import {FocusStyleManager, Toaster, Position} from '@blueprintjs/core';
 import {getSidebarMenuItems} from './components/SidebarSelectors';
 
 FocusStyleManager.onlyShowFocusOnTabs();
@@ -24,25 +24,6 @@ class App extends Component {
 
   componentWillMount() {
     this.props.fetchSchema();
-  }
-
-  componentDidMount() {
-    this.toaster = Toaster.create({
-      position: Position.TOP
-    });
-  }
-
-  componentWillUpdate(nextProps) {
-    const {errorMessage} = nextProps;
-
-    if (errorMessage) {
-      this.toaster.show({
-        message: errorMessage,
-        className: 'pt-intent-danger',
-        timeout: 0,
-        onDismiss: this.handleDismissClick
-      });
-    }
   }
 
   handleDismissClick = event => {
@@ -86,6 +67,7 @@ class App extends Component {
           onToggleSidebar={this.handleToggleSidebar} openSidebar={this.state.openSidebar}
         />
         <SidebarMenu menuItems={this.props.sidebarMenuItems} open={this.state.openSidebar}/>
+        <ErrorToaster/>
         <div className={`view-content ${this.state.contentClassNames}`}>
           {children}
         </div>
@@ -102,15 +84,12 @@ App.propTypes = {
 function mapStateToProps(state) {
   return {
     sidebarMenuItems: getSidebarMenuItems(state),
-    errorMessage: state.errorReducer,
-    resetErrorMessage: PropTypes.func.isRequired,
     schemaReducer: state.schemaReducer,
     authReducer: state.authReducer
   };
 }
 
 export default connect(mapStateToProps, {
-  resetErrorMessage,
   fetchSchema,
   logout,
   selectTenant
