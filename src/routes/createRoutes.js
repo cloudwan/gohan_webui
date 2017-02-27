@@ -4,7 +4,6 @@ import TableView, {onTableEnter} from '../TableView';
 import DetailView, {onDetailEnter} from '../DetailView';
 import NotFound from '../NotFoundView';
 import requestAuth from '../auth/requestAuth';
-import components from './componentsList';
 
 /**
  * Returns parents of specified schema.
@@ -28,14 +27,52 @@ export const getParents = (schemas, schema) => {
 };
 
 /**
+ * Returns component with onEnter and onLeave actions.
+ *
+ * @param components {Array} - Array of componenets
+ * @param route {{viewClass: string}}
+ * @return {{component: React.Component, onEnter: (function | undefined), onLeave: (function | undefined)}}
+ */
+const getComponent = (components, route) => {
+  if (!route || !components) {
+    return;
+  }
+
+  const viewClass = route.viewClass;
+  const component = components[viewClass];
+
+  if (component === undefined) {
+    console.error('Cannot select component! Check config.json!');
+    return;
+  }
+
+  return {
+    component,
+    onEnter: component.onEnter,
+    onLeave: component.onLeave
+  };
+};
+
+/**
  * Creates array of routes based on config.json and array of schemas.
  *
  * @param store {Object} - Store of application
+ * @param components {Object} - React components
  * @return {Array}
  */
-export const createRoutes = store => {
+export const createRoutes = (store, components) => {
   const {routes} = store.getState().configReducer;
   const schemas = store.getState().schemaReducer.data;
+  const indexRoute = getComponent(components, routes.find(item => item.path === ''));
+
+  const configRoutes = routes.reduce((result, route) => {
+    const component = getComponent(components, route);
+    result.push({
+      path: route.path,
+      ...component
+    });
+    return result;
+  }, []);
 
   const schemaRoutes = schemas.reduce((result, schema) => {
     const schemaChilds = schemas.filter(childSchema => childSchema.parent === schema.singular);
@@ -148,36 +185,13 @@ export const createRoutes = store => {
     return result;
   }, []);
 
-  const prepareRoutes = item => {
-    if (Array.isArray(item.childRoutes)) {
-      return item.childRoutes.map(item => {
-        const childRoutes = prepareRoutes(item);
-        const component = components[item.componentName];
-
-        if (component === undefined) {
-          throw new Error('Cannot select component! Check config.json!');
-        }
-
-        const result = {
-          path: item.path,
-          component,
-        };
-
-        if (childRoutes) {
-          result.childRoutes = childRoutes;
-        }
-
-        return result;
-      });
-    }
-  };
-
   return [
     {
       path: '/',
       component: requestAuth(App),
+      indexRoute,
       childRoutes: [
-        ...prepareRoutes(routes),
+        ...configRoutes,
         ...schemaRoutes,
         {
           path: '*',

@@ -2,6 +2,14 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 export class Sample extends Component {
+  static onEnter() {
+    console.log('onEnter');
+  }
+
+  static onLeave() {
+    console.log('onLeave');
+  }
+
   render() {
     return (
       <div className="pt-card pt-elevation-3 detail">
