@@ -14,7 +14,7 @@ chai.should();
 describe('< BaseInput />', function () {
   it('should exist', () => {
     const wrapper = shallow(
-      <BaseInput id={'0'} />
+      <BaseInput id={'0'} schema={{type: 'string'}}/>
     );
 
     wrapper.should.not.equal(undefined);
@@ -22,7 +22,7 @@ describe('< BaseInput />', function () {
 
   it('should contain 1 input', () => {
     const wrapper = shallow(
-      <BaseInput id={'0'} />
+      <BaseInput id={'0'} schema={{type: 'string'}}/>
     );
 
     wrapper.find('input').should.have.length(1);
@@ -30,7 +30,7 @@ describe('< BaseInput />', function () {
 
   it('should have empty value when passed undefined value prop', () => {
     const wrapper = shallow(
-      <BaseInput id={'0'} />
+      <BaseInput id={'0'} schema={{type: 'string'}}/>
     );
 
     wrapper.find('input').get(0).props.value.should.equal('');
@@ -38,7 +38,9 @@ describe('< BaseInput />', function () {
 
   it('should have the same value as passed by prop', () => {
     const wrapper = shallow(
-      <BaseInput id={'0'} value={'test'}/>
+      <BaseInput id={'0'} schema={{type: 'string'}}
+        value={'test'}
+      />
     );
 
     wrapper.find('input').get(0).props.value.should.equal('test');
@@ -48,7 +50,7 @@ describe('< BaseInput />', function () {
     const onChange = chai.spy();
     const wrapper = shallow(
       <BaseInput id={'0'} value={'test'}
-        onChange={onChange}
+        onChange={onChange} schema={{type: 'string'}}
       />
     );
 
