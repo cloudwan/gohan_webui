@@ -1,28 +1,59 @@
-import React, {PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
+import validator from './../validator';
 
-function BaseInput(props) {
-  // Note: since React 15.2.0 we can't forward unknown element attributes, so we
-  // exclude the 'options' and 'schema' ones here.
-  const {
-    value,
-    placeholder,
-    onChange,
-    label,        // eslint-disable-line
-    required,     // eslint-disable-line
-    readonly,     // eslint-disable-line
-    autofocus,    // eslint-disable-line
-    options,      // eslint-disable-line
-    schema,       // eslint-disable-line
-    formContext,  // eslint-disable-line
-    ...inputProps // eslint-disable-line
-  } = props;
+class BaseInput extends Component {
+  constructor(props) {
+    super(props);
 
-  return (
-    <input className="pt-input pt-fill" type="text"
-      placeholder={placeholder} dir="auto"
-      value={value ? value : ''} onChange={event => onChange(event.target.value)}
-    />
-  );
+    this.state = {
+      errors: []
+    };
+  }
+
+  onInputChange = (event) => {
+    const {value} = event.target;
+    const errors = [];
+
+    if (this.props.required && !value) {
+      errors.push({
+        message: 'Required'
+      });
+    }
+
+    validator.validate(this.props.schema, value);
+
+    if (validator.errors) {
+      errors.push(...validator.errors);
+    }
+
+    this.setState({errors});
+    this.props.onChange(event.target.value);
+  };
+
+  render() {
+    const {
+      value,
+      placeholder,
+      label,        // eslint-disable-line
+      required,     // eslint-disable-line
+      readonly,     // eslint-disable-line
+      autofocus,    // eslint-disable-line
+      options,      // eslint-disable-line
+      schema,       // eslint-disable-line
+      formContext,  // eslint-disable-line
+      ...inputProps // eslint-disable-line
+    } = this.props;
+
+    return (
+      <span>
+        <input className="pt-input pt-fill" type={schema.type}
+          placeholder={placeholder} dir="auto"
+          value={value ? value : ''} onChange={this.onInputChange}
+        />
+        {this.state.errors.map((error, key) => (<div key={key}>{error.message}</div>))}
+      </span>
+    );
+  }
 }
 
 BaseInput.defaultProps = {
