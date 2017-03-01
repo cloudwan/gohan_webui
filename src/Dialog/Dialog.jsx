@@ -100,7 +100,8 @@ export class GeneratedDialog extends Component {
                       }, {}
                     )}
                   uiSchema={{'ui:order': this.props.schema.propertiesOrder, ...this.props.uiSchema}}
-                  onSubmit={this.handleSubmit} showErrorList={false}>
+                  onSubmit={this.handleSubmit} showErrorList={false}
+                  noValidate={true}>
                   <div/>
                 </Form>
               </div>
