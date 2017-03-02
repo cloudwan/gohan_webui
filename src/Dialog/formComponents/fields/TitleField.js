@@ -6,9 +6,9 @@ function TitleField(props) {
   const {id, title, required} = props;
 
   return (
-    <legend id={id}>
+    <legend id={id} className="gohan-form-legend">
       {title}
-      {required ? <span className={'form-asterisk'}>{REQUIRED_FIELD_SYMBOL}</span> : null}
+      {required ? <span className={'gohan-form-asterisk'}>{REQUIRED_FIELD_SYMBOL}</span> : null}
     </legend>
   );
 }

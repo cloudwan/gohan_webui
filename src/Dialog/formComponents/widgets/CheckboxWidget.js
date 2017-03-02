@@ -11,7 +11,7 @@ function CheckboxWidget({
   onChange,
 }) {
   return (
-    <label className={'pt-control pt-checkbox'}>
+    <label className={'pt-control gohan-form-checkbox pt-checkbox'}>
       <input type='checkbox'
         id={id}
         checked={typeof value === 'undefined' ? false : value}
