@@ -1,0 +1,13 @@
+.gohan-select-widget {
+  ul {
+    max-height: 23vh;
+    overflow: auto;
+  }
+  button {
+    text-align: left;
+    span.pt-align-right{
+      float: right;
+      margin-top: 7px;
+    }
+  }
+}
