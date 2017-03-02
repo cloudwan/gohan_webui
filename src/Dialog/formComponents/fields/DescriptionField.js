@@ -1,8 +1,5 @@
 import React, {PropTypes} from 'react';
 
-const descriptionStyle = {
-  marginTop: 0
-};
 
 function DescriptionField(props) {
   const {id, description} = props;
@@ -12,9 +9,17 @@ function DescriptionField(props) {
   }
 
   if (typeof description === 'string') {
-    return <p id={id} style={descriptionStyle}>{description}</p>;
+    return (
+      <p id={id} className="gohan-form-description">
+        {description}
+      </p>
+    );
   }
-  return <div id={id} style={descriptionStyle}>{description}</div>;
+  return (
+    <div id={id} className="gohan-form-description">
+      {description}
+    </div>
+  );
 }
 
 DescriptionField.propTypes = {
