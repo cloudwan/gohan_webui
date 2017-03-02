@@ -156,7 +156,7 @@ class ObjectField extends Component {
       );
     }
     return (
-      <fieldset style={{borderWidth: 0}}>
+      <fieldset className="gohan-reset-fieldset">
         {title ? <TitleField id={`${idSchema.$id}__title`}
           title={title}
           required={required}
@@ -167,25 +167,28 @@ class ObjectField extends Component {
             description={schema.description}
             formContext={formContext}
           /> : null}
-        {
-        orderedProperties.map((name, index) => {
-          return (
-            <SchemaField key={index}
-              name={name}
-              required={this.isRequired(name)}
-              schema={schema.properties[name]}
-              uiSchema={uiSchema[name]}
-              errorSchema={errorSchema[name]}
-              idSchema={idSchema[name]}
-              formData={this.state[name]}
-              onChange={this.onPropertyChange(name)}
-              registry={this.props.registry}
-              disabled={disabled}
-              readonly={readonly}
-            />
-          );
-        })
-      }</fieldset>
+        <div className="gohan-form-object-children">
+          {
+            orderedProperties.map((name, index) => {
+              return (
+                <SchemaField key={index}
+                  name={name}
+                  required={this.isRequired(name)}
+                  schema={schema.properties[name]}
+                  uiSchema={uiSchema[name]}
+                  errorSchema={errorSchema[name]}
+                  idSchema={idSchema[name]}
+                  formData={this.state[name]}
+                  onChange={this.onPropertyChange(name)}
+                  registry={this.props.registry}
+                  disabled={disabled}
+                  readonly={readonly}
+                />
+              );
+            }
+            )}
+        </div>
+      </fieldset>
     );
   }
 }

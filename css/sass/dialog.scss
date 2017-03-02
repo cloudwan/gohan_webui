@@ -1,4 +1,5 @@
 .gohan-select-widget {
+  margin-bottom: 10px;
   ul {
     max-height: 23vh;
     overflow: auto;
@@ -10,4 +11,51 @@
       margin-top: 7px;
     }
   }
+}
+
+.gohan-form-asterisk {
+  color: #ff0039;
+  margin-left: 0.25rem;
+}
+
+.gohan-form-dialog-group {
+  margin-bottom: 5px;
+}
+
+.gohan-form-error-list {
+  padding: 2px;
+  list-style-type: none;
+  margin: 0;
+}
+
+.gohan-form-error-list-item {
+  margin-top: 0;
+}
+
+.gohan-form-legend {
+  font-weight: bolder;
+}
+
+.gohan-form-description {
+  font-size: 0.8em;
+  font-style: italic;
+  margin-top: 0;
+  margin-bottom: 2px;
+  padding-left: 2px;
+}
+
+.gohan-reset-fieldset {
+  border-width: 0;
+  padding: 0;
+  margin-left: 0;
+}
+
+.gohan-form-object-children {
+  padding-left: 10px;
+}
+
+.gohan-form-checkbox {
+  margin-bottom: 5px;
+  min-height: 10px;
+  line-height: 16px;
 }
