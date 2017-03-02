@@ -43,14 +43,21 @@ class BaseInput extends Component {
       formContext,  // eslint-disable-line
       ...inputProps // eslint-disable-line
     } = this.props;
+    const {errors} = this.state;
 
     return (
-      <span>
-        <input className="pt-input pt-fill" type={schema.type}
+      <span className={`pt-form-group form-dialog-group ${errors.length ? 'pt-intent-danger' : ''}`} >
+        <input className={`pt-input pt-fill ${errors.length ? 'pt-intent-danger' : ''}`} type={schema.type}
           placeholder={placeholder} dir="auto"
           value={value ? value : ''} onChange={this.onInputChange}
         />
-        {this.state.errors.map((error, key) => (<div key={key}>{error.message}</div>))}
+        <ul className="form-error-list">
+          {errors.map((error, key) => (
+            <li key={key} className="pt-form-helper-text form-error-list-item">
+              {error.message}
+            </li>
+        ))}
+        </ul>
       </span>
     );
   }
