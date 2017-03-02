@@ -7,6 +7,7 @@ import spies from 'chai-spies';
 import {shallow, mount} from 'enzyme';
 
 import SelectWidget from './SelectWidget';
+import {Button, MenuItem} from '@blueprintjs/core';
 
 chai.use(spies);
 chai.use(chaiEnzyme());
@@ -35,7 +36,7 @@ describe('< SelectWidget />', function () {
     wrapper.find('div').should.have.length(1);
   });
 
-  it('should contain 1 select', () => {
+  it('should contain 1 button', () => {
     const enumOptions = [];
     const wrapper = shallow(
       <SelectWidget schema={{}} id={'0'}
@@ -43,7 +44,7 @@ describe('< SelectWidget />', function () {
       />
     );
 
-    wrapper.find('select').should.have.length(1);
+    wrapper.find(Button).should.have.length(1);
   });
 
   it('should render correctly list of options with non-null values', () => {
@@ -59,8 +60,9 @@ describe('< SelectWidget />', function () {
         options={{enumOptions}}
       />
     );
+    wrapper.find(Button).simulate('click');
 
-    wrapper.find('option').should.have.length(enumOptions.length);
+    wrapper.find(MenuItem).should.have.length(enumOptions.length);
   });
 
   it('should render correctly list of options with one null value', () => {
@@ -78,7 +80,9 @@ describe('< SelectWidget />', function () {
       />
     );
 
-    wrapper.find('option').should.have.length(enumOptions.length);
+    wrapper.find(Button).simulate('click');
+
+    wrapper.find(MenuItem).should.have.length(enumOptions.length);
   });
 
   it('should check whether options are mapped correctly', () => {
@@ -88,19 +92,44 @@ describe('< SelectWidget />', function () {
       {value: 'value2', label: 'label2'},
       {value: 'value3', label: 'label3'}
     ];
-    const properHtml = '<select>' +
-      '<option value="">Choose an item...</option>' +
-      '<option value="value1">label1</option>' +
-      '<option value="value2">label2</option>' +
-      '<option value="value3">label3</option>' +
-      '</select>';
+    const properHtml = '<ul class="pt-menu">' +
+      '<!-- react-text: 7 -->' +
+      '<!-- /react-text -->' +
+      '<li class="">' +
+      '<a class="pt-menu-item pt-popover-dismiss" tabindex="0">' +
+      '<!-- react-text: 10 -->' +
+      'Not selected' +
+      '<!-- /react-text -->' +
+      '</a>' +
+      '</li>' +
+      '<li class="">' +
+      '<a class="pt-menu-item pt-popover-dismiss" tabindex="0">' +
+      '<!-- react-text: 13 -->' +
+      'label1' +
+      '<!-- /react-text -->' +
+      '</a>' +
+      '</li>' +
+      '<li class="">' +
+      '<a class="pt-menu-item pt-popover-dismiss" tabindex="0">' +
+      '<!-- react-text: 16 -->' +
+      'label2' +
+      '<!-- /react-text -->' +
+      '</a>' +
+      '</li>' +
+      '<li class="">' +
+      '<a class="pt-menu-item pt-popover-dismiss" tabindex="0">' +
+      '<!-- react-text: 19 -->label3<!-- /react-text -->' +
+      '</a>' +
+      '</li>' +
+      '</ul>';
     const wrapper = mount(
       <SelectWidget schema={{}} id={'0'}
         options={{enumOptions}}
       />
     );
+    wrapper.find(Button).simulate('click');
 
-    wrapper.find('select').should.have.html(properHtml);
+    wrapper.find('ul').should.have.html(properHtml);
   });
 
   it('should check option with default value', () => {
@@ -116,6 +145,6 @@ describe('< SelectWidget />', function () {
       />
     );
 
-    wrapper.find('select').get(0).value.should.equal('value2');
+    wrapper.props().value.should.equal('value2');
   });
 });
