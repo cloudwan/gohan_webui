@@ -29,11 +29,11 @@ export const getParents = (schemas, schema) => {
 /**
  * Returns component with onEnter and onLeave actions.
  *
- * @param components {Array} - Array of componenets
+ * @param components {Object} - Array of components
  * @param route {{viewClass: string}}
  * @return {{component: React.Component, onEnter: (function | undefined), onLeave: (function | undefined)}}
  */
-const getComponent = (components, route) => {
+export const getComponent = (components, route) => {
   if (!route || !components) {
     return;
   }
