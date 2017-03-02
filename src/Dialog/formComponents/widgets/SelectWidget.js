@@ -1,4 +1,7 @@
-import React, {PropTypes} from 'react';
+/* global window*/
+import React, {Component, PropTypes} from 'react';
+import ReactDOM from 'react-dom';
+import {Button, Menu, MenuItem} from '@blueprintjs/core';
 
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 
@@ -17,48 +20,130 @@ function processValue({type, items}, value) {
   return value;
 }
 
-function SelectWidget({
-  schema,
-  label,      // eslint-disable-line
-  options,
-  value,      // eslint-disable-line
-  required,   // eslint-disable-line
-  disabled,   // eslint-disable-line
-  readonly,   // eslint-disable-line
-  multiple,   // eslint-disable-line
-  autofocus,  // eslint-disable-line
-  onChange
-}) {
-  const {enumOptions} = options;
+class SelectWidget extends Component {
 
-  const items = enumOptions.map(({value, label}, i) => {
-    if (value === null) {
-      return (
-        <option key={i} value={''}>
-          Choose an item...
-        </option>
-      );
-    }
-    return (
-      <option key={i} value={value}>
-        {label}
-      </option>
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      focused: false,
+      searchQuery: ''
+    };
+  }
+
+  componentWillMount() {
+    window.addEventListener('click', this.handleWindowClick, false);
+    window.addEventListener('keydown', this.handleKeydown, false);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('click', this.handleWindowClick, false);
+    window.removeEventListener('keydown', this.handleKeydown, false);
+  }
+
+  handleWindowClick = (event) => {
+    const isParent = (reference, target) => (
+      target === reference || (target.parentNode && isParent(reference, target.parentNode))
     );
-  });
+    if (this.state.focused) {
+      if (!isParent(ReactDOM.findDOMNode(this.widget), event.target)) {
+        this.handleBlur();
+      }
+    }
+  };
 
-  return (
-    <div className="pt-select pt-fill">
-      <select disabled={disabled} onChange={(event) => onChange(processValue(schema, event.target.value))}
-        defaultValue={value}>
-        {items}
-      </select>
-    </div>
-  );
+  handleKeydown = (event) => {
+    if (this.state.focused) {
+      if (event.key === 'Tab') {
+        this.handleBlur();
+      }
+    }
+  };
+
+  handleMenuItemClick = value => {
+    this.props.onChange(processValue(this.props.schema, value));
+    this.handleShowAndHideMenu();
+  };
+
+  handleShowAndHideMenu = () => {
+    this.setState({focused: !this.state.focused, searchQuery: ''});
+  };
+
+  handleBlur = () => {
+    this.setState({focused: false, searchQuery: ''});
+  };
+
+  handleSearchChange = (event) => {
+    this.setState({searchQuery: event.target.value});
+  };
+
+  render() {
+    const searchThreshold = 6;
+    const {focused} = this.state;
+    const {
+      value,
+      options,
+      label,      // eslint-disable-line
+      required,   // eslint-disable-line
+      disabled,   // eslint-disable-line
+      readonly,   // eslint-disable-line
+      multiple,   // eslint-disable-line
+      autofocus,  // eslint-disable-line
+    } = this.props;
+
+    let nullable = false;
+    const enumOptions = options.enumOptions.filter(item => {
+      if (!item.value) {
+        nullable = true;
+
+        return false;
+      }
+      return item.label.includes(this.state.searchQuery);
+    }).sort((a, b) => a.label.localeCompare(b.label));
+    const selectedItem = options.enumOptions.find(item => item.value === value);
+
+    return (
+      <div className="gohan-select-widget pt-fill" style={{position: 'relative'}}
+        ref={ref => {this.widget = ref;}}>
+        <Button text={selectedItem ? selectedItem.label : 'Nothing selected'} onClick={this.handleShowAndHideMenu}
+          className={'pt-fill'} rightIconName={'caret-down'}
+        />
+        {focused &&
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            right: '1px',
+            left: '1px',
+            zIndex: 10
+          }}>
+            {(options.enumOptions.length >= searchThreshold) &&
+              <div className="pt-input-group pt-fill">
+                <span className="pt-icon pt-icon-search"/>
+                <input className="pt-input" type="text"
+                  placeholder="Search input" dir="auto"
+                  value={this.state.searchQuery} onChange={this.handleSearchChange}
+                />
+              </div>
+            }
+            <Menu>
+              {this.state.searchQuery && (enumOptions.length === 0) &&
+                <span>{`No results matched "${this.state.searchQuery}"`}</span>
+              }
+              {nullable &&
+                <MenuItem text={'Not selected'} onClick={() => this.handleMenuItemClick(null)}/>
+              }
+              {enumOptions.map(({value, label}, i) => (
+                <MenuItem key={i} text={label}
+                  onClick={() => this.handleMenuItemClick(value)}
+                />
+              ))}
+            </Menu>
+          </div>
+        }
+      </div>
+    );
+  }
 }
-
-SelectWidget.defaultProps = {
-  autofocus: false,
-};
 
 if (process.env.NODE_ENV !== 'production') {
   SelectWidget.propTypes = {
