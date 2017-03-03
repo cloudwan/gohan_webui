@@ -10,7 +10,7 @@ describe('authReducer ', () => {
   it('should return initial state', () => {
     reducer(undefined, {}).should.deep.equal(
       {
-        inProgress: false,
+        inProgress: true,
         logged: false
       });
     reducer({}, {}).should.deep.equal({});

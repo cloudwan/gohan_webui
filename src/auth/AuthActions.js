@@ -88,6 +88,8 @@ export function fetchTokenData() {
       }).catch(() => {
         dispatch(logout());
       });
+    } else {
+      dispatch(logout());
     }
   };
 
