@@ -7,7 +7,7 @@ import {
 } from './AuthActionTypes';
 
 export default function authReducer(state = {
-  inProgress: false,
+  inProgress: true,
   logged: false
 }, action) {
   switch (action.type) {
