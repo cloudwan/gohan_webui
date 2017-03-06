@@ -84,6 +84,13 @@ class ObjectField extends Component {
     };
   };
 
+  hiddenContent = false;
+
+  onTitleClick = () => {
+    this.hiddenContent = !this.hiddenContent;
+    this.forceUpdate();
+  };
+
   filterSchemaProperties = (name, value, options) => {
     const {definitions} = this.props.registry;
     const baseSchema = retrieveSchema(this.props.schema, definitions);
@@ -139,11 +146,15 @@ class ObjectField extends Component {
     });
 
     let orderedProperties;
+    let maxHeight = 'none';
     try {
       const properties = Object.keys(schema.properties);
+      // formElemHeight: current max height of SchemaField, needed to estimate max height of div with nested elements
+      const formElemHeight = 75;
       orderedProperties = orderProperties(
         properties, schema.propertiesOrder.filter(item => properties.includes(item)) || uiSchema['ui:order']
       );
+      maxHeight = title ? orderedProperties.length * formElemHeight : 'none';
     } catch (err) {
       return (
         <div>
@@ -161,13 +172,19 @@ class ObjectField extends Component {
           title={title}
           required={required}
           formContext={formContext}
+          hiddenContent={this.hiddenContent}
+          onClick={this.onTitleClick}
         /> : null}
         {schema.description ?
           <DescriptionField id={`${idSchema.$id}__description`}
             description={schema.description}
             formContext={formContext}
           /> : null}
-        <div className="gohan-form-object-children">
+        <div className={`gohan-form-object-children
+                    ${this.hiddenContent ? 'gohan-hidden-content' : 'gohan-shown-content'}`}
+          style={{
+            maxHeight: this.hiddenContent ? 0 : maxHeight
+          }}>
           {
             orderedProperties.map((name, index) => {
               return (
