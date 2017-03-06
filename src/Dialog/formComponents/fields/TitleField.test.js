@@ -35,11 +35,13 @@ describe('< TitleField />', () => {
     wrapper.find('legend').text().should.be.equal(testTitle);
   });
 
-  it('should have span when "required" value is true', () => {
+  it('should have asterisk when "required" value is true', () => {
     const wrapper = shallow(
       <TitleField required={true}/>
     );
 
-    wrapper.find('span').should.have.length(1);
+    wrapper.findWhere(n => {
+      return n.node === '*';
+    }).should.have.length(1);
   });
 });
