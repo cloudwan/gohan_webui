@@ -34,6 +34,14 @@
 
 .gohan-form-legend {
   font-weight: bolder;
+  width: 100%;
+  .gohan-caret-icon {
+    float: right;
+    cursor: pointer;
+  }
+  &.gohan-form-title-cursor {
+    cursor: pointer;
+  }
 }
 
 .gohan-form-description {
@@ -52,6 +60,17 @@
 
 .gohan-form-object-children {
   padding-left: 10px;
+
+  &.gohan-shown-content {
+    overflow: hidden;
+    transition: max-height 500ms ease-out;
+  }
+
+  &.gohan-hidden-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 500ms ease-in;
+  }
 }
 
 .gohan-form-checkbox {
