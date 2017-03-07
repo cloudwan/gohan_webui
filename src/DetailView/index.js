@@ -1,4 +1,6 @@
+import {injectEpic} from '../app/epics';
 import DetailView from './DetailView';
+import {detailFetch} from './DetailEpics';
 
 import {injectReducer} from '../app/reducers';
 
@@ -8,4 +10,5 @@ export default DetailView;
 
 export function onDetailEnter(store) {
   injectReducer(store, {key: 'detailReducer', reducer});
+  injectEpic(store, {key: 'detailEpic', epic: detailFetch});
 }
