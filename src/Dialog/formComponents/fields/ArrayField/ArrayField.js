@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {Button, Intent, Tabs2, Tab2} from '@blueprintjs/core';
 
 import {
   getWidget,
@@ -82,16 +83,26 @@ class ArrayField extends Component {
     });
   };
 
-  onDropIndexClick = index => {
+  selectedTab = 'item0';
+
+  onDropIndexClick = (index, changeTab) => {
     return event => {
       event.preventDefault();
+      event.stopPropagation();
       this.asyncSetState({
         items: this.state.items.filter((_, i) => i !== index)
       }, {validate: true}); // refs #195
+      if (changeTab) {
+        const itemsLength = this.state.items.length;
+        let newIndex = index - 1 < 0 ? 0 : index;
+        newIndex = newIndex >= (itemsLength - 1) ? itemsLength - 2 : newIndex;
+        this.selectedTab = `item${newIndex}`;
+        this.forceUpdate();
+      }
     };
   };
 
-  onReorderClick = (index, newIndex) => {
+  onReorderClick = (index, newIndex, changeTab) => {
     return event => {
       event.preventDefault();
       event.target.blur();
@@ -106,6 +117,10 @@ class ArrayField extends Component {
           return item;
         })
       }, {validate: true});
+      if (changeTab) {
+        this.selectedTab = `item${newIndex}`;
+        this.forceUpdate();
+      }
     };
   };
 
@@ -122,6 +137,12 @@ class ArrayField extends Component {
   onSelectChange = value => {
     this.asyncSetState({items: value});
   };
+
+  onTabChange = newTabId => {
+    this.selectedTab = newTabId;
+    this.forceUpdate();
+  };
+
 
   render() {
     const {schema, uiSchema} = this.props;
@@ -167,25 +188,45 @@ class ArrayField extends Component {
             idSchema={idSchema}
             description={schema.description}
           /> : null}
-        <div className='row array-item-list'>{
-          items.map((item, index) => {
-            const itemErrorSchema = errorSchema ? errorSchema[index] : undefined;
-            const itemIdPrefix = idSchema.$id + '_' + index;
-            const itemIdSchema = toIdSchema(itemsSchema, itemIdPrefix, definitions);
-            return this.renderArrayFieldItem({
-              index,
-              canMoveUp: index > 0,
-              canMoveDown: index < items.length - 1,
-              itemSchema: itemsSchema,
-              itemIdSchema,
-              itemErrorSchema,
-              itemData: items[index],
-              itemUiSchema: uiSchema.items,
-              autofocus: autofocus && index === 0
-            });
-          })
-        }</div>
-        <AddButton onClick={this.onAddClick} disabled={disabled || readonly}/>
+
+        <Button intent={Intent.PRIMARY} text="Add item"
+          iconName="add" onClick={this.onAddClick}
+          disabled={disabled || readonly}
+        />
+        {items.length ? <Tabs2 id={`tabs-${title}`} className="gohan-tabs"
+          selectedTabId={this.selectedTab} onChange={this.onTabChange}>
+          {
+            items.map((item, index) => {
+              const itemErrorSchema = errorSchema ? errorSchema[index] : undefined;
+              const itemIdPrefix = idSchema.$id + '_' + index;
+              const itemIdSchema = toIdSchema(itemsSchema, itemIdPrefix, definitions);
+
+              const panel = this.renderArrayFieldItem({
+                index,
+                canMoveUp: index > 0,
+                canMoveDown: index < items.length - 1,
+                itemSchema: itemsSchema,
+                itemIdSchema,
+                itemErrorSchema,
+                itemData: items[index],
+                itemUiSchema: uiSchema.items,
+                autofocus: autofocus && index === 0
+              });
+
+              return (
+                <Tab2 key={`item${index}`} id={`item${index}`}
+                  title={
+                    <span>Item {index + 1}
+                      <span className="pt-icon-remove" onClick={this.onDropIndexClick(index, true)}/>
+                    </span>}
+                  panel={panel}
+                />
+              );
+            })
+            }
+        </Tabs2> : null
+        }
+
       </fieldset>
     );
   }
@@ -306,7 +347,6 @@ class ArrayField extends Component {
 
   renderArrayFieldItem({
     index,
-    removable = true,
     canMoveUp = true,
     canMoveDown = true,
     itemSchema,
@@ -317,20 +357,35 @@ class ArrayField extends Component {
     autofocus
   }) {
     const {SchemaField} = this.props.registry.fields;
-    const {disabled, readonly, uiSchema} = this.props;
+    const {uiSchema} = this.props;
 
     const {orderable} = {orderable: true, ...uiSchema['ui:options']};
 
     const _canMoveUp = orderable && canMoveUp;
     const _canMoveDown = orderable && canMoveDown;
 
-    const hasToolbar = removable || _canMoveUp || _canMoveDown;
-
-    const btnStyle = {flex: 1, paddingLeft: 6, paddingRight: 6, fontWeight: 'bold'};
-
     return (
       <div key={index} className='array-item'>
-        <div className={hasToolbar ? 'col-xs-10' : 'col-xs-12'}>
+        <div style={{
+          display: (_canMoveUp || _canMoveDown) ? 'flex' : 'none',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          fontSize: '0.9em'
+        }}>
+          <a onClick={this.onReorderClick(index, index - 1, true)} style={{
+            order: 1,
+            visibility: _canMoveUp ? 'visible' : 'hidden'
+          }}>
+            <span className="pt-icon-chevron-left"/> Move left
+          </a>
+          <a onClick={this.onReorderClick(index, index + 1, true)} style={{
+            order: 2,
+            visibility: _canMoveDown ? 'visible' : 'hidden'
+          }}>
+            Move right <span className="pt-icon-chevron-right"/>
+          </a>
+        </div>
+        <div className="gohan-form-array-item">
           <SchemaField schema={itemSchema}
             uiSchema={itemUiSchema}
             formData={itemData}
@@ -344,31 +399,6 @@ class ArrayField extends Component {
             autofocus={autofocus}
           />
         </div>
-        {
-          hasToolbar ?
-            <div className='col-xs-2 array-item-toolbox text-right'>
-              <div className='btn-group' style={{display: 'flex'}}>
-                {_canMoveUp || _canMoveDown ?
-                  <button type='button' className='btn btn-default array-item-move-up'
-                    style={btnStyle}
-                    tabIndex='-1'
-                    disabled={disabled || readonly || !_canMoveUp}
-                    onClick={this.onReorderClick(index, index - 1)}>⬆</button> : null}
-                {_canMoveUp || _canMoveDown ?
-                  <button type='button' className='btn btn-default array-item-move-down'
-                    style={btnStyle}
-                    tabIndex='-1'
-                    disabled={disabled || readonly || !_canMoveDown}
-                    onClick={this.onReorderClick(index, index + 1)}>⬇</button> : null}
-                {removable ?
-                  <button type='button' className='btn btn-danger array-item-remove'
-                    style={btnStyle}
-                    tabIndex='-1'
-                    disabled={disabled || readonly}
-                    onClick={this.onDropIndexClick(index)}>✖</button> : null}
-              </div>
-            </div> : null
-        }
       </div>
     );
   }
