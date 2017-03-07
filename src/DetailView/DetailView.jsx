@@ -8,8 +8,6 @@ import {
   initialize,
   fetchData,
   clearData,
-  pollData,
-  cancelPollData,
   deleteData,
   updateData
 } from './DetailActions';
@@ -46,16 +44,7 @@ class DetailView extends Component {
     props.fetchData();
   }
 
-  componentDidMount() {
-
-    if (this.props.configReducer.polling) {
-      this.pollData();
-    }
-  }
-
   componentWillUnmount() {
-    this.state.source.cancel();
-    this.props.cancelPollData();
     this.props.clearData();
   }
 
@@ -142,11 +131,6 @@ class DetailView extends Component {
       </div>
     );
   }
-
-  pollData() {
-    const {detail, activeSchema, source} = this.state;
-    this.props.pollData(activeSchema.url + '/' + detail, activeSchema.singular, source.token);
-  }
 }
 
 DetailView.propTypes = {
@@ -155,7 +139,6 @@ DetailView.propTypes = {
   configReducer: PropTypes.object.isRequired,
   fetchData: PropTypes.func.isRequired,
   clearData: PropTypes.func.isRequired,
-  cancelPollData: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
@@ -171,8 +154,6 @@ export default connect(mapStateToProps, {
   initialize,
   fetchData,
   clearData,
-  pollData,
-  cancelPollData,
   deleteData,
   updateData
 })(DetailView);

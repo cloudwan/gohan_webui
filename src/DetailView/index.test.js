@@ -15,10 +15,12 @@ describe('DetailView index', () => {
       const storeObject = {};
       const store = mockStore(storeObject);
       store.asyncReducers = {};
+      store.asyncEpics = {};
 
       onDetailEnter(store);
 
       store.asyncReducers['detailReducer'].should.not.equal(undefined);
+      store.asyncEpics['detailEpic'].should.not.equal(undefined);
     });
   });
 });

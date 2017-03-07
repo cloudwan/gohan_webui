@@ -25,5 +25,5 @@
     ],
     "pageLimit": 5,
     "loginRequestTimeout": 30000,
-    "polling:": true
+    "polling": true
 }
