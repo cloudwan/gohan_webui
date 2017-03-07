@@ -80,7 +80,7 @@ class TableHeader extends Component {
   render() {
     return (
       <tr>
-        <th key={-1}>
+        <th key={-1} className="gohan-table-select-column">
           <input type="checkbox" onChange={this.handleCheckedRowsInputChange}
             checked={this.state.checkedAll}
           />
