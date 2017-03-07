@@ -52,8 +52,8 @@ export default class UserModel extends Model {
       for (let key in data) {
         sessionStorage.setItem(key, data[key]);
       }
-      if (data.unscopedToken) {
-        this.set('authData', JSON.parse(data.unscopedToken));
+      if (data[`${this.storagePrefix}unscopedToken`]) {
+        this.set('authData', JSON.parse(data[`${this.storagePrefix}unscopedToken`]));
       }
     } else if (event.key === 'clearSessionStorage') {
       this.unsetAuthData();
