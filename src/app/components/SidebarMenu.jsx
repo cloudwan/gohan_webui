@@ -1,7 +1,8 @@
 import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
 import {Menu, MenuItem} from '@blueprintjs/core';
 
-export default class SidebarMenu extends Component {
+export class SidebarMenu extends Component {
   constructor(props) {
     super(props);
 
@@ -24,12 +25,16 @@ export default class SidebarMenu extends Component {
       const filteredMenuItems = [];
 
       menuItems.forEach((item) => {
+        const splitLocationPath = this.props.locationReducer.pathname.replace('#', '');
+        const splitItemPath = item.path.replace('#', '');
+        const isActive = splitLocationPath === splitItemPath;
+
         if (searchQuery === '' || searchQueryRE.test(item.title)) {
           filteredMenuItems.push(
             <MenuItem key={item.index}
               text={item.title}
               href={item.path}
-              className="item"
+              className={'item' + (isActive ? ' pt-active pt-intent-primary' : '')}
             />
           );
         }
@@ -51,7 +56,7 @@ export default class SidebarMenu extends Component {
             />
           </label>
         </div>
-        <Menu className="pt-menu pt-large">
+        <Menu className="pt-large">
           {this.buildMenuItems()}
         </Menu>
       </div>
@@ -63,3 +68,12 @@ SidebarMenu.propTypes = {
   menuItems: PropTypes.array,
   open: PropTypes.bool
 };
+
+function mapStateToProps(state) {
+  return {
+    locationReducer: state.locationReducer
+  };
+}
+
+export default connect(mapStateToProps, {
+})(SidebarMenu);
