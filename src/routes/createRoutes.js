@@ -1,5 +1,4 @@
 import React from 'react';
-import App from './../app/App';
 import TableView, {onTableEnter} from '../TableView';
 import DetailView, {onDetailEnter} from '../DetailView';
 import NotFound from '../NotFoundView';
@@ -188,7 +187,7 @@ export const createRoutes = (store, components) => {
   return [
     {
       path: '/',
-      component: requestAuth(App),
+      component: requestAuth(components.App),
       indexRoute,
       childRoutes: [
         ...configRoutes,
