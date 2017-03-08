@@ -1,18 +1,27 @@
 /* global it, describe */
 import React from 'react';
+import configureStore from 'redux-mock-store';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
 import spies from 'chai-spies';
 import {shallow, mount} from 'enzyme';
 
 import {Menu, MenuItem} from '@blueprintjs/core';
-import SidebarMenu from './SidebarMenu';
+import ConnectedSidebarMenu, {SidebarMenu} from './SidebarMenu';
 
 chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 
+const mockStore = configureStore();
+
 describe('< SidebarMenu />', function () {
+  const store = mockStore({
+    locationReducer: {
+      pathname: '/v1.0/matchingpath'
+    }
+  });
+
   it('should exist', () => {
     const wrapper = shallow(
       <SidebarMenu/>
@@ -59,7 +68,7 @@ describe('< SidebarMenu />', function () {
       }
     ];
     const wrapper = mount(
-      <SidebarMenu menuItems={menuItems}/>
+      <ConnectedSidebarMenu store={store} menuItems={menuItems}/>
     );
 
     wrapper.update();
@@ -100,7 +109,7 @@ describe('< SidebarMenu />', function () {
       }
     ];
     const wrapper = mount(
-      <SidebarMenu menuItems={menuItems}/>
+      <ConnectedSidebarMenu store={store} menuItems={menuItems}/>
     );
 
     wrapper.update();
@@ -123,7 +132,7 @@ describe('< SidebarMenu />', function () {
       }
     ];
     const wrapper = mount(
-      <SidebarMenu menuItems={menuItems}/>
+      <ConnectedSidebarMenu store={store} menuItems={menuItems}/>
     );
 
     wrapper.update();
@@ -146,12 +155,80 @@ describe('< SidebarMenu />', function () {
       }
     ];
     const wrapper = mount(
-      <SidebarMenu menuItems={menuItems}/>
+      <ConnectedSidebarMenu store={store} menuItems={menuItems}/>
     );
 
     wrapper.update();
     wrapper.find('[type="text"]').simulate('change', {target: {value: 'title4'}});
 
     wrapper.find(MenuItem).should.have.length(0);
+  });
+
+  it('should highlight a matching menu item', () => {
+    const menuItems = [
+      {
+        title: 'title1',
+        path: '#/plural1',
+        index: 1
+      },
+      {
+        title: 'title2',
+        path: '#/v1.0/matchingpath',
+        index: 2
+      }
+    ];
+    const wrapper = mount(
+      <ConnectedSidebarMenu store={store} menuItems={menuItems}/>
+    );
+
+    wrapper.update();
+    wrapper.find('.pt-intent-primary').should.have.length(1);
+  });
+
+  it('should NOT highlight a matching menu item when viewing child resources', () => {
+    const customStore = mockStore({
+      locationReducer: {
+        pathname: '/v1.0/resourcegroup/childresource/resourceid'
+      }
+    });
+    const menuItems = [
+      {
+        title: 'title1',
+        path: '#/plural1',
+        index: 1
+      },
+      {
+        title: 'title2',
+        path: '#/v1.0/resourcegroup',
+        index: 2
+      }
+    ];
+    const wrapper = mount(
+      <ConnectedSidebarMenu store={customStore} menuItems={menuItems}/>
+    );
+
+    wrapper.update();
+    wrapper.find('.pt-intent-primary').should.have.length(0);
+  });
+
+  it('should highlight nothing if no path names match', () => {
+    const menuItems = [
+      {
+        title: 'title1',
+        path: '#/non_matching_path1',
+        index: 1
+      },
+      {
+        title: 'title2',
+        path: '#/v1.0/non_matching_path2',
+        index: 2
+      }
+    ];
+    const wrapper = mount(
+      <ConnectedSidebarMenu store={store} menuItems={menuItems}/>
+    );
+
+    wrapper.update();
+    wrapper.find('.pt-intent-primary').should.have.length(0);
   });
 });
