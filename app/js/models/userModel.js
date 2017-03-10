@@ -30,9 +30,9 @@ export default class UserModel extends Model {
     window.addEventListener('storage', this.sessionStorageTransfer.bind(this), false);
 
     if (!sessionStorage.length) {
-      localStorage.setItem('getSessionStorage', 'true');
+      localStorage.setItem(`${this.storagePrefix}getSessionStorage`, 'true');
       setTimeout(() => {
-        localStorage.removeItem('getSessionStorage');
+        localStorage.removeItem(`${this.storagePrefix}getSessionStorage`);
       }, 500);
     }
   }
@@ -41,13 +41,13 @@ export default class UserModel extends Model {
     if (!event.newValue) {
       return;
     }
-    if (event.key === 'getSessionStorage') {
-      localStorage.setItem('sessionStorage', JSON.stringify(sessionStorage));
+    if (event.key === `${this.storagePrefix}getSessionStorage`) {
+      localStorage.setItem(`${this.storagePrefix}sessionStorage`, JSON.stringify(sessionStorage));
       setTimeout(() => {
-        localStorage.removeItem('sessionStorage');
-        localStorage.removeItem('getSessionStorage');
+        localStorage.removeItem(`${this.storagePrefix}sessionStorage`);
+        localStorage.removeItem(`${this.storagePrefix}getSessionStorage`);
       }, 0);
-    } else if (event.key === 'sessionStorage' && !sessionStorage.length) {
+    } else if (event.key === `${this.storagePrefix}sessionStorage` && !sessionStorage.length) {
       const data = JSON.parse(event.newValue);
       for (let key in data) {
         sessionStorage.setItem(key, data[key]);
@@ -55,7 +55,7 @@ export default class UserModel extends Model {
       if (data[`${this.storagePrefix}unscopedToken`]) {
         this.set('authData', JSON.parse(data[`${this.storagePrefix}unscopedToken`]));
       }
-    } else if (event.key === 'clearSessionStorage') {
+    } else if (event.key === `${this.storagePrefix}clearSessionStorage`) {
       this.unsetAuthData();
 
     }
@@ -275,9 +275,9 @@ export default class UserModel extends Model {
    * Reset auth data
    */
   unsetAuthData() {
-    localStorage.setItem('clearSessionStorage', 'true');
+    localStorage.setItem(`${this.storagePrefix}clearSessionStorage`, 'true');
     setTimeout(() => {
-      localStorage.removeItem('clearSessionStorage');
+      localStorage.removeItem(`${this.storagePrefix}clearSessionStorage`);
     }, 0);
     sessionStorage.removeItem(`${this.storagePrefix}scopedToken`);
     sessionStorage.removeItem(`${this.storagePrefix}unscopedToken`);
