@@ -88,20 +88,12 @@ describe('createRoutes ', () => {
         }
       };
 
-      getComponent(components, route1).should.deep.equal({
-        component: {
-          id: 'foo'
-        },
-        onEnter: undefined,
-        onLeave: undefined
+      getComponent(components, route1).component.should.deep.equal({
+        id: 'foo'
       });
 
-      getComponent(components, route2).should.deep.equal({
-        component: {
-          id: 'bar',
-          onEnter: 'function onEnter',
-          onLeave: 'function onLeave'
-        },
+      getComponent(components, route2).component.should.deep.equal({
+        id: 'bar',
         onEnter: 'function onEnter',
         onLeave: 'function onLeave'
       });
