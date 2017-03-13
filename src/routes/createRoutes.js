@@ -32,7 +32,7 @@ export const getParents = (schemas, schema) => {
  * @param route {{viewClass: string}}
  * @return {{component: React.Component, onEnter: (function | undefined), onLeave: (function | undefined)}}
  */
-export const getComponent = (components, route) => {
+export const getComponent = (components, route, store) => {
   if (!route || !components) {
     return;
   }
@@ -47,8 +47,8 @@ export const getComponent = (components, route) => {
 
   return {
     component,
-    onEnter: component.onEnter,
-    onLeave: component.onLeave
+    onEnter: (...params) => component.onEnter(store, ...params),
+    onLeave: (...params) => component.onLeave(store, ...params)
   };
 };
 
@@ -62,10 +62,10 @@ export const getComponent = (components, route) => {
 export const createRoutes = (store, components) => {
   const {routes} = store.getState().configReducer;
   const schemas = store.getState().schemaReducer.data;
-  const indexRoute = getComponent(components, routes.find(item => item.path === ''));
+  const indexRoute = getComponent(components, routes.find(item => item.path === ''), store);
 
   const configRoutes = routes.reduce((result, route) => {
-    const component = getComponent(components, route);
+    const component = getComponent(components, route, store);
     result.push({
       path: route.path,
       ...component
