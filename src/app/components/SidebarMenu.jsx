@@ -24,14 +24,14 @@ export class SidebarMenu extends Component {
       const searchQueryRE = new RegExp(searchQuery, 'i');
       const filteredMenuItems = [];
 
-      menuItems.forEach((item) => {
+      menuItems.forEach((item, key) => {
         const splitLocationPath = this.props.locationReducer.pathname.replace('#', '');
         const splitItemPath = item.path.replace('#', '');
         const isActive = splitLocationPath === splitItemPath;
 
         if (searchQuery === '' || searchQueryRE.test(item.title)) {
           filteredMenuItems.push(
-            <MenuItem key={item.index}
+            <MenuItem key={key}
               text={item.title}
               href={item.path}
               className={'item' + (isActive ? ' pt-active pt-intent-primary' : '')}

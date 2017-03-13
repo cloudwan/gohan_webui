@@ -1,23 +1,15 @@
 /* global it, describe */
 import chai from 'chai';
 
-import * as selectors from './SidebarSelectors';
+import * as selectors from './SchemaSelectors';
 
 chai.should();
 
-describe('SidebarSelectors', () => {
+describe('SchemaSelectors', () => {
   describe('getSidebarMenuItems', () => {
     it('should return appropriate menu items', () => {
       selectors.getSidebarMenuItems(
         {
-          configReducer: {
-            sidebar: [
-              {
-                title: 'sampleTest',
-                path: 'foo/bar/baz'
-              }
-            ]
-          },
           schemaReducer: {
             data: [
               {
@@ -61,22 +53,14 @@ describe('SidebarSelectors', () => {
         }
       ).should.deep.equal([
         {
-          index: 0,
-          title: 'sampleTest',
-          path: '#/foo/bar/baz'
-        },
-        {
-          index: 1,
           title: 'test1 title',
           path: '#/test1_url'
         },
         {
-          index: 2,
           title: 'test2 title',
           path: '#/test2_url'
         },
         {
-          index: 3,
           title: 'test5 title',
           path: '#/test5_url'
         }

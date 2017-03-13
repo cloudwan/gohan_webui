@@ -7,7 +7,9 @@ import Navbar from './components/Navbar';
 import SidebarMenu from './components/SidebarMenu';
 import ErrorToaster from './../error/ErrorToaster';
 import {logout, selectTenant} from '../auth/AuthActions';
-import {getSidebarMenuItems} from './components/SidebarSelectors';
+
+import {getSidebar} from './../config/ConfigSelectors';
+import {getSidebarMenuItems} from './../schema/SchemaSelectors';
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
@@ -83,7 +85,7 @@ App.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    sidebarMenuItems: getSidebarMenuItems(state),
+    sidebarMenuItems: [...getSidebar(state), ...getSidebarMenuItems(state)],
     schemaReducer: state.schemaReducer,
     authReducer: state.authReducer
   };
