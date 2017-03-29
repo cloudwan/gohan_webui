@@ -24,7 +24,7 @@ export default class Navbar extends Component {
       <Menu>
         {this.props.tenants.map(item => (
           <MenuItem key={item.id} text={item.name}
-            onClick={() => this.handleTenantClick(item.id)}
+            onClick={() => this.handleTenantClick(item.name)}
           />
         ))}
       </Menu>
