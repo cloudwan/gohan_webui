@@ -74,4 +74,49 @@ describe('SchemaSelectors', () => {
       }).should.deep.equal([]);
     });
   });
+
+  describe('getSchema', () => {
+    it('should return appropriate schema', () => {
+      selectors.getSchema(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test1',
+                title: 'test1 title',
+                url: '/test1_url',
+                metadata: {
+                  type: 'test1_type'
+                }
+              },
+              {
+                id: 'test2',
+                title: 'test2 title',
+                url: '/test2_url',
+                metadata: {
+                  type: 'test2_type'
+                }
+              }
+            ]
+          }
+        }
+      , 'test1').should.deep.equal(
+        {
+          id: 'test1',
+          title: 'test1 title',
+          url: '/test1_url',
+          metadata: {
+            type: 'test1_type'
+          }
+        }
+      );
+    });
+
+    it('should return empty menu items array', () => {
+      selectors.getSidebarMenuItems({
+        schemaReducer: {},
+        configReducer: {},
+      }).should.deep.equal([]);
+    });
+  });
 });

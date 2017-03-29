@@ -1,6 +1,7 @@
 import {createSelector} from 'reselect';
 
 const schemas = (state) => state.schemaReducer.data;
+const schema = (state, id) => state.schemaReducer.data.find(item => item.id === id);
 
 export const getSidebarMenuItems = createSelector(
   [schemas],
@@ -14,5 +15,12 @@ export const getSidebarMenuItems = createSelector(
       ));
     }
     return [];
+  }
+);
+
+export const getSchema = createSelector(
+  [schema],
+  (schema) => {
+    return schema;
   }
 );
