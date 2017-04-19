@@ -1,16 +1,12 @@
 /* global it, describe */
 import React from 'react';
-import {Provider} from 'react-redux';
 import configureStore from 'redux-mock-store';
 import chai from 'chai';
 import spies from 'chai-spies';
 import chaiEnzyme from 'chai-enzyme';
-import {shallow, mount} from 'enzyme';
+import {shallow, render} from 'enzyme';
 
-import Table from '../components/Table';
-import LoadingIndicator from '../components/LoadingIndicator';
-import {Alert} from '@blueprintjs/core';
-import ConnectedTableView, {TableView} from './TableView';
+import ConnectedTableView from './TableView';
 
 chai.use(chaiEnzyme());
 chai.use(spies);
@@ -52,72 +48,22 @@ describe('< TableView />', () => {
   });
 
   it('should contain particular elements', () => {
-    const wrapper = shallow(
-      <TableView schemaReducer={{}} fetchData={() => {}}
-        clearData={() => {}} tableReducer={{isLoading: false}}
-        schema={{}} data={[]}
-        visibleColumns={[]} activeSchema={{prefix: '/v1.0', plural: 'test'}}
-      />
+    const context = {};
+    const wrapper = render(
+      <ConnectedTableView store={store}/>,
+      {context}
     );
 
-    wrapper.find('div').should.have.length(1);
-    wrapper.find(Table).should.have.length(1);
+    wrapper.find('div').should.have.length(3);
   });
 
   it('should contain LoadingIndicator when component is loading', () => {
-    const wrapper = shallow(
-      <TableView schemaReducer={{}} fetchData={() => {}}
-        clearData={() => {}} tableReducer={{isLoading: true}}
-      />
+    const context = {};
+    const wrapper = render(
+      <ConnectedTableView store={store}/>,
+      {context}
     );
 
-    wrapper.find(LoadingIndicator).should.have.length(1);
+    wrapper.find('.loading-container').should.have.length(1);
   });
-
-  it('should contain LoadingIndicator when no tableReducer is passed', () => {
-    const wrapper = shallow(
-      <TableView schemaReducer={{}} fetchData={() => {}}
-        clearData={() => {}}
-      />
-    );
-
-    wrapper.find(LoadingIndicator).should.have.length(1);
-  });
-
-  it('should show Alert component', () => {
-    const tableReducer = {
-      deletedMultipleResources: false,
-      data: [],
-      filters: {
-        filterBy: '',
-        filterValue: ''
-      }
-    };
-    const headers = [
-      'test'
-    ];
-    const schema = {
-      schema: {
-        properties: {
-          test: {
-            title: 'test'
-          }
-        }
-      },
-      singular: 'test'
-    };
-    const wrapper = mount(
-      <Provider store={store}>
-        <TableView schemaReducer={{}} fetchData={() => {}}
-          clearData={() => {}} tableReducer={tableReducer}
-          activeSchema={schema} headers={headers}
-        />
-      </Provider>
-    );
-
-    wrapper.find(TableView).at(0).node.handleOpenAlert({});
-    wrapper.update();
-    wrapper.find(Alert).should.have.length(1);
-  });
-
 });
