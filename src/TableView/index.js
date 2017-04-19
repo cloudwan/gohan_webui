@@ -1,10 +1,9 @@
-import TableView from './TableView';
 import {injectReducer} from '../app/reducers';
 import reducer from './tableReducer';
 
 import {initialize, fetchData, clearData} from './TableActions';
 
-export default TableView;
+export * from './TableView';
 
 export function onTableEnter(store, plural, nextState, parentUrl = '') {
   let filters;

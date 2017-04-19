@@ -1,6 +1,6 @@
 import React from 'react';
-import TableView, {onTableEnter} from '../TableView';
-import DetailView, {onDetailEnter} from '../DetailView';
+import {onTableEnter, getTableView} from '../TableView';
+import {onDetailEnter, getDetailView} from '../DetailView';
 import NotFound from '../NotFoundView';
 import requestAuth from '../auth/requestAuth';
 
@@ -60,6 +60,8 @@ export const getComponent = (components, route, store) => {
  * @return {Array}
  */
 export const createRoutes = (store, components) => {
+  const TableView = getTableView(components.Table);
+  const DetailView = getDetailView(components.Detail);
   const {routes} = store.getState().configReducer;
   const schemas = store.getState().schemaReducer.data;
   const indexRoute = getComponent(components, routes.find(item => item.path === ''), store);
