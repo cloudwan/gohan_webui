@@ -58,7 +58,8 @@ export class GeneratedDialog extends Component {
    */
   render() {
     const {action, baseSchema} = this.props;
-    const title = `${action[0].toUpperCase() + action.slice(1)} new ${baseSchema.singular}`;
+    const title = `${action[0].toUpperCase() + action.slice(1)}${action === 'create' ? ' new ' : ' '}` +
+      `${baseSchema.title}`;
     const actions = [];
 
     if (this.props.onClose) {
