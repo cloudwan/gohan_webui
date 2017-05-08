@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import _ from 'lodash';
+import {Button} from '@blueprintjs/core';
 
 import {deepEquals} from 'react-jsonschema-form/lib/utils';
-
 
 import {
   getDefaultFormState,
@@ -25,6 +25,7 @@ function objectKeysHaveChanged(formData, state) {
   if (!deepEquals(newKeys.sort(), oldKeys.sort())) {
     return true;
   }
+
   return false;
 }
 
@@ -84,12 +85,7 @@ class ObjectField extends Component {
     };
   };
 
-  hiddenContent = false;
-
-  onTitleClick = () => {
-    this.hiddenContent = !this.hiddenContent;
-    this.forceUpdate();
-  };
+  nullValue = false;
 
   filterSchemaProperties = (name, value, options) => {
     const {definitions} = this.props.registry;
@@ -111,6 +107,21 @@ class ObjectField extends Component {
     }
 
     this.asyncSetState(newState, options);
+  };
+
+  onAddRemoveClick = () => {
+    if (this.nullValue) {
+      this.asyncSetState(this.getStateFromProps(this.props));
+    } else {
+      this.asyncSetState(this.props.schema.propertiesOrder.reduce((result, name) => {
+        result[name] = undefined;
+
+        return result;
+      }, {}));
+    }
+
+    this.nullValue = !this.nullValue;
+    this.forceUpdate();
   };
 
   render() {
@@ -146,15 +157,11 @@ class ObjectField extends Component {
     });
 
     let orderedProperties;
-    let maxHeight = 'none';
     try {
       const properties = Object.keys(schema.properties);
-      // formElemHeight: current max height of SchemaField, needed to estimate max height of div with nested elements
-      const formElemHeight = 75;
       orderedProperties = orderProperties(
         properties, schema.propertiesOrder.filter(item => properties.includes(item)) || uiSchema['ui:order']
       );
-      maxHeight = title ? orderedProperties.length * formElemHeight : 'none';
     } catch (err) {
       return (
         <div>
@@ -168,24 +175,27 @@ class ObjectField extends Component {
     }
     return (
       <fieldset className="gohan-reset-fieldset">
-        {title ? <TitleField id={`${idSchema.$id}__title`}
-          title={title}
-          required={required}
-          formContext={formContext}
-          hiddenContent={this.hiddenContent}
-          onClick={this.onTitleClick}
-        /> : null}
-        {schema.description ?
+        {title && (
+          <TitleField id={`${idSchema.$id}__title`}
+            title={title}
+            required={required}
+            formContext={formContext}>
+            {schema.nullable && (
+              <Button iconName={(schema.nullable && this.nullValue) ? 'add' : 'remove'} className="pt-minimal"
+                onClick={this.onAddRemoveClick}
+              />
+            )}
+          </TitleField>
+        )}
+        {schema.description && (
           <DescriptionField id={`${idSchema.$id}__description`}
             description={schema.description}
             formContext={formContext}
-          /> : null}
-        <div className={`gohan-form-object-children
-                    ${this.hiddenContent ? 'gohan-hidden-content' : 'gohan-shown-content'}`}
-          style={{
-            maxHeight: this.hiddenContent ? 0 : maxHeight
-          }}>
-          {
+          />
+        )}
+
+        <div className={'gohan-form-object-children'}>
+          {!this.nullValue &&
             orderedProperties.map((name, index) => {
               return (
                 <SchemaField key={index}
