@@ -219,6 +219,7 @@ describe('DialogActions ', () => {
                 'b2',
                 'c3'
               ],
+              nullable: true,
               options: {
                 a1: 'Sample name 1',
                 b2: 'Sample name 2',

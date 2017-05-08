@@ -1,4 +1,5 @@
 import axios from 'axios';
+import cloneDeep from 'lodash/cloneDeep';
 import {PREPARE_SUCCESS, PREPARE_FAILURE, CLEAR_DATA} from './DialogActionTypes';
 
 function fetchSuccess(data) {
@@ -17,11 +18,15 @@ function fetchError(data) {
 
 function toLocalSchema(schema, state, parentProperty) {
   return new Promise((resolve, reject) => {
-    const result = {...schema};
+    const result = cloneDeep(schema);
 
-    if (Array.isArray(result.type)) {
+    if (Array.isArray(schema.type)) {
+      if (schema.type.includes('null')) {
+        result.nullable = true;
+      }
       result.type = result.type[0];
     }
+
     if (result.relation !== undefined && result.relation !== parentProperty) {
       const enumValues = [];
       const options = {};
