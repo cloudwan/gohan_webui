@@ -214,7 +214,7 @@ class ArrayField extends Component {
               });
 
               return (
-                <Tab2 key={`item${index}`} id={`item${index}`}
+                <Tab2 key={index} id={`item${index}`}
                   title={
                     <span>Item {index + 1}
                       <span className="pt-icon-remove" onClick={this.onDropIndexClick(index, true)}/>
