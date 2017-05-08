@@ -3,7 +3,7 @@ import React, {PropTypes} from 'react';
 const REQUIRED_FIELD_SYMBOL = '*';
 
 function TitleField(props) {
-  const {id, title, required, hiddenContent, onClick} = props;
+  const {id, title, required, hiddenContent, onClick, children} = props;
   let showArrow = hiddenContent !== undefined;
 
   return (
@@ -14,6 +14,7 @@ function TitleField(props) {
       {showArrow ? <span className={`gohan-caret-icon
                           pt-icon-standard pt-icon-caret-${hiddenContent ? 'up' : 'down'}`}
       /> : null}
+      {children}
     </legend>
   );
 }
