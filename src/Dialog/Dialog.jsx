@@ -57,9 +57,9 @@ export class GeneratedDialog extends Component {
    * @return {ReactElement} markup
    */
   render() {
-    const {action, baseSchema} = this.props;
-    const title = `${action[0].toUpperCase() + action.slice(1)}${action === 'create' ? ' new ' : ' '}` +
-      `${baseSchema.title}`;
+    const {action, baseSchema, customTitle} = this.props;
+    const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
+      `${action === 'create' ? ' new ' : ' '}${baseSchema.title}`;
     const actions = [];
 
     if (this.props.onClose) {
@@ -144,7 +144,8 @@ if (process.env.NODE_ENV !== 'production') {
       PropTypes.array
     ]),
     onClose: PropTypes.func,
-    onSubmit: PropTypes.func
+    onSubmit: PropTypes.func,
+    customTitle: PropTypes.string
   };
 }
 
