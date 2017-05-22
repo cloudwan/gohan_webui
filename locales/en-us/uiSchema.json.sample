@@ -1,0 +1,14 @@
+[
+  {
+    "id": "basictype",
+    "title": "test",
+    "properties": {
+      "ui:disabled": true,
+      "name" : {
+        "ui:widget": "js"
+      },
+      "color": {
+      }
+    }
+  }
+]
