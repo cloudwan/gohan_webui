@@ -104,6 +104,10 @@ module.exports = {
       {
         from: 'src/config.json',
         to: 'config.json'
+      },
+      {
+        from: 'locales',
+        to: 'locales'
       }
     ]),
     new webpack.DefinePlugin({
