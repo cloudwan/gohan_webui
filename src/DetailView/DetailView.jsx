@@ -11,6 +11,7 @@ import {
   deleteData,
   updateData
 } from './DetailActions';
+import {getUiSchema} from './../uiSchema/UiSchemaSelectors';
 import {Alert, Intent} from '@blueprintjs/core';
 
 export const getDetailView = (DetailComponent = Detail) => {
@@ -89,7 +90,8 @@ export const getDetailView = (DetailComponent = Detail) => {
         return (
           <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
             data={this.state.dialogData} onClose={this.handleCloseModal}
-            onSubmit={this.handleSubmit} baseSchema={this.state.activeSchema}
+            onSubmit={this.handleSubmit} uiSchema={this.props.uiSchema.properties}
+            baseSchema={this.state.activeSchema}
           />
         );
       }
@@ -141,9 +143,10 @@ export const getDetailView = (DetailComponent = Detail) => {
     clearData: PropTypes.func.isRequired,
   };
 
-  function mapStateToProps(state) {
+  function mapStateToProps(state, props) {
     return {
       schemaReducer: state.schemaReducer,
+      uiSchema: getUiSchema(state, props.singular),
       detailReducer: state.detailReducer,
       configReducer: state.configReducer
     };

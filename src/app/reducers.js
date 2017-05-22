@@ -4,6 +4,7 @@ import configReducer from './../config/configReducer';
 import locationReducer from '../location/locationReducer';
 import errorReducer from './../error/errorReducer';
 import authReducer from './../auth/authReducer';
+import uiSchemaReducer from './../uiSchema/uiSchemaReducer';
 import schemaReducer from './../schema/schemaReducer';
 import dialogReducer from '../Dialog/dialogReducer';
 
@@ -14,6 +15,7 @@ export const makeRootReducer = asyncReducers => {
     errorReducer,
     authReducer,
     schemaReducer,
+    uiSchemaReducer,
     dialogReducer,
     ...asyncReducers
   });
