@@ -1,0 +1,1 @@
+export const FETCH_SUCCESS = 'UI_SCHEMA_FETCH_SUCCESS';
