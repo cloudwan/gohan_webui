@@ -2,7 +2,6 @@
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import {Button, Menu, MenuItem} from '@blueprintjs/core';
-
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 
 /**
@@ -83,10 +82,10 @@ class SelectWidget extends Component {
     const {
       value,
       options,
+      disabled,
+      readonly,
       label,      // eslint-disable-line
       required,   // eslint-disable-line
-      disabled,   // eslint-disable-line
-      readonly,   // eslint-disable-line
       multiple,   // eslint-disable-line
       autofocus,  // eslint-disable-line
     } = this.props;
@@ -103,19 +102,13 @@ class SelectWidget extends Component {
     const selectedItem = options.enumOptions.find(item => item.value === value);
 
     return (
-      <div className="gohan-select-widget pt-fill" style={{position: 'relative'}}
-        ref={ref => {this.widget = ref;}}>
+      <div className="gohan-select-widget pt-fill" ref={ref => {this.widget = ref;}}>
         <Button text={selectedItem ? selectedItem.label : 'Nothing selected'} onClick={this.handleShowAndHideMenu}
           className={'pt-fill'} rightIconName={'caret-down'}
+          disabled={disabled || readonly}
         />
         {focused &&
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            right: '1px',
-            left: '1px',
-            zIndex: 10
-          }}>
+          <div className="options-list">
             {(options.enumOptions.length >= searchThreshold) &&
               <div className="pt-input-group pt-fill">
                 <span className="pt-icon pt-icon-search"/>
@@ -135,6 +128,7 @@ class SelectWidget extends Component {
               {enumOptions.map(({value, label}, i) => (
                 <MenuItem key={i} text={label}
                   onClick={() => this.handleMenuItemClick(value)}
+                  className={selectedItem && value === selectedItem.value ? 'pt-active' : ''}
                 />
               ))}
             </Menu>
