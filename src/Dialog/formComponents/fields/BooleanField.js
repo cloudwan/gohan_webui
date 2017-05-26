@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 
 import {
-  defaultFieldValue,
   getWidget,
   optionsList,
   getDefaultRegistry,
@@ -46,7 +45,7 @@ function BooleanField(props) {
     id: idSchema && idSchema.$id,
     onChange,
     label: (title === undefined) ? name : title,
-    value: defaultFieldValue(formData, schema),
+    value: formData,
     required,
     disabled,
     readonly,
