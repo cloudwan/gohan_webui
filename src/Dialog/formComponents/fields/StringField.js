@@ -1,7 +1,6 @@
 import React, {PropTypes} from 'react';
 
 import {
-  defaultFieldValue,
   getWidget,
   optionsList,
   getDefaultRegistry
@@ -36,7 +35,7 @@ function StringField(props) {
     schema,
     id: idSchema && idSchema.$id,
     label: (title === undefined) ? name : title,
-    value: defaultFieldValue(formData, schema),
+    value: formData,
     onChange,
     required,
     disabled,
