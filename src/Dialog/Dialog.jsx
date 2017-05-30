@@ -8,7 +8,7 @@ import fields from './formComponents/fields';
 import Template from './formComponents/Template';
 
 import {prepareSchema, clearData} from './DialogActions';
-
+import {getUiSchemaProperties} from './../uiSchema/UiSchemaSelectors';
 /**
  * Dialog component for creating and editing resources.
  *
@@ -100,7 +100,11 @@ export class GeneratedDialog extends Component {
                         return result;
                       }, {}
                     )}
-                  uiSchema={{'ui:order': this.props.schema.propertiesOrder, ...this.props.uiSchema}}
+                  uiSchema={{
+                    'ui:order': this.props.schema.propertiesOrder,
+                    ...this.props.uiSchemaProperties,
+                    ...this.props.uiSchema
+                  }}
                   onSubmit={this.handleSubmit} showErrorList={false}
                   noValidate={true}>
                   <div/>
@@ -149,12 +153,12 @@ if (process.env.NODE_ENV !== 'production') {
   };
 }
 
-function mapStateToProps(state) {
-  return {
-    schema: getSchema(state),
-    isLoading: getLoadingState(state)
-  };
-}
+const mapStateToProps = (state, {baseSchema}) => ({
+  schema: getSchema(state),
+  uiSchemaProperties: getUiSchemaProperties(state, baseSchema.id),
+  isLoading: getLoadingState(state)
+});
+
 export default connect(mapStateToProps, {
   prepareSchema,
   clearData
