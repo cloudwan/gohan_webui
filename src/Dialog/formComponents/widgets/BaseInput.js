@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {asNumber} from 'react-jsonschema-form/lib/utils';
 import validator from './../validator';
 
 class BaseInput extends Component {
@@ -20,7 +21,11 @@ class BaseInput extends Component {
       });
     }
 
-    validator.validate(this.props.schema, value);
+    if (this.props.schema.type === 'number') {
+      validator.validate(this.props.schema, asNumber(value));
+    } else {
+      validator.validate(this.props.schema, value);
+    }
 
     if (validator.errors) {
       errors.push(...validator.errors);
