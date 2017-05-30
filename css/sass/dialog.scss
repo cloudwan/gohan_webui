@@ -2,6 +2,26 @@
 $select-options-background: #ffffff;
 $select-options-input-focus: #137cbd;
 
+.pt-dialog {
+  position: relative;
+  width: auto;
+  margin: 10px;
+  top: initial;
+}
+
+@media (min-width: 768px) {
+  .pt-dialog {
+    width: 600px;
+    margin: 30px auto;
+  }
+}
+@media (min-width: 992px) {
+  .pt-dialog {
+    width: 900px;
+  }
+}
+
+
 /* Select widget */
 .gohan-select-widget {
   position: relative;
@@ -45,6 +65,63 @@ $select-options-input-focus: #137cbd;
     .pt-menu-item {
       border-radius: 0;
     }
+  }
+}
+
+.list-sortable {
+  counter-reset: section;
+  padding: 0;
+  background-color: #f3f3f3;
+  margin-bottom: 5px;
+  min-height: 2em;
+  li.list-item-container {
+    list-style: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-left: 5px solid #ccc;
+    margin-bottom: -1px;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    > div {
+      display: table-cell;
+      vertical-align: top;
+      padding: 8px 5px;
+    }
+    > div.action {
+      width: 3em;
+      text-align: center;
+      vertical-align: middle;
+      padding-left: 10px;
+    }
+    > div.sort {
+      width: 6em;
+    }
+  }
+}
+.list-sortable-active {
+  z-index: 3000;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-left: 5px solid #ccc;
+  margin-bottom: -1px;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  > div {
+    display: table-cell;
+    vertical-align: top;
+    padding: 8px 5px;
+  }
+  > div.action {
+    width: 3em;
+    text-align: center;
+    vertical-align: middle;
+    padding-left: 10px;
+  }
+  > div.sort {
+    width: 6em;
   }
 }
 
