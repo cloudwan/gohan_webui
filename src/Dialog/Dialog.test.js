@@ -54,13 +54,17 @@ describe('< Dialog />', () => {
     const store = mockStore({
       dialogReducer: {
         schema: {
+          id: '1',
           propertiesOrder: ['test1', 'test2']
         },
         isLoading: false
+      },
+      uiSchemaReducer: {
+        data: []
       }
     });
     const wrapper = shallow(
-      <ConnectedDialog store={store} />
+      <ConnectedDialog store={store} baseSchema={{id: 'test'}}/>
     );
 
     wrapper.should.not.equal(undefined);

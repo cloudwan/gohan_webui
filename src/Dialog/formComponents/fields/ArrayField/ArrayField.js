@@ -54,6 +54,23 @@ export default class ArrayField extends Component {
     this.state = this.getStateFromProps(props);
   }
 
+  componentDidMount() {
+    const {initialItem} = {initialItem: true, ...this.props.uiSchema['ui:options']};
+
+    if (initialItem) {
+      const {items} = this.state;
+      const {schema, registry} = this.props;
+      const {definitions} = registry;
+      let itemSchema = schema.items;
+      if (isFixedItems(schema) && allowAdditionalItems(schema)) {
+        itemSchema = schema.additionalItems;
+      }
+      this.props.onChange(items.concat([
+        getDefaultFormState(itemSchema, undefined, definitions)
+      ]), {validate: false});
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     this.setState(this.getStateFromProps(nextProps));
   }
