@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import _ from 'lodash';
-import {Button} from '@blueprintjs/core';
+import {Button, Tabs2, Tab2} from '@blueprintjs/core';
 
 import {deepEquals} from 'react-jsonschema-form/lib/utils';
 
@@ -173,6 +173,15 @@ class ObjectField extends Component {
         </div>
       );
     }
+    const isTab = this.props.idSchema.$id !== 'root' &&
+      schema.properties &&
+      Object.keys(schema.properties).reduce((result, item) => {
+        const {type} = schema.properties[item];
+
+        return type === 'object' || type === 'array' ? result + 1 : result;
+      },
+      0
+      ) > 1;
     return (
       <fieldset className="gohan-reset-fieldset">
         {title && (
@@ -193,28 +202,71 @@ class ObjectField extends Component {
             formContext={formContext}
           />
         )}
-
-        <div className={'gohan-form-object-children'}>
-          {!this.nullValue &&
-            orderedProperties.map((name, index) => {
-              return (
-                <SchemaField key={index}
-                  name={name}
-                  required={this.isRequired(name)}
-                  schema={schema.properties[name]}
-                  uiSchema={uiSchema[name]}
-                  errorSchema={errorSchema[name]}
-                  idSchema={idSchema[name]}
-                  formData={this.state[name]}
-                  onChange={this.onPropertyChange(name)}
-                  registry={this.props.registry}
-                  disabled={disabled}
-                  readonly={readonly}
-                />
-              );
+        {isTab && (
+          <Tabs2 id={`object-${name}`} defaultSelectedTabId={0}>
+            {!this.nullValue &&
+            orderedProperties.filter(
+              key => schema.properties[key].type === 'object' || schema.properties[key].type === 'array'
+            ).map((name, index) => (
+              <Tab2 key={index} id={index}
+                title={schema.properties[name].title || uiSchema[name].title} panel={
+                  <SchemaField required={this.isRequired(name)}
+                    schema={{...schema.properties[name], title: undefined, description: undefined}}
+                    uiSchema={uiSchema[name]}
+                    errorSchema={errorSchema[name]}
+                    idSchema={idSchema[name]}
+                    formData={this.state[name]}
+                    onChange={this.onPropertyChange(name)}
+                    registry={this.props.registry}
+                    disabled={disabled}
+                    readonly={readonly}
+                  />
+                }
+              />
+              ))
             }
-            )}
-        </div>
+          </Tabs2>
+        )}
+        {isTab && !this.nullValue && orderedProperties.filter(
+          key => schema.properties[key].type !== 'object' && schema.properties[key].type !== 'array'
+        ).map((name, index) => (
+          <SchemaField key={index} name={name}
+            required={this.isRequired(name)}
+            schema={schema.properties[name]}
+            uiSchema={uiSchema[name]}
+            errorSchema={errorSchema[name]}
+            idSchema={idSchema[name]}
+            formData={this.state[name]}
+            onChange={this.onPropertyChange(name)}
+            registry={this.props.registry}
+            disabled={disabled}
+            readonly={readonly}
+          />
+        ))
+        }
+        {!isTab && (
+          <div className={'gohan-form-object-children'}>
+            {!this.nullValue &&
+              orderedProperties.map((name, index) => {
+                return (
+                  <SchemaField key={index}
+                    name={name}
+                    required={this.isRequired(name)}
+                    schema={schema.properties[name]}
+                    uiSchema={uiSchema[name]}
+                    errorSchema={errorSchema[name]}
+                    idSchema={idSchema[name]}
+                    formData={this.state[name]}
+                    onChange={this.onPropertyChange(name)}
+                    registry={this.props.registry}
+                    disabled={disabled}
+                    readonly={readonly}
+                  />
+                );
+              }
+              )}
+          </div>
+        )}
       </fieldset>
     );
   }
