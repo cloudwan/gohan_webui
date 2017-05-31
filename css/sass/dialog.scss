@@ -1,6 +1,7 @@
 /* Select widget colors */
 $select-options-background: #ffffff;
 $select-options-input-focus: #137cbd;
+$object-field-background: #ebf1f5;
 
 .pt-dialog {
   position: relative;
@@ -123,6 +124,14 @@ $select-options-input-focus: #137cbd;
   > div.sort {
     width: 6em;
   }
+}
+
+/* Object editor */
+.pt-tabs {
+  border: 1px solid darken($object-field-background, 20%);
+  background: $object-field-background;
+  margin: 0 0 1em 2px;
+  padding: 0 1em 1em 1em;
 }
 
 .gohan-form-asterisk {
