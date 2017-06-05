@@ -88,9 +88,7 @@ class ObjectField extends Component {
   nullValue = false;
 
   filterSchemaProperties = (name, value, options) => {
-    const {definitions} = this.props.registry;
-    const baseSchema = retrieveSchema(this.props.schema, definitions);
-    const {propertiesLogic = {}} = baseSchema;
+    const propertiesLogic = this.props.uiSchema['ui:logic'] || {};
     const newState = {[name]: value};
     const logic = propertiesLogic[name];
 
@@ -138,7 +136,7 @@ class ObjectField extends Component {
     const {SchemaField, TitleField, DescriptionField} = fields;
     const baseSchema = retrieveSchema(this.props.schema, definitions);
     const title = (baseSchema.title === undefined) ? name : baseSchema.title;
-    const {propertiesLogic = {}} = baseSchema;
+    const propertiesLogic = this.props.uiSchema['ui:logic'] || {};
     const schema = _.cloneDeep(baseSchema);
 
     Object.keys(propertiesLogic).forEach(key => {
