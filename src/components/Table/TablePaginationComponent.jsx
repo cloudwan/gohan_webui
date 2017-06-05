@@ -34,4 +34,5 @@ class TablePaginationComponent extends Component {
   }
 }
 
+
 export default TablePaginationComponent;
