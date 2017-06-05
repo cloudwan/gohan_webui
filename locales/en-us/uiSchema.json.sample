@@ -9,6 +9,15 @@
       },
       "color": {
       }
+    },
+    "logic": {
+      "name": {
+        "hide": {
+          "hide": [
+            "color"
+          ]
+        }
+      }
     }
   }
 ]
