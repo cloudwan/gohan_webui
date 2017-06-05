@@ -16,3 +16,8 @@ export const getUiSchemaProperties = createSelector(
   [schema],
   schema => schema && schema.properties ? schema.properties : undefined
 );
+
+export const getUiSchemaLogic = createSelector(
+  [schema],
+  schema => schema && schema.logic ? schema.logic : undefined
+);
