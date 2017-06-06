@@ -100,7 +100,7 @@ describe('SchemaSelectors', () => {
             ]
           }
         }
-      , 'test1').should.deep.equal(
+        , 'test1').should.deep.equal(
         {
           id: 'test1',
           title: 'test1 title',
@@ -118,5 +118,190 @@ describe('SchemaSelectors', () => {
         configReducer: {},
       }).should.deep.equal([]);
     });
+  });
+
+  describe('hasReadPermission', () => {
+    it('should return appropriate value', () => {
+      selectors.hasReadPermission(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test1',
+                title: 'test1 title',
+                url: '/test1_url',
+                metadata: {
+                  type: 'test1_type'
+                },
+                schema: {
+                  permission: [
+                    'read'
+                  ]
+                }
+              }
+            ]
+          }
+        }
+        , 'test1').should.equal(true);
+    });
+
+    selectors.hasReadPermission(
+      {
+        schemaReducer: {
+          data: [
+            {
+              id: 'test1',
+              title: 'test1 title',
+              url: '/test1_url',
+              metadata: {
+                type: 'test1_type'
+              },
+              schema: {
+                permission: []
+              }
+            }
+          ]
+        }
+      }
+      , 'test1').should.equal(false);
+  });
+
+  describe('hasCreatePermission', () => {
+    it('should return appropriate value', () => {
+      selectors.hasCreatePermission(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test1',
+                title: 'test1 title',
+                url: '/test1_url',
+                metadata: {
+                  type: 'test1_type'
+                },
+                schema: {
+                  permission: [
+                    'create'
+                  ]
+                }
+              }
+            ]
+          }
+        }
+        , 'test1').should.equal(true);
+    });
+
+    selectors.hasCreatePermission(
+      {
+        schemaReducer: {
+          data: [
+            {
+              id: 'test1',
+              title: 'test1 title',
+              url: '/test1_url',
+              metadata: {
+                type: 'test1_type'
+              },
+              schema: {
+                permission: []
+              }
+            }
+          ]
+        }
+      }
+      , 'test1').should.equal(false);
+  });
+
+  describe('hasUpdatePermission', () => {
+    it('should return appropriate value', () => {
+      selectors.hasUpdatePermission(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test1',
+                title: 'test1 title',
+                url: '/test1_url',
+                metadata: {
+                  type: 'test1_type'
+                },
+                schema: {
+                  permission: [
+                    'update',
+                  ]
+                }
+              }
+            ]
+          }
+        }
+        , 'test1').should.equal(true);
+    });
+
+    selectors.hasUpdatePermission(
+      {
+        schemaReducer: {
+          data: [
+            {
+              id: 'test1',
+              title: 'test1 title',
+              url: '/test1_url',
+              metadata: {
+                type: 'test1_type'
+              },
+              schema: {
+                permission: [
+                ]
+              }
+            }
+          ]
+        }
+      }
+      , 'test1').should.equal(false);
+  });
+
+  describe('hasDeletePermission', () => {
+    it('should return appropriate value', () => {
+      selectors.hasDeletePermission(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test1',
+                title: 'test1 title',
+                url: '/test1_url',
+                metadata: {
+                  type: 'test1_type'
+                },
+                schema: {
+                  permission: [
+                    'delete'
+                  ]
+                }
+              }
+            ]
+          }
+        }
+        , 'test1').should.equal(true);
+    });
+
+    selectors.hasDeletePermission(
+      {
+        schemaReducer: {
+          data: [
+            {
+              id: 'test1',
+              title: 'test1 title',
+              url: '/test1_url',
+              metadata: {
+                type: 'test1_type'
+              },
+              schema: {
+                permission: []
+              }
+            }
+          ]
+        }
+      }
+      , 'test1').should.equal(false);
   });
 });
