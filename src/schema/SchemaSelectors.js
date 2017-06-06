@@ -24,3 +24,23 @@ export const getSchema = createSelector(
     return schema;
   }
 );
+
+export const hasReadPermission = createSelector(
+  [schema],
+  schema => schema.schema.permission.includes('read')
+);
+
+export const hasCreatePermission = createSelector(
+  [schema],
+  schema => schema.schema.permission.includes('create')
+);
+
+export const hasUpdatePermission = createSelector(
+  [schema],
+  schema => schema.schema.permission.includes('update')
+)
+;
+export const hasDeletePermission = createSelector(
+  [schema],
+  schema => schema.schema.permission.includes('delete')
+);
