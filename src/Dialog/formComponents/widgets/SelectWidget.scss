@@ -1,0 +1,55 @@
+@import '../../../styles/colors';
+
+.gohan-select-widget {
+  position: relative;
+  margin-bottom: 10px;
+
+  ul {
+    max-height: 21vh;
+    overflow: auto;
+  }
+
+  button {
+    text-align: left;
+
+    span.pt-align-right{
+      float: right;
+      margin-top: 7px;
+    }
+  }
+
+  &__options-list {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 10;
+    border: 1px solid darken($select-options-background, 40%);
+    background: $select-options-background;
+
+    .pt-menu {
+      border-radius: 0;
+    }
+  }
+
+  .pt-input {
+    border-radius: 0;
+    box-shadow: 0 0 0 0 transparentize($select-options-background, 1),
+      0 0 0 0 transparentize($select-options-background, 1),
+      inset 0 0 0 0 transparentize($select-options-background, 1),
+      inset 0px -1px 0px 0px darken($select-options-background, 40%);
+
+    &:focus {
+      box-shadow: inset 0 0 0 1px $select-options-input-focus,
+        inset 0 0 0 3px transparentize($select-options-input-focus, 0.8),
+        inset 0 1px 1px transparentize($select-options-input-focus, 0.7);
+    }
+  }
+
+  .pt-menu {
+    padding: 0;
+
+    .pt-menu-item {
+      border-radius: 0;
+    }
+  }
+}

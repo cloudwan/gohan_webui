@@ -3,14 +3,13 @@ import React from 'react';
 import {render} from 'react-dom';
 import {hashHistory} from 'react-router';
 
-import '../css/sass/main.scss';
-
 import Root from './app/Root';
 import createStore from './app/store';
 import {fetchConfig} from './config/ConfigActions';
 import {fetchUiSchema} from './uiSchema/UiSchemaActions';
 import {updateLocation} from './location/LocationActions';
 
+import './index.scss';
 
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
 store.unsubscribeHistory = hashHistory.listen(updateLocation(store));

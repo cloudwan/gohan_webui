@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react';
 
+import './DescriptionField.scss';
 
 function DescriptionField(props) {
   const {id, description} = props;
@@ -10,13 +11,13 @@ function DescriptionField(props) {
 
   if (typeof description === 'string') {
     return (
-      <p id={id} className="gohan-form-description">
+      <p id={id} className="gohan-form__description">
         {description}
       </p>
     );
   }
   return (
-    <div id={id} className="gohan-form-description">
+    <div id={id} className="gohan-form__description">
       {description}
     </div>
   );

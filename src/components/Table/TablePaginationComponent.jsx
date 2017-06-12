@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import ReactPaginate from 'react-paginate';
 
+import './TablePagination.scss';
+
 class TablePaginationComponent extends Component {
 
   handlePageChange = ({selected}) => {
@@ -12,12 +14,12 @@ class TablePaginationComponent extends Component {
 
     if (this.props.pageCount > 1) {
       pagination = (
-        <ReactPaginate className="pagination" previousLabel={''}
+        <ReactPaginate className="table__pagination" previousLabel={''}
           nextLabel={''} breakLabel={<a>...</a>}
           breakClassName={'pt-button pt-disabled'} initialPage={this.props.activePage}
           pageCount={this.props.pageCount} marginPagesDisplayed={2}
           pageRangeDisplayed={5} onPageChange={this.handlePageChange}
-          containerClassName={'pagination pt-button-group'}
+          containerClassName={'table__pagination pt-button-group'}
           activeClassName={'pt-active'} pageClassName={'pt-button'}
           previousClassName={'pt-button'} nextClassName={'pt-button'}
           previousLinkClassName={'pt-icon-chevron-left'} nextLinkClassName={'pt-icon-chevron-right'}

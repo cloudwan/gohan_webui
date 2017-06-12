@@ -1,0 +1,19 @@
+.table__pagination {
+  padding-left: 0;
+  user-select: none;
+
+  ul {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  li {
+    padding: 0;
+  }
+
+  a {
+    padding: 0 10px;
+    text-decoration: none;
+    display: block;
+  }
+}

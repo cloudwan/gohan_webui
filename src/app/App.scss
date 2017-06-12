@@ -1,0 +1,13 @@
+.view-content {
+  padding-top: 50px;
+  padding-right: 0;
+  padding-bottom: 0;
+  padding-left: 260px;
+  min-height: 400px;
+  transition: padding-left 250ms ease-in;
+
+  &.full-width {
+    padding-left: 0;
+    transition: padding-left 250ms ease-out;
+  }
+}

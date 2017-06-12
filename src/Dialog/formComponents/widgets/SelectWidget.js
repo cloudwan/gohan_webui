@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import {Button, Menu, MenuItem} from '@blueprintjs/core';
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 
+import './SelectWidget.scss';
+
 /**
  * This is a silly limitation in the DOM where option change event values are
  * always retrieved as strings.
@@ -108,7 +110,7 @@ class SelectWidget extends Component {
           disabled={disabled || readonly}
         />
         {focused &&
-          <div className="options-list">
+          <div className="gohan-select-widget__options-list">
             {(options.enumOptions.length >= searchThreshold) &&
               <div className="pt-input-group pt-fill">
                 <span className="pt-icon pt-icon-search"/>

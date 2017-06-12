@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react';
 
+import './CheckboxWidget.scss';
+
 function CheckboxWidget({
   schema,  // eslint-disable-line
   id,
@@ -11,7 +13,7 @@ function CheckboxWidget({
   onChange,
 }) {
   return (
-    <label className={'pt-control gohan-form-checkbox pt-checkbox'}>
+    <label className={'pt-control gohan-form__checkbox pt-checkbox'}>
       <input type='checkbox'
         id={id}
         checked={typeof value === 'undefined' ? false : value}

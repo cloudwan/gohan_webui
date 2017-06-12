@@ -1,0 +1,11 @@
+.table-container {
+  [type=button], select {
+    user-select: none;
+  }
+}
+
+@media (max-width: 1200px) {
+  .table-container > .pt-card {
+    overflow-x: auto;
+  }
+}

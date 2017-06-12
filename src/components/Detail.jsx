@@ -4,6 +4,8 @@ import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/yaml/yaml';
 import {Tooltip, Position} from '@blueprintjs/core';
 
+import './Detail.scss';
+
 export default class Detail extends Component {
   handleEditClick = () => {
     this.props.onEdit(this.props.data);

@@ -1,0 +1,15 @@
+.gohan-form {
+  &__dialog-group {
+    margin-bottom: 5px;
+  }
+
+  &__error-list {
+    padding: 2px;
+    list-style-type: none;
+    margin: 0;
+  }
+
+  &__error-list-item {
+    margin-top: 0;
+  }
+}

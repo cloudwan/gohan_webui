@@ -22,6 +22,8 @@ import ArrayFieldDescription from './ArrayFieldDescription';
 import AddButton from './AddButton';
 import {ArraySortableList} from './ArraySortableList';
 
+import './ArrayField.scss';
+
 export default class ArrayField extends Component {
   static defaultProps = {
     uiSchema: {},
@@ -205,7 +207,7 @@ export default class ArrayField extends Component {
         }
 
         <ArraySortableList pressDelay={500} onSortEnd={this.onReorderMoved}
-          helperClass="list-sortable-active" lockAxis="y"
+          helperClass="list-sortable--active" lockAxis="y"
           lockToContainerEdges={true}>
           {
             items.map((value, index) => {
@@ -216,12 +218,12 @@ export default class ArrayField extends Component {
               return (
                 <ArraySortableItem key={index} index={index}
                   disabled={!orderable}>
-                  <div className="action">
+                  <div className="list-sortable__item-field list-sortable__item-field--action">
                     <Button intent={Intent.PRIMARY} iconName="remove"
                       className="pt-minimal" onClick={this.onDropIndexClick(index)}
                     />
                   </div>
-                  <div className="body">
+                  <div className="list-sortable__item-field">
                     {
                       this.renderArrayFieldItem({
                         index,
@@ -238,7 +240,7 @@ export default class ArrayField extends Component {
                   </div>
                   {
                     orderable && (
-                      <div className="sort">
+                      <div className="list-sortable__item-field list-sortable__item-field--sort">
                         <Button intent={Intent.PRIMARY} iconName="chevron-up"
                           text="Up" className="pt-minimal"
                           disabled={index === 0} onClick={this.onReorderClick(index, index - 1)}
@@ -390,7 +392,7 @@ export default class ArrayField extends Component {
 
     return (
       <div className='array-item'>
-        <div className="gohan-form-array-item">
+        <div className="gohan-form__array-item">
           <SchemaField schema={itemSchema}
             uiSchema={itemUiSchema}
             formData={itemData}

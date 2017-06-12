@@ -23,6 +23,8 @@ import LoadingIndicator from '../components/LoadingIndicator';
 import Dialog from '../Dialog/Dialog';
 import {Alert, Intent} from '@blueprintjs/core';
 
+import './TableView.scss';
+
 export const getTableView = (TableComponent = Table) => {
   class TableView extends Component {
     constructor(props) {

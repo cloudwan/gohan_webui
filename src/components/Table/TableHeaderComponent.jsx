@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {Tooltip, Position} from '@blueprintjs/core';
 
+import './TableHeader.scss';
+
 class TableHeader extends Component {
 
   constructor(props) {
@@ -53,7 +55,7 @@ class TableHeader extends Component {
     return visibleColumns.map((column, index) => {
       const property = properties[column];
       let sortIcon = <Tooltip content="Sort by this property." position={Position.RIGHT}>
-        <span className={'hidden pt-icon-small pt-icon-sort'}/>
+        <span className="table__sort-icon pt-icon-small pt-icon-sort"/>
       </Tooltip>;
 
       if (this.state.sortKey === column) {
@@ -61,13 +63,14 @@ class TableHeader extends Component {
           'Sorted in ascending order.' :
           'Sorted in descending order.'}
           position={Position.RIGHT}>
-          <span className={'pt-icon-small pt-icon-sort-' + this.state.sortOrder}/>
+          <span className={`table__sort-icon pt-icon-small pt-icon-sort-${this.state.sortOrder}`}/>
         </Tooltip>;
       }
 
       return (
         <th key={index}>
-          <a onClick={this.handleHeaderClick} data-gohan={column}>
+          <a onClick={this.handleHeaderClick} data-gohan={column}
+            className="table__header-link">
             <Tooltip content={property.description}><span>{property.title}</span></Tooltip>
             {sortIcon}
           </a>
@@ -80,13 +83,13 @@ class TableHeader extends Component {
   render() {
     return (
       <tr>
-        <th key={-1} className="gohan-table-select-column">
+        <th key={-1} className="gohan-table__select-column">
           <input type="checkbox" onChange={this.handleCheckedRowsInputChange}
             checked={this.state.checkedAll}
           />
         </th>
         {this.buildTableHeaders()}
-        <th className="options">{'Options'}</th>
+        <th className="table__header--options">{'Options'}</th>
       </tr>
     );
   }

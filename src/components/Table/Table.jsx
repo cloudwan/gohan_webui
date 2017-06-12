@@ -5,6 +5,8 @@ import TableHeaderComponent from './TableHeaderComponent.jsx';
 import TableRowComponent from './TableRowComponent.jsx';
 import Breadcrumb from '../Breadcrumb';
 
+import './Table.scss';
+
 class Table extends Component {
   buildTableBody = () => {
     return this.props.data.map(item => {

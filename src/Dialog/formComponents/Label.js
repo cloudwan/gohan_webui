@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './Label.scss';
+
 const REQUIRED_FIELD_SYMBOL = '*';
 
 function Label(props) {
@@ -10,9 +12,9 @@ function Label(props) {
   }
 
   return (
-    <legend id={id} className="gohan-form-legend">
+    <legend id={id} className="gohan-form__legend">
       {label}
-      {required ? <span className={'gohan-form-asterisk'}>{REQUIRED_FIELD_SYMBOL}</span> : null}
+      {required ? <span className={'gohan-form__asterisk'}>{REQUIRED_FIELD_SYMBOL}</span> : null}
     </legend>
   );
 }
