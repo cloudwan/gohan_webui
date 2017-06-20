@@ -55,7 +55,7 @@ describe('authReducer ', () => {
     );
   });
 
-  it('should handle LOGIN_SUCCESS', () => {
+  it('should handle LOGOUT', () => {
     reducer(undefined, {
       type: actionTypes.LOGOUT,
     }).should.deep.equal({
@@ -100,6 +100,15 @@ describe('authReducer ', () => {
       ],
       inProgress: false,
       logged: true
+    });
+  });
+
+  it(`should handle ${actionTypes.CLEAR_STORAGE}`, () => {
+    reducer(undefined, {
+      type: actionTypes.CLEAR_STORAGE,
+    }).should.deep.equal({
+      inProgress: false,
+      logged: false
     });
   });
 });

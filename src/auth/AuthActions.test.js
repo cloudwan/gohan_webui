@@ -29,7 +29,7 @@ describe('AuthActions ', () => {
       axios.post = _post;
     });
 
-    it('should create LOGIN_SUCCESS and TENANT_FETCH_SUCCESS', async () => {
+    it(`should dispatch ${actionTypes.LOGIN_SUCCESS} and ${actionTypes.TENANT_FETCH_SUCCESS}`, async () => {
       axios.post = chai.spy((url, data, headers) => {
         url.should.equal('http://localhost:8666/tokens');
         headers['Content-Type'].should.equal('application/json');
@@ -99,12 +99,15 @@ describe('AuthActions ', () => {
   });
 
   describe('logout() ', () => {
-    it('should create LOGOUT', () => {
+    it(`should dispatch ${actionTypes.CLEAR_STORAGE} action and ${actionTypes.LOGOUT}`, () => {
       const store = mockStore({});
 
       store.dispatch(actions.logout());
 
       store.getActions().should.deep.equal([
+        {
+          type: actionTypes.CLEAR_STORAGE
+        },
         {
           type: actionTypes.LOGOUT,
         }
