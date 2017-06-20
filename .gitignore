@@ -7,3 +7,4 @@ dist/*
 .sass-cache
 coverage
 doc/*
+package-lock.json
