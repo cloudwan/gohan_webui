@@ -3,7 +3,8 @@ import {
   LOGIN_INPROGRESS,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
-  TENANT_FETCH_SUCCESS
+  TENANT_FETCH_SUCCESS,
+  CLEAR_STORAGE
 } from './AuthActionTypes';
 
 export default function authReducer(state = {
@@ -11,6 +12,11 @@ export default function authReducer(state = {
   logged: false
 }, action) {
   switch (action.type) {
+    case CLEAR_STORAGE:
+      return {
+        inProgress: false,
+        logged: false
+      };
     case LOGOUT:
       return {
         inProgress: false,
