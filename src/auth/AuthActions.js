@@ -7,10 +7,11 @@ import {
   LOGIN_ERROR,
   LOGOUT,
   TENANT_FETCH_SUCCESS,
-  TENANT_FETCH_FAILURE
+  TENANT_FETCH_FAILURE,
+  CLEAR_STORAGE
 } from './AuthActionTypes';
 
-const {sessionStorage} = window;
+const {sessionStorage, location} = window;
 
 function fetchTenantSuccess(data) {
   return dispatch => {
@@ -86,10 +87,10 @@ export function fetchTokenData() {
       axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
         dispatch(loginSuccess(response.data));
       }).catch(() => {
-        dispatch(logout());
+        dispatch(clearStorage());
       });
     } else {
-      dispatch(logout());
+      dispatch(clearStorage());
     }
   };
 
@@ -162,18 +163,24 @@ export function login(username, password) {
     }).catch(error => {
       dispatch(loginFailure(error));
     });
-
   };
 }
 
-export function logout() {
+export function clearStorage() {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('scopedToken');
   sessionStorage.removeItem('tenant');
 
-
   return dispatch => {
+    dispatch({type: CLEAR_STORAGE});
+  };
+}
+
+export function logout() {
+  return dispatch => {
+    dispatch(clearStorage());
     dispatch({type: LOGOUT});
+    location.reload();
   };
 }
 
