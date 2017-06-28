@@ -6,8 +6,7 @@ import spies from 'chai-spies';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow} from 'enzyme';
 
-import {Dialog, Button, ProgressBar} from '@blueprintjs/core';
-import Form from 'react-jsonschema-form';
+import {Button, ProgressBar} from '@blueprintjs/core';
 import ConnectedDialog, {GeneratedDialog} from './Dialog';
 
 chai.use(chaiEnzyme());
@@ -68,21 +67,6 @@ describe('< Dialog />', () => {
     );
 
     wrapper.should.not.equal(undefined);
-  });
-
-  it('should contain particular elements', () => {
-    const wrapper = shallow(
-      <GeneratedDialog action={action} baseSchema={baseSchema}
-        schema={schema} data={data}
-        prepareSchema={() => {}} isLoading={false}
-        clearData={() => {}} isOpen={true}
-      />
-    );
-
-    wrapper.find(Dialog).should.have.length(1);
-    wrapper.find(Form).should.have.length(1);
-    wrapper.find('div').should.have.length(5);
-    wrapper.find(Button).should.have.length(1);
   });
 
   it('should contain 2 Buttons when passed onClose function', () => {

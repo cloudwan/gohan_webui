@@ -9,6 +9,7 @@ describe('dialogReducer ', () => {
 
   it('should return initial state', () => {
     dialogReducer(undefined, {}).should.deep.equal({
+      dialogs: {},
       isLoading: true,
       schema: undefined
     });
@@ -28,6 +29,7 @@ describe('dialogReducer ', () => {
         ]
       }
     ).should.deep.equal({
+      dialogs: {},
       isLoading: false,
       schema: [
         {
@@ -46,6 +48,7 @@ describe('dialogReducer ', () => {
         type: actionTypes.CLEAR_DATA
       }
     ).should.deep.equal({
+      dialogs: {},
       isLoading: true,
       schema: undefined
     });

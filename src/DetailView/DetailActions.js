@@ -72,7 +72,7 @@ function updateError(error) {
   };
 }
 
-export function updateData(data) {
+export function updateData(data, successCb, errorCb) {
   return (dispatch, getState) => {
     const state = getState();
     const {url} = state.detailReducer;
@@ -88,11 +88,20 @@ export function updateData(data) {
 
       if (status === 200) {
         dispatch(updateSuccess());
+        if (successCb) {
+          successCb();
+        }
       } else {
         dispatch(updateError('Cannot update resource!'));
+        if (errorCb) {
+          errorCb();
+        }
       }
     }).catch(error => {
       dispatch(updateError(error));
+      if (errorCb) {
+        errorCb();
+      }
     });
   };
 }

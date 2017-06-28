@@ -655,11 +655,7 @@ describe('TableActions ', () => {
           },
           status: 409,
           data: {
-            test: [
-              {
-                name: 'testName'
-              }
-            ]
+            error: 'test'
           }
         });
       });

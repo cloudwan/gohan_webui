@@ -1,3 +1,6 @@
+export const OPEN = 'DIALOG_OPEN';
+export const CLOSE = 'DIALOG_CLOSE';
 export const PREPARE_SUCCESS = 'DIALOG_PREPARE_SUCCESS';
 export const PREPARE_FAILURE = 'DIALOG_PREPARE_FAILURE';
 export const CLEAR_DATA = 'DIALOG_CLEAR_DATA';
+
