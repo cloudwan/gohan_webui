@@ -1,6 +1,12 @@
 import axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import {PREPARE_SUCCESS, PREPARE_FAILURE, CLEAR_DATA} from './DialogActionTypes';
+import {
+  OPEN,
+  CLOSE,
+  PREPARE_SUCCESS,
+  PREPARE_FAILURE,
+  CLEAR_DATA
+} from './DialogActionTypes';
 
 function fetchSuccess(data) {
   return dispatch => {
@@ -110,6 +116,7 @@ function toLocalSchema(schema, state, parentProperty) {
     }
   });
 }
+
 function filterSchema(schema, action, parentProperty) {
   let result = {};
 
@@ -204,3 +211,17 @@ export function clearData() {
     dispatch({type: CLEAR_DATA});
   };
 }
+
+export const openDialog = name => () => dispatch => dispatch(
+  {
+    type: OPEN,
+    name
+  }
+);
+
+export const closeDialog = name => () => dispatch => dispatch(
+  {
+    type: CLOSE,
+    name
+  }
+);

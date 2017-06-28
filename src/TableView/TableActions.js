@@ -170,7 +170,7 @@ function createSuccess(plural) {
 
 function createError(data) {
   return dispatch => {
-    const error = data.data;
+    const {error} = data.data;
 
     dispatch({type: CREATE_FAILURE, error});
   };
@@ -184,7 +184,7 @@ function createError(data) {
  * @param plural {string}
  * @return {function}
  */
-export function createData(data, plural) {
+export function createData(data, plural, successCb, errorCb) {
   return (dispatch, getState) => {
     const state = getState();
     const {url} = state.tableReducer[plural];
@@ -200,11 +200,20 @@ export function createData(data, plural) {
 
       if (status === 201) {
         dispatch(createSuccess(plural));
+        if (successCb) {
+          successCb();
+        }
       } else {
-        dispatch(createError({data: 'Cannot create new resource!'}));
+        dispatch(createError({data: {error: 'Cannot create new resource!'}}));
+        if (errorCb) {
+          errorCb();
+        }
       }
     }).catch(error => {
       dispatch(createError(error.response));
+      if (errorCb) {
+        errorCb();
+      }
     });
   };
 }
@@ -220,7 +229,7 @@ function updateSuccess(plural) {
 
 function updateError(data) {
   return dispatch => {
-    const error = data.data;
+    const {error} = data.data;
 
     dispatch({type: UPDATE_FAILURE, error});
   };
@@ -235,7 +244,7 @@ function updateError(data) {
  * @param plural {string}
  * @return {function}
  */
-export function updateData(id, data, plural) {
+export function updateData(id, data, plural, successCb, errorCb) {
   return (dispatch, getState) => {
     const state = getState();
     const {url} = state.tableReducer[plural];
@@ -251,11 +260,20 @@ export function updateData(id, data, plural) {
 
       if (status === 200) {
         dispatch(updateSuccess(plural));
+        if (successCb) {
+          successCb();
+        }
       } else {
-        dispatch(updateError({data: 'Cannot update resource!'}));
+        dispatch(updateError({data: {error: 'Cannot update resource!'}}));
+        if (errorCb) {
+          errorCb();
+        }
       }
     }).catch(error => {
       dispatch(updateError(error.response));
+      if (errorCb) {
+        errorCb();
+      }
     });
   };
 }
