@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {Dialog, Button, ProgressBar, Intent} from '@blueprintjs/core';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
+
 import {getSchema, getLoadingState} from './DialogSelectors';
 import widgets from './formComponents/widgets';
 import fields from './formComponents/fields';
@@ -25,7 +26,7 @@ export class GeneratedDialog extends Component {
    * Prepares schema to before shows dialog.
    * @override
    */
-  componentWillMount() {
+  componentDidMount() {
     const {baseSchema, action} = this.props;
 
     this.props.prepareSchema(baseSchema.schema, action, baseSchema.parent);
@@ -48,7 +49,6 @@ export class GeneratedDialog extends Component {
    */
   handleSubmit = ({formData}) => {
     this.props.onSubmit(formData, this.props.data.id);
-    this.props.onClose(); // Add check success
   };
 
   /**
@@ -62,13 +62,11 @@ export class GeneratedDialog extends Component {
       `${action === 'create' ? ' new ' : ' '}${baseSchema.title}`;
     const actions = [];
 
-    if (this.props.onClose) {
-      actions.push(
-        <Button key={actions.length} text="Cancel"
-          onClick={this.props.onClose}
-        />
-      );
-    }
+    actions.push(
+      <Button key={actions.length} text="Cancel"
+        onClick={this.props.onClose}
+      />
+    );
     actions.push(
       <Button key={actions.length} text="Submit"
         intent={Intent.PRIMARY} onClick={event => {
@@ -127,7 +125,7 @@ export class GeneratedDialog extends Component {
 
 GeneratedDialog.defaultProps = {
   action: 'create',
-  formData: {},
+  data: {},
   onSubmit: () => {},
   uiSchema: {}
 };
