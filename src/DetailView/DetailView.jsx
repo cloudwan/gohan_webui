@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import axios from 'axios';
 import LoadingIndicator from '../components/LoadingIndicator';
@@ -11,6 +12,13 @@ import {
   deleteData,
   updateData
 } from './DetailActions';
+import dialog from '../Dialog';
+
+import {
+  openDialog,
+  closeDialog
+} from '../Dialog/DialogActions';
+
 import {getUiSchema} from './../uiSchema/UiSchemaSelectors';
 import {Alert, Intent} from '@blueprintjs/core';
 
@@ -49,21 +57,22 @@ export const getDetailView = (DetailComponent = Detail) => {
       this.props.clearData();
     }
 
-    handleEdit = id => {
-      this.setState({modalOpen: true, actionModal: 'update', dialogData: id});
+    handleOpenUpdateDialog = id => {
+      this.setState({dialogData: id}, this.props.openUpdateDialog);
+    };
+
+    handleCloseUpdateDialog = () => {
+      this.props.closeUpdateDialog();
+    };
+
+    handleSubmitUpdateDialog = data => {
+
+      this.props.updateData(data, this.props.closeUpdateDialog);
     };
 
     handleDelete = () => {
       this.props.deleteData();
       this.handleCloseAlert();
-    };
-
-    handleOpenModal = () => {
-      this.setState({modalOpen: true, actionModal: 'create', dialogData: {}});
-    };
-
-    handleCloseModal = () => {
-      this.setState({modalOpen: false});
     };
 
     handleOpenAlert = () => {
@@ -72,31 +81,6 @@ export const getDetailView = (DetailComponent = Detail) => {
 
     handleCloseAlert = () => {
       this.setState({alertOpen: false});
-    };
-
-    handleSubmit = (data) => {
-      switch (this.state.actionModal) {
-        case 'create':
-          this.props.createData(data);
-          break;
-        case 'update':
-          this.props.updateData(data);
-          break;
-      }
-    };
-
-    showModal = () => {
-      if (this.state.modalOpen) {
-        return (
-          <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
-            data={this.state.dialogData} onClose={this.handleCloseModal}
-            onSubmit={this.handleSubmit} uiSchema={this.props.uiSchema.properties}
-            baseSchema={this.state.activeSchema}
-          />
-        );
-      }
-
-      return null;
     };
 
     showAlert = () => {
@@ -123,12 +107,24 @@ export const getDetailView = (DetailComponent = Detail) => {
         );
       }
 
+      const UpdateDialog = dialog({name: `${this.props.schemaId}_update`})(
+        props => (
+          <Dialog {...props}
+            action={'update'}
+            onClose={this.handleCloseUpdateDialog}
+            onSubmit={this.handleSubmitUpdateDialog}
+            data={this.state.dialogData}
+            baseSchema={this.state.activeSchema}
+          />
+        )
+      );
+
       return (
         <div className="detail-container">
-          {this.showModal()}
+          <UpdateDialog/>
           {this.showAlert()}
           <DetailComponent schema={this.state.activeSchema} data={data}
-            onEdit={this.handleEdit} onDelete={this.handleOpenAlert}
+            onEdit={this.handleOpenUpdateDialog} onDelete={this.handleOpenAlert}
           />
         </div>
       );
@@ -152,14 +148,19 @@ export const getDetailView = (DetailComponent = Detail) => {
     };
   }
 
+  function mapDispatchToProps(dispatch, {schemaId}) {
+    return bindActionCreators({
+      openUpdateDialog: openDialog(`${schemaId}_update`),
+      closeUpdateDialog: closeDialog(`${schemaId}_update`),
+      initialize,
+      fetchData,
+      clearData,
+      deleteData,
+      updateData
+    }, dispatch);
+  }
 
-  return connect(mapStateToProps, {
-    initialize,
-    fetchData,
-    clearData,
-    deleteData,
-    updateData
-  })(DetailView);
+  return connect(mapStateToProps, mapDispatchToProps)(DetailView);
 };
 
 export default getDetailView();

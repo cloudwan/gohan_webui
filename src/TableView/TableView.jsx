@@ -1,5 +1,8 @@
 import React, {Component, PropTypes} from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import dialog from '../Dialog';
+
 import Table from '../components/Table';
 import {
   getActiveSchema,
@@ -21,6 +24,11 @@ import {
 } from './TableActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Dialog from '../Dialog/Dialog';
+
+import {
+  openDialog,
+  closeDialog
+} from '../Dialog/DialogActions';
 import {Alert, Intent} from '@blueprintjs/core';
 
 export const getTableView = (TableComponent = Table) => {
@@ -29,7 +37,6 @@ export const getTableView = (TableComponent = Table) => {
       super(props);
 
       this.state = {
-        modalOpen: false,
         alertOpen: false,
         alertDeleteSelectedOpen: false,
         actionModal: 'create',
@@ -114,12 +121,31 @@ export const getTableView = (TableComponent = Table) => {
       this.props.sortData(sortKey, sortOrder, plural);
     };
 
-    handleOpenModal = () => {
-      this.setState({modalOpen: true, actionModal: 'create', dialogData: {}});
+    handleOpenCreateDialog = () => {
+      this.props.openCreateDialog();
     };
 
-    handleCloseModal = () => {
-      this.setState({modalOpen: false});
+    handleCloseCreateDialog = () => {
+      this.props.closeCreateDialog();
+    };
+
+    handleSubmitCreateDialog = (data) => {
+      const {plural} = this.props;
+      this.props.createData(data, plural, this.props.closeCreateDialog);
+    };
+
+    handleOpenUpdateDialog = id => {
+      this.setState({dialogData: id}, this.props.openUpdateDialog);
+    };
+
+    handleCloseUpdateDialog = () => {
+      this.props.closeUpdateDialog();
+    };
+
+    handleSubmitUpdateDialog = (data, id) => {
+      const {plural} = this.props;
+
+      this.props.updateData(id, data, plural, this.props.closeUpdateDialog);
     };
 
     handleOpenAlert = (item) => {
@@ -141,23 +167,6 @@ export const getTableView = (TableComponent = Table) => {
     handleDeleteData = () => {
       this.props.deleteData(this.state.markedForDeletion.id, this.props.activeSchema.plural);
       this.handleCloseAlert();
-    };
-
-    handleSubmit = (data, id) => {
-      const {plural} = this.props;
-
-      switch (this.state.actionModal) {
-        case 'create':
-          this.props.createData(data, plural);
-          break;
-        case 'update':
-          this.props.updateData(id, data, plural);
-          break;
-      }
-    };
-
-    handleEditItem = id => {
-      this.setState({modalOpen: true, actionModal: 'update', dialogData: id});
     };
 
     handleCheckAllChange = checkedAll => {
@@ -241,18 +250,6 @@ export const getTableView = (TableComponent = Table) => {
       }
     };
 
-    showModal = () => {
-      if (this.state.modalOpen) {
-        return (
-          <Dialog isOpen={this.state.modalOpen} action={this.state.actionModal}
-            data={this.state.dialogData} onClose={this.handleCloseModal}
-            onSubmit={this.handleSubmit} baseSchema={this.props.activeSchema}
-          />
-        );
-      }
-
-      return null;
-    };
     showAlert = () => {
       if (this.state.alertOpen) {
         return (
@@ -279,27 +276,60 @@ export const getTableView = (TableComponent = Table) => {
       const filterValue = filters ? filters[Object.keys(filters)[0]] : '';
       const filterBy = filters ? Object.keys(filters)[0] : '';
 
+      const CreateDialog = dialog({name: `${this.props.schemaId}_create`})(
+        props => (
+          <Dialog {...props}
+            action={'create'}
+            onClose={this.handleCloseCreateDialog}
+            onSubmit={this.handleSubmitCreateDialog}
+            baseSchema={this.props.activeSchema}
+          />
+        )
+      );
+
+      const UpdateDialog = dialog({name: `${this.props.schemaId}_update`})(
+        props => (
+          <Dialog {...props}
+            action={'update'}
+            onClose={this.handleCloseUpdateDialog}
+            onSubmit={this.handleSubmitUpdateDialog}
+            data={this.state.dialogData}
+            baseSchema={this.props.activeSchema}
+          />
+        )
+      );
+
       return (
         <div className="table-container">
-          {this.showModal()}
+          <CreateDialog/>
+          <UpdateDialog/>
           {this.showAlert()}
           {this.showDeleteSelectedAlert()}
           <TableComponent schema={{
             ...this.props.activeSchema,
             url: (this.props.parentUrl || this.props.activeSchema.prefix) + '/' + this.props.activeSchema.plural
-          }} data={data}
-            pageCount={this.props.pageCount} activePage={this.props.activePage}
-            filterBy={filterBy} filterValue={filterValue}
-            sortKey={this.props.tableReducer.sortKey} sortOrder={this.props.tableReducer.sortOrder}
-            handlePageChange={this.handlePageChange} createData={this.props.createData}
-            removeData={this.handleDeleteData} updateData={this.props.updateData}
-            filterData={this.handleFilterData} visibleColumns={this.props.headers}
-            openModal={this.handleOpenModal} closeModal={this.handleCloseModal}
-            editData={this.handleEditItem} rowCheckboxChange={this.handleRowCheckboxChange}
-            sortData={this.handleSortData} openDeleteSelectedAlert={this.handleOpenDeleteSelectedAlert}
+          }}
+            data={data}
+            pageCount={this.props.pageCount}
+            activePage={this.props.activePage}
+            filterBy={filterBy}
+            filterValue={filterValue}
+            sortKey={this.props.tableReducer.sortKey}
+            sortOrder={this.props.tableReducer.sortOrder}
+            handlePageChange={this.handlePageChange}
+            removeData={this.handleDeleteData}
+            filterData={this.handleFilterData}
+            visibleColumns={this.props.headers}
+            openModal={this.handleOpenCreateDialog}
+            closeModal={this.handleCloseCreateDialog}
+            editData={this.handleOpenUpdateDialog}
+            rowCheckboxChange={this.handleRowCheckboxChange}
+            sortData={this.handleSortData}
+            openDeleteSelectedAlert={this.handleOpenDeleteSelectedAlert}
             buttonDeleteSelectedDisabled={this.state.buttonDeleteSelectedDisabled}
             checkedAll={this.state.checkedAll}
-            handleCheckAll={this.handleCheckAllChange} openAlert={this.handleOpenAlert}
+            handleCheckAll={this.handleCheckAllChange}
+            openAlert={this.handleOpenAlert}
           />
         </div>
       );
@@ -330,18 +360,25 @@ export const getTableView = (TableComponent = Table) => {
     };
   }
 
-  return connect(mapStateToProps, {
-    initialize,
-    fetchData,
-    clearData,
-    createData,
-    deleteData,
-    sortData,
-    setOffset,
-    filterData,
-    updateData,
-    deleteMultipleResources
-  })(TableView);
+  function mapDispatchToProps(dispatch, {schemaId}) {
+    return bindActionCreators({
+      openCreateDialog: openDialog(`${schemaId}_create`),
+      closeCreateDialog: closeDialog(`${schemaId}_create`),
+      openUpdateDialog: openDialog(`${schemaId}_update`),
+      closeUpdateDialog: closeDialog(`${schemaId}_update`),
+      initialize,
+      fetchData,
+      clearData,
+      createData,
+      deleteData,
+      sortData,
+      setOffset,
+      filterData,
+      updateData,
+      deleteMultipleResources
+    }, dispatch);
+  }
+  return connect(mapStateToProps, mapDispatchToProps)(TableView);
 };
 
 export default getTableView();

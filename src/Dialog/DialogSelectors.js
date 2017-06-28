@@ -2,6 +2,7 @@ import {createSelector} from 'reselect';
 
 const isLoading = (state) => state.dialogReducer.isLoading;
 const schema = (state) => state.dialogReducer.schema;
+const dialog = (state, name) => state.dialogReducer.dialogs[name];
 
 /**
  * Returns loading state selector.
@@ -20,4 +21,8 @@ export const getSchema = createSelector(
   (schema) => {
     return schema;
   }
+);
+
+export const isOpen = createSelector(
+  [dialog], dialog => Boolean(dialog)
 );
