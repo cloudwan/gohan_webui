@@ -48,8 +48,10 @@ export default class CustomActionModel extends Model {
         if (response.ok) {
           response.text().then(data => resolve(data)).catch(error => reject(error));
         } else {
-          reject(response.statusText);
-          console.error(response.statusText);
+          response.json().then(data => {
+            reject(data.error);
+            console.error(data.error);
+          });
         }
       }).catch(error => {
         reject(error);
