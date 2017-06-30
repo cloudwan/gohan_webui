@@ -1,0 +1,20 @@
+.gohan-form {
+  &__asterisk {
+    color: #ff0039;
+    margin-left: 0.25rem;
+  }
+
+  &__legend {
+    font-weight: bolder;
+    width: 100%;
+
+    &--cursor {
+      cursor: pointer;
+    }
+  }
+
+  &__caret-icon {
+    float: right;
+    cursor: pointer;
+  }
+}

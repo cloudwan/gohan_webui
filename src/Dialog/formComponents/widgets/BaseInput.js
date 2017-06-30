@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 import validator from './../validator';
 
+import './BaseInput.scss';
+
 class BaseInput extends Component {
   constructor(props) {
     super(props);
@@ -51,14 +53,14 @@ class BaseInput extends Component {
     const {errors} = this.state;
 
     return (
-      <span className={`pt-form-group gohan-form-dialog-group ${errors.length ? 'pt-intent-danger' : ''}`} >
+      <span className={`pt-form-group gohan-form__dialog-group ${errors.length ? 'pt-intent-danger' : ''}`} >
         <input className={`pt-input pt-fill ${errors.length ? 'pt-intent-danger' : ''}`} type={schema.type}
           placeholder={placeholder} dir="auto"
           value={value ? value : ''} onChange={this.onInputChange}
         />
-        <ul className="gohan-form-error-list">
+        <ul className="gohan-form__error-list">
           {errors.map((error, key) => (
-            <li key={key} className="pt-form-helper-text gohan-form-error-list-item">
+            <li key={key} className="pt-form-helper-text gohan-form__error-list-item">
               {error.message}
             </li>
         ))}

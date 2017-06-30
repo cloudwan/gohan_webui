@@ -31,6 +31,8 @@ import {
 } from '../Dialog/DialogActions';
 import {Alert, Intent} from '@blueprintjs/core';
 
+import './TableView.scss';
+
 export const getTableView = (TableComponent = Table) => {
   class TableView extends Component {
     constructor(props) {

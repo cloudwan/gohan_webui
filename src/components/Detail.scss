@@ -1,0 +1,20 @@
+.detail {
+
+  h2 {
+    display: inline-block;
+  }
+
+  > span.property-title {
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.9);
+  }
+
+  .icons {
+    display: inline-block;
+    float: right;
+
+    &.delete {
+      margin-left: 15px;
+    }
+  }
+}

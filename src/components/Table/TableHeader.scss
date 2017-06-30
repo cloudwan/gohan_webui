@@ -1,0 +1,30 @@
+.table {
+  &__header--options {
+    cursor: default;
+    user-select: none;
+  }
+
+  &__sort-icon {
+    padding-left: 8px;
+    visibility: hidden;
+  }
+
+  &__header-link {
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+
+    &:hover {
+      color: #103f69;
+
+      .table__sort-icon {
+        visibility: visible;
+        color: rgba(16, 63, 105, 0.71);
+      }
+    }
+  }
+}
+
+.gohan-table__select-column {
+  width: 5px;
+}

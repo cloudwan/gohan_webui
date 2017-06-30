@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {Menu, MenuItem} from '@blueprintjs/core';
 
+import './SidebarMenu.scss';
+
 export class SidebarMenu extends Component {
   constructor(props) {
     super(props);
@@ -45,11 +47,11 @@ export class SidebarMenu extends Component {
   }
 
   render() {
-    const sidebarOpenClass = this.props.open ? '' : 'sidebar-hidden';
+    const sidebarOpenClass = this.props.open ? '' : 'sidebar--hidden';
 
     return (
       <div className={`pt-elevation-2 pt-fixed-top sidebar ${sidebarOpenClass}`}>
-        <div className="sidebar-search">
+        <div className="sidebar__search">
           <label className="pt-label">
             <input type="text" className="pt-input"
               placeholder="Search" onChange={this.handleSearchChange}

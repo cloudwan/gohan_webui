@@ -1,0 +1,20 @@
+.gohan-form__object-children {
+  padding-left: 10px;
+
+  &--shown-content {
+    overflow: hidden;
+    transition: max-height 500ms ease-out;
+  }
+
+  &--hidden-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 500ms ease-in;
+  }
+}
+
+.gohan-fieldset--reset {
+  border-width: 0;
+  padding: 0;
+  margin-left: 0;
+}

@@ -13,6 +13,7 @@ import {
   setState
 } from 'react-jsonschema-form/lib/utils';
 
+import './ObjectField.scss';
 
 function objectKeysHaveChanged(formData, state) {
   // for performance, first check for lengths
@@ -181,7 +182,7 @@ class ObjectField extends Component {
       0
       ) > 1;
     return (
-      <fieldset className="gohan-reset-fieldset">
+      <fieldset className="gohan-fieldset--reset">
         {title && (
           <TitleField id={`${idSchema.$id}__title`}
             title={title}
@@ -243,7 +244,7 @@ class ObjectField extends Component {
         ))
         }
         {!isTab && (
-          <div className={'gohan-form-object-children'}>
+          <div className={'gohan-form__object-children'}>
             {!this.nullValue &&
               orderedProperties.map((name, index) => {
                 return (

@@ -1,5 +1,7 @@
 import React, {PropTypes} from 'react';
 
+import './TitleField.scss';
+
 const REQUIRED_FIELD_SYMBOL = '*';
 
 function TitleField(props) {
@@ -7,11 +9,11 @@ function TitleField(props) {
   let showArrow = hiddenContent !== undefined;
 
   return (
-    <legend id={id} className={`gohan-form-legend ${showArrow ? 'gohan-form-title-cursor' : ''}`}
+    <legend id={id} className={`gohan-form__legend ${showArrow ? 'gohan-form__legend--cursor' : ''}`}
       onClick={onClick}>
       {title}
-      {required ? <span className={'gohan-form-asterisk'}>{REQUIRED_FIELD_SYMBOL}</span> : null}
-      {showArrow ? <span className={`gohan-caret-icon
+      {required ? <span className={'gohan-form__asterisk'}>{REQUIRED_FIELD_SYMBOL}</span> : null}
+      {showArrow ? <span className={`gohan-form__caret-icon
                           pt-icon-standard pt-icon-caret-${hiddenContent ? 'up' : 'down'}`}
       /> : null}
       {children}

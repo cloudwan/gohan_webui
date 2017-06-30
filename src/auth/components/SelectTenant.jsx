@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import {Button} from '@blueprintjs/core';
 
+import './SelectTenant.scss';
+
 export default class SelectTenant extends Component {
   constructor(props) {
     super(props);
@@ -52,7 +54,7 @@ export default class SelectTenant extends Component {
               </div>
           </label>
 
-          <Button type="submit" className="pt-intent-primary auth-submit"
+          <Button type="submit" className="pt-intent-primary auth-card__submit"
             disabled={!this.state.value}>
             Select tenant
           </Button>

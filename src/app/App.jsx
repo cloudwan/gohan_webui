@@ -11,6 +11,8 @@ import {logout, selectTenant} from '../auth/AuthActions';
 import {getSidebar} from './../config/ConfigSelectors';
 import {getSidebarMenuItems} from './../schema/SchemaSelectors';
 
+import './App.scss';
+
 FocusStyleManager.onlyShowFocusOnTabs();
 
 class App extends Component {
@@ -47,7 +49,7 @@ class App extends Component {
     if (this.state.openSidebar) {
       this.setState({
         openSidebar: false,
-        contentClassNames: 'sidebar-hidden'
+        contentClassNames: 'full-width'
       });
     } else {
       this.setState({

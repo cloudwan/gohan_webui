@@ -1,0 +1,52 @@
+@import './colors';
+
+body {
+  margin: 0;
+  background-color: #edecec;
+}
+
+.table-container, .detail-container, .loading-container {
+  margin: 15px
+}
+
+// Overwrites
+.CodeMirror {
+  height: auto;
+  border: 1px solid #ccc;
+
+  pre {
+    box-shadow: none;
+    min-width: 200px;
+  }
+}
+
+.pt-dialog {
+  position: relative;
+  width: auto;
+  margin: 10px;
+  top: initial;
+}
+
+@media (min-width: 768px) {
+  .pt-dialog {
+    width: 600px;
+    margin: 30px auto;
+  }
+}
+
+@media (min-width: 992px) {
+  .pt-dialog {
+    width: 900px;
+  }
+}
+
+.pt-tabs {
+  border: 1px solid darken($object-field-background, 20%);
+  background: $object-field-background;
+  margin: 0 0 1em 2px;
+  padding: 0 1em 1em 1em;
+}
+
+.pt-tab-list {
+  flex-wrap: wrap;
+}
