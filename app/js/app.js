@@ -7,6 +7,7 @@ import 'bootstrap-select';
 // Import css.
 import '../css/less/bootstrap.less';
 import 'bootstrap-select/dist/css/bootstrap-select.css';
+import 'highlight.js/styles/github-gist.css';
 import 'font-awesome/css/font-awesome.css';
 import 'spinkit/scss/spinners/7-three-bounce.scss';
 import '../css/sass/layout.scss';

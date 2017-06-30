@@ -2,7 +2,7 @@
 import {View} from 'backbone';
 import _ from 'underscore';
 import jsyaml from 'js-yaml';
-
+import hljs from 'highlight.js';
 import BootstrapDialog from 'bootstrap-dialog';
 
 import DialogView from './dialogView';
@@ -244,6 +244,11 @@ export default class DetailView extends View {
 
     this.$('button[data-toggle=hover]').popover();
 
+    this.$el.find('pre').each((i, elm) => {
+      const $elm = $(elm).wrapInner('<code class="yaml"></div>');
+
+      hljs.highlightBlock($elm.children('code').get(0));
+    });
     return this;
   }
 }

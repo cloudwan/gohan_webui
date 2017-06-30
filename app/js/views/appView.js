@@ -13,6 +13,8 @@ import TopView from './topView';
 import ErrorView from './errorView';
 import BreadCrumbView from './breadCrumbView';
 
+import hljs from 'highlight.js';
+
 import template from './../../templates/app.html';
 
 export default class AppView extends View {
@@ -170,6 +172,15 @@ export default class AppView extends View {
           (($(this).popover('hide').data('bs.popover') || {}).inState || {}).click = false;
         }
       });
+    });
+    $(document).on('show.bs.popover', event => {
+      setTimeout(() => {
+        const $elm = $('#' + $(event.target)
+          .attr('aria-describedby')).children('.popover-content').children('pre');
+
+        $elm.wrapInner('<code class="yaml"></div>');
+        hljs.highlightBlock($elm.children('code').get(0));
+      }, 0);
     });
   }
 
