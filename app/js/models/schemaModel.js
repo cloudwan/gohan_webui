@@ -3,6 +3,7 @@ import 'whatwg-fetch';
 import jsyaml from 'js-yaml';
 import {Model, Collection} from 'backbone';
 import CustomActionModel from './customActionModel';
+import _ from 'underscore';
 
 /**
  * Class contains logic of schema model in application.
@@ -1116,13 +1117,8 @@ export default class SchemaModel extends Model {
       }
 
       if (property.permission === null ||
-        property.permission === undefined) {
-        result[key] = property;
-        if (property.type.indexOf('array') >= 0) {
-          result[key].items = this.filterSchema(property.items, action, parentProperty);
-        } else if (property.type.indexOf('object') >= 0) {
-          result[key] = this.filterSchema(property, action, parentProperty);
-        }
+        property.permission === undefined ||
+        _.isEmpty(property.permission)) {
         continue;
       }
       if (property.permission && property.permission.indexOf(action) >= 0) {
