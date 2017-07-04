@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import {
   getWidget,
@@ -79,8 +80,8 @@ if (process.env.NODE_ENV !== 'production') {
     idSchema: PropTypes.object,
     onChange: PropTypes.func.isRequired,
     formData: PropTypes.oneOfType([
-      React.PropTypes.string,
-      React.PropTypes.number,
+      PropTypes.string,
+      PropTypes.number,
     ]),
     registry: PropTypes.shape({
       widgets: PropTypes.objectOf(PropTypes.oneOfType([

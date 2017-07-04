@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/yaml/yaml';
 import 'codemirror/mode/javascript/javascript';

@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 import validator from './../validator';
 
@@ -11,7 +12,7 @@ class BaseInput extends Component {
     };
   }
 
-  onInputChange = (event) => {
+  onInputChange = event => {
     const {value} = event.target;
     const errors = [];
 
@@ -61,7 +62,7 @@ class BaseInput extends Component {
             <li key={key} className="pt-form-helper-text gohan-form-error-list-item">
               {error.message}
             </li>
-        ))}
+          ))}
         </ul>
       </span>
     );

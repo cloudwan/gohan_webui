@@ -1,5 +1,6 @@
 /* global window*/
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import {Button, Menu, MenuItem} from '@blueprintjs/core';
 import {asNumber} from 'react-jsonschema-form/lib/utils';
@@ -40,7 +41,7 @@ class SelectWidget extends Component {
     window.removeEventListener('keydown', this.handleKeydown, false);
   }
 
-  handleWindowClick = (event) => {
+  handleWindowClick = event => {
     const isParent = (reference, target) => (
       target === reference || (target.parentNode && isParent(reference, target.parentNode))
     );
@@ -51,7 +52,7 @@ class SelectWidget extends Component {
     }
   };
 
-  handleKeydown = (event) => {
+  handleKeydown = event => {
     if (this.state.focused) {
       if (event.key === 'Tab') {
         this.handleBlur();
@@ -72,7 +73,7 @@ class SelectWidget extends Component {
     this.setState({focused: false, searchQuery: ''});
   };
 
-  handleSearchChange = (event) => {
+  handleSearchChange = event => {
     this.setState({searchQuery: event.target.value});
   };
 

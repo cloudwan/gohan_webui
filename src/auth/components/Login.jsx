@@ -1,5 +1,6 @@
 /* global process */
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Button} from '@blueprintjs/core';
 
 export default class Login extends Component {

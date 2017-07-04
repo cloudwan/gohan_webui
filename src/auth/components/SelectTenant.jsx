@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Button} from '@blueprintjs/core';
 
 export default class SelectTenant extends Component {
@@ -44,12 +45,12 @@ export default class SelectTenant extends Component {
         <form onSubmit={this.handleSelectTenantSubmit}>
           <label className="pt-label">
               Select tenant
-              <div className="pt-select pt-large">
-                <select onChange={this.handleTenantChange} defaultValue={''}>
-                  <option value={''} />
-                  {this.buildSelectOptions()}
-                </select>
-              </div>
+            <div className="pt-select pt-large">
+              <select onChange={this.handleTenantChange} defaultValue={''}>
+                <option value={''} />
+                {this.buildSelectOptions()}
+              </select>
+            </div>
           </label>
 
           <Button type="submit" className="pt-intent-primary auth-submit"

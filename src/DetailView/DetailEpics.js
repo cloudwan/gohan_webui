@@ -24,8 +24,8 @@ export const detailFetch = (action$, store) => {
           console.error(error);
           return Observable.of(fetchError('Cannot fetch data!'));
         })
-        .repeatWhen((params) => params.delay(pollingInterval).takeWhile(() => Boolean(polling)))
+        .repeatWhen(params => params.delay(pollingInterval).takeWhile(() => Boolean(polling)))
         .takeUntil(action$.ofType(FETCH_CANCELLED));
     }
-  );
+    );
 };

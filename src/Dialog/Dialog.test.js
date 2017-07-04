@@ -77,7 +77,7 @@ describe('< Dialog />', () => {
         onClose={() => {}} clearData={() => {}}
         isOpen={true}
       />
-      );
+    );
 
     wrapper.find(Button).should.have.length(2);
   });
