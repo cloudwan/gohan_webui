@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Check JavaScript code style
-RUN_ESLINT=1
+RUN_ESLINT=0
 ESLINT_PATH=`command -v ./node_modules/.bin/eslint`
 JSFILES=$(git diff-index --name-status --cached HEAD | grep -v ^D | egrep '.js$|.jsx$' | cut -c3-)
 if [ -z "$JSFILES" ]; then

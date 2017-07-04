@@ -1,40 +1,40 @@
 {
   "parser": "babel-eslint",
   "plugins": [
-    "babel",
-    "react"
+    "react",
+    "flowtype",
+    "babel"
   ],
   "env": {
     "es6": true,
     "node": true
   },
-  "ecmaFeatures": {
-    "arrowFunctions": true,
-    "binaryLiterals": true,
-    "blockBindings": true,
-    "classes": true,
-    "defaultParams": true,
-    "destructuring": true,
-    "experimentalObjectRestSpread": true,
-    "forOf": true,
-    "generators": true,
-    "globalReturn": true,
-    "jsx": true,
-    "modules": true,
-    "objectLiteralComputedProperties": true,
-    "objectLiteralDuplicateProperties": true,
-    "objectLiteralShorthandMethods": true,
-    "objectLiteralShorthandProperties": true,
-    "octalLiterals": true,
-    "regexUFlag": true,
-    "regexYFlag": true,
-    "restParams": true,
-    "spread": true,
-    "superInFunctions": true,
-    "templateStrings": true,
-    "unicodeCodePointEscapes": true
+  "settings": {
+    "flowtype": {
+      "onlyFilesWithFlowAnnotation": true
+    }
   },
   "rules": {
+    "flowtype/boolean-style": [2, "boolean"],
+    "flowtype/define-flow-type": 2,
+    "flowtype/delimiter-dangle": [2, "always-multiline"],
+    "flowtype/generic-spacing": [2, "never"],
+    "flowtype/no-dupe-keys": 2,
+    "flowtype/no-primitive-constructor-types": 2,
+    "flowtype/no-types-missing-file-annotation": 0,
+    "flowtype/no-weak-types": 2,
+    "flowtype/object-type-delimiter": [2, "comma"],
+    "flowtype/require-parameter-type": [2, {"excludeArrowFunctions": "expressionsOnly"}],
+    "flowtype/require-return-type": [2, "always", {"annotateUndefined": "never"}],
+    "flowtype/require-valid-file-annotation": 2,
+    "flowtype/semi": [2, "always"],
+    "flowtype/space-after-type-colon": [2, "always"],
+    "flowtype/space-before-generic-bracket": [2,"never"],
+    "flowtype/space-before-type-colon": [2,"never"],
+    "flowtype/type-id-match": [2, "^([A-Z][a-z0-9]+)+Type$"],
+    "flowtype/union-intersection-spacing": [2, "always"],
+    "flowtype/use-flow-type": 1,
+    "flowtype/valid-syntax": 1,
     "react/no-danger": 2,
     "react/no-deprecated": 2,
     "react/no-did-mount-set-state": 2,
@@ -60,7 +60,7 @@
     "react/jsx-pascal-case": 2,
     "react/jsx-uses-react": 2,
     "react/jsx-uses-vars": 2,
-    "babel/arrow-parens": [2, "as-needed"],
+    "arrow-parens": [2, "as-needed"],
     "array-bracket-spacing": [2, "never"],
     "arrow-spacing": 2,
     "block-scoped-var": 0,
@@ -87,7 +87,6 @@
     "handle-callback-err": [2, "error"],
     "id-length": 0,
     "id-match": [2, "^(?:_?[a-zA-Z0-9]*)|[_A-Z0-9]+$"],
-    "indent": [2,2,{"SwitchCase": 1}],
     "init-declarations": 0,
     "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
     "linebreak-style": 2,
@@ -229,10 +228,5 @@
     "wrap-iife": 2,
     "wrap-regex": 0,
     "yoda": [2, "never", {"exceptRange": true}]
-  },
-  "settings": {
-    "flowtype": {
-      "onlyFilesWithFlowAnnotation": false
-    }
   }
 }

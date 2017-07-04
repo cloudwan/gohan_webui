@@ -2,9 +2,7 @@ npm-debug.log
 config.json
 schema.json
 node_modules
-bower_components
-dist/*
+dist/
 .sass-cache
 coverage
-doc/*
-package-lock.json
+doc/

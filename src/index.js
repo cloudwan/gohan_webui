@@ -1,4 +1,4 @@
-/* global window, document, VERSION */
+/* global window, document, gohanVersion */
 import React from 'react';
 import {render} from 'react-dom';
 import {hashHistory} from 'react-router';
@@ -13,9 +13,10 @@ import {updateLocation} from './location/LocationActions';
 
 
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
+
 store.unsubscribeHistory = hashHistory.listen(updateLocation(store));
 
-console.log(`Gohan version: ${VERSION.gohanWebUI.version}, repo tag: ${VERSION.gohanWebUI.tag}`);
+console.log(`Gohan version: ${gohanVersion.version}, repo tag: ${gohanVersion.tag}`);
 
 store.dispatch(fetchConfig()).then(() => {
   store.dispatch(fetchUiSchema()).then(() => {
