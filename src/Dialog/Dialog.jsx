@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Dialog, Button, ProgressBar, Intent} from '@blueprintjs/core';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';

@@ -1,7 +1,7 @@
 import {createSelector} from 'reselect';
 
-const isLoading = (state) => state.dialogReducer.isLoading;
-const schema = (state) => state.dialogReducer.schema;
+const isLoading = state => state.dialogReducer.isLoading;
+const schema = state => state.dialogReducer.schema;
 const dialog = (state, name) => state.dialogReducer.dialogs[name];
 
 /**
@@ -11,14 +11,14 @@ const dialog = (state, name) => state.dialogReducer.dialogs[name];
  */
 export const getLoadingState = createSelector(
   [isLoading],
-  (isLoading) => {
+  isLoading => {
     return Boolean(isLoading);
   }
 );
 
 export const getSchema = createSelector(
   [schema],
-  (schema) => {
+  schema => {
     return schema;
   }
 );

@@ -44,7 +44,7 @@ describe('DialogActions ', () => {
             'create'
           ],
           relation: 'pet',
-          relation_property: 'pet',  // eslint-disable-line camelcase
+          relation_property: 'pet', // eslint-disable-line camelcase
           title: 'pet',
           type: [
             'string',
@@ -229,7 +229,7 @@ describe('DialogActions ', () => {
                 'create'
               ],
               relation: 'pet',
-              relation_property: 'pet',  // eslint-disable-line camelcase
+              relation_property: 'pet', // eslint-disable-line camelcase
               title: 'pet',
               type: 'string'
             },
@@ -298,7 +298,7 @@ describe('DialogActions ', () => {
             'create'
           ],
           relation: 'pet',
-          relation_property: 'pet',  // eslint-disable-line camelcase
+          relation_property: 'pet', // eslint-disable-line camelcase
           title: 'pet',
           type: [
             'string',
@@ -439,7 +439,7 @@ describe('DialogActions ', () => {
             'create'
           ],
           relation: 'animal',
-          relation_property: 'animal',  // eslint-disable-line camelcase
+          relation_property: 'animal', // eslint-disable-line camelcase
           title: 'animal',
           type: [
             'string',

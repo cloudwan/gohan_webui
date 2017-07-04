@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Tooltip, Position} from '@blueprintjs/core';
 
 class TableHeader extends Component {
@@ -57,12 +58,12 @@ class TableHeader extends Component {
       </Tooltip>;
 
       if (this.state.sortKey === column) {
-        sortIcon = <Tooltip content={this.state.sortOrder === 'asc' ?
-          'Sorted in ascending order.' :
-          'Sorted in descending order.'}
-          position={Position.RIGHT}>
-          <span className={'pt-icon-small pt-icon-sort-' + this.state.sortOrder}/>
-        </Tooltip>;
+        sortIcon = (
+          <Tooltip position={Position.RIGHT}
+            content={this.state.sortOrder === 'asc' ? 'Sorted in ascending order.' : 'Sorted in descending order.'}>
+            <span className={'pt-icon-small pt-icon-sort-' + this.state.sortOrder}/>
+          </Tooltip>
+        );
       }
 
       return (
