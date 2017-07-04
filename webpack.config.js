@@ -1,10 +1,11 @@
+const process = require('process');
 const path = require('path');
 const gitSync = require('git-rev-sync');
-const process = require('process');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const pkg = require('./package.json');
 
 const devServerPort = 8080;
 const devServerHostname = 'localhost';
@@ -12,13 +13,11 @@ const sourcePath = path.join(__dirname, '/src');
 const outputPath = path.join(__dirname, '/dist');
 const ENV = process.env.NODE_ENV;
 
-function version() {
-  return {
-    hash: gitSync.long(),
-    tag: gitSync.tag(),
-    version: process.env.npm_package_version
-  };
-}
+const version = () => ({
+  hash: gitSync.long(),
+  tag: gitSync.tag(),
+  version: pkg.version
+});
 
 module.exports = {
   context: __dirname,
@@ -28,7 +27,7 @@ module.exports = {
   ],
   output: {
     path: outputPath,
-    filename: 'bundle.[hash].js',
+    filename: '[name].[hash].js',
     sourceMapFilename: '[file].map'
   },
   module: {
@@ -36,18 +35,21 @@ module.exports = {
       {
         test: /\.js(x?)$/,
         exclude: /node_modules/,
-        include: __dirname,
+        include: [
+          __dirname
+        ],
         use: 'babel-loader'
       },
       {
         test: /\.css$/,
-        exclude: /node_modules/,
-        loader: ExtractTextPlugin.extract({
-          loader: [
+        include: /node_modules/,
+        use: ExtractTextPlugin.extract({
+          use: [
             {
               loader: 'css-loader',
               query: {
-                sourceMap: true
+                sourceMap: true,
+                modules: true
               }
             }
           ]
@@ -55,13 +57,19 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract({
-          loader: [
+        use: ExtractTextPlugin.extract({
+          use: [
             {
               loader: 'css-loader',
+              options: {
+                sourceMap: true
+              }
             },
             {
               loader: 'sass-loader',
+              options: {
+                sourceMap: true
+              }
             }
           ]
         })
@@ -76,10 +84,9 @@ module.exports = {
         }
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.(jpe?g|png|gif)$/i,
         use: [
-          'file?hash=sha512&digest=hex&name=[hash].[ext]',
-          'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+          'file-loader?hash=sha512&digest=hex&name=[hash].[ext]'
         ]
       }
     ]
@@ -93,12 +100,8 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin({
-      filename: 'bundle.[contenthash].css',
+      filename: '[name].[contenthash].css',
       allChunks: true
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/index.html',
-      inject: 'body'
     }),
     new CopyWebpackPlugin([
       {
@@ -110,6 +113,10 @@ module.exports = {
         to: 'locales'
       }
     ]),
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      inject: 'body'
+    }),
     new webpack.DefinePlugin({
       process: {
         env: {
@@ -117,10 +124,16 @@ module.exports = {
           NODE_ENV: JSON.stringify(ENV)
         }
       },
-      VERSION: {
-        gohanWebUI: JSON.stringify(version())
-      }
-    })
+      gohanVersion: JSON.stringify(version())
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      minChunks: module => module.context && module.context.indexOf('node_modules') !== -1
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'manifest'
+    }),
+    new webpack.optimize.OccurrenceOrderPlugin()
   ],
   performance: {
     hints: false
