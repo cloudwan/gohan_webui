@@ -1,0 +1,15 @@
+[ignore]
+.*/dist/.*
+.*\.test\.js
+
+[include]
+
+[libs]
+.*/node_modules/.*
+
+[options]
+emoji=true
+module.use_strict=true
+
+
+[lints]

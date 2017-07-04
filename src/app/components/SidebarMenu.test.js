@@ -81,7 +81,6 @@ describe('< SidebarMenu />', function () {
       <SidebarMenu/>
     );
 
-    wrapper.should.have.state('searchQuery');
     wrapper.state('searchQuery').should.be.equal('');
   });
 
