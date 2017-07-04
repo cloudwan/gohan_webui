@@ -1,8 +1,8 @@
 import {createSelector} from 'reselect';
 
-const schemaReducer = (state) => state.schemaReducer.data;
+const schemaReducer = state => state.schemaReducer.data;
 const plural = (state, props) => props.plural;
-const pageLimit = (state) => state.configReducer.pageLimit;
+const pageLimit = state => state.configReducer.pageLimit;
 const totalCount = (state, props) => {
   if (state.tableReducer[props.plural]) {
     return state.tableReducer[props.plural].totalCount;
@@ -33,7 +33,7 @@ export const getActiveSchema = createSelector(
 
 export const getHeaders = createSelector(
   [(state, props) => getActiveSchema(state, props)],
-  (schema) => {
+  schema => {
     if (schema) {
       const schemaProperties = schema.schema.properties;
       const schemaPropertiesOrder = schema.schema.propertiesOrder;

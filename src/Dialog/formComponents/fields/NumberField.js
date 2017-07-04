@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 import StringField from './StringField';

@@ -1,5 +1,6 @@
 /* global window */
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 
 import {dataURItoBlob, shouldRender, setState} from 'react-jsonschema-form/lib/utils';
 
