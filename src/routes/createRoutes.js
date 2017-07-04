@@ -116,7 +116,7 @@ export const createRoutes = (store, components) => {
             }
           );
         },
-        onEnter: (nextState) => {
+        onEnter: nextState => {
           let url = Object.keys(nextState.params).reduce((result, key) => {
             return result.replace(`:${key}`, nextState.params[key]);
           }, singularPath);
@@ -155,7 +155,7 @@ export const createRoutes = (store, components) => {
             }
           );
         },
-        onEnter: (nextState) => {
+        onEnter: nextState => {
           const parentUrl = `${schema.prefix}/${schema.plural}/${nextState.params.id}`;
 
           onDetailEnter(store);
@@ -181,7 +181,7 @@ export const createRoutes = (store, components) => {
             }
           );
         },
-        onEnter: (nextState) => {
+        onEnter: nextState => {
           onTableEnter(store, schema.plural, nextState, schema.prefix);
         }
       };

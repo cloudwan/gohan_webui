@@ -65,7 +65,7 @@ describe('< TableToolbarComponent />', () => {
     wrapper.find('option').should.have.length(2);
   });
 
-  it('should call filterData', (done) => {
+  it('should call filterData', done => {
     const filterData = chai.spy(() => {done();});
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
@@ -83,7 +83,7 @@ describe('< TableToolbarComponent />', () => {
 
   });
 
-  it('should call filterData with undefined argument', (done) => {
+  it('should call filterData with undefined argument', done => {
     const filterData = chai.spy(() => {done();});
     const wrapper = shallow(
       <TableToolbar handleOpenModal={() => {}} filterValue={''}
@@ -114,7 +114,7 @@ describe('< TableToolbarComponent />', () => {
     deleteMultipleResources.should.have.been.called.once; // eslint-disable-line no-unused-expressions
   });
 
-  it('should call filterData from handleMenuItemSelected', (done) => {
+  it('should call filterData from handleMenuItemSelected', done => {
     const filterData = chai.spy(() => {done();});
     const filterProperties = ['item1', 'item2'];
     const properties = {

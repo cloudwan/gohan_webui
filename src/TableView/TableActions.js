@@ -364,7 +364,7 @@ export function deleteMultipleResources(ids, plural) {
     };
     let requests = [];
 
-    ids.forEach((id) => {
+    ids.forEach(id => {
       requests.push(axios.delete(gohanUrl + url + '/' + id, {headers}));
     });
 
@@ -372,7 +372,7 @@ export function deleteMultipleResources(ids, plural) {
       .then(() => {
         dispatch(deleteMultipleResourcesSuccess(plural));
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(deleteError(error));
         dispatch(fetchData(plural));
       });

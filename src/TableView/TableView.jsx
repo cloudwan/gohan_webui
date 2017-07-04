@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import dialog from '../Dialog';
@@ -129,7 +130,7 @@ export const getTableView = (TableComponent = Table) => {
       this.props.closeCreateDialog();
     };
 
-    handleSubmitCreateDialog = (data) => {
+    handleSubmitCreateDialog = data => {
       const {plural} = this.props;
       this.props.createData(data, plural, this.props.closeCreateDialog);
     };
@@ -148,7 +149,7 @@ export const getTableView = (TableComponent = Table) => {
       this.props.updateData(id, data, plural, this.props.closeUpdateDialog);
     };
 
-    handleOpenAlert = (item) => {
+    handleOpenAlert = item => {
       this.setState({alertOpen: true, markedForDeletion: item});
     };
 

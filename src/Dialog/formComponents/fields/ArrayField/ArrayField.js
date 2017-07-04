@@ -1,4 +1,5 @@
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {Button, Intent} from '@blueprintjs/core';
 import {ArraySortableItem} from './ArraySortableItem';
 
@@ -113,7 +114,7 @@ export default class ArrayField extends Component {
     });
   };
 
-  onDropIndexClick = (index) => {
+  onDropIndexClick = index => {
     return event => {
       event.preventDefault();
       event.stopPropagation();
@@ -238,17 +239,17 @@ export default class ArrayField extends Component {
                   </div>
                   {
                     orderable && (
-                      <div className="sort">
-                        <Button intent={Intent.PRIMARY} iconName="chevron-up"
-                          text="Up" className="pt-minimal"
-                          disabled={index === 0} onClick={this.onReorderClick(index, index - 1)}
-                        />
-                        <Button intent={Intent.PRIMARY} iconName="chevron-down"
-                          text="Down" className="pt-minimal"
-                          disabled={index === items.length - 1} onClick={this.onReorderClick(index, index + 1)}
-                        />
-                      </div>
-                    )
+                    <div className="sort">
+                      <Button intent={Intent.PRIMARY} iconName="chevron-up"
+                        text="Up" className="pt-minimal"
+                        disabled={index === 0} onClick={this.onReorderClick(index, index - 1)}
+                      />
+                      <Button intent={Intent.PRIMARY} iconName="chevron-down"
+                        text="Down" className="pt-minimal"
+                        disabled={index === items.length - 1} onClick={this.onReorderClick(index, index + 1)}
+                      />
+                    </div>
+                  )
                   }
                 </ArraySortableItem>
               );

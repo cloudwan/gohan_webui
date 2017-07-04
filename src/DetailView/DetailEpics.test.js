@@ -46,11 +46,11 @@ describe('DetailEpics', () => {
       );
 
       // noinspection JSAnnotator
-      Ajax.ajax = (options) => {
+      Ajax.ajax = options => {
         options.method.should.equal('GET');
         options.url.should.equal('http://gohan.io/v1/foo/bar/baz');
         options.headers['X-Auth-Token'].should.equal('sampleTokenId');
-        return Rx.Observable.create((observer) => {
+        return Rx.Observable.create(observer => {
           observer.next({
             response: {
               baz: {
@@ -99,11 +99,11 @@ describe('DetailEpics', () => {
       );
 
       // noinspection JSAnnotator
-      Ajax.ajax = (options) => {
+      Ajax.ajax = options => {
         options.method.should.equal('GET');
         options.url.should.equal('http://gohan.io/v1/foo/bar/baz');
         options.headers['X-Auth-Token'].should.equal('sampleTokenId');
-        return Rx.Observable.create((observer) => {
+        return Rx.Observable.create(observer => {
           observer.error({
             xhr: {
               response: 'Cannot fetch data'
