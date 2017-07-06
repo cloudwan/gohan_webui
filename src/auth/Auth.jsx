@@ -10,8 +10,17 @@ import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
 import {Toast} from '@blueprintjs/core';
 
+import {
+  getTokenId,
+  getTokenExpires,
+  getTenant,
+  getTenants,
+  getUser,
+  getProgressState,
+} from './AuthSelectors';
+
 export class Auth extends Component {
-  componentWillMount() {
+  componentDidMount() {
     this.props.fetchTokenData();
   }
 
@@ -107,12 +116,12 @@ if (process.env.NODE_ENV !== 'production') {
 
 function mapStateToProps(state) {
   return {
-    tokenId: state.authReducer.tokenId,
-    tokenExpires: state.authReducer.tokenExpires,
-    tenant: state.authReducer.tenant,
-    tenants: state.authReducer.tenants,
-    user: state.authReducer.user,
-    inProgress: state.authReducer.inProgress,
+    tokenId: getTokenId(state),
+    tokenExpires: getTokenExpires(state),
+    tenant: getTenant(state),
+    tenants: getTenants(state),
+    user: getUser(state),
+    inProgress: getProgressState(state),
     errorMessage: state.errorReducer
   };
 }

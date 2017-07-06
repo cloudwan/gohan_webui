@@ -1,244 +1,171 @@
+// @flow
 /* global window */
-import axios from 'axios';
-
 import {
-  LOGIN_INPROGRESS,
+  LOGIN,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   LOGOUT,
-  TENANT_FETCH_SUCCESS,
-  TENANT_FETCH_FAILURE,
+  SELECT_TENANT,
+  SELECT_TENANT_FAILURE,
+  FETCH_TENANTS_SUCCESS,
+  FETCH_TENANTS_FAILURE,
   CLEAR_STORAGE
 } from './AuthActionTypes';
 
 const {sessionStorage, location} = window;
 
-function fetchTenantSuccess(data) {
-  return dispatch => {
-    dispatch({data, type: TENANT_FETCH_SUCCESS});
+type UserType = {
+  +id: string,
+  +name: string,
+  +roles: any, // eslint-disable-line flowtype/no-weak-types
+  +roles_links: any, // eslint-disable-line flowtype/no-weak-types
+  +username: string,
+};
+
+type TenantType = {
+  +id: string,
+  +name: string,
+  +enabled: boolean,
+  +description: string,
+};
+
+type LoginActionType = {
+  +type: string,
+  +username: string,
+  +password: string,
+};
+
+type LoginSuccessActionType = {
+  +type: string,
+  +data: {
+    +tokenId: string,
+    +tokenExpires: string,
+    +tenant: string,
+    +user: string,
+  },
+  +password: string,
+};
+
+type FetchTenantSuccessActionType = {
+  +type: string,
+  +data: [TenantType],
+};
+
+type FetchTokenActionType = {
+  +type: string,
+  +token: string,
+  +tenant: string,
+};
+
+type SelectTenantActionType = {
+  +type: string,
+  +username: string,
+  +password: string,
+};
+
+type ErrorActionType = {
+  +type: string,
+  +error: string,
+};
+
+export const loginSuccess = (
+  tokenId: string,
+  tokenExpires: string,
+  tenant: TenantType,
+  user: UserType
+): LoginSuccessActionType => {
+  sessionStorage.setItem('token', tokenId);
+
+  return {
+    type: LOGIN_SUCCESS,
+    data: {
+      tokenId,
+      tokenExpires,
+      tenant,
+      user,
+    },
   };
-}
+};
 
-function fetchTenantFailure(data) {
-  const {response} = data;
+export const loginFailure = (error: string): ErrorActionType => ({
+  type: LOGIN_ERROR,
+  error,
+});
 
-  if (response) {
-    const {status} = response;
+export const login = (username: string, password: string): LoginActionType => ({
+  type: LOGIN,
+  username,
+  password
+});
 
-    if (status === 401) {
-      return dispatch => {
-        dispatch({type: TENANT_FETCH_FAILURE, error: 'Please login again!'});
-      };
-    }
+export const fetchTenantSuccess = (data: [TenantType]): FetchTenantSuccessActionType => ({
+  type: FETCH_TENANTS_SUCCESS,
+  data,
+});
 
-    return dispatch => {
-      dispatch({type: TENANT_FETCH_FAILURE, error: `Status: ${status}. Something got wrong please, try again!`});
-    };
-  } else if (data.message) {
-    return dispatch => {
-      dispatch({type: TENANT_FETCH_FAILURE, error: `${data.message}!`});
-    };
-  }
+export const fetchTenantFailure = (error: string): ErrorActionType => ({
+  type: FETCH_TENANTS_FAILURE,
+  error,
+});
 
-  return dispatch => {
-    const error = 'Cannot fetch tenant list!';
-    dispatch({type: TENANT_FETCH_FAILURE, error});
-  };
-}
-
-function fetchTenants() {
-  return (dispatch, getState) => {
-    const state = getState();
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': state.authReducer.tokenId
-    };
-
-    axios.get(state.configReducer.authUrl + '/tenants', {headers}).then(response => {
-      dispatch(fetchTenantSuccess(response.data));
-    }).catch(error => {
-      dispatch(fetchTenantFailure(error));
-    });
-  };
-}
-
-export function fetchTokenData() {
+export const fetchTokenData = (): FetchTokenActionType => {
   const token = sessionStorage.getItem('token');
   const tenant = sessionStorage.getItem('tenant');
 
-  return (dispatch, getState) => {
-    if (token) {
-      const state = getState();
-      const headers = {
-        'Content-Type': 'application/json'
-      };
-      const data = {
-        auth: {
-          token: {
-            id: token
-          }
-        }
-      };
-
-      if (tenant) {
-        data.auth.tenantName = tenant;
-      }
-
-      axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
-        dispatch(loginSuccess(response.data));
-      }).catch(() => {
-        dispatch(clearStorage());
-      });
-    } else {
-      dispatch(clearStorage());
-    }
-  };
-
-}
-
-function inProgress() {
-  return dispatch => {
-    dispatch({type: LOGIN_INPROGRESS});
-  };
-}
-
-
-function loginSuccess(data) {
-  return dispatch => {
-
-    sessionStorage.setItem('token', data.access.token.id);
-    dispatch({data, type: LOGIN_SUCCESS});
-    dispatch(fetchTenants());
-  };
-}
-
-function loginFailure(data) {
-  const {response} = data;
-
-  if (response) {
-    const {status} = response;
-
-    if (status === 400) {
-      return dispatch => {
-        dispatch({type: LOGIN_ERROR, error: 'Please enter login and password!'});
-      };
-    } else if (status === 401) {
-      return dispatch => {
-        dispatch({type: LOGIN_ERROR, error: 'Please enter correct login and password!'});
-      };
-    }
-
-    return dispatch => {
-      dispatch({type: LOGIN_ERROR, error: `Status: ${status}. Something got wrong please, try again!`});
-    };
-  } else if (data.message) {
-    return dispatch => {
-      dispatch({type: LOGIN_ERROR, error: `${data.message}!`});
+  if (token) {
+    return {
+      type: LOGIN,
+      token,
+      tenant
     };
   }
+  return clearStorage();
+};
 
-  return dispatch => {
-    dispatch({type: LOGIN_ERROR, error: 'Unknown Error!'});
-  };
-}
-
-export function login(username, password) {
-  return (dispatch, getState) => {
-    const state = getState();
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    const data = {
-      auth: {
-        passwordCredentials: {
-          username,
-          password
-        }
-      }
-    };
-
-    dispatch(inProgress());
-    axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
-      dispatch(loginSuccess(response.data));
-    }).catch(error => {
-      dispatch(loginFailure(error));
-    });
-  };
-}
-
-export function clearStorage() {
+export const clearStorage = (): () => void => {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('scopedToken');
   sessionStorage.removeItem('tenant');
 
-  return dispatch => {
-    dispatch({type: CLEAR_STORAGE});
+  return {
+    type: CLEAR_STORAGE
   };
-}
+};
 
-export function logout() {
-  return dispatch => {
+export const logout = (): () => void => {
+  return (dispatch: () => void) => {
     dispatch(clearStorage());
     dispatch({type: LOGOUT});
     location.reload();
   };
-}
+};
 
-function selectTenantSuccess(data) {
-  return dispatch => {
-    sessionStorage.setItem('scopedToken', data.access.token.id);
-    sessionStorage.setItem('tenant', data.access.token.tenant.name);
+export const selectTenantSuccess = (
+  tokenId: string,
+  tokenExpires: string,
+  tenant: TenantType,
+  user: UserType
+): LoginSuccessActionType => {
+    sessionStorage.setItem('scopedToken', tokenId);
+    sessionStorage.setItem('tenant', tenant.name);
 
-    dispatch({data, type: LOGIN_SUCCESS});
-  };
-}
-
-function selectTenantFailure(data) {
-  const {response} = data;
-
-  if (response) {
-    const {status} = response;
-
-    if (status === 401) {
-      return dispatch => {
-        dispatch({type: LOGIN_ERROR, error: 'Cannot select tenant!'});
-      };
-    }
-    return dispatch => {
-      dispatch({type: LOGIN_ERROR, error: `Status: ${status}. Something got wrong please, try again!`});
+    return {
+      type: LOGIN_SUCCESS,
+      data: {
+        tokenId,
+        tokenExpires,
+        tenant,
+        user,
+      },
     };
+};
 
-  } else if (data.message) {
-    return dispatch => {
-      dispatch({type: LOGIN_ERROR, error: `${data.message}!`});
-    };
-  }
+export const selectTenantFailure = (error: string): ErrorActionType => ({
+  type: SELECT_TENANT_FAILURE,
+  error,
+});
 
-  return dispatch => {
-    dispatch({type: LOGIN_ERROR, error: 'Unknown Error!'});
-  };
-}
-
-export function selectTenant(tenantName) {
-  return (dispatch, getState) => {
-    const state = getState();
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-
-    const data = {
-      auth: {
-        tenantName,
-        token: {
-          id: state.authReducer.tokenId
-        }
-      }
-    };
-    dispatch(inProgress());
-    axios.post(state.configReducer.authUrl + '/tokens', data, headers).then(response => {
-      dispatch(selectTenantSuccess(response.data));
-    }).catch(error => {
-      dispatch(selectTenantFailure(error));
-    });
-  };
-}
+export const selectTenant = (tenantName: string): SelectTenantActionType => ({
+  type: SELECT_TENANT,
+  tenantName
+});

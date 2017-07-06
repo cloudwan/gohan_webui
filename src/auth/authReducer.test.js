@@ -20,20 +20,16 @@ describe('authReducer ', () => {
     reducer(undefined, {
       type: actionTypes.LOGIN_SUCCESS,
       data: {
-        access: {
-          token: {
-            id: 'testId',
-            expires: 'expires date',
-            tenant: {
-              id: 'sample Id',
-              name: 'demo',
-              description: 'Demo tenant',
-              enabled: true
-            }
-          },
-          user: {
-            username: 'Admin'
-          }
+        tokenId: 'testId',
+        tokenExpires: 'expires date',
+        tenant: {
+          id: 'sample Id',
+          name: 'demo',
+          description: 'Demo tenant',
+          enabled: true
+        },
+        user: {
+          username: 'Admin'
         }
       }
     }).should.deep.equal(
@@ -55,6 +51,15 @@ describe('authReducer ', () => {
     );
   });
 
+  it('should handle LOGIN_ERROR', () => {
+    reducer(undefined, {
+      type: actionTypes.LOGIN_ERROR,
+    }).should.deep.equal({
+      inProgress: false,
+      logged: false
+    });
+  });
+
   it('should handle LOGOUT', () => {
     reducer(undefined, {
       type: actionTypes.LOGOUT,
@@ -73,25 +78,14 @@ describe('authReducer ', () => {
     });
   });
 
-  it('should handle LOGIN_ERROR', () => {
+  it('should handle FETCH_TENANTS_SUCCESS', () => {
     reducer(undefined, {
-      type: actionTypes.LOGIN_ERROR,
-    }).should.deep.equal({
-      inProgress: false,
-      logged: false
-    });
-  });
-
-  it('should handle LOGIN_ERROR', () => {
-    reducer(undefined, {
-      data: {
-        tenants: [
-          {
-            name: 'test tenant'
-          }
-        ]
-      },
-      type: actionTypes.TENANT_FETCH_SUCCESS,
+      data: [
+        {
+          name: 'test tenant'
+        }
+      ],
+      type: actionTypes.FETCH_TENANTS_SUCCESS,
     }).should.deep.equal({
       tenants: [
         {
