@@ -1,12 +1,14 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Auth from './Auth';
 
+import {getLoggedState} from './AuthSelectors';
+
 export default function requestAuth(WrappedComponent) {
-  class RequestAuthComponent extends Component {
+  class RequestAuthComponent extends PureComponent {
     render() {
-      const {logged} = this.props.authReducer;
+      const {logged} = this.props;
 
       if (logged) {
         return (
@@ -21,7 +23,7 @@ export default function requestAuth(WrappedComponent) {
 
   function mapStateToProps(state) {
     return {
-      authReducer: state.authReducer,
+      logged: getLoggedState(state),
     };
   }
 
@@ -30,7 +32,7 @@ export default function requestAuth(WrappedComponent) {
   };
 
   RequestAuthComponent.propTypes = {
-    authReducer: PropTypes.object.isRequired
+    logged: PropTypes.bool.isRequired
   };
 
   return connect(mapStateToProps, {

@@ -3,16 +3,13 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
 import spies from 'chai-spies';
-import axios from 'axios';
 
 import * as actionTypes from './AuthActionTypes';
 import * as actions from './AuthActions';
 
 chai.use(spies);
-chai.should();
+const should = chai.should();
 
-const _get = axios.get;
-const _post = axios.post;
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -23,78 +20,97 @@ describe('AuthActions ', () => {
     sessionStorage.itemInsertionCallback = null;
   });
 
+  describe('loginSuccess()', () => {
+    it(`should set token in session storage and returns ${actionTypes.LOGIN_SUCCESS} action`, () => {
+      actions.loginSuccess('tokenId', '1/2/2017', {name: 'tenant'}, {name: 'user'})
+        .should.deep.equal({
+        type: actionTypes.LOGIN_SUCCESS,
+        data: {
+          tokenId: 'tokenId',
+          tokenExpires: '1/2/2017',
+          tenant: {name: 'tenant'},
+          user: {name: 'user'},
+        }
+      });
+      sessionStorage.token.should.equal('tokenId');
+    });
+  });
+
+  describe('loginFailure()', () => {
+    it(`should returns ${actionTypes.LOGIN_ERROR} action`, () => {
+      actions.loginFailure('Error')
+        .should.deep.equal({
+        type: actionTypes.LOGIN_ERROR,
+        error: 'Error'
+      });
+    });
+  });
+
   describe('login() ', () => {
-    afterEach(() => {
-      axios.get = _get;
-      axios.post = _post;
+    it(`should returns ${actionTypes.LOGIN} action`, () => {
+      actions.login('userName', 'password')
+        .should.deep.equal({
+        type: actionTypes.LOGIN,
+        username: 'userName',
+        password: 'password',
+      });
+    });
+  });
+
+  describe('fetchTenantSuccess()', () => {
+    it(`should returns ${actionTypes.FETCH_TENANTS_SUCCESS} action`, () => {
+      actions.fetchTenantSuccess(['tenant'])
+        .should.deep.equal({
+        type: actionTypes.FETCH_TENANTS_SUCCESS,
+        data: ['tenant'],
+      });
+    });
+  });
+
+  describe('fetchTenantFailure()', () => {
+    it(`should returns ${actionTypes.FETCH_TENANTS_FAILURE} action`, () => {
+      actions.fetchTenantFailure('Error')
+        .should.deep.equal({
+        type: actionTypes.FETCH_TENANTS_FAILURE,
+        error: 'Error'
+      });
+    });
+  });
+
+  describe('fetchTokenData() ', () => {
+    it(`should returns ${actionTypes.CLEAR_STORAGE} action if session storage is clear`, () => {
+      actions.fetchTokenData()
+        .should.deep.equal({
+        type: actionTypes.CLEAR_STORAGE,
+      });
     });
 
-    it(`should dispatch ${actionTypes.LOGIN_SUCCESS} and ${actionTypes.TENANT_FETCH_SUCCESS}`, async () => {
-      axios.post = chai.spy((url, data, headers) => {
-        url.should.equal('http://localhost:8666/tokens');
-        headers['Content-Type'].should.equal('application/json');
+    it(`should returns ${actionTypes.LOGIN} action if session storage contains credentials`, () => {
+      sessionStorage.setItem('token', 'test token');
+      sessionStorage.setItem('tenant', 'test tenant');
 
-        return Promise.resolve({
-          status: 200,
-          data: {
-            access: {
-              token: {
-                id: 'admin_token'
-              }
-            }
-          }
-        });
+      actions.fetchTokenData()
+        .should.deep.equal({
+        type: actionTypes.LOGIN,
+        token: 'test token',
+        tenant: 'test tenant',
+      });
+    });
+  });
+  describe('clearStorage() ', () => {
+    it(`should returns ${actionTypes.CLEAR_STORAGE} action and clear session storage`, () => {
+      sessionStorage.setItem('token', 'test token');
+      sessionStorage.setItem('scopedToken', 'test scoped token');
+      sessionStorage.setItem('tenant', 'test tenant');
+
+      actions.clearStorage()
+        .should.deep.equal({
+        type: actionTypes.CLEAR_STORAGE,
       });
 
-      axios.get = chai.spy((url, options) => {
-        url.should.equal('http://localhost:8666/tenants');
-        options.headers['Content-Type'].should.equal('application/json');
-        options.headers['X-Auth-Token'].should.equal('admin_token');
-
-        return Promise.resolve({
-          status: 200,
-          data: {
-            tenants: [{
-              id: 'sample_id_123',
-              name: 'test tenant',
-              description: null,
-              enabled: true
-            }, {
-              id: 'sample_id_456',
-              name: 'admin',
-              description: 'admin tenant',
-              enabled: true
-            }]
-          }
-        });
-      });
-
-      const store = mockStore({
-        configReducer: {
-          authUrl: 'http://localhost:8666'
-        },
-        authReducer: {
-          tokenId: 'admin_token'
-        }
-      });
-
-      await store.dispatch(actions.login('admin', 'password'));
-
-      store.getActions().should.deep.equal([
-        {
-          type: 'AUTH_LOGIN_INPROGRESS'
-        },
-        {
-          data: {
-            access: {
-              token: {
-                id: 'admin_token'
-              }
-            }
-          },
-          type: actionTypes.LOGIN_SUCCESS,
-        }
-      ]);
+      should.equal(sessionStorage.getItem('token'), null);
+      should.equal(sessionStorage.getItem('scopedToken'), null);
+      should.equal(sessionStorage.getItem('tenant'), null);
     });
   });
 
@@ -112,6 +128,43 @@ describe('AuthActions ', () => {
           type: actionTypes.LOGOUT,
         }
       ]);
+    });
+  });
+});
+
+describe('selectTenantSuccess()', () => {
+  it(`should set token and tenant in session storage and returns ${actionTypes.LOGIN_SUCCESS} action`, () => {
+    actions.selectTenantSuccess('tokenId', '1/2/2017', {name: 'tenant'}, {name: 'user'})
+      .should.deep.equal({
+      type: actionTypes.LOGIN_SUCCESS,
+      data: {
+        tokenId: 'tokenId',
+        tokenExpires: '1/2/2017',
+        tenant: {name: 'tenant'},
+        user: {name: 'user'},
+      }
+    });
+    sessionStorage.getItem('scopedToken').should.equal('tokenId');
+    sessionStorage.getItem('tenant').should.equal('tenant');
+  });
+});
+
+describe('selectTenantFailure()', () => {
+  it(`should returns ${actionTypes.SELECT_TENANT_FAILURE} action`, () => {
+    actions.selectTenantFailure('Error')
+      .should.deep.equal({
+      type: actionTypes.SELECT_TENANT_FAILURE,
+      error: 'Error'
+    });
+  });
+});
+
+describe('selectTenant() ', () => {
+  it(`should returns ${actionTypes.SELECT_TENANT} action`, () => {
+    actions.selectTenant('tenantName')
+      .should.deep.equal({
+      type: actionTypes.SELECT_TENANT,
+      tenantName: 'tenantName',
     });
   });
 });

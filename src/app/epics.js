@@ -1,7 +1,11 @@
 import {combineEpics} from 'redux-observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
-const epic$ = new BehaviorSubject(combineEpics());
+import AuthEpics from './../auth/AuthEpics';
+
+const epic$ = new BehaviorSubject(combineEpics(
+  AuthEpics
+));
 
 export const rootEpic = (action$, store) =>
   epic$.mergeMap(epic =>
