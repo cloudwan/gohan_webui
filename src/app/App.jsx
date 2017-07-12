@@ -5,12 +5,9 @@ import {FocusStyleManager} from '@blueprintjs/core';
 
 import {fetchSchema} from './../schema/SchemaActions';
 import Navbar from './components/Navbar';
-import SidebarMenu from './components/SidebarMenu';
+import Sidebar from './components/Sidebar';
 import ErrorToaster from './../error/ErrorToaster';
 import {logout, selectTenant} from '../auth/AuthActions';
-
-import {getSidebar} from './../config/ConfigSelectors';
-import {getSidebarMenuItems} from './../schema/SchemaSelectors';
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
@@ -69,7 +66,7 @@ class App extends Component {
           onRequestChangeTenant={this.handleRequestChangeTenant}
           onToggleSidebar={this.handleToggleSidebar} openSidebar={this.state.openSidebar}
         />
-        <SidebarMenu menuItems={this.props.sidebarMenuItems} open={this.state.openSidebar}/>
+        <Sidebar open={this.state.openSidebar}/>
         <ErrorToaster/>
         <div className={`view-content ${this.state.contentClassNames}`}>
           {children}
@@ -86,7 +83,6 @@ App.propTypes = {
 
 function mapStateToProps(state) {
   return {
-    sidebarMenuItems: [...getSidebar(state), ...getSidebarMenuItems(state)],
     schemaReducer: state.schemaReducer,
     authReducer: state.authReducer
   };
