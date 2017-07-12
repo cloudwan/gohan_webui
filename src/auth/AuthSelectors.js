@@ -36,6 +36,11 @@ export const getTenant = createSelector(
   }
 );
 
+export const getTenantName = createSelector(
+  [tenant],
+  tenant => tenant.name
+);
+
 export const getTenants = createSelector(
   [tenants],
   tenants => {
@@ -48,6 +53,11 @@ export const getUser = createSelector(
   user => {
     return user;
   }
+);
+
+export const getUserName = createSelector(
+  [user],
+  user => user.username
 );
 
 export const getProgressState = createSelector(
