@@ -21,17 +21,6 @@ class App extends Component {
     };
   }
 
-  componentWillMount() {
-    this.props.fetchSchema();
-  }
-
-  handleDismissClick = event => {
-    if (event) {
-      event.preventDefault();
-    }
-    this.props.resetErrorMessage();
-  };
-
   handleToggleSidebar = () => {
     if (this.state.openSidebar) {
       this.setState({

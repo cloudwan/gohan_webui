@@ -88,7 +88,8 @@ describe('< Auth />', () => {
 
     wrapper.setProps({
       tokenId: 1,
-      tenant: 'tenant'
+      tenant: 'tenant',
+      tenants: []
     });
 
     onLoginSuccess.should.have.been.called.once; // eslint-disable-line no-unused-expressions
