@@ -10,6 +10,7 @@ import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
 import {Toast} from '@blueprintjs/core';
 
+import {getError} from './../error/ErrorSelectors';
 import {
   getTokenId,
   getTokenExpires,
@@ -35,7 +36,7 @@ export class Auth extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined) {
+    if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined && nextProps.tenants !== undefined) {
       if (this.props.onLoginSuccess) {
         this.props.onLoginSuccess();
       }
@@ -122,7 +123,7 @@ function mapStateToProps(state) {
     tenants: getTenants(state),
     user: getUser(state),
     inProgress: getProgressState(state),
-    errorMessage: state.errorReducer
+    errorMessage: getError(state),
   };
 }
 
