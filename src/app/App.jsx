@@ -7,7 +7,6 @@ import {fetchSchema} from './../schema/SchemaActions';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import ErrorToaster from './../error/ErrorToaster';
-import {logout, selectTenant} from '../auth/AuthActions';
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
@@ -33,14 +32,6 @@ class App extends Component {
     this.props.resetErrorMessage();
   };
 
-  handleRequestLogout = () => {
-    this.props.logout();
-  };
-
-  handleRequestChangeTenant = tenantId => {
-    this.props.selectTenant(tenantId);
-  };
-
   handleToggleSidebar = () => {
     if (this.state.openSidebar) {
       this.setState({
@@ -57,14 +48,11 @@ class App extends Component {
 
   render() {
     const {children} = this.props;
-    const {user, tenant, tenants} = this.props.authReducer;
 
     return (
       <div>
-        <Navbar userName={user.username} tenants={tenants}
-          activeTenant={tenant.name} onRequestLogout={this.handleRequestLogout}
-          onRequestChangeTenant={this.handleRequestChangeTenant}
-          onToggleSidebar={this.handleToggleSidebar} openSidebar={this.state.openSidebar}
+        <Navbar onToggleSidebar={this.handleToggleSidebar}
+          isSidebarOpen={this.state.openSidebar}
         />
         <Sidebar open={this.state.openSidebar}/>
         <ErrorToaster/>
@@ -77,19 +65,14 @@ class App extends Component {
 }
 
 App.propTypes = {
-  schemaReducer: PropTypes.object,
   children: PropTypes.node
 };
 
-function mapStateToProps(state) {
+function mapStateToProps() {
   return {
-    schemaReducer: state.schemaReducer,
-    authReducer: state.authReducer
   };
 }
 
 export default connect(mapStateToProps, {
   fetchSchema,
-  logout,
-  selectTenant
 })(App);
