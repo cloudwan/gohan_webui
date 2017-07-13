@@ -4,6 +4,10 @@ export const get = (url, headers) => ajax({method: 'GET', url, headers, crossDom
 
 export const post = (url, headers, body) => ajax({method: 'POST', url, body, headers, crossDomain: true});
 
+export const put = (url, headers, body) => ajax({method: 'PUT', url, body, headers, crossDomain: true});
+
+export const purge = (url, headers) => ajax({method: 'DELETE', url, headers, crossDomain: true});
+
 export const parseXHRError = error => {
   if (error) {
     if (error.xhr) {

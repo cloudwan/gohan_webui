@@ -1,5 +1,9 @@
-import axios from 'axios';
 import {browserHistory} from 'react-router';
+import {
+  put,
+  purge,
+  parseXHRError
+} from './../api/index';
 import {
   FETCH,
   FETCH_SUCCESS,
@@ -9,73 +13,42 @@ import {
   DELETE_SUCCESS,
   DELETE_FAILURE,
   UPDATE_FAILURE,
-  INIT
 } from './DetailActionTypes';
 
-export function initialize(url, singular, options) {
-  return dispatch => {
-    dispatch({data: {url, singular, ...options}, type: INIT});
-  };
-}
+export const fetch = url => () => dispatch => dispatch({
+  type: FETCH,
+  url,
+});
 
-export function fetchData() {
-  return dispatch => {
-    dispatch({type: FETCH});
-  };
-}
+export const fetchSuccess = data => ({
+  type: FETCH_SUCCESS,
+  data,
+});
 
-export function fetchSuccess(data) {
-  return {
-    type: FETCH_SUCCESS,
-    data
-  };
-}
+export const fetchError = error => ({
+  type: FETCH_FAILURE,
+  error,
+});
 
-export function fetchError(error) {
-  return {
-    type: FETCH_FAILURE,
-    error
-  };
-}
+export const clearData = () => dispatch => {
+  dispatch({
+    type: FETCH_CANCELLED
+  });
+  dispatch({
+    type: CLEAR_DATA
+  });
+};
 
-export function clearData() {
-  return dispatch => {
-    dispatch({type: FETCH_CANCELLED});
-    dispatch({type: CLEAR_DATA});
-  };
-}
+export const updateSuccess = url => dispatch => dispatch(fetch(url)());
 
-function updateSuccess() {
-  return dispatch => {
-    dispatch({type: FETCH_CANCELLED});
-    dispatch(fetchData());
-  };
-}
+export const updateError = error => dispatch => dispatch({
+  type: UPDATE_FAILURE,
+  error
+});
 
-function updateError(error) {
-  if (error.response) {
-    switch (error.response.status) {
-      case 400:
-        error = 'Invalid request.';
-        break;
-      case 404:
-        error = 'Resource has not been found.';
-        break;
-      case 409:
-        error = 'Conflict.';
-    }
-  } else {
-    error = error.toString();
-  }
-  return dispatch => {
-    dispatch({type: UPDATE_FAILURE, error});
-  };
-}
-
-export function updateData(data, successCb, errorCb) {
+export const update = url => (data, successCb, errorCb) => {
   return (dispatch, getState) => {
     const state = getState();
-    const {url} = state.detailReducer;
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
     const headers = {
@@ -83,61 +56,45 @@ export function updateData(data, successCb, errorCb) {
       'X-Auth-Token': tokenId
     };
 
-    axios.put(gohanUrl + url, data, {headers}).then(response => {
+    put(gohanUrl + url, headers, data).subscribe(response => {
       const {status} = response;
 
       if (status === 200) {
-        dispatch(updateSuccess());
+        dispatch(updateSuccess(url));
         if (successCb) {
           successCb();
         }
       } else {
-        dispatch(updateError('Cannot update resource!'));
+        dispatch(updateError(parseXHRError(response)));
         if (errorCb) {
           errorCb();
         }
       }
-    }).catch(error => {
-      dispatch(updateError(error));
+    }, error => {
+      dispatch(updateError(parseXHRError(error)));
       if (errorCb) {
         errorCb();
       }
     });
   };
-}
+};
 
-function deleteSuccess() {
+export const removeSuccess = () => {
   browserHistory.goBack();
   return dispatch => {
     dispatch({type: DELETE_SUCCESS});
     dispatch({type: FETCH_CANCELLED});
   };
-}
+};
 
-function deleteError(error) {
-  if (error.response) {
-    switch (error.response.status) {
-      case 400:
-        error = 'Invalid request.';
-        break;
-      case 404:
-        error = 'Resource has not been found.';
-        break;
-      case 409:
-        error = 'Conflict.';
-    }
-  } else {
-    error = error.toString();
-  }
-  return dispatch => {
-    dispatch({type: DELETE_FAILURE, error});
-  };
-}
+export const removeError = error => dispatch => dispatch({
+  type: DELETE_FAILURE,
+  error
+});
 
-export function deleteData() {
+export const remove = url => () => {
   return (dispatch, getState) => {
     const state = getState();
-    const {url} = state.detailReducer;
     const {url: gohanUrl} = state.configReducer.gohan;
     const {tokenId} = state.authReducer;
     const headers = {
@@ -145,15 +102,17 @@ export function deleteData() {
       'X-Auth-Token': tokenId
     };
 
-    axios.delete(gohanUrl + url, {headers}).then(response => {
-
-      if (response.status === 204) {
-        dispatch(deleteSuccess());
-      } else {
-        dispatch(deleteError(response));
+    purge(gohanUrl + url, headers).subscribe(
+      response => {
+        if (response.status === 204) {
+          dispatch(removeSuccess());
+        } else {
+          dispatch(removeError(parseXHRError(response)));
+        }
+      },
+      error => {
+        dispatch(removeError(parseXHRError(error)));
       }
-    }).catch(error => {
-      dispatch(deleteError(error));
-    });
+    );
   };
-}
+};

@@ -18,6 +18,7 @@ describe('API', () => {
     it('should calls RxJS ajax method with appropriate params', () => {
       // noinspection JSAnnotator
       Ajax.ajax = options => {
+        options.method.should.equal('GET');
         options.url.should.equal('http://sample.url');
         options.headers.should.equal('headers');
       };
@@ -29,11 +30,37 @@ describe('API', () => {
     it('should calls RxJS ajax method with appropriate params', () => {
       // noinspection JSAnnotator
       Ajax.ajax = options => {
+        options.method.should.equal('POST');
         options.url.should.equal('http://sample.url');
         options.headers.should.equal('headers');
         options.body.should.equal('body');
       };
       api.post('http://sample.url', 'headers', 'body');
+    });
+  });
+
+  describe('put()', () => {
+    it('should calls RxJS ajax method with appropriate params', () => {
+      // noinspection JSAnnotator
+      Ajax.ajax = options => {
+        options.method.should.equal('PUT');
+        options.url.should.equal('http://sample.url');
+        options.headers.should.equal('headers');
+        options.body.should.equal('body');
+      };
+      api.put('http://sample.url', 'headers', 'body');
+    });
+  });
+
+  describe('purge()', () => {
+    it('should calls RxJS ajax method with appropriate params', () => {
+      // noinspection JSAnnotator
+      Ajax.ajax = options => {
+        options.method.should.equal('DELETE');
+        options.url.should.equal('http://sample.url');
+        options.headers.should.equal('headers');
+      };
+      api.purge('http://sample.url', 'headers');
     });
   });
 

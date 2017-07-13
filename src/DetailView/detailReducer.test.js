@@ -11,38 +11,31 @@ describe('detailReducer ', () => {
     detailReducer(undefined, {}).should.deep.equal({
       isLoading: true,
       data: {},
-      polling: false
+    });
+
+    detailReducer({isLoading: true, data: {}}, {}).should.deep.equal({
+      isLoading: true,
+      data: {},
     });
   });
 
-  it('should handle FETCH_SUCCESS', () => {
+  it(`should handle ${actionTypes.FETCH_SUCCESS} action type`, () => {
     detailReducer(
       undefined, {
         type: actionTypes.FETCH_SUCCESS,
-        data: [
-          {
-            path: 'sample1'
-          },
-          {
-            path: 'sample2'
-          }
-        ]
+        data: {
+          name: 'sample1'
+        },
       }
     ).should.deep.equal({
       isLoading: false,
-      polling: false,
-      data: [
-        {
-          path: 'sample1'
-        },
-        {
-          path: 'sample2'
-        }
-      ]
+      data: {
+        name: 'sample1'
+      }
     });
   });
 
-  it('should handle CLEAR_DATA', () => {
+  it(`should handle ${actionTypes.CLEAR_DATA} action type`, () => {
     detailReducer(
       undefined, {
         type: actionTypes.CLEAR_DATA
@@ -50,8 +43,6 @@ describe('detailReducer ', () => {
     ).should.deep.equal({
       isLoading: true,
       data: {},
-      children: {},
-      polling: false
     });
   });
 });
