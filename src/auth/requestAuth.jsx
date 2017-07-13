@@ -27,10 +27,6 @@ export default function requestAuth(WrappedComponent) {
     };
   }
 
-  RequestAuthComponent.contextTypes = {
-    router: PropTypes.object
-  };
-
   RequestAuthComponent.propTypes = {
     logged: PropTypes.bool.isRequired
   };

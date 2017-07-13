@@ -93,6 +93,7 @@ export const createRoutes = (store, components) => {
         path: singularPath,
         singular: schema.singular,
         schemaId: schema.id,
+        url: schema.url,
         getComponent(nextState, cb) {
           let parentUrl = Object.keys(nextState.params).reduce((result, key) => {
             return result.replace(`:${key}`, nextState.params[key]);
@@ -103,7 +104,11 @@ export const createRoutes = (store, components) => {
             params => {
               return (
                 <div>
-                  <DetailView singular={schema.singular} {...params}/>
+                  <DetailView singular={schema.singular}
+                    schemaId={schema.id}
+                    url={schema.url}
+                    {...params}
+                  />
                   {
                     schemaChilds.map(child => (
                       <TableView key={child.id} plural={child.plural}
@@ -142,7 +147,11 @@ export const createRoutes = (store, components) => {
 
               return (
                 <div>
-                  <DetailView singular={schema.singular} {...params}/>
+                  <DetailView singular={schema.singular}
+                    schemaId={schema.id}
+                    url={schema.url}
+                    {...params}
+                  />
                   {
                     schemaChilds.map(child => (
                       <TableView key={child.id} plural={child.plural}

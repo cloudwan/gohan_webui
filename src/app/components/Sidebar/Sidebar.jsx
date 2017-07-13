@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import isEqual from 'lodash/isEqual';
+
 
 import {getSidebarItems} from './SidebarSelectors';
 import {getPathname} from './../../../location/LocationSelectors';
@@ -11,6 +13,10 @@ import Menu from './components/Menu';
 import MenuItem from './components/MenuItem';
 
 export class Sidebar extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
+  }
+
   constructor(props) {
     super(props);
 

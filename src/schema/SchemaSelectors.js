@@ -25,6 +25,11 @@ export const getSchema = createSelector(
   }
 );
 
+export const getAllSchemas = createSelector(
+  [schemas],
+  schemas => schemas
+);
+
 export const hasReadPermission = createSelector(
   [schema],
   schema => schema.schema.permission.includes('read')
