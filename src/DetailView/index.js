@@ -1,5 +1,5 @@
 import {injectEpic} from '../app/epics';
-import {detailFetch} from './DetailEpics';
+import DetailEpics from './DetailEpics';
 
 import {injectReducer} from '../app/reducers';
 
@@ -9,5 +9,5 @@ export * from './DetailView';
 
 export function onDetailEnter(store) {
   injectReducer(store, {key: 'detailReducer', reducer});
-  injectEpic(store, {key: 'detailEpic', epic: detailFetch});
+  injectEpic(store, {key: 'detailEpic', epic: DetailEpics});
 }

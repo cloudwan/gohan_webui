@@ -1,4 +1,3 @@
-export const INIT = 'DETAIL_INITIALIZE';
 export const FETCH = 'DETAIL_FETCH';
 export const FETCH_SUCCESS = 'DETAIL_FETCH_SUCCESS';
 export const FETCH_FAILURE = 'DETAIL_FETCH_FAILURE';

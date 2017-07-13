@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-
+import isEqual from 'lodash/isEqual';
 import {logout, selectTenant} from './../../../auth/AuthActions';
 import {
   getUserName,
@@ -23,6 +23,10 @@ import {
 } from '@blueprintjs/core';
 
 export class Navbar extends Component {
+  shouldComponentUpdate(nextProps) {
+    return !isEqual(this.props, nextProps);
+  }
+
   handleMenuButtonClick = () => {
     this.props.onToggleSidebar();
   };
