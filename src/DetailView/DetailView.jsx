@@ -1,17 +1,17 @@
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import axios from 'axios';
+import isEqual from 'lodash/isEqual';
+
 import LoadingIndicator from '../components/LoadingIndicator';
 import Detail from '../components/Detail';
 import Dialog from '../Dialog/Dialog';
 import {
-  initialize,
-  fetchData,
+  fetch,
   clearData,
-  deleteData,
-  updateData
+  remove,
+  update
 } from './DetailActions';
 import dialog from '../Dialog';
 
@@ -21,37 +21,33 @@ import {
 } from '../Dialog/DialogActions';
 
 import {getUiSchema} from './../uiSchema/UiSchemaSelectors';
+import {getSchema} from './../schema/SchemaSelectors';
+import {
+  checkLoading,
+  getData,
+} from './DetailSelectors';
+
 import {Alert, Intent} from '@blueprintjs/core';
 
 export const getDetailView = (DetailComponent = Detail) => {
-  class DetailView extends Component {
+  class DetailView extends PureComponent {
     constructor(props) {
       super(props);
 
-      const activeSchema = props.schemaReducer.data.find(
-        object => object.singular === this.props.singular
-      );
-      const childSchemas = props.schemaReducer.data.filter(
-        object => object.parent === activeSchema.id
-      );
-      const detail = props.params.id;
-      const CancelToken = axios.CancelToken;
-      const source = CancelToken.source();
-
       this.state = {
-        activeSchema,
-        childSchemas,
-        detail,
-        source,
         modalOpen: false,
         alertOpen: false,
         actionModal: 'update',
         dialogData: {}
       };
+    }
 
-      props.initialize(activeSchema.url + '/' + detail, activeSchema.singular);
+    shouldComponentUpdate(nextProps, nextState) {
+      return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
+    }
 
-      props.fetchData();
+    componentDidMount() {
+      this.props.fetch();
     }
 
     componentWillUnmount() {
@@ -68,11 +64,11 @@ export const getDetailView = (DetailComponent = Detail) => {
 
     handleSubmitUpdateDialog = data => {
 
-      this.props.updateData(data, this.props.closeUpdateDialog);
+      this.props.update(data, this.props.closeUpdateDialog);
     };
 
     handleDelete = () => {
-      this.props.deleteData();
+      this.props.remove();
       this.handleCloseAlert();
     };
 
@@ -100,7 +96,11 @@ export const getDetailView = (DetailComponent = Detail) => {
     };
 
     render() {
-      const {data, isLoading} = this.props.detailReducer;
+      const {
+        data,
+        isLoading,
+        activeSchema,
+      } = this.props;
 
       if (isLoading) {
         return (
@@ -115,7 +115,7 @@ export const getDetailView = (DetailComponent = Detail) => {
             onClose={this.handleCloseUpdateDialog}
             onSubmit={this.handleSubmitUpdateDialog}
             data={this.state.dialogData}
-            baseSchema={this.state.activeSchema}
+            baseSchema={activeSchema}
           />
         )
       );
@@ -124,7 +124,7 @@ export const getDetailView = (DetailComponent = Detail) => {
         <div className="detail-container">
           <UpdateDialog/>
           {this.showAlert()}
-          <DetailComponent schema={this.state.activeSchema} data={data}
+          <DetailComponent schema={activeSchema} data={data}
             onEdit={this.handleOpenUpdateDialog} onDelete={this.handleOpenAlert}
           />
         </div>
@@ -133,33 +133,28 @@ export const getDetailView = (DetailComponent = Detail) => {
   }
 
   DetailView.propTypes = {
-    schemaReducer: PropTypes.object.isRequired,
-    detailReducer: PropTypes.object.isRequired,
-    configReducer: PropTypes.object.isRequired,
-    fetchData: PropTypes.func.isRequired,
     clearData: PropTypes.func.isRequired,
   };
 
-  function mapStateToProps(state, props) {
+  function mapStateToProps(state, {schemaId}) {
     return {
-      schemaReducer: state.schemaReducer,
-      uiSchema: getUiSchema(state, props.singular),
-      detailReducer: state.detailReducer,
-      configReducer: state.configReducer
+      activeSchema: getSchema(state, schemaId),
+      uiSchema: getUiSchema(state, schemaId),
+      isLoading: checkLoading(state),
+      data: getData(state),
     };
   }
 
-  function mapDispatchToProps(dispatch, {schemaId}) {
+  const mapDispatchToProps = (dispatch, {schemaId, params, url}) => {
     return bindActionCreators({
       openUpdateDialog: openDialog(`${schemaId}_update`),
       closeUpdateDialog: closeDialog(`${schemaId}_update`),
-      initialize,
-      fetchData,
+      fetch: fetch(`${url}/${params.id}`),
       clearData,
-      deleteData,
-      updateData
+      remove: remove(`${url}/${params.id}`),
+      update: update(`${url}/${params.id}`)
     }, dispatch);
-  }
+  };
 
   return connect(mapStateToProps, mapDispatchToProps)(DetailView);
 };

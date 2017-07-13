@@ -7,12 +7,13 @@ import Auth from '../auth/Auth';
 import components from './componentsList';
 import createRoutes from './createRoutes';
 
+import {getAllSchemas} from './../schema/SchemaSelectors';
 import {fetchSchema} from './../schema/SchemaActions';
 
 class Routes extends Component {
   shouldComponentUpdate(props) {
     return !(
-      props.schemaReducer.data.length === this.props.schemaReducer.data.length && props.schemaReducer.data.length !== 0
+      props.schemas.length === this.props.schemas.length && props.schemas.length !== 0
     );
   }
 
@@ -21,7 +22,7 @@ class Routes extends Component {
   };
 
   render() {
-    if (this.props.schemaReducer.data.length !== 0) {
+    if (this.props.schemas.length !== 0) {
       const routes = createRoutes(this.props.store, components);
 
       return (
@@ -36,7 +37,7 @@ class Routes extends Component {
 
 function mapStateToProps(state) {
   return {
-    schemaReducer: state.schemaReducer,
+    schemas: getAllSchemas(state),
   };
 }
 
@@ -49,5 +50,5 @@ Routes.contextTypes = {
 };
 
 Routes.propTypes = {
-  schemaReducer: PropTypes.object
+  schemas: PropTypes.array
 };
