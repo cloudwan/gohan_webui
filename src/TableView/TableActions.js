@@ -17,6 +17,8 @@ import {
   DELETE_MULTIPLE_RESOURCES_SUCCESS
 } from './TableActionTypes';
 
+import {showError} from './../Dialog/DialogActions';
+
 /**
  * Initializes resource settings like url and plural.
  *
@@ -172,7 +174,8 @@ function createError(data) {
   return dispatch => {
     const {error} = data.data;
 
-    dispatch({type: CREATE_FAILURE, error});
+    dispatch({type: CREATE_FAILURE});
+    dispatch(showError(error));
   };
 }
 
@@ -231,7 +234,8 @@ function updateError(data) {
   return dispatch => {
     const {error} = data.data;
 
-    dispatch({type: UPDATE_FAILURE, error});
+    dispatch({type: UPDATE_FAILURE});
+    dispatch(showError(error));
   };
 }
 
