@@ -15,6 +15,8 @@ import {
   UPDATE_FAILURE,
 } from './DetailActionTypes';
 
+import {showError} from './../Dialog/DialogActions';
+
 export const fetch = url => () => dispatch => dispatch({
   type: FETCH,
   url,
@@ -41,10 +43,12 @@ export const clearData = () => dispatch => {
 
 export const updateSuccess = url => dispatch => dispatch(fetch(url)());
 
-export const updateError = error => dispatch => dispatch({
-  type: UPDATE_FAILURE,
-  error
-});
+export const updateError = error => dispatch => {
+  dispatch({
+    type: UPDATE_FAILURE,
+  });
+  dispatch(showError(error));
+};
 
 export const update = url => (data, successCb, errorCb) => {
   return (dispatch, getState) => {

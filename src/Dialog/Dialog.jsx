@@ -1,15 +1,22 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Dialog, Button, ProgressBar, Intent} from '@blueprintjs/core';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
+import {Dialog, ProgressBar, Intent} from '@blueprintjs/core';
+import Button from './../components/Button';
 
 import {getSchema, getLoadingState} from './DialogSelectors';
 import widgets from './formComponents/widgets';
 import fields from './formComponents/fields';
 import Template from './formComponents/Template';
 
-import {prepareSchema, clearData} from './DialogActions';
+import ErrorToast from './components/ErrorToast';
+
+import {
+  prepareSchema,
+  clearData,
+  clearError,
+} from './DialogActions';
 import {getUiSchemaProperties, getUiSchemaLogic} from './../uiSchema/UiSchemaSelectors';
 /**
  * Dialog component for creating and editing resources.
@@ -61,25 +68,11 @@ export class GeneratedDialog extends Component {
     const {action, baseSchema, customTitle} = this.props;
     const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
       `${action === 'create' ? ' new ' : ' '}${baseSchema.title}`;
-    const actions = [];
-
-    actions.push(
-      <Button key={actions.length} text="Cancel"
-        onClick={this.props.onClose}
-      />
-    );
-    actions.push(
-      <Button key={actions.length} text="Submit"
-        intent={Intent.PRIMARY} onClick={event => {
-          this.form.onSubmit(event);
-        }}
-      />
-    );
 
     return (
-      <Dialog title={title} actions={actions}
-        autoScrollBodyContent={true}
+      <Dialog title={title}
         {...this.props}>
+        <ErrorToast />
         <div className="pt-dialog-body">
           {(() => {
             if (this.props.isLoading || this.props.schema === undefined) {
@@ -115,7 +108,13 @@ export class GeneratedDialog extends Component {
         </div>
         <div className="pt-dialog-footer">
           <div className="pt-dialog-footer-actions">
-            {actions}
+            <Button text="Cancel"
+              onClick={this.props.onClose}
+            />
+            <Button text="Submit"
+              intent={Intent.PRIMARY}
+              onClick={event => {this.form.onSubmit(event);}}
+            />
           </div>
         </div>
       </Dialog>
@@ -128,7 +127,7 @@ GeneratedDialog.defaultProps = {
   action: 'create',
   data: {},
   onSubmit: () => {},
-  uiSchema: {}
+  uiSchema: {},
 };
 
 if (process.env.NODE_ENV !== 'production') {
@@ -157,10 +156,11 @@ const mapStateToProps = (state, {baseSchema}) => ({
   schema: getSchema(state),
   jsonUiSchema: getUiSchemaProperties(state, baseSchema.id),
   jsonUiSchemaLogic: getUiSchemaLogic(state, baseSchema.id),
-  isLoading: getLoadingState(state)
+  isLoading: getLoadingState(state),
 });
 
 export default connect(mapStateToProps, {
   prepareSchema,
-  clearData
+  clearError,
+  clearData,
 })(GeneratedDialog);

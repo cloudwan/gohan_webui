@@ -483,6 +483,68 @@ describe('DialogActions ', () => {
         error: 'Cannot find related schema!'
       }
     ]);
+  });
 
+  describe('openDialog', () => {
+    it(`should create ${actionTypes.OPEN}`, () => {
+      const storeObject = {};
+      const store = mockStore(storeObject);
+
+      store.dispatch(actions.openDialog('foo')());
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.OPEN,
+          name: 'foo',
+        }
+      ]);
+    });
+  });
+
+  describe('closeDialog', () => {
+    it(`should create ${actionTypes.CLOSE}`, () => {
+      const storeObject = {};
+      const store = mockStore(storeObject);
+
+      store.dispatch(actions.closeDialog('foo')());
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.CLOSE,
+          name: 'foo',
+        }
+      ]);
+    });
+  });
+
+  describe('clearError', () => {
+    it(`should create ${actionTypes.CLEAR_ERROR}`, () => {
+      const storeObject = {};
+      const store = mockStore(storeObject);
+
+      store.dispatch(actions.clearError());
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.CLEAR_ERROR,
+        }
+      ]);
+    });
+  });
+
+  describe('showError', () => {
+    it(`should create ${actionTypes.CLEAR_ERROR}`, () => {
+      const storeObject = {};
+      const store = mockStore(storeObject);
+
+      store.dispatch(actions.showError('Test error message'));
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.ERROR,
+          message: 'Test error message',
+        }
+      ]);
+    });
   });
 });
