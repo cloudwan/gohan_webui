@@ -6,6 +6,7 @@ import spies from 'chai-spies';
 import axios from 'axios';
 
 import * as actionTypes from './TableActionTypes';
+import * as dialogActionTypes from './../Dialog/DialogActionTypes';
 import * as actions from './TableActions';
 
 chai.use(spies);
@@ -664,7 +665,10 @@ describe('TableActions ', () => {
       store.getActions().should.deep.equal([
         {
           type: actionTypes.CREATE_FAILURE,
-          error: 'Cannot create new resource!'
+        },
+        {
+          type: dialogActionTypes.ERROR,
+          message: 'Cannot create new resource!',
         }
       ]);
     });
@@ -815,7 +819,10 @@ describe('TableActions ', () => {
       store.getActions().should.deep.equal([
         {
           type: actionTypes.UPDATE_FAILURE,
-          error: 'Cannot update resource!'
+        },
+        {
+          type: dialogActionTypes.ERROR,
+          message: 'Cannot update resource!',
         }
       ]);
     });

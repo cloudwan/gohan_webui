@@ -1,6 +1,9 @@
 import React from 'react';
 import ProtoTypes from 'prop-types';
-import {Button as BlueprintButton} from '@blueprintjs/core';
+import {
+  Button as BlueprintButton,
+  Intent as BlueprintIntent,
+} from '@blueprintjs/core';
 
 export const Button = (
   {
@@ -13,6 +16,7 @@ export const Button = (
     onClick,
     type = 'button',
     text,
+    intent = BlueprintIntent.NONE
   }
 ) => (
   <BlueprintButton className={`${isMinimal ? 'pt-minimal' : ''}`}
@@ -22,7 +26,8 @@ export const Button = (
     rightIconName={rightIconName}
     loading={loading}
     onClick={onClick}
-    type={type}>
+    type={type}
+    intent={intent}>
     {text}
   </BlueprintButton>
 );
@@ -40,5 +45,6 @@ if (process.env.NODE_ENV !== 'production') {
     onClick: ProtoTypes.func,
     type: ProtoTypes.string,
     text: ProtoTypes.string,
+    intent: ProtoTypes.number,
   };
 }

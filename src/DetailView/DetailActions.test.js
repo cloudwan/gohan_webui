@@ -5,6 +5,7 @@ import chai from 'chai';
 import spies from 'chai-spies';
 
 import * as actionTypes from './DetailActionTypes';
+import * as dialogActionTypes from './../Dialog/DialogActionTypes';
 import * as actions from './DetailActions';
 
 chai.use(spies);
@@ -94,8 +95,11 @@ describe('DetailActions ', () => {
       store.getActions().should.deep.equal([
         {
           type: actionTypes.UPDATE_FAILURE,
-          error: 'Error message'
         },
+        {
+          type: dialogActionTypes.ERROR,
+          message: 'Error message',
+        }
       ]);
     });
   });

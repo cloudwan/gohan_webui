@@ -5,6 +5,8 @@ import {
   CLOSE,
   PREPARE_SUCCESS,
   PREPARE_FAILURE,
+  ERROR,
+  CLEAR_ERROR,
   CLEAR_DATA
 } from './DialogActionTypes';
 
@@ -223,5 +225,18 @@ export const closeDialog = name => () => dispatch => dispatch(
   {
     type: CLOSE,
     name
+  }
+);
+
+export const clearError = () => dispatch => dispatch(
+  {
+    type: CLEAR_ERROR,
+  }
+);
+
+export const showError = message => dispatch => dispatch(
+  {
+    type: ERROR,
+    message,
   }
 );
