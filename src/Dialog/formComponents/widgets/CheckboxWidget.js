@@ -9,13 +9,16 @@ function CheckboxWidget({
   disabled,// eslint-disable-line
   label,
   autofocus,
-  onChange,
+  onChange
 }) {
+  const defaultValue = typeof schema.default === 'undefined' ? false : schema.default;
+  const checked = typeof value === 'undefined' ? defaultValue : value;
+
   return (
     <label className={'pt-control gohan-form-checkbox pt-checkbox'}>
       <input type='checkbox'
         id={id}
-        checked={typeof value === 'undefined' ? false : value}
+        checked={checked}
         required={required}
         disabled={disabled}
         autoFocus={autofocus}
