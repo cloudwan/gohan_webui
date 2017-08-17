@@ -91,7 +91,7 @@ class TableRow extends Component {
 
       return (
         <td key={index}>
-          {data}
+          {String(data)}
         </td>
       );
     });
