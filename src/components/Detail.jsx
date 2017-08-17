@@ -14,6 +14,13 @@ export default class Detail extends Component {
     this.props.onDelete(this.props.data);
   };
 
+  renderPropertyValueAsText = propertyValue => {
+    if (typeof propertyValue === 'object') {
+        return JSON.stringify(propertyValue);
+    }
+
+    return String(propertyValue);
+  };
 
   render() {
     const {schema, title} = this.props.schema;
@@ -61,7 +68,7 @@ export default class Detail extends Component {
           return (
             <p key={index}>
               <span className="property-title">{property.title}: </span>
-              <span>{typeof propertyValue === 'object' ? JSON.stringify(propertyValue) : propertyValue}</span>
+              <span>{this.renderPropertyValueAsText(propertyValue)}</span>
             </p>
           );
         })}
