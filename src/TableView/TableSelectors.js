@@ -21,13 +21,35 @@ const offset = (state, props) => {
   }
   return 0;
 };
+const data = (state, props) => state.tableReducer[props.plural].data;
+const parentUrl = (state, props) => props.parentUrl;
+const tableReducer = state => state.tableReducer;
+const isLoading = (state, props) => {
+  if (state.tableReducer && state.tableReducer[props.plural]) {
+    return state.tableReducer[props.plural].isLoading;
+  }
+
+  return true;
+};
+
+export const getResourceTitle = createSelector(
+  [(state, props) => getActiveSchema(state, props)],
+  schema => schema.title
+);
 
 export const getActiveSchema = createSelector(
   [schemaReducer, plural],
-  (schemas, plural) => {
-    return schemas.find(
-      object => object.plural === plural
-    );
+  (schemas, plural) => schemas.find(object => object.plural === plural)
+);
+
+export const getLinkUrl = createSelector(
+  [(state, props) => getActiveSchema(state, props), parentUrl],
+  (schema, parentUrl) => {
+    if (schema) {
+      return parentUrl || `${schema.prefix}/${schema.plural}`;
+    }
+
+    return '';
   }
 );
 
@@ -54,7 +76,13 @@ export const getHeaders = createSelector(
           return result;
         }
 
-        result.push(item);
+        const transformedItem = {
+          id: item,
+          title: schemaProperties[item].title,
+          type: schemaProperties[item].type
+        };
+
+        result.push(transformedItem);
 
         return result;
       }, []);
@@ -62,6 +90,11 @@ export const getHeaders = createSelector(
 
     return [];
   }
+);
+
+export const getData = createSelector(
+  [data],
+  data => data
 );
 
 export const getActivePage = createSelector(
@@ -76,4 +109,39 @@ export const getPageCount = createSelector(
   (totalCount, limit, pageLimit) => {
     return Math.ceil(totalCount / (limit || pageLimit));
   }
+);
+
+export const getSortOptions = createSelector(
+  [tableReducer, plural],
+  (tableReducer, plural) => {
+    return {
+      sortKey: tableReducer[plural].sortKey,
+      sortOrder: tableReducer[plural].sortOrder
+    };
+  }
+);
+
+export const getFilters = createSelector(
+  [tableReducer, plural],
+  (tableReducer, plural) => tableReducer[plural].filters
+);
+
+export const getPageLimit = createSelector(
+  [pageLimit],
+  pageLimit => pageLimit
+);
+
+export const getLimit = createSelector(
+  [limit],
+  limit => limit
+);
+
+export const getTotalCount = createSelector(
+  [totalCount],
+  totalCount => totalCount
+);
+
+export const getIsLoading = createSelector(
+  [isLoading],
+  isLoading => isLoading
 );

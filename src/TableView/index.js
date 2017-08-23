@@ -27,8 +27,8 @@ export function onTableEnter(store, plural, nextState, parentUrl = '') {
 
   store.dispatch(
     initialize(
-      `${parentUrl}/${plural}`, plural,
-      {
+      `${parentUrl}/${plural}`,
+      plural, {
         sortKey,
         sortOrder,
         limit,
