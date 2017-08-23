@@ -5,11 +5,23 @@ import {connect} from 'react-redux';
 import dialog from '../Dialog';
 
 import Table from '../components/Table';
+import TableToolbar from '../components/Table/TableToolbar';
+import TablePagination from '../components/Table/TablePagination';
+
 import {
   getActiveSchema,
   getHeaders,
   getPageCount,
-  getActivePage
+  getActivePage,
+  getData,
+  getLinkUrl,
+  getSortOptions,
+  getResourceTitle,
+  getFilters,
+  getPageLimit,
+  getLimit,
+  getTotalCount,
+  getIsLoading
 } from './TableSelectors';
 import {
   initialize,
@@ -38,33 +50,75 @@ export const getTableView = (TableComponent = Table) => {
       super(props);
 
       this.state = {
-        alertOpen: false,
-        alertDeleteSelectedOpen: false,
-        actionModal: 'create',
         dialogData: {},
         checkedRowsIds: [],
-        checkedAll: {
-          checked: false,
-          changedByRow: false
-        },
-        buttonDeleteSelectedDisabled: true
+        removalSingleItemAlertOpen: false,
+        removedItemId: null,
+        removalSelectedItemsAlertOpen: false
       };
     }
 
-    componentWillReceiveProps(nextProps) {
-      if (nextProps.tableReducer.deletedMultipleResources === true &&
-        nextProps.tableReducer.deletedMultipleResources !== this.props.tableReducer.deletedMultipleResources) {
-        this.setState({
-          checkedRowsIds: [],
-          buttonDeleteSelectedDisabled: true,
-          checkedAll: {checked: false, changedByRow: false}
-        });
+    clearCheckedRows = () => {
+      this.setState({checkedRowsIds: []});
+    };
+
+    handleRemoveItemClick = id => {
+      this.setState({removalSingleItemAlertOpen: true, removedItemId: id});
+    };
+
+    handleCloseRemovalSingleItemAlert = () => {
+      this.setState({removalSingleItemAlertOpen: false, removedItemId: null});
+    };
+
+    handleDeleteItem = () => {
+      this.props.deleteData(this.state.removedItemId, this.props.activeSchema.plural);
+      this.handleCloseRemovalSingleItemAlert();
+    };
+
+    handleDeleteSelectedClick = () => {
+      this.setState({removalSelectedItemsAlertOpen: true});
+    };
+
+    handleCloseRemovalSelectedItemsAlert = () => {
+      this.setState({removalSelectedItemsAlertOpen: false});
+    };
+
+    handleDeleteSelected = () => {
+      const {checkedRowsIds} = this.state;
+      const {plural} = this.props;
+
+      if (checkedRowsIds.length > 0) {
+        this.props.deleteMultipleResources(checkedRowsIds, plural, this.clearCheckedRows);
       }
-    }
+
+      if (this.state.removalSelectedItemsAlertOpen) {
+        this.handleCloseRemovalSelectedItemsAlert();
+      }
+    };
+
+    handleCheckItems = (itemsIds, checkedAll) => {
+      const {checkedRowsIds} = this.state;
+      if (checkedAll) {
+        this.setState({
+          checkedRowsIds: itemsIds
+        });
+      } else {
+        itemsIds.forEach(id => {
+          const idPosition = checkedRowsIds.indexOf(id);
+          if (idPosition === -1) {
+            checkedRowsIds.push(id);
+          } else {
+            checkedRowsIds.splice(idPosition, 1);
+          }
+        });
+
+        this.setState({checkedRowsIds});
+      }
+    };
 
     handlePageChange = page => {
-      const {totalCount, limit} = this.props.tableReducer;
-      const {pageLimit} = this.props.configReducer;
+      const {totalCount, limit} = this.props;
+      const {pageLimit} = this.props;
       const newOffset = page * (limit || pageLimit);
 
       if (newOffset > totalCount) {
@@ -85,9 +139,7 @@ export const getTableView = (TableComponent = Table) => {
 
       this.props.setOffset(newOffset, plural);
       this.setState({
-        checkedRowsIds: [],
-        buttonDeleteSelectedDisabled: true,
-        checkedAll: {checked: false, changedByRow: false}
+        checkedRowsIds: []
       });
     };
 
@@ -135,8 +187,8 @@ export const getTableView = (TableComponent = Table) => {
       this.props.createData(data, plural, this.props.closeCreateDialog);
     };
 
-    handleOpenUpdateDialog = id => {
-      this.setState({dialogData: id}, this.props.openUpdateDialog);
+    handleOpenUpdateDialog = item => {
+      this.setState({dialogData: item}, this.props.openUpdateDialog);
     };
 
     handleCloseUpdateDialog = () => {
@@ -149,131 +201,49 @@ export const getTableView = (TableComponent = Table) => {
       this.props.updateData(id, data, plural, this.props.closeUpdateDialog);
     };
 
-    handleOpenAlert = item => {
-      this.setState({alertOpen: true, markedForDeletion: item});
-    };
-
-    handleCloseAlert = () => {
-      this.setState({alertOpen: false});
-    };
-
-    handleOpenDeleteSelectedAlert = () => {
-      this.setState({alertDeleteSelectedOpen: true});
-    };
-
-    handleCloseDeleteSelectedAlert = () => {
-      this.setState({alertDeleteSelectedOpen: false});
-    };
-
-    handleDeleteData = () => {
-      this.props.deleteData(this.state.markedForDeletion.id, this.props.activeSchema.plural);
-      this.handleCloseAlert();
-    };
-
-    handleCheckAllChange = checkedAll => {
-      let {checkedRowsIds} = this.state;
-      const {data} = this.props.tableReducer;
-
-      if (checkedAll.checked === true && checkedAll.changedByRow === false) {
-        if (data.length > 0) {
-          data.forEach(item => {
-            const itemId = item.id;
-            if (checkedRowsIds.includes(itemId) === false) {
-              checkedRowsIds.push(itemId);
-            }
-          });
-        } else {
-          checkedAll.checked = false;
-        }
-      } else {
-        checkedRowsIds = [];
-        checkedAll.checked = false;
-      }
-
-      this.setState({checkedAll, checkedRowsIds, buttonDeleteSelectedDisabled: !checkedAll.checked});
-    };
-
-    handleRowCheckboxChange = id => {
-      let {checkedRowsIds, checkedAll} = this.state;
-      const idIndex = checkedRowsIds.indexOf(id);
-
-      if (idIndex > -1) {
-        checkedRowsIds.splice(idIndex, 1);
-        checkedAll = {
-          checked: false,
-          changedByRow: true
-        };
-      } else {
-        checkedRowsIds.push(id);
-      }
-
-      if (checkedRowsIds.length > 0) {
-        this.setState({buttonDeleteSelectedDisabled: false, checkedAll, checkedRowsIds});
-      } else {
-        this.setState({
-          buttonDeleteSelectedDisabled: true,
-          checkedAll: {
-            checked: false,
-            changedByRow: true
-          },
-          checkedRowsIds
-        }
-        );
-      }
-
-    };
-
-    handleDeleteMultipleResources = () => {
-      const {checkedRowsIds} = this.state;
-      const {plural} = this.props;
-
-      if (checkedRowsIds.length > 0) {
-        this.props.deleteMultipleResources(checkedRowsIds, plural);
-      }
-
-      if (this.state.alertDeleteSelectedOpen) {
-        this.handleCloseDeleteSelectedAlert();
-      }
-    };
-
-    showDeleteSelectedAlert = () => {
-      if (this.state.alertDeleteSelectedOpen) {
+    renderRemovalSingleItemAlert = () => {
+      if (this.state.removalSingleItemAlertOpen) {
         return (
-          <Alert isOpen={this.state.alertDeleteSelectedOpen}
-            onConfirm={this.handleDeleteMultipleResources}
-            onCancel={this.handleCloseDeleteSelectedAlert}
-            intent={Intent.PRIMARY}
-            confirmButtonText={'Delete'}
-            cancelButtonText={'Cancel'}>
-            <p>Delete selected rows?</p>
+          <Alert intent={Intent.PRIMARY}
+            isOpen={this.state.removalSingleItemAlertOpen}
+            confirmButtonText='Delete'
+            cancelButtonText='Cancel'
+            onConfirm={this.handleDeleteItem}
+            onCancel={this.handleCloseRemovalSingleItemAlert}>
+            <p>Delete item?</p>
           </Alert>
         );
       }
     };
 
-    showAlert = () => {
-      if (this.state.alertOpen) {
+    renderRemovalSelectedItemsAlert = () => {
+      if (this.state.removalSelectedItemsAlertOpen) {
         return (
           <Alert intent={Intent.PRIMARY}
-            isOpen={this.state.alertOpen}
+            isOpen={this.state.removalSelectedItemsAlertOpen}
             confirmButtonText='Delete'
             cancelButtonText='Cancel'
-            onConfirm={this.handleDeleteData}
-            onCancel={this.handleCloseAlert}>
-            <p>Delete {this.state.markedForDeletion.name} ?</p>
+            onConfirm={this.handleDeleteSelected}
+            onCancel={this.handleCloseRemovalSelectedItemsAlert}>
+            <p>Delete item(s)?</p>
           </Alert>
         );
       }
     };
 
     render() {
-      if (!this.props.tableReducer || this.props.tableReducer.isLoading) {
+      if (this.props.isLoading) {
         return (
-          <LoadingIndicator />
+          <LoadingIndicator/>
         );
       }
 
-      const {data, filters} = this.props.tableReducer;
+      const {
+        data,
+        linkUrl,
+        resourceTitle,
+        filters
+      } = this.props;
       const filterValue = filters ? filters[Object.keys(filters)[0]] : '';
       const filterBy = filters ? Object.keys(filters)[0] : '';
 
@@ -304,34 +274,53 @@ export const getTableView = (TableComponent = Table) => {
         <div className="table-container">
           <CreateDialog/>
           <UpdateDialog/>
-          {this.showAlert()}
-          {this.showDeleteSelectedAlert()}
-          <TableComponent schema={{
-            ...this.props.activeSchema,
-            url: (this.props.parentUrl || this.props.activeSchema.prefix) + '/' + this.props.activeSchema.plural
-          }}
-            data={data}
-            pageCount={this.props.pageCount}
-            activePage={this.props.activePage}
-            filterBy={filterBy}
-            filterValue={filterValue}
-            sortKey={this.props.tableReducer.sortKey}
-            sortOrder={this.props.tableReducer.sortOrder}
-            handlePageChange={this.handlePageChange}
-            removeData={this.handleDeleteData}
-            filterData={this.handleFilterData}
-            visibleColumns={this.props.headers}
-            openModal={this.handleOpenCreateDialog}
-            closeModal={this.handleCloseCreateDialog}
-            editData={this.handleOpenUpdateDialog}
-            rowCheckboxChange={this.handleRowCheckboxChange}
-            sortData={this.handleSortData}
-            openDeleteSelectedAlert={this.handleOpenDeleteSelectedAlert}
-            buttonDeleteSelectedDisabled={this.state.buttonDeleteSelectedDisabled}
-            checkedAll={this.state.checkedAll}
-            handleCheckAll={this.handleCheckAllChange}
-            openAlert={this.handleOpenAlert}
-          />
+          {this.renderRemovalSingleItemAlert()}
+          {this.renderRemovalSelectedItemsAlert()}
+          <div className={'pt-card pt-elevation-3'}>
+            <TableToolbar deleteSelected={{
+              disabled: this.state.checkedRowsIds.length === 0,
+              onClick: this.handleDeleteSelectedClick
+            }}
+              newResource={{
+              onClick: this.handleOpenCreateDialog,
+              title: resourceTitle
+            }}
+              filters={{
+                properties: this.props.headers,
+                onChange: this.handleFilterData,
+                by: filterBy,
+                value: filterValue
+              }}
+            />
+            <TableComponent data={data}
+              url={linkUrl}
+              columns={this.props.headers}
+              checkboxColumn={{
+                visible: true,
+                onCheckboxClick: this.handleCheckItems,
+                checkedItems: this.state.checkedRowsIds
+              }}
+              optionsColumn={{
+                edit: {
+                  visible: true,
+                  onClick: this.handleOpenUpdateDialog
+                },
+                remove: {
+                  visible: true,
+                  onClick: this.handleRemoveItemClick
+                }
+              }}
+              sortOptions={{
+                sortKey: this.props.sortOptions.sortKey,
+                sortOrder: this.props.sortOptions.sortOrder,
+                onChange: this.handleSortData
+              }}
+            />
+            <TablePagination pageCount={this.props.pageCount}
+              activePage={this.props.activePage}
+              handlePageClick={this.handlePageChange}
+            />
+          </div>
         </div>
       );
     }
@@ -343,8 +332,6 @@ export const getTableView = (TableComponent = Table) => {
 
   TableView.propTypes = {
     errorMessage: PropTypes.string,
-    schemaReducer: PropTypes.object.isRequired,
-    tableReducer: PropTypes.object,
     fetchData: PropTypes.func.isRequired,
     clearData: PropTypes.func.isRequired
   };
@@ -355,9 +342,15 @@ export const getTableView = (TableComponent = Table) => {
       headers: getHeaders(state, props),
       pageCount: getPageCount(state, props),
       activePage: getActivePage(state, props),
-      configReducer: state.configReducer,
-      schemaReducer: state.schemaReducer,
-      tableReducer: state.tableReducer[props.plural]
+      data: getData(state, props),
+      linkUrl: getLinkUrl(state, props),
+      sortOptions: getSortOptions(state, props),
+      resourceTitle: getResourceTitle(state, props),
+      filters: getFilters(state, props),
+      pageLimit: getPageLimit(state, props),
+      limit: getLimit(state, props),
+      totalCount: getTotalCount(state, props),
+      isLoading: getIsLoading(state, props)
     };
   }
 
@@ -379,6 +372,7 @@ export const getTableView = (TableComponent = Table) => {
       deleteMultipleResources
     }, dispatch);
   }
+
   return connect(mapStateToProps, mapDispatchToProps)(TableView);
 };
 

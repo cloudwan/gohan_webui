@@ -367,9 +367,10 @@ function deleteMultipleResourcesSuccess(plural) {
  *
  * @param {[string]} ids
  * @param {string} plural
+ * @param {function} successCb
  * @return {function}
  */
-export function deleteMultipleResources(ids, plural) {
+export function deleteMultipleResources(ids, plural, successCb) {
   return (dispatch, getState) => {
     const state = getState();
     const {url} = state.tableReducer[plural];
@@ -389,6 +390,9 @@ export function deleteMultipleResources(ids, plural) {
       .then(() => {
         previousPageIfEmptyAfterDeletion(ids.length, state, plural, dispatch);
         dispatch(deleteMultipleResourcesSuccess(plural));
+        if (successCb) {
+          successCb();
+        }
       })
       .catch(error => {
         dispatch(deleteError(error));
