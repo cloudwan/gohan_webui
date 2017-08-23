@@ -32,8 +32,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       }
     );
@@ -52,8 +51,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       },
       {
@@ -86,8 +84,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       }
     );
@@ -106,8 +103,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       },
       {
@@ -136,8 +132,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       },
       {
@@ -160,8 +155,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: 'name',
           sortOrder: 'asc',
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       }
     );
@@ -180,8 +174,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       },
       {
@@ -203,8 +196,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       }
     );
@@ -223,8 +215,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       },
       {
@@ -252,8 +243,7 @@ describe('tableReducer ', () => {
           filters: {
             key: 'name',
             value: 'test'
-          },
-          deletedMultipleResources: false,
+          }
         }
       }
     );
@@ -272,8 +262,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: false,
+          filters: {}
         }
       },
       {
@@ -294,8 +283,7 @@ describe('tableReducer ', () => {
           limit: undefined,
           sortKey: undefined,
           sortOrder: undefined,
-          filters: {},
-          deletedMultipleResources: true,
+          filters: {}
         }
       }
     );

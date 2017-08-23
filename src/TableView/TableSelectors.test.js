@@ -88,6 +88,8 @@ describe('TableSelectors ', () => {
                     id: {
                     },
                     name: {
+                      title: 'title',
+                      type: 'string',
                     },
                     description: {
                       view: [
@@ -108,7 +110,11 @@ describe('TableSelectors ', () => {
           plural: 'test1'
         }
       ).should.deep.equal([
-        'name'
+        {
+          id: 'name',
+          title: 'title',
+          type: 'string'
+        }
       ]);
 
       selectors.getHeaders(
@@ -122,8 +128,12 @@ describe('TableSelectors ', () => {
                     id: {
                     },
                     name: {
+                      title: 'title',
+                      type: 'string'
                     },
                     description: {
+                      title: 'title',
+                      type: 'string',
                       view: [
                         'list'
                       ]
@@ -141,9 +151,15 @@ describe('TableSelectors ', () => {
         {
           plural: 'test1'
         }
-      ).should.deep.equal([
-        'name',
-        'description'
+      ).should.deep.equal([{
+        id: 'name',
+        title: 'title',
+        type: 'string'
+      }, {
+        id: 'description',
+        title: 'title',
+        type: 'string'
+      }
       ]);
     });
 
@@ -159,8 +175,12 @@ describe('TableSelectors ', () => {
                     id: {
                     },
                     name: {
+                      title: 'title',
+                      type: 'string'
                     },
                     description: {
+                      title: 'title',
+                      type: 'string',
                       view: [
                         'list'
                       ]
@@ -179,9 +199,15 @@ describe('TableSelectors ', () => {
         {
           plural: 'test1'
         }
-      ).should.deep.equal([
-        'name',
-        'description'
+      ).should.deep.equal([{
+        id: 'name',
+        title: 'title',
+        type: 'string'
+      }, {
+        id: 'description',
+        title: 'title',
+        type: 'string'
+      }
       ]);
     });
   });

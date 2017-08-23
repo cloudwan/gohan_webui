@@ -27,7 +27,6 @@ export default function tableReducer(state = {}, action) {
           sortKey: undefined,
           sortOrder: undefined,
           filters: {},
-          deletedMultipleResources: false,
           ...data
         }
       };
@@ -36,7 +35,6 @@ export default function tableReducer(state = {}, action) {
         result[key] = {
           ...state[key],
           isLoading: false,
-          deletedMultipleResources: false,
           data: data[key],
           ...options
         };
@@ -53,8 +51,7 @@ export default function tableReducer(state = {}, action) {
         [data.plural]: {
           ...state[data.plural],
           sortKey: data.sortKey,
-          sortOrder: data.sortOrder,
-          deletedMultipleResources: false
+          sortOrder: data.sortOrder
         }
       };
     case UPDATE_OFFSET:
@@ -62,8 +59,7 @@ export default function tableReducer(state = {}, action) {
         ...state,
         [data.plural]: {
           ...state[data.plural],
-          offset: data.offset,
-          deletedMultipleResources: false
+          offset: data.offset
         }
       };
     case UPDATE_FILTERS:
@@ -71,16 +67,14 @@ export default function tableReducer(state = {}, action) {
         ...state,
         [data.plural]: {
           ...state[data.plural],
-          filters: data.filters,
-          deletedMultipleResources: false
+          filters: data.filters
         }
       };
     case DELETE_MULTIPLE_RESOURCES_SUCCESS:
       return {
         ...state,
         [data.plural]: {
-          ...state[data.plural],
-          deletedMultipleResources: true
+          ...state[data.plural]
         }
       };
     default:
