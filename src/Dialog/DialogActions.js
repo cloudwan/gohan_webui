@@ -3,6 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import {
   OPEN,
   CLOSE,
+  CLOSE_ALL,
   PREPARE_SUCCESS,
   PREPARE_FAILURE,
   ERROR,
@@ -227,6 +228,8 @@ export const closeDialog = name => () => dispatch => dispatch(
     name
   }
 );
+
+export const closeActiveDialog = () => ({type: CLOSE_ALL});
 
 export const clearError = () => dispatch => dispatch(
   {
