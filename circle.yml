@@ -1,6 +1,6 @@
 machine:
   node:
-    version: 6.1.0
+    version: 8.4.0
 test:
   override:
     - npm run lint -- -f junit -o $CIRCLE_TEST_REPORTS/eslint-results.xml
