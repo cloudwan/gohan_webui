@@ -17,6 +17,9 @@ $brand-info:            #9954BB !default;
 $brand-warning:         #FF7518 !default;
 $brand-danger:          #FF0039 !default;
 
+.CodeMirror {
+  max-height: 45vh !important;
+}
 
 /*
  * Base structure
@@ -41,6 +44,37 @@ body {
 }
 .table-container, .detail-container, .loading-container {
   margin: 15px
+}
+
+.detail {
+  padding: 0;
+  .detail-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-bottom: 1px solid #ddd;
+    padding: 0 15px;
+    .title {
+      font-size: 18px;
+      margin: 10px 0;
+      line-height: 30px;
+      color: $gray;
+    }
+    .actions {
+      margin: 10px 0;
+    }
+  }
+  .detail-content {
+    padding: 20px;
+    >*>span.property-title {
+      font-weight: bold;
+      color: $gray;
+    }
+  }
+}
+
+.detail-custom-action:first-letter {
+  text-transform: capitalize;
 }
 
 .table {
@@ -74,23 +108,6 @@ body {
 .table-container {
   [type=button], select {
     user-select: none;
-  }
-}
-
-.detail {
-  h2 {
-    display: inline-block;
-  }
-  >span.property-title {
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.9);
-  }
-  .icons {
-    display: inline-block;
-    float: right;
-    &.delete {
-      margin-left: 15px;
-    }
   }
 }
 

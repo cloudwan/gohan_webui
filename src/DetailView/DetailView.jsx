@@ -96,11 +96,7 @@ export const getDetailView = (DetailComponent = Detail) => {
     };
 
     render() {
-      const {
-        data,
-        isLoading,
-        activeSchema,
-      } = this.props;
+      const {isLoading} = this.props;
 
       if (isLoading) {
         return (
@@ -108,6 +104,12 @@ export const getDetailView = (DetailComponent = Detail) => {
         );
       }
 
+      const {
+        data,
+        activeSchema,
+        url,
+        id
+      } = this.props;
       const UpdateDialog = dialog({name: `${this.props.schemaId}_update`})(
         props => (
           <Dialog {...props}
@@ -126,6 +128,7 @@ export const getDetailView = (DetailComponent = Detail) => {
           {this.showAlert()}
           <DetailComponent schema={activeSchema} data={data}
             onEdit={this.handleOpenUpdateDialog} onDelete={this.handleOpenAlert}
+            url={url} id={id}
           />
         </div>
       );

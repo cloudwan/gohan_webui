@@ -7,6 +7,7 @@ import authReducer from './../auth/authReducer';
 import uiSchemaReducer from './../uiSchema/uiSchemaReducer';
 import schemaReducer from './../schema/schemaReducer';
 import dialogReducer from '../Dialog/dialogReducer';
+import customActionReducer from '../CustomActions/CustomActionReducer';
 
 export const makeRootReducer = asyncReducers => {
   return combineReducers({
@@ -17,6 +18,7 @@ export const makeRootReducer = asyncReducers => {
     schemaReducer,
     uiSchemaReducer,
     dialogReducer,
+    customActionReducer,
     ...asyncReducers
   });
 };
