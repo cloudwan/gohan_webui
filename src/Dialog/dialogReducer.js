@@ -1,6 +1,7 @@
 import {
   OPEN,
   CLOSE,
+  CLOSE_ALL,
   PREPARE_SUCCESS,
   CLEAR_DATA,
   ERROR,
@@ -29,6 +30,11 @@ export default function dialogReducer(
 
       return {
         ...state,
+      };
+    case CLOSE_ALL:
+      return {
+        ...state,
+        dialogs: {}
       };
     case ERROR:
       return {
