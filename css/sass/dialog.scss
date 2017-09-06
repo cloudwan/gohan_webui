@@ -75,6 +75,12 @@ $object-field-background: #ebf1f5;
   }
 }
 
+.field-array-of-object {
+  .sort {
+    display: flex;
+    justify-content: space-between;
+  }
+}
 .list-sortable {
   counter-reset: section;
   padding: 0;
