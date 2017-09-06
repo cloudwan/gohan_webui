@@ -6,8 +6,12 @@ $object-field-background: #ebf1f5;
 .pt-dialog {
   position: relative;
   width: auto;
-  margin: 10px;
   top: initial;
+  max-height: 90vh;
+  margin: 5vh auto;
+  .pt-dialog-body {
+    overflow-y: auto;
+  }
 }
 .pt-dialog > div.pt-toast {
   margin: 20px 20px 0;
@@ -16,7 +20,6 @@ $object-field-background: #ebf1f5;
 @media (min-width: 768px) {
   .pt-dialog {
     width: 600px;
-    margin: 30px auto;
   }
 }
 @media (min-width: 992px) {
