@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Button, Intent} from '@blueprintjs/core';
+import {Tab2, Tabs2, Button, Intent} from '@blueprintjs/core';
 import {ArraySortableItem} from './ArraySortableItem';
+
 
 import {
   getWidget,
@@ -63,12 +64,16 @@ export default class ArrayField extends Component {
       const {schema, registry} = this.props;
       const {definitions} = registry;
       let itemSchema = schema.items;
+
       if (isFixedItems(schema) && allowAdditionalItems(schema)) {
         itemSchema = schema.additionalItems;
       }
-      this.props.onChange(items.concat([
-        getDefaultFormState(itemSchema, undefined, definitions)
-      ]), {validate: false});
+
+      if (this.props.formData === undefined) {
+        this.props.onChange(items.concat([
+          getDefaultFormState(itemSchema, undefined, definitions)
+        ]), {validate: false});
+      }
     }
   }
 
@@ -79,7 +84,9 @@ export default class ArrayField extends Component {
   getStateFromProps(props) {
     const formData = Array.isArray(props.formData) ? props.formData : null;
     const {definitions} = this.props.registry;
+
     return {
+      selectedTabId: this.state ? this.state.selectedTabId : 0,
       items: getDefaultFormState(props.schema, formData, definitions) || []
     };
   }
@@ -104,13 +111,18 @@ export default class ArrayField extends Component {
     const {schema, registry} = this.props;
     const {definitions} = registry;
     let itemSchema = schema.items;
+
     if (isFixedItems(schema) && allowAdditionalItems(schema)) {
       itemSchema = schema.additionalItems;
     }
+
+    const newItems = items.concat([
+      getDefaultFormState(itemSchema, undefined, definitions)
+    ]);
+
     this.asyncSetState({
-      items: items.concat([
-        getDefaultFormState(itemSchema, undefined, definitions)
-      ])
+      items: newItems,
+      selectedTabId: newItems.length - 1
     });
   };
 
@@ -118,9 +130,14 @@ export default class ArrayField extends Component {
     return event => {
       event.preventDefault();
       event.stopPropagation();
-      this.asyncSetState({
-        items: this.state.items.filter((_, i) => i !== index)
-      }, {validate: true});
+      const newState = {
+        items: this.state.items.filter((_, i) => i !== index),
+      };
+
+      if (this.state.selectedTabId >= newState.items.length) {
+        newState.selectedTabId = this.state.selectedTabId - 1;
+      }
+      this.asyncSetState(newState, {validate: true});
     };
   };
 
@@ -138,6 +155,18 @@ export default class ArrayField extends Component {
       const {items} = this.state;
       this.asyncSetState({
         items: ArrayField.reorderList(items, oldIndex, newIndex)
+      }, {validate: true});
+    };
+  };
+
+  onReorderObjectClick = (oldIndex, newIndex) => {
+    return event => {
+      event.preventDefault();
+      event.target.blur();
+      const {items} = this.state;
+      this.asyncSetState({
+        items: ArrayField.reorderList(items, oldIndex, newIndex),
+        selectedTabId: newIndex
       }, {validate: true});
     };
   };
@@ -168,7 +197,97 @@ export default class ArrayField extends Component {
     if (isMultiSelect(schema)) {
       return this.renderMultiSelect();
     }
+    if (schema.items.type === 'object') {
+      return this.renderObjectArray();
+    }
     return this.renderNormalArray();
+  }
+
+  renderObjectArray() {
+    const {
+      schema,
+      uiSchema,
+      errorSchema,
+      idSchema,
+      name,
+      required,
+      disabled,
+      readonly,
+      autofocus,
+    } = this.props;
+    const title = (schema.title === undefined) ? name : schema.title;
+    const {items} = this.state;
+    const {definitions, fields} = this.props.registry;
+    const {TitleField, DescriptionField} = fields;
+    const itemsSchema = retrieveSchema(schema.items, definitions);
+    const {orderable} = {orderable: true, ...uiSchema['ui:options']};
+
+    return (
+      <div className={`field field-array field-array-of-${itemsSchema.type}`}>
+        <ArrayFieldTitle TitleField={TitleField}
+          idSchema={idSchema}
+          title={title}
+          required={required}
+        />
+        {
+          schema.description &&
+          <ArrayFieldDescription DescriptionField={DescriptionField}
+            idSchema={idSchema}
+            description={schema.description}
+          />
+        }
+        <Button intent={Intent.PRIMARY} text="Add item"
+          iconName="add" onClick={this.onAddClick}
+          disabled={disabled || readonly} className="pt-minimal"
+        />
+        <Tabs2 selectedTabId={this.state.selectedTabId}
+          renderActiveTabPanelOnly={true}
+          onChange={props => this.setState({selectedTabId: props})}>
+          {
+            items.map((value, index) => {
+              const itemErrorSchema = errorSchema ? errorSchema[index] : undefined;
+              const itemIdPrefix = idSchema.$id + '_' + index;
+              const itemIdSchema = toIdSchema(itemsSchema, itemIdPrefix, definitions);
+
+              return (
+                <Tab2 key={index}
+                  id={index}
+                  index={index}
+                  disabled={!orderable}
+                  title={<span>{`Item ${index + 1}`} <Button intent={Intent.PRIMARY} iconName="remove"
+                    className="pt-minimal" onClick={this.onDropIndexClick(index)}
+                  /></span>}
+                  panel={<div>
+                    <div className={'sort'}>
+                      <Button intent={Intent.PRIMARY} iconName="chevron-left"
+                        text="Move Left" className="pt-minimal"
+                        disabled={index === 0} onClick={this.onReorderObjectClick(index, index - 1)}
+                      />
+                      <Button intent={Intent.PRIMARY} rightIconName="chevron-right"
+                        text="Move Right" className="pt-minimal"
+                        disabled={index === items.length - 1} onClick={this.onReorderObjectClick(index, index + 1)}
+                      />
+                    </div>
+                    {this.renderArrayFieldItem({
+                      index,
+                      canMoveUp: index > 0,
+                      canMoveDown: index < items.length - 1,
+                      itemSchema: itemsSchema,
+                      itemIdSchema,
+                      itemErrorSchema,
+                      itemData: items[index],
+                      itemUiSchema: uiSchema.items,
+                      autofocus: autofocus && index === 0
+                    })}
+                  </div>
+                  }
+                />
+              );
+            })
+          }
+        </Tabs2>
+      </div>
+    );
   }
 
   renderNormalArray() {
