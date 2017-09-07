@@ -46,7 +46,7 @@ export const getLinkUrl = createSelector(
   [(state, props) => getActiveSchema(state, props), parentUrl],
   (schema, parentUrl) => {
     if (schema) {
-      return parentUrl || `${schema.prefix}/${schema.plural}`;
+      return `${(parentUrl || schema.prefix)}/${schema.plural}`;
     }
 
     return '';
