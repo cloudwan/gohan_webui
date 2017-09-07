@@ -21,7 +21,13 @@ const offset = (state, props) => {
   }
   return 0;
 };
-const data = (state, props) => state.tableReducer[props.plural].data;
+const data = (state, props) => {
+  if (state.tableReducer && state.tableReducer[props.plural] && state.tableReducer[props.plural].data) {
+    return state.tableReducer[props.plural].data;
+  }
+
+  return {};
+};
 const parentUrl = (state, props) => props.parentUrl;
 const tableReducer = state => state.tableReducer;
 const isLoading = (state, props) => {
@@ -114,16 +120,29 @@ export const getPageCount = createSelector(
 export const getSortOptions = createSelector(
   [tableReducer, plural],
   (tableReducer, plural) => {
+    if (tableReducer && tableReducer[plural]) {
+      return {
+        sortKey: tableReducer[plural].sortKey,
+        sortOrder: tableReducer[plural].sortOrder
+      };
+    }
+
     return {
-      sortKey: tableReducer[plural].sortKey,
-      sortOrder: tableReducer[plural].sortOrder
+      sortKey: '',
+      sortOrder: 'asc'
     };
   }
 );
 
 export const getFilters = createSelector(
   [tableReducer, plural],
-  (tableReducer, plural) => tableReducer[plural].filters
+  (tableReducer, plural) => {
+    if (tableReducer && tableReducer[plural]) {
+      return tableReducer[plural].filters;
+    }
+
+    return {};
+  }
 );
 
 export const getPageLimit = createSelector(
