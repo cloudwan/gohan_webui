@@ -78,6 +78,10 @@ export const getHeaders = createSelector(
           return result;
         }
 
+        if (item.includes(`${property.relation}_id`)) {
+          return result;
+        }
+
         if (property && property.view && !property.view.includes('list')) {
           return result;
         }
