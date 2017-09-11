@@ -8,6 +8,7 @@ import uiSchemaReducer from './../uiSchema/uiSchemaReducer';
 import schemaReducer from './../schema/schemaReducer';
 import dialogReducer from '../Dialog/dialogReducer';
 import customActionReducer from '../CustomActions/CustomActionReducer';
+import apiRequestReducer from '../apiRequest/ApiRequestReducer';
 
 export const makeRootReducer = asyncReducers => {
   return combineReducers({
@@ -19,6 +20,7 @@ export const makeRootReducer = asyncReducers => {
     uiSchemaReducer,
     dialogReducer,
     customActionReducer,
+    apiRequestReducer,
     ...asyncReducers
   });
 };

@@ -22,6 +22,7 @@ import {
 
 import {getUiSchema} from './../uiSchema/UiSchemaSelectors';
 import {getSchema} from './../schema/SchemaSelectors';
+import {getGohanUrl} from '../config/ConfigSelectors';
 import {
   checkLoading,
   getData,
@@ -108,7 +109,8 @@ export const getDetailView = (DetailComponent = Detail) => {
         data,
         activeSchema,
         url,
-        id
+        id,
+        gohanUrl,
       } = this.props;
       const UpdateDialog = dialog({name: `${this.props.schemaId}_update`})(
         props => (
@@ -126,9 +128,13 @@ export const getDetailView = (DetailComponent = Detail) => {
         <div className="detail-container">
           <UpdateDialog/>
           {this.showAlert()}
-          <DetailComponent schema={activeSchema} data={data}
-            onEdit={this.handleOpenUpdateDialog} onDelete={this.handleOpenAlert}
-            url={url} id={id}
+          <DetailComponent schema={activeSchema}
+            data={data}
+            onEdit={this.handleOpenUpdateDialog}
+            onDelete={this.handleOpenAlert}
+            url={url}
+            id={id}
+            gohanUrl={gohanUrl}
           />
         </div>
       );
@@ -145,6 +151,7 @@ export const getDetailView = (DetailComponent = Detail) => {
       uiSchema: getUiSchema(state, schemaId),
       isLoading: checkLoading(state),
       data: getData(state),
+      gohanUrl: getGohanUrl(state),
     };
   }
 
