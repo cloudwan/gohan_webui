@@ -2,9 +2,11 @@ import {combineEpics} from 'redux-observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import AuthEpics from './../auth/AuthEpics';
+import ApiRequestEpics from '../apiRequest/ApiRequestEpics';
 
 const epic$ = new BehaviorSubject(combineEpics(
-  AuthEpics
+  AuthEpics,
+  ApiRequestEpics,
 ));
 
 export const rootEpic = (action$, store) =>

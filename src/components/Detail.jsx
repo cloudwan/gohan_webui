@@ -8,9 +8,22 @@ import {
   Button
 } from '@blueprintjs/core';
 
+import ApiRequest from '../apiRequest';
 import CustomActions from '../CustomActions';
 
 export default class Detail extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isApiRequestFormOpen: false,
+    };
+  }
+
+  handleApiRequestFormToggle = () => this.setState(prevState => ({
+    isApiRequestFormOpen: !prevState.isApiRequestFormOpen,
+  }));
+
   handleEditClick = () => {
     this.props.onEdit(this.props.data);
   };
@@ -32,11 +45,13 @@ export default class Detail extends Component {
       schema,
       title,
     } = this.props.schema;
+    const {isApiRequestFormOpen} = this.state;
     const {actions} = this.props.schema;
     const {
       data,
       url,
       id,
+      gohanUrl,
     } = this.props;
 
     return (
@@ -94,6 +109,16 @@ export default class Detail extends Component {
               </p>
             );
           })}
+          <Button className={'pt-minimal toggle-request-form'}
+            iconName={isApiRequestFormOpen ? 'chevron-up' : 'chevron-down'}
+            text={'API Request Form'}
+            onClick={this.handleApiRequestFormToggle}
+          />
+          {
+            isApiRequestFormOpen && <div className="detail-request-form">
+              <ApiRequest baseUrl={`${gohanUrl}${this.props.schema.url}/${data.id}`} />
+            </div>
+          }
         </div>
       </div>
     );
