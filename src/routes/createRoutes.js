@@ -155,7 +155,7 @@ export const createRoutes = (store, components) => {
                   {
                     schemaChilds.map(child => (
                       <TableView key={child.id} plural={child.plural}
-                        parentUrl={parentUrl} schemaId={schema.id}
+                        parentUrl={parentUrl} schemaId={child.id}
                       />
                     ))
                   }

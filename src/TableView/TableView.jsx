@@ -4,6 +4,8 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import dialog from '../Dialog';
 
+import isEqual from 'lodash/isEqual';
+
 import Table from '../components/Table';
 import TableToolbar from '../components/Table/TableToolbar';
 import TablePagination from '../components/Table/TablePagination';
@@ -115,6 +117,10 @@ export const getTableView = (TableComponent = Table) => {
         this.setState({checkedRowsIds});
       }
     };
+
+    shouldComponentUpdate(nextProps, nextState) {
+      return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
+    }
 
     handlePageChange = page => {
       const {totalCount, limit} = this.props;
