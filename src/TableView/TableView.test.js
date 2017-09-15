@@ -28,6 +28,7 @@ describe('< TableView />', () => {
       data: [{
         plural: 'test',
         schema: {
+          permission: [],
           properties: [],
           propertiesOrder: []
         }
@@ -70,6 +71,7 @@ describe('< TableView />', () => {
         data: [{
           plural: 'test',
           schema: {
+            permission: [],
             properties: [],
             propertiesOrder: []
           }

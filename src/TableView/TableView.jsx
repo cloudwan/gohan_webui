@@ -6,9 +6,7 @@ import dialog from '../Dialog';
 
 import isEqual from 'lodash/isEqual';
 
-import Table from '../components/Table';
-import TableToolbar from '../components/Table/TableToolbar';
-import TablePagination from '../components/Table/TablePagination';
+import TableComponent from './TableComponent';
 
 import {
   getActiveSchema,
@@ -25,6 +23,12 @@ import {
   getTotalCount,
   getIsLoading
 } from './TableSelectors';
+
+import {
+  hasCreatePermission,
+  hasUpdatePermission,
+  hasDeletePermission
+} from './../schema/SchemaSelectors';
 import {
   initialize,
   fetchData,
@@ -37,7 +41,7 @@ import {
   filterData,
   deleteMultipleResources
 } from './TableActions';
-import LoadingIndicator from '../components/LoadingIndicator';
+
 import Dialog from '../Dialog/Dialog';
 
 import {
@@ -46,7 +50,7 @@ import {
 } from '../Dialog/DialogActions';
 import {Alert, Intent} from '@blueprintjs/core';
 
-export const getTableView = (TableComponent = Table) => {
+export const getTableView = (Table = TableComponent) => {
   class TableView extends Component {
     constructor(props) {
       super(props);
@@ -238,17 +242,14 @@ export const getTableView = (TableComponent = Table) => {
     };
 
     render() {
-      if (this.props.isLoading) {
-        return (
-          <LoadingIndicator/>
-        );
-      }
-
       const {
         data,
         linkUrl,
         resourceTitle,
-        filters
+        filters,
+        createPermission,
+        updatePermission,
+        deletePermission
       } = this.props;
       const filterValue = filters ? filters[Object.keys(filters)[0]] : '';
       const filterBy = filters ? Object.keys(filters)[0] : '';
@@ -276,58 +277,59 @@ export const getTableView = (TableComponent = Table) => {
         )
       );
 
+      const tableProps = {
+        isLoading: this.props.isLoading,
+        headers: this.props.headers,
+        title: resourceTitle,
+        url: linkUrl,
+        toolbar: {
+          filter: {
+            onChange: this.handleFilterData,
+            by: filterBy,
+            value: filterValue
+          },
+          onDeleteSelectedClick: this.handleDeleteSelectedClick,
+          onAddResourceClick: this.handleOpenCreateDialog,
+        },
+        table: {
+          data,
+          checkboxColumn: {
+            onCheckboxClick: this.handleCheckItems,
+            checkedItems: this.state.checkedRowsIds
+          },
+          optionsColumn: {
+            edit: {
+              onClick: this.handleOpenUpdateDialog
+            },
+            remove: {
+              onClick: this.handleRemoveItemClick
+            },
+          },
+          sort: {
+            sortKey: this.props.sortOptions.sortKey,
+            sortOrder: this.props.sortOptions.sortOrder,
+            onChange: this.handleSortData
+          }
+        },
+        pagination: {
+          pageCount: this.props.pageCount,
+          onChangePage: this.handlePageChange,
+          activePage: this.props.activePage,
+        },
+        permissions: {
+          create: createPermission,
+          update: updatePermission,
+          remove: deletePermission
+        }
+      };
+
       return (
-        <div className="table-container">
+        <Table {...tableProps}>
           <CreateDialog/>
           <UpdateDialog/>
           {this.renderRemovalSingleItemAlert()}
           {this.renderRemovalSelectedItemsAlert()}
-          <div className={'pt-card pt-elevation-3'}>
-            <TableToolbar deleteSelected={{
-              disabled: this.state.checkedRowsIds.length === 0,
-              onClick: this.handleDeleteSelectedClick
-            }}
-              newResource={{
-              onClick: this.handleOpenCreateDialog,
-              title: resourceTitle
-            }}
-              filters={{
-                properties: this.props.headers,
-                onChange: this.handleFilterData,
-                by: filterBy,
-                value: filterValue
-              }}
-            />
-            <TableComponent data={data}
-              url={linkUrl}
-              columns={this.props.headers}
-              checkboxColumn={{
-                visible: true,
-                onCheckboxClick: this.handleCheckItems,
-                checkedItems: this.state.checkedRowsIds
-              }}
-              optionsColumn={{
-                edit: {
-                  visible: true,
-                  onClick: this.handleOpenUpdateDialog
-                },
-                remove: {
-                  visible: true,
-                  onClick: this.handleRemoveItemClick
-                }
-              }}
-              sortOptions={{
-                sortKey: this.props.sortOptions.sortKey,
-                sortOrder: this.props.sortOptions.sortOrder,
-                onChange: this.handleSortData
-              }}
-            />
-            <TablePagination pageCount={this.props.pageCount}
-              activePage={this.props.activePage}
-              handlePageClick={this.handlePageChange}
-            />
-          </div>
-        </div>
+        </Table>
       );
     }
   }
@@ -356,7 +358,10 @@ export const getTableView = (TableComponent = Table) => {
       pageLimit: getPageLimit(state, props),
       limit: getLimit(state, props),
       totalCount: getTotalCount(state, props),
-      isLoading: getIsLoading(state, props)
+      isLoading: getIsLoading(state, props),
+      createPermission: hasCreatePermission(state, props.schemaId),
+      updatePermission: hasUpdatePermission(state, props.schemaId),
+      deletePermission: hasDeletePermission(state, props.schemaId)
     };
   }
 
