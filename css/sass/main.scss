@@ -297,3 +297,27 @@ select.select {
 .toaster-codemirror .CodeMirror {
   height: 300px;
 }
+
+/*
+ *  Sidebar menu component
+ */
+
+.menu {
+  &-category {
+    &-header {
+      display: flex;
+      justify-content: space-between;
+
+      &-collapsible {
+        cursor: pointer;
+      }
+    }
+  }
+
+  &-search-noresults {
+    margin: 0 10px;
+    word-wrap: break-word;
+    line-height: 20px;
+    font-size: 16px;
+  }
+}
