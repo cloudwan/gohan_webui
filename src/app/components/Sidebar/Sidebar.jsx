@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 import isEqual from 'lodash/isEqual';
+import {connect} from 'react-redux';
 
-
-import {getSidebarItems} from './SidebarSelectors';
-import {getPathname} from './../../../location/LocationSelectors';
+import {getSidebarCategories} from './SidebarSelectors';
+import {getPathname} from '../../../location/LocationSelectors';
 
 import Container from './components/Container';
 import Search from './components/Search';
 import Menu from './components/Menu';
 import MenuItem from './components/MenuItem';
+import MenuCategory from './components/MenuCategory';
 
 export class Sidebar extends Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -33,13 +33,15 @@ export class Sidebar extends Component {
 
   render() {
     const {
-      menuItems,
-      pathname,
-      open,
+      open = true,
+      categories,
+      pathname
     } = this.props;
+
     const {
       searchQuery,
     } = this.state;
+
     const searchRegExp = new RegExp(searchQuery, 'i');
 
     return (
@@ -49,15 +51,25 @@ export class Sidebar extends Component {
         />
         <Menu>
           {
-            menuItems
-              .filter(item => searchRegExp.test(item.title))
-              .map((item, index) => (
-                <MenuItem key={index}
-                  text={item.title}
-                  href={item.path}
-                  isActive={item.path.replace('#', '') === pathname}
-                />
-              ))
+            (categories && categories.length > 0) && categories.map((category, categoryIndex) => {
+              const filteredItems = category.items.filter(item => searchRegExp.test(item.title));
+
+              return (filteredItems.length > 0) && (
+                <MenuCategory key={`${category.title}-${categoryIndex}`}
+                  title={category.title}
+                  items={filteredItems}>
+                  {
+                    filteredItems.map((item, index) => (
+                      <MenuItem key={`${item.title}-${index}`}
+                        text={item.title}
+                        href={item.path}
+                        isActive={item.path.replace('#', '') === pathname}
+                      />
+                    ))
+                  }
+                </MenuCategory>
+              );
+            })
           }
         </Menu>
       </Container>
@@ -65,23 +77,23 @@ export class Sidebar extends Component {
   }
 }
 
+export const mapStateToProps = state => ({
+  categories: getSidebarCategories(state),
+  pathname: getPathname(state),
+});
+
 Sidebar.defaultProps = {
   pathname: '',
-  menuItems: [],
+  categories: [],
   open: false,
 };
 
 if (process.env.NODE_ENV !== 'production') {
   Sidebar.propTypes = {
-    pathname: PropTypes.string,
-    menuItems: PropTypes.array,
-    open: PropTypes.bool
+    open: PropTypes.bool,
+    categories: PropTypes.array,
+    pathname: PropTypes.string.isRequired,
   };
 }
-
-export const mapStateToProps = state => ({
-  pathname: getPathname(state),
-  menuItems: getSidebarItems(state),
-});
 
 export default connect(mapStateToProps, {})(Sidebar);
