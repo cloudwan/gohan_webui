@@ -10,12 +10,12 @@ import {Sidebar} from './Sidebar';
 import Search from './components/Search';
 import Menu from './components/Menu';
 import MenuItem from './components/MenuItem';
+import MenuCategory from './components/MenuCategory';
 import Container from './components/Container';
 
 chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
-
 
 describe('< Sidebar />', function () {
   it('should exist', () => {
@@ -50,30 +50,88 @@ describe('< Sidebar />', function () {
     wrapper.find(Menu).should.have.length(1);
   });
 
-
-  it('should contain list of 2 MenuItems', () => {
-    const menuItems = [
+  it('shouldn\'t render empty categories', () => {
+    const categories = [
       {
-        title: 'title1',
-        path: '#/plural1',
+        title: 'Favorites',
+        items: [],
       },
       {
-        title: 'title2',
-        path: '#/plural2',
-      }
+        title: 'Others',
+        items: [],
+      },
     ];
+
     const wrapper = mount(
-      <Sidebar menuItems={menuItems}/>
+      <Sidebar categories={categories} />
     );
 
-    wrapper.find(MenuItem).should.have.length(2);
-    wrapper.find(MenuItem).at(0).props().text.should.equal('title1');
-    wrapper.find(MenuItem).at(0).props().href.should.equal('#/plural1');
-    wrapper.find(MenuItem).at(0).props().isActive.should.equal(false);
+    const menuCategories = wrapper.find(MenuCategory);
+    menuCategories.should.have.length(0);
 
-    wrapper.find(MenuItem).at(1).props().text.should.equal('title2');
-    wrapper.find(MenuItem).at(1).props().href.should.equal('#/plural2');
-    wrapper.find(MenuItem).at(1).props().isActive.should.equal(false);
+  });
+
+  it('should contain favorites, one category and others with correct menu items', () => {
+    const categories = [
+      {
+        title: 'Favorites',
+        items: [
+          {
+            title: 'title1',
+            path: '#/plural1',
+          },
+        ]
+      },
+      {
+        title: 'category1',
+        items: [
+          {
+            title: 'title1',
+            path: '#/plural1',
+          },
+        ],
+      },
+      {
+        title: 'Others',
+        items: [
+          {
+            title: 'title2',
+            path: '#/plural2',
+          },
+        ],
+      }
+    ];
+
+    const wrapper = mount(
+      <Sidebar categories={categories} />
+    );
+
+    const menuCategories = wrapper.find(MenuCategory);
+    menuCategories.should.have.length(3);
+
+    const favorites = menuCategories.at(0);
+    const category1 = menuCategories.at(1);
+    const others = menuCategories.at(2);
+
+    favorites.props().title.should.equal('Favorites');
+    category1.props().title.should.equal('category1');
+    others.props().title.should.equal('Others');
+
+    const favoriteItems = favorites.find(MenuItem);
+    const category1Items = category1.find(MenuItem);
+    const otherItems = others.find(MenuItem);
+
+    favoriteItems.should.have.length(1);
+    favoriteItems.at(0).props().text.should.equal('title1');
+    favoriteItems.at(0).props().href.should.equal('#/plural1');
+
+    category1Items.should.have.length(1);
+    category1Items.at(0).props().text.should.equal('title1');
+    category1Items.at(0).props().href.should.equal('#/plural1');
+
+    otherItems.should.have.length(1);
+    otherItems.at(0).props().text.should.equal('title2');
+    otherItems.at(0).props().href.should.equal('#/plural2');
   });
 
   it('should have initial state', () => {
@@ -95,22 +153,41 @@ describe('< Sidebar />', function () {
   });
 
   it('should highlight a matching menu item', () => {
-    const menuItems = [
+    const categories = [
       {
-        title: 'title1',
-        path: '#/plural1',
-        index: 1
+        title: 'Favorites',
+        items: [
+          {
+            title: 'title1',
+            path: '#/plural1',
+          },
+        ]
       },
       {
-        title: 'title2',
-        path: '#/v1.0/matchingpath',
-        index: 2
+        title: 'category1',
+        items: [
+          {
+            title: 'title1',
+            path: '#/plural1',
+          },
+          {
+            title: 'title2',
+            path: '#/v1.0/matchingpath',
+          }
+        ]
       }
     ];
     const wrapper = mount(
-      <Sidebar pathname={'/plural1'} menuItems={menuItems}/>
+      <Sidebar pathname={'/plural1'}
+        categories={categories}
+      />
     );
 
-    wrapper.find(MenuItem).findWhere(item => item.props().isActive === true).should.have.length(1);
+    const menuCategories = wrapper.find(MenuCategory);
+    const favorites = menuCategories.at(0);
+    const category1 = menuCategories.at(1);
+
+    favorites.find(MenuItem).findWhere(item => item.props().isActive === true).should.have.length(1);
+    category1.find(MenuItem).findWhere(item => item.props().isActive === true).should.have.length(1);
   });
 });

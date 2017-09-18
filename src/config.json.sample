@@ -7,7 +7,8 @@
     "sidebar": [
         {
             "path": "",
-            "title": "Sample"
+            "title": "Sample",
+            "id": "sample_item"
         }
     ],
     "routes": [
@@ -15,6 +16,35 @@
             "path": "",
             "viewClass": "Sample",
             "name": "Sample"
+        }
+    ],
+    "sidebarFavorites": [
+        "sample_item",
+        "food",
+        "menu"
+    ],
+    "sidebarCategories": [
+        {
+            "name": "Sample Category",
+            "id": "sample_category",
+            "items": [
+                "sample_item"
+            ]
+        },
+        {
+            "name": "Examples",
+            "id": "examples",
+            "items": [
+                "basictype",
+                "format",
+                "objecttype",
+                "food",
+                "menu",
+                "arraytype3",
+                "arraytype2",
+                "arraytype1",
+                "parent_child"
+            ]
         }
     ],
     "errorMessages": {
