@@ -36,14 +36,6 @@ describe('< CheckboxWidget />', function () {
     wrapper.find('input').should.have.length(1);
   });
 
-  it('should contain 1 span', () => {
-    const wrapper = shallow(
-      <CheckboxWidget schema={{}} id={'0'} />
-    );
-
-    wrapper.find('span').should.have.length(1);
-  });
-
   it('should have unchecked input when "checked" value is undefined', () => {
     const wrapper = shallow(
       <CheckboxWidget schema={{}} id={'0'} />

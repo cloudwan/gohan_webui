@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import bootstrap from 'bootstrap/dist/css/bootstrap.css';
 
 function CheckboxWidget({
   schema,  // eslint-disable-line
@@ -15,18 +16,20 @@ function CheckboxWidget({
   const checked = typeof value === 'undefined' ? defaultValue : value;
 
   return (
-    <label className={'pt-control gohan-form-checkbox pt-checkbox'}>
-      <input type='checkbox'
-        id={id}
-        checked={checked}
-        required={required}
-        disabled={disabled}
-        autoFocus={autofocus}
-        onChange={event => onChange(event.target.checked)}
-      />
-      <span className="pt-control-indicator"/>
-      {label}
-    </label>
+    <div className={bootstrap['form-check']}>
+      <label className={bootstrap['form-check-label']}>
+        <input className={bootstrap['form-check-input']}
+          type='checkbox'
+          id={id}
+          checked={checked}
+          required={required}
+          disabled={disabled}
+          autoFocus={autofocus}
+          onChange={event => onChange(event.target.checked)}
+        />
+        {label}
+      </label>
+    </div>
   );
 }
 
