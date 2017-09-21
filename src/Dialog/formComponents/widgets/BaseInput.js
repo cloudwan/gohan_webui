@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+
 import {asNumber} from 'react-jsonschema-form/lib/utils';
+
 import validator from './../validator';
+import Input from './../../../components/forms/Input';
 
 class BaseInput extends Component {
   constructor(props) {
@@ -38,6 +41,7 @@ class BaseInput extends Component {
 
   render() {
     const {
+      id,
       value,
       placeholder,
       label,        // eslint-disable-line
@@ -49,22 +53,14 @@ class BaseInput extends Component {
       formContext,  // eslint-disable-line
       ...inputProps // eslint-disable-line
     } = this.props;
-    const {errors} = this.state;
 
     return (
-      <span className={`pt-form-group gohan-form-dialog-group ${errors.length ? 'pt-intent-danger' : ''}`} >
-        <input className={`pt-input pt-fill ${errors.length ? 'pt-intent-danger' : ''}`} type={schema.type}
-          placeholder={placeholder} dir="auto"
-          value={value ? value : ''} onChange={this.onInputChange}
-        />
-        <ul className="gohan-form-error-list">
-          {errors.map((error, key) => (
-            <li key={key} className="pt-form-helper-text gohan-form-error-list-item">
-              {error.message}
-            </li>
-          ))}
-        </ul>
-      </span>
+      <Input id={id}
+        value={value}
+        type={schema.type}
+        placeholder={placeholder}
+        onChange={this.onInputChange}
+      />
     );
   }
 }
