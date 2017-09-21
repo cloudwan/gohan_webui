@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Tab2, Tabs2, Button, Intent} from '@blueprintjs/core';
-import {ArraySortableItem} from './ArraySortableItem';
+import {Button, Intent} from '@blueprintjs/core';
 
+import Tab from './../../../../components/Tabs/Tab';
+import Tabs from './../../../../components/Tabs/Tabs';
+import {ArraySortableItem} from './ArraySortableItem';
 
 import {
   getWidget,
@@ -240,8 +242,7 @@ export default class ArrayField extends Component {
           iconName="add" onClick={this.onAddClick}
           disabled={disabled || readonly} className="pt-minimal"
         />
-        <Tabs2 selectedTabId={this.state.selectedTabId}
-          renderActiveTabPanelOnly={true}
+        <Tabs selectedTabId={this.state.selectedTabId}
           onChange={props => this.setState({selectedTabId: props})}>
           {
             items.map((value, index) => {
@@ -250,14 +251,16 @@ export default class ArrayField extends Component {
               const itemIdSchema = toIdSchema(itemsSchema, itemIdPrefix, definitions);
 
               return (
-                <Tab2 key={index}
-                  id={index}
-                  index={index}
+                <Tab key={index}
                   disabled={!orderable}
                   title={<span>{`Item ${index + 1}`} <Button intent={Intent.PRIMARY} iconName="remove"
                     className="pt-minimal" onClick={this.onDropIndexClick(index)}
                   /></span>}
-                  panel={<div>
+                  panel={<div style={{
+                    padding: 15,
+                    border: '1px solid #ddd',
+                    borderTop: 'none'
+                  }}>
                     <div className={'sort'}>
                       <Button intent={Intent.PRIMARY} iconName="chevron-left"
                         text="Move Left" className="pt-minimal"
@@ -285,7 +288,7 @@ export default class ArrayField extends Component {
               );
             })
           }
-        </Tabs2>
+        </Tabs>
       </div>
     );
   }

@@ -1,8 +1,9 @@
 import React from 'react';
 
-const REQUIRED_FIELD_SYMBOL = '*';
+import Label from './../../components/forms/Label';
+import Asterisk from './../../components/forms/Asterisk';
 
-function Label(props) {
+function LabelDialogLabel(props) {
   const {label, required, id} = props;
 
   if (!label) {
@@ -10,11 +11,11 @@ function Label(props) {
   }
 
   return (
-    <legend id={id} className="gohan-form-legend">
+    <Label htmlFor={id}>
       {label}
-      {required ? <span className={'gohan-form-asterisk'}>{REQUIRED_FIELD_SYMBOL}</span> : null}
-    </legend>
+      {required && <Asterisk/>}
+    </Label>
   );
 }
 
-export default Label;
+export default LabelDialogLabel;
