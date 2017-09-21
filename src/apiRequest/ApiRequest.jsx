@@ -29,7 +29,7 @@ export class ApiRequest extends Component {
     this.state = {
       body: '',
       method: 'GET',
-      query: '',
+      query: (props.queryList && props.queryList.length > 0) ? props.queryList[0] : '',
     };
   }
 
