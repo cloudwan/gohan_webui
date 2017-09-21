@@ -5,6 +5,8 @@ import chaiEnzyme from 'chai-enzyme';
 import spies from 'chai-spies';
 import {shallow} from 'enzyme';
 
+import Input from './../../../components/forms/Input';
+
 import BaseInput from './BaseInput';
 
 chai.use(spies);
@@ -20,30 +22,12 @@ describe('< BaseInput />', function () {
     wrapper.should.not.equal(undefined);
   });
 
-  it('should contain 1 input', () => {
+  it('should contain 1 < Input />', () => {
     const wrapper = shallow(
       <BaseInput id={'0'} schema={{type: 'string'}}/>
     );
 
-    wrapper.find('input').should.have.length(1);
-  });
-
-  it('should have empty value when passed undefined value prop', () => {
-    const wrapper = shallow(
-      <BaseInput id={'0'} schema={{type: 'string'}}/>
-    );
-
-    wrapper.find('input').get(0).props.value.should.equal('');
-  });
-
-  it('should have the same value as passed by prop', () => {
-    const wrapper = shallow(
-      <BaseInput id={'0'} schema={{type: 'string'}}
-        value={'test'}
-      />
-    );
-
-    wrapper.find('input').get(0).props.value.should.equal('test');
+    wrapper.find(Input).should.have.length(1);
   });
 
   it('should call onChange event', () => {
@@ -54,7 +38,7 @@ describe('< BaseInput />', function () {
       />
     );
 
-    wrapper.find('input').at(0).simulate('change', {target: {value: 'newValue'}});
+    wrapper.find(Input).at(0).simulate('change', {target: {value: 'newValue'}});
     onChange.should.have.been.called.once; // eslint-disable-line no-unused-expressions
   });
 });

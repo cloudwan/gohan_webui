@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import bootstrap from 'bootstrap/dist/css/bootstrap.css';
+
 import Label from './Label';
 
 function Template(props) {
@@ -14,13 +16,14 @@ function Template(props) {
     errors,
     help,
     description,
-    hidden
+    hidden,
+    rawErrors
   } = props;
   if (hidden) {
     return children;
   }
   return (
-    <div>
+    <div className={`${bootstrap['form-group']} ${rawErrors ? bootstrap['has-danger'] : ''}`}>
       {displayLabel ? <Label label={label} required={required}
         id={id}
       /> : null}
@@ -28,6 +31,9 @@ function Template(props) {
       {children}
       {errors}
       {help}
+      {rawErrors && Array.isArray(rawErrors) && rawErrors.map((item, key) => (
+        <div className={bootstrap['form-control-feedback']} key={key}>{item}</div>
+      ))}
     </div>
   );
 }
