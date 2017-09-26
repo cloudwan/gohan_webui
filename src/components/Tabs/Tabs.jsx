@@ -1,9 +1,13 @@
 import React, {Component} from 'react';
-import ProtoTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import styles from './styles.css';
 
 class Tabs extends Component {
+  static defaultProps = {
+    onChange: () => {},
+  }
+
   constructor(props) {
     super(props);
 
@@ -13,7 +17,8 @@ class Tabs extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.selectedTabId !== this.state.activeTab) {
+    const {selectedTabId: tabId} = newProps;
+    if ((tabId !== undefined) && (tabId !== this.state.activeTab)) {
       this.setState({activeTab: newProps.selectedTabId});
     }
   }
@@ -56,6 +61,7 @@ export default Tabs;
 
 if (process.env.NODE_ENV !== 'production') {
   Tabs.propTypes = {
-    children: ProtoTypes.node.isRequired,
+    children: PropTypes.node.isRequired,
+    onChange: PropTypes.func,
   };
 }

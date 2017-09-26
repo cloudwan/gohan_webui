@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
-import {Button, Tabs2, Tab2} from '@blueprintjs/core';
-
-import {deepEquals} from 'react-jsonschema-form/lib/utils';
+import cloneDeep from 'lodash/cloneDeep';
+import {Button} from '@blueprintjs/core';
 
 import {
+  deepEquals,
   getDefaultFormState,
   orderProperties,
   retrieveSchema,
@@ -14,6 +13,8 @@ import {
   setState
 } from 'react-jsonschema-form/lib/utils';
 
+import Tab from '../../../components/Tabs/Tab';
+import Tabs from '../../../components/Tabs/Tabs';
 
 function objectKeysHaveChanged(formData, state) {
   // for performance, first check for lengths
@@ -138,7 +139,7 @@ class ObjectField extends Component {
     const baseSchema = retrieveSchema(this.props.schema, definitions);
     const title = (baseSchema.title === undefined) ? name : baseSchema.title;
     const propertiesLogic = this.props.uiSchema['ui:logic'] || {};
-    const schema = _.cloneDeep(baseSchema);
+    const schema = cloneDeep(baseSchema);
 
     Object.keys(propertiesLogic).forEach(key => {
       const property = propertiesLogic[key];
@@ -202,29 +203,34 @@ class ObjectField extends Component {
           />
         )}
         {isTab && (
-          <Tabs2 id={`object-${name}`} defaultSelectedTabId={0}>
-            {!this.nullValue &&
-            orderedProperties.filter(
-              key => schema.properties[key].type === 'object' || schema.properties[key].type === 'array'
-            ).map((name, index) => (
-              <Tab2 key={index} id={index}
-                title={schema.properties[name].title || uiSchema[name].title} panel={
-                  <SchemaField required={this.isRequired(name)}
-                    schema={{...schema.properties[name], title: undefined, description: undefined}}
-                    uiSchema={uiSchema[name]}
-                    errorSchema={errorSchema[name]}
-                    idSchema={idSchema[name]}
-                    formData={this.state[name]}
-                    onChange={this.onPropertyChange(name)}
-                    registry={this.props.registry}
-                    disabled={disabled}
-                    readonly={readonly}
+          <Tabs>
+            {
+              !this.nullValue && (
+                orderedProperties.filter(
+                  key => schema.properties[key].type === 'object' || schema.properties[key].type === 'array'
+                ).map((name, index) => (
+                  <Tab key={index}
+                    title={schema.properties[name].title || uiSchema[name].title}
+                    panel={
+                      <div className="tab-content">
+                        <SchemaField required={this.isRequired(name)}
+                          schema={{...schema.properties[name], title: undefined, description: undefined}}
+                          uiSchema={uiSchema[name]}
+                          errorSchema={errorSchema[name]}
+                          idSchema={idSchema[name]}
+                          formData={this.state[name]}
+                          onChange={this.onPropertyChange(name)}
+                          registry={this.props.registry}
+                          disabled={disabled}
+                          readonly={readonly}
+                        />
+                      </div>
+                    }
                   />
-                }
-              />
-            ))
+                ))
+              )
             }
-          </Tabs2>
+          </Tabs>
         )}
         {isTab && !this.nullValue && orderedProperties.filter(
           key => schema.properties[key].type !== 'object' && schema.properties[key].type !== 'array'
