@@ -88,12 +88,14 @@ describe('AuthActions ', () => {
     it(`should returns ${actionTypes.LOGIN} action if session storage contains credentials`, () => {
       sessionStorage.setItem('token', 'test token');
       sessionStorage.setItem('tenant', 'test tenant');
+      sessionStorage.setItem('tenantId', 'tenantId');
 
       actions.fetchTokenData()
         .should.deep.equal({
         type: actionTypes.LOGIN,
         token: 'test token',
         tenant: 'test tenant',
+        tenantId: 'tenantId'
       });
     });
   });
@@ -161,10 +163,11 @@ describe('selectTenantFailure()', () => {
 
 describe('selectTenant() ', () => {
   it(`should returns ${actionTypes.SELECT_TENANT} action`, () => {
-    actions.selectTenant('tenantName')
+    actions.selectTenant('tenantName', 'tenantId')
       .should.deep.equal({
       type: actionTypes.SELECT_TENANT,
       tenantName: 'tenantName',
+      tenantId: 'tenantId'
     });
   });
 });

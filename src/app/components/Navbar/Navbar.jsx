@@ -35,8 +35,8 @@ export class Navbar extends Component {
     this.props.logout();
   };
 
-  handleChangeTenantClick = tenantName => {
-    this.props.selectTenant(tenantName);
+  handleChangeTenantClick = (tenantName, tenantId) => {
+    this.props.selectTenant(tenantName, tenantId);
   };
 
   render() {
@@ -61,6 +61,7 @@ export class Navbar extends Component {
             <Menu>
               {tenants.map(item => (
                 <TenantMenuItem key={item.id}
+                  id={item.id}
                   text={item.name}
                   onClick={this.handleChangeTenantClick}
                 />
@@ -117,7 +118,7 @@ if (process.env.NODE_ENV !== 'production') {
 export const mapStateToProps = state => ({
   userName: getUserName(state),
   tenant: getTenantName(state),
-  tenants: getTenants(state),
+  tenants: getTenants(state)
 });
 
 export default connect(mapStateToProps, {

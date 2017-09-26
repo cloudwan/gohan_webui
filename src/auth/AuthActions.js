@@ -111,12 +111,14 @@ export const fetchTenantFailure = (error: string): ErrorActionType => ({
 export const fetchTokenData = (): FetchTokenActionType => {
   const token = sessionStorage.getItem('token');
   const tenant = sessionStorage.getItem('tenant');
+  const tenantId = sessionStorage.getItem('tenantId');
 
   if (token) {
     return {
       type: LOGIN,
       token,
-      tenant
+      tenant,
+      tenantId
     };
   }
   return clearStorage();
@@ -148,6 +150,7 @@ export const selectTenantSuccess = (
 ): LoginSuccessActionType => {
     sessionStorage.setItem('scopedToken', tokenId);
     sessionStorage.setItem('tenant', tenant.name);
+    sessionStorage.setItem('tenantId', tenant.id);
 
     return {
       type: LOGIN_SUCCESS,
@@ -165,7 +168,8 @@ export const selectTenantFailure = (error: string): ErrorActionType => ({
   error,
 });
 
-export const selectTenant = (tenantName: string): SelectTenantActionType => ({
+export const selectTenant = (tenantName: string, tenantId: string): SelectTenantActionType => ({
   type: SELECT_TENANT,
-  tenantName
+  tenantName,
+  tenantId
 });
