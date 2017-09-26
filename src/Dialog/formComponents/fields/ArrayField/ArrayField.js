@@ -256,11 +256,7 @@ export default class ArrayField extends Component {
                   title={<span>{`Item ${index + 1}`} <Button intent={Intent.PRIMARY} iconName="remove"
                     className="pt-minimal" onClick={this.onDropIndexClick(index)}
                   /></span>}
-                  panel={<div style={{
-                    padding: 15,
-                    border: '1px solid #ddd',
-                    borderTop: 'none'
-                  }}>
+                  panel={<div className="tab-content">
                     <div className={'sort'}>
                       <Button intent={Intent.PRIMARY} iconName="chevron-left"
                         text="Move Left" className="pt-minimal"
