@@ -38,7 +38,7 @@ describe('< SelectTenant />', function () {
 
   it('should call handleTenantChange', () => {
     const wrapper = mount(
-      <SelectTenant tenants={['sample1', 'sample2']} onTenantSubmit={() => {}}/>
+      <SelectTenant tenants={[{name: 'sample1', id: 's1'}, {name: 'sample2', id: 's2'}]} onTenantSubmit={() => {}}/>
     );
 
     wrapper.find('select').at(0).props().onChange({
@@ -50,7 +50,9 @@ describe('< SelectTenant />', function () {
   it('should call handleSelectTenantSubmit', () => {
     const handleSelectTenantSubmit = chai.spy();
     const wrapper = mount(
-      <SelectTenant tenants={['sample1', 'sample2']} onTenantSubmit={handleSelectTenantSubmit}/>
+      <SelectTenant tenants={[{name: 'sample1', id: 's1'}, {name: 'sample2', id: 's2'}]}
+        onTenantSubmit={handleSelectTenantSubmit}
+      />
     );
 
     wrapper.find('form').at(0).simulate('submit', {preventDefault: () => {}, stopPropagation: () => {}});
