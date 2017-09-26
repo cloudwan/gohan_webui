@@ -57,7 +57,7 @@ export const getUser = createSelector(
 
 export const getUserName = createSelector(
   [user],
-  user => user.username
+  user => user.username || user.name
 );
 
 export const getProgressState = createSelector(

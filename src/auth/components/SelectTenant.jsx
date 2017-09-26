@@ -7,7 +7,8 @@ export default class SelectTenant extends Component {
     super(props);
 
     this.state = {
-      value: ''
+      value: '',
+      id: ''
     };
   }
 
@@ -17,7 +18,7 @@ export default class SelectTenant extends Component {
       event.stopPropagation();
     }
 
-    this.props.onTenantSubmit(this.state.value);
+    this.props.onTenantSubmit(this.state.value, this.state.id);
   };
 
   handleTenantChange = event => {
@@ -26,13 +27,16 @@ export default class SelectTenant extends Component {
       event.stopPropagation();
     }
 
-    this.setState({value: event.target.value});
+    this.setState({
+      value: event.target.value,
+      id: this.props.tenants.find(item => item.name === event.target.value).id
+    });
   };
 
   buildSelectOptions = () => {
     return this.props.tenants.map(
-      (tenant, key) => {
-        return <option value={tenant.name} key={key}>{tenant.name}</option>;
+      tenant => {
+        return <option value={tenant.name} key={tenant.id}>{tenant.name}</option>;
       }
     );
   };
@@ -46,7 +50,8 @@ export default class SelectTenant extends Component {
           <label className="pt-label">
               Select tenant
             <div className="pt-select pt-large">
-              <select onChange={this.handleTenantChange} defaultValue={''}>
+              <select onChange={this.handleTenantChange}
+                defaultValue={''}>
                 <option value={''} />
                 {this.buildSelectOptions()}
               </select>

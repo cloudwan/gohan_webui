@@ -10,9 +10,10 @@ export class TenantMenuItem extends PureComponent {
     const {
       text,
       onClick,
+      id
     } = this.props;
 
-    onClick(text);
+    onClick(text, id);
   };
 
   render() {
