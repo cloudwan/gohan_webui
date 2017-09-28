@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
 import {Dialog, ProgressBar, Intent} from '@blueprintjs/core';
 import Button from './../components/Button';
+import isEqual from 'lodash/isEqual';
 
 import {getSchema, getLoadingState} from './DialogSelectors';
 import widgets from './formComponents/widgets';
@@ -38,6 +39,14 @@ export class GeneratedDialog extends Component {
     const {baseSchema, action} = this.props;
 
     this.props.prepareSchema(baseSchema.schema, action, baseSchema.parent);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const {action} = this.props;
+
+    if (!isEqual(this.props.baseSchema.schema, nextProps.baseSchema.schema)) {
+      this.props.prepareSchema(nextProps.baseSchema.schema, action, nextProps.baseSchema.parent);
+    }
   }
 
   /**
@@ -98,6 +107,7 @@ export class GeneratedDialog extends Component {
                     ...this.props.jsonUiSchema,
                     ...this.props.uiSchema
                   }}
+                  onChange={this.props.onChange}
                   onSubmit={this.handleSubmit} showErrorList={false}
                   noValidate={true}>
                   <div/>
@@ -126,6 +136,7 @@ export class GeneratedDialog extends Component {
 GeneratedDialog.defaultProps = {
   action: 'create',
   data: {},
+  onChange: () => {},
   onSubmit: () => {},
   uiSchema: {},
 };
@@ -146,6 +157,7 @@ if (process.env.NODE_ENV !== 'production') {
       PropTypes.object,
       PropTypes.array
     ]),
+    onChange: PropTypes.func,
     onClose: PropTypes.func,
     onSubmit: PropTypes.func,
     customTitle: PropTypes.string
