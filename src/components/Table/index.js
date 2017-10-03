@@ -145,6 +145,14 @@ class TableComponent extends Component {
                           {item[column.id]}
                         </TableDataBooleanCell>
                       );
+                    case 'link':
+                      return (
+                        <TableDataLinkCell url={item[column.id].url}
+                          id={item[column.id].id}
+                          key={index}>
+                          {item[column.id].name}
+                        </TableDataLinkCell>
+                      );
                     case 'array':
                     case 'object':
                       return (
