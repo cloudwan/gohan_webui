@@ -1,0 +1,14 @@
+.breadcrumbs {
+  composes: pt-breadcrumbs from '@blueprintjs/core/dist/blueprint.css';
+}
+
+.breadcrumb {
+  composes: pt-breadcrumb from '@blueprintjs/core/dist/blueprint.css';
+}
+
+.breadcrumbCurrent {
+  composes: breadcrumb;
+  composes: pt-breadcrumb-current
+  from '@blueprintjs/core/dist/blueprint.css';
+  font-weight: normal;
+}

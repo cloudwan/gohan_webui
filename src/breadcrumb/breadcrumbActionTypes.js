@@ -1,0 +1,3 @@
+export const UPDATE = 'UPDATE';
+export const UPDATE_FULFILLED = 'UPDATE_FULFILLED';
+export const UPDATE_FAILURE = 'UPDATE_FAILURE';

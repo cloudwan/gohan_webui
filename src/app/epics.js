@@ -3,10 +3,12 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 import AuthEpics from './../auth/AuthEpics';
 import ApiRequestEpics from '../apiRequest/ApiRequestEpics';
+import BreadcrumbEpics from '../breadcrumb/breadcrumbEpics';
 
 const epic$ = new BehaviorSubject(combineEpics(
   AuthEpics,
   ApiRequestEpics,
+  BreadcrumbEpics,
 ));
 
 export const rootEpic = (action$, store) =>

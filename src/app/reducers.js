@@ -9,6 +9,7 @@ import schemaReducer from './../schema/schemaReducer';
 import dialogReducer from '../Dialog/dialogReducer';
 import customActionReducer from '../CustomActions/CustomActionReducer';
 import apiRequestReducer from '../apiRequest/ApiRequestReducer';
+import breadcrumbReducer from '../breadcrumb/breadcrumbReducer';
 
 export const makeRootReducer = asyncReducers => {
   return combineReducers({
@@ -21,6 +22,7 @@ export const makeRootReducer = asyncReducers => {
     dialogReducer,
     customActionReducer,
     apiRequestReducer,
+    breadcrumbReducer,
     ...asyncReducers
   });
 };
