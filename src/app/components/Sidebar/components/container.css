@@ -1,0 +1,25 @@
+.sidebar {
+  composes: pt-elevation-2 pt-fixed-top from '@blueprintjs/core/dist/blueprint.css';
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: -230px;
+  width: 230px;
+  display: block;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  z-index: 1035;
+  transition: left 250ms;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.open {
+  composes: sidebar;
+  left: 0;
+  transition: left 250ms;
+}
+
+.navSidebar {
+  padding-top: 101px;
+}

@@ -1,0 +1,4 @@
+.menu {
+  composes: pt-large from global;
+  padding: 0;
+}

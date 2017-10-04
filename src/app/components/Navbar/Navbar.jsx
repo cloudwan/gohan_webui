@@ -14,6 +14,7 @@ import NavContainer from './components/NavContainer';
 import NavbarGroup from './components/NavbarGroup';
 import TenantMenuItem from './components/TenantMenuItem';
 import Breadcrumb from '../../../breadcrumb/Breadcrumb';
+import Logo from '../Logo';
 
 import {
   Menu,
@@ -22,6 +23,8 @@ import {
   PopoverInteractionKind,
   Position
 } from '@blueprintjs/core';
+
+import styles from './navbar.css';
 
 export class Navbar extends Component {
   shouldComponentUpdate(nextProps) {
@@ -51,10 +54,20 @@ export class Navbar extends Component {
     return (
       <NavContainer>
         <NavbarGroup isRight={false}>
+          {
+            !isSidebarOpen && (
+              <Logo width={40}
+                height={38}
+                paddingHorizontal={5}
+                paddingVertical={3}
+                logoPath={'../../../../img/gohan-logo-gray.png'}
+              />
+            )
+          }
           <Button iconName={`menu-${isSidebarOpen ? 'closed' : 'open'}`}
             isMinimal={true}
             onClick={this.handleMenuButtonClick}
-            text={'Gohan WebUI'}
+            className={styles.sidebarButton}
           />
           <Breadcrumb />
         </NavbarGroup>
@@ -72,6 +85,7 @@ export class Navbar extends Component {
           } interactionKind={PopoverInteractionKind.CLICK}
             position={Position.BOTTOM}>
             <Button isMinimal={true}
+              className={styles.navbarButton}
               iconName={'projects'}
               rightIconName="caret-down"
               text={tenant}
@@ -89,6 +103,7 @@ export class Navbar extends Component {
             interactionKind={PopoverInteractionKind.CLICK}
             position={Position.BOTTOM_RIGHT}>
             <Button isMinimal={true}
+              className={styles.navbarButton}
               iconName={'user'}
               rightIconName="caret-down"
               text={userName}
@@ -115,7 +130,6 @@ if (process.env.NODE_ENV !== 'production') {
     isSidebarOpen: PropTypes.bool,
   };
 }
-
 
 export const mapStateToProps = state => ({
   userName: getUserName(state),

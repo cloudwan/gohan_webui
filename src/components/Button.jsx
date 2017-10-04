@@ -11,6 +11,7 @@ export const Button = (
     disabled = false,
     loading = false,
     isMinimal = false,
+    className = '',
     iconName,
     rightIconName,
     onClick,
@@ -19,7 +20,7 @@ export const Button = (
     intent = BlueprintIntent.NONE
   }
 ) => (
-  <BlueprintButton className={`${isMinimal ? 'pt-minimal' : ''}`}
+  <BlueprintButton className={`${className}${isMinimal ? ' pt-minimal' : ''}`}
     active={active}
     disabled={disabled}
     iconName={iconName}
@@ -46,5 +47,6 @@ if (process.env.NODE_ENV !== 'production') {
     type: ProtoTypes.string,
     text: ProtoTypes.string,
     intent: ProtoTypes.number,
+    className: ProtoTypes.string,
   };
 }

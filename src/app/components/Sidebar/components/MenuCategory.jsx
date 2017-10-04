@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import styles from './menuCategory.css';
+
 class MenuCategory extends Component {
   constructor(props) {
     super(props);
@@ -19,7 +21,6 @@ class MenuCategory extends Component {
       children,
       title,
       collapsible,
-      className,
     } = this.props;
 
     const {
@@ -27,11 +28,11 @@ class MenuCategory extends Component {
     } = this.state;
 
     return (
-      <div className={`menu-category${(className === '') ? '' : ` ${className}`}`}>
-        <li className={`pt-menu-header menu-category-header${collapsible ? ' menu-category-header-collapsible' : ''}`}
+      <div>
+        <li className={`${styles.header} ${collapsible ? styles.collapsible : ''}`}
           onClick={this.handleCategoryToggle}>
           <h6>{title}</h6>
-          {collapsible && <span className={`pt-icon-standard pt-icon-caret-${isOpen ? 'up' : 'down'}`}/>}
+          {collapsible && <span className={styles[isOpen ? 'collapseIconOpen' : 'collapseIconClosed']}/>}
         </li>
         <div>
           {isOpen && children}
@@ -53,6 +54,5 @@ if (process.env.NODE_ENV !== 'production') {
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
     collapsible: PropTypes.bool,
-    className: PropTypes.string,
   };
 }
