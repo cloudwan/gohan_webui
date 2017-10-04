@@ -36,10 +36,9 @@ body {
   background-color: #edecec;
 }
 .view-content {
-  padding-top: 50px;
   padding-right: 0;
   padding-bottom: 0;
-  padding-left: 260px;
+  padding-left: 230px;
   min-height: 400px;
   transition: padding-left 250ms ease-in;
 
@@ -128,28 +127,6 @@ body {
   }
 }
 
-.sidebar {
-  position: fixed;
-  top: 50px;
-  height: 100%;
-  width: 260px;
-  float: left;
-  overflow-x: hidden;
-  background-color: #fff;
-  padding-top: 10px;
-  margin-left: 0;
-  transition: margin-left 250ms ease-in;
-
-  .sidebar-search {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  &.sidebar-hidden {
-    margin-left: -260px;
-    transition: margin-left 250ms ease-out;
-  }
-}
 /*
  * Auth component
  */

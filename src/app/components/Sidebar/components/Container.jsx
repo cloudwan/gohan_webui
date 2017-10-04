@@ -1,9 +1,13 @@
 import React from 'react';
 import ProtoTypes from 'prop-types';
 
+import styles from './container.css';
+
 export const Container = ({children = null, isOpen = false}) => (
-  <div className={`pt-elevation-2 pt-fixed-top sidebar${isOpen ? '' : ' sidebar-hidden'}`}>
-    {children}
+  <div className={styles[isOpen ? 'open' : 'sidebar']}>
+    <div className={styles.navSidebar}>
+      {children}
+    </div>
   </div>
 );
 

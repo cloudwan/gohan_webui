@@ -1,0 +1,28 @@
+.brandTextContainer {
+  display: inline-block;
+  position: relative;
+  top: 3px;
+}
+
+.brandName {
+  margin: 0;
+  font-size: 22px;
+  line-height: 35px;
+  font-weight: 300;
+}
+
+.brandName a {
+  color: #333;
+}
+
+.brandName a:hover {
+  color: #333;
+}
+
+.brandVersion {
+  font-size: 11px;
+  text-align: right;
+  color: #aaa;
+  padding-right: 5px;
+  margin-top: -5px;
+}
