@@ -1,9 +1,16 @@
 .breadcrumbs {
   composes: pt-breadcrumbs from '@blueprintjs/core/dist/blueprint.css';
+  color: #fff;
 }
 
 .breadcrumb {
   composes: pt-breadcrumb from '@blueprintjs/core/dist/blueprint.css';
+  color: #fff;
+}
+
+.breadcrumb:hover,
+.breadcrumbs > li:after {
+  color: #fff;
 }
 
 .breadcrumbCurrent {

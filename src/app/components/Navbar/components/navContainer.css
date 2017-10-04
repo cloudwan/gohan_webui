@@ -1,0 +1,5 @@
+.navContainer {
+  composes: pt-navbar from '@blueprintjs/core/dist/blueprint.css';
+  background-color: #1976D2;
+  border-color: #145ca4;
+}
