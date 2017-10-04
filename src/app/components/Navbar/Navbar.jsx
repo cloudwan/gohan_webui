@@ -13,6 +13,7 @@ import Button from '../../../components/Button';
 import NavContainer from './components/NavContainer';
 import NavbarGroup from './components/NavbarGroup';
 import TenantMenuItem from './components/TenantMenuItem';
+import Breadcrumb from '../../../breadcrumb/Breadcrumb';
 
 import {
   Menu,
@@ -55,6 +56,7 @@ export class Navbar extends Component {
             onClick={this.handleMenuButtonClick}
             text={'Gohan WebUI'}
           />
+          <Breadcrumb />
         </NavbarGroup>
         <NavbarGroup isRight={true}>
           <Popover content={
@@ -118,7 +120,7 @@ if (process.env.NODE_ENV !== 'production') {
 export const mapStateToProps = state => ({
   userName: getUserName(state),
   tenant: getTenantName(state),
-  tenants: getTenants(state)
+  tenants: getTenants(state),
 });
 
 export default connect(mapStateToProps, {
