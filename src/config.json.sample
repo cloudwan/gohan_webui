@@ -4,7 +4,6 @@
         "schema": "/gohan/v0.1/schemas",
         "url": "http://__HOST__:9091"
     },
-    "keystoneVersion": "v3",
     "sidebar": [
         {
             "path": "",
