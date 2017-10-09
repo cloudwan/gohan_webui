@@ -20,10 +20,7 @@ describe('AuthEpics', () => {
       {
         configReducer: {
           polling: false,
-          gohan: {
-            url: 'http://gohan.io'
-          },
-          keystoneVersion: 'v2'
+          authUrl: 'http://gohan.io/v2.0',
         },
         authReducer: {
           tokenId: 'sampleTokenId'
@@ -443,10 +440,7 @@ describe('AuthEpics', () => {
       {
         configReducer: {
           polling: false,
-          gohan: {
-            url: 'http://gohan.io'
-          },
-          keystoneVersion: 'v3'
+          authUrl: 'http://gohan.io/v3',
         },
         authReducer: {
           tokenId: 'sampleTokenId'
@@ -1099,6 +1093,118 @@ describe('AuthEpics', () => {
               a: {
                 type: actionTypes.LOGIN_ERROR,
                 error: 'Unknown error!'
+              }
+            }
+          ],
+          action: ['(a|)', {
+            a: {
+              type: actionTypes.LOGIN
+            }
+          }],
+          response: [
+            '-#|',
+            null,
+            {
+              xhr: response
+            }
+          ],
+          store
+        });
+      });
+    });
+  });
+
+  describe('Wrong Keystone auth url', () => {
+    const mockStore = configureMockStore();
+    const store = mockStore(
+      {
+        configReducer: {
+          polling: false,
+          authUrl: 'http://gohan.io/wrong!',
+        },
+        authReducer: {
+          tokenId: 'sampleTokenId'
+        }
+      }
+    );
+
+    describe('login()', () => {
+      it(`should dispatch ${actionTypes.LOGIN_ERROR} action`, () => {
+        const response = {};
+
+        expectEpic(login, {
+          expected: [
+            '(a|)',
+            {
+              a: {
+                type: actionTypes.LOGIN_ERROR,
+                error: 'Wrong auth url! Please check config.json.'
+              }
+            }
+          ],
+          action: ['(a|)', {
+            a: {
+              type: actionTypes.LOGIN,
+              username: 'admin',
+              password: 'test_pass'
+            }
+          }],
+          response: [
+            '-#|',
+            null,
+            {
+              xhr: response
+            }
+          ],
+          store
+        });
+      });
+    });
+
+    describe('selectTenant()', () => {
+      it(`should dispatch ${actionTypes.SELECT_TENANT_FAILURE} action`, () => {
+        const response = {};
+
+        expectEpic(selectTenant, {
+          expected: [
+            '(a|)',
+            {
+              a: {
+                type: actionTypes.SELECT_TENANT_FAILURE,
+                error: 'Wrong auth url! Please check config.json.'
+              }
+            }
+          ],
+          action: ['(a|)', {
+            a: {
+              type: actionTypes.SELECT_TENANT,
+              tenantName: 'test_tenant',
+              tenantId: 'tenantId'
+            }
+          }],
+          response: [
+            '-#|',
+            null,
+            {
+              xhr: response
+            }
+          ],
+          store
+        });
+      });
+    });
+
+    describe('fetchTenants()', () => {
+      it(`should dispatch ${actionTypes.LOGIN_ERROR} action`, () => {
+        const response = {};
+
+        expectEpic(login, {
+          expected: [
+            '(a|)',
+            {
+              a: {
+                type: actionTypes.LOGIN_ERROR,
+                error: 'Wrong auth url! Please check config.json.'
               }
             }
           ],
