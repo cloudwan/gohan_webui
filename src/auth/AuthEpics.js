@@ -20,7 +20,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(LOGIN)
     .mergeMap(({username, password, token, tenant, tenantId}) => {
       const state = store.getState();
-      const {keystoneVersion, authUrl} = state.configReducer;
+      const {authUrl} = state.configReducer;
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -28,7 +28,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
         auth: {}
       };
 
-      if (keystoneVersion === 'v3') {
+      if (/v3$/.test(authUrl)) {
         if (username !== undefined && password !== undefined) {
           data.auth.identity = {
             methods: [
@@ -69,7 +69,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
 
         return call(
           post,
-          `${authUrl}/v3/auth/tokens`,
+          `${authUrl}/auth/tokens`,
           headers,
           data
         )
@@ -83,44 +83,41 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
             Observable.of({type: FETCH_TENANTS}))
           )
           .catch(error => Observable.of(loginFailure(parseXHRError(error))));
-      }
+      } else if (/v2.0$/.test(authUrl)) {
+        if (username !== undefined && password !== undefined) {
+          data.auth.passwordCredentials = {
+            username,
+            password
+          };
+        } else if (token) {
+          data.auth.token = {
+            id: token
+          };
+        }
 
+        if (tenant) {
+          data.auth.tenantName = tenant;
+        }
 
-      if (keystoneVersion === undefined) {
-        console.warn('No "keystoneVersion" in config.json!');
-      }
-
-      if (username !== undefined && password !== undefined) {
-        data.auth.passwordCredentials = {
-          username,
-          password
-        };
-      } else if (token) {
-        data.auth.token = {
-          id: token
-        };
-      }
-
-      if (tenant) {
-        data.auth.tenantName = tenant;
-      }
-
-      return call(
-        post,
-        `${authUrl}/tokens`,
-        headers,
-        data
-      )
-        .flatMap(response => Observable.concat(
-          Observable.of(loginSuccess(
-            response.response.access.token.id,
-            response.response.access.token.expires,
-            response.response.access.token.tenant,
-            response.response.access.user
-          )),
-          Observable.of({type: FETCH_TENANTS}))
+        return call(
+          post,
+          `${authUrl}/tokens`,
+          headers,
+          data
         )
-        .catch(error => Observable.of(loginFailure(parseXHRError(error))));
+          .flatMap(response => Observable.concat(
+            Observable.of(loginSuccess(
+              response.response.access.token.id,
+              response.response.access.token.expires,
+              response.response.access.token.tenant,
+              response.response.access.user
+            )),
+            Observable.of({type: FETCH_TENANTS}))
+          )
+          .catch(error => Observable.of(loginFailure(parseXHRError(error))));
+      }
+      console.log('Wrong auth url! Please check config.json.');
+      return Observable.of(loginFailure('Wrong auth url! Please check config.json.'));
     });
 };
 
@@ -128,7 +125,7 @@ export const selectTenant = (action$, store, call = (fn, ...args) => fn(...args)
   return action$.ofType(SELECT_TENANT)
     .mergeMap(({tenantName, tenantId}) => {
       const state = store.getState();
-      const {authUrl, keystoneVersion} = state.configReducer;
+      const {authUrl} = state.configReducer;
       const {tokenId} = state.authReducer;
       const headers = {
         'Content-Type': 'application/json'
@@ -137,7 +134,7 @@ export const selectTenant = (action$, store, call = (fn, ...args) => fn(...args)
         auth: {}
       };
 
-      if (keystoneVersion === 'v3') {
+      if (/v3$/.test(authUrl)) {
         data.auth = {
           identity: {
             methods: [
@@ -156,7 +153,7 @@ export const selectTenant = (action$, store, call = (fn, ...args) => fn(...args)
 
         return call(
           post,
-          `${authUrl}/v3/auth/tokens`,
+          `${authUrl}/auth/tokens`,
           headers,
           data
         )
@@ -172,34 +169,32 @@ export const selectTenant = (action$, store, call = (fn, ...args) => fn(...args)
             console.log(error);
             return Observable.of(selectTenantFailure(parseXHRError(error)));
           });
-      }
+      } else if (/v2.0$/.test(authUrl)) {
+        data.auth = {
+          token: {
+            id: tokenId
+          },
+          tenantName
+        };
 
-      if (keystoneVersion === undefined) {
-        console.warn('No "keystoneVersion" in config.json!');
-      }
-
-      data.auth = {
-        token: {
-          id: tokenId
-        },
-        tenantName
-      };
-
-      return call(
-        post,
-        `${authUrl}/tokens`,
-        headers,
-        data
-      )
-        .flatMap(response => Observable.concat(
-          Observable.of(selectTenantSuccess(
-            response.response.access.token.id,
-            response.response.access.token.expires,
-            response.response.access.token.tenant,
-            response.response.access.user
-          )))
+        return call(
+          post,
+          `${authUrl}/tokens`,
+          headers,
+          data
         )
-        .catch(error => Observable.of(selectTenantFailure(parseXHRError(error))));
+          .flatMap(response => Observable.concat(
+            Observable.of(selectTenantSuccess(
+              response.response.access.token.id,
+              response.response.access.token.expires,
+              response.response.access.token.tenant,
+              response.response.access.user
+            )))
+          )
+          .catch(error => Observable.of(selectTenantFailure(parseXHRError(error))));
+      }
+      console.log('Wrong auth url! Please check config.json.');
+      return Observable.of(selectTenantFailure('Wrong auth url! Please check config.json.'));
     });
 };
 
@@ -207,34 +202,32 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
   return action$.ofType(FETCH_TENANTS)
     .mergeMap(() => {
       const state = store.getState();
-      const {authUrl, keystoneVersion} = state.configReducer;
+      const {authUrl} = state.configReducer;
       const {tokenId} = state.authReducer;
       const headers = {
         'Content-Type': 'application/json',
         'X-Auth-Token': tokenId
       };
 
-      if (keystoneVersion === 'v3') {
+      if (/v3$/.test(authUrl)) {
         return call(
           get,
-          `${authUrl}/v3/auth/projects`,
+          `${authUrl}/auth/projects`,
           headers
         )
           .map(response => fetchTenantSuccess(response.response.projects))
           .catch(error => Observable.of(fetchTenantFailure(parseXHRError(error))));
+      } else if (/v2.0$/.test(authUrl)) {
+        return call(
+          get,
+          `${authUrl}/tenants`,
+          headers
+        )
+          .map(response => fetchTenantSuccess(response.response.tenants))
+          .catch(error => Observable.of(fetchTenantFailure(parseXHRError(error))));
       }
-
-      if (keystoneVersion === undefined) {
-        console.warn('No "keystoneVersion" in config.json!');
-      }
-
-      return call(
-        get,
-        `${authUrl}/tenants`,
-        headers
-      )
-        .map(response => fetchTenantSuccess(response.response.tenants))
-        .catch(error => Observable.of(fetchTenantFailure(parseXHRError(error))));
+      console.log('Wrong auth url! Please check config.json.');
+      return Observable.of(fetchTenantFailure('Wrong auth url! Please check config.json.'));
     });
 };
 
