@@ -13,7 +13,7 @@ function Template(props) {
     required,    // eslint-disable-line
     displayLabel,// eslint-disable-line
     children,
-    errors,
+    errors,      // eslint-disable-line
     help,
     description,
     hidden,
@@ -29,11 +29,7 @@ function Template(props) {
       /> : null}
       {displayLabel && description ? description : null}
       {children}
-      {errors}
       {help}
-      {rawErrors && Array.isArray(rawErrors) && rawErrors.map((item, key) => (
-        <div className={bootstrap['form-control-feedback']} key={key}>{item}</div>
-      ))}
     </div>
   );
 }
