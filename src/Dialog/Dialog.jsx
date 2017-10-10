@@ -10,6 +10,7 @@ import {getSchema, getLoadingState} from './DialogSelectors';
 import widgets from './formComponents/widgets';
 import fields from './formComponents/fields';
 import Template from './formComponents/Template';
+import ErrorListTemplate from './formComponents/ErrorListTemplate';
 
 import ErrorToast from './components/ErrorToast';
 
@@ -81,8 +82,8 @@ export class GeneratedDialog extends Component {
     return (
       <Dialog title={title}
         {...this.props}>
-        <ErrorToast />
         <div className="pt-dialog-body">
+          <ErrorToast />
           {(() => {
             if (this.props.isLoading || this.props.schema === undefined) {
               return (
@@ -94,7 +95,10 @@ export class GeneratedDialog extends Component {
               <div>
                 <Form ref={c => {this.form = c;}} schema={this.props.schema}
                   fields={fields} widgets={widgets}
-                  FieldTemplate={Template} formData={
+                  FieldTemplate={Template}
+                  showErrorList={true}
+                  ErrorList={ErrorListTemplate}
+                  formData={
                     this.props.schema.propertiesOrder.reduce(
                       (result, item) => {
                         result[item] = this.props.data[item];
@@ -108,8 +112,7 @@ export class GeneratedDialog extends Component {
                     ...this.props.uiSchema
                   }}
                   onChange={this.props.onChange}
-                  onSubmit={this.handleSubmit} showErrorList={false}
-                  noValidate={true}>
+                  onSubmit={this.handleSubmit}>
                   <div/>
                 </Form>
               </div>
