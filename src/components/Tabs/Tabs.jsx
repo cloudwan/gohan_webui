@@ -6,7 +6,8 @@ import styles from './styles.css';
 class Tabs extends Component {
   static defaultProps = {
     onChange: () => {},
-  }
+    children: [],
+  };
 
   constructor(props) {
     super(props);
@@ -61,7 +62,7 @@ export default Tabs;
 
 if (process.env.NODE_ENV !== 'production') {
   Tabs.propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     onChange: PropTypes.func,
   };
 }
