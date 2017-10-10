@@ -3,6 +3,7 @@ import CidrWidget from './CidrWidget';
 import MacWidget from './MacWidget';
 import UuidWidget from './UuidWidget';
 import Ipv4Widget from './Ipv4Widget';
+import Ipv6Widget from './Ipv6Widget';
 import TextWidget from './TextWidget';
 import SelectWidget from './SelectWidget';
 import CodeWidget from './CodeWidget.jsx';
@@ -15,6 +16,7 @@ export default Object.freeze({
   mac: MacWidget,
   uuid: UuidWidget,
   ipv4: Ipv4Widget,
+  ipv6: Ipv6Widget,
   js: CodeWidget,
   yaml: CodeWidget
 });

@@ -16,7 +16,7 @@ class BaseInput extends Component {
   }
 
   onInputChange = event => {
-    const {value} = event.target;
+    const value = (event.target.value === '' && this.props.required) ? undefined : event.target.value;
     const errors = [];
 
     if (this.props.required && !value) {
@@ -36,7 +36,7 @@ class BaseInput extends Component {
     }
 
     this.setState({errors});
-    this.props.onChange(event.target.value);
+    this.props.onChange(value);
   };
 
   render() {

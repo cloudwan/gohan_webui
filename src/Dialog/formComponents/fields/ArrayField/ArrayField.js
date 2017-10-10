@@ -139,6 +139,11 @@ export default class ArrayField extends Component {
       if (this.state.selectedTabId >= newState.items.length) {
         newState.selectedTabId = this.state.selectedTabId - 1;
       }
+
+      if (this.props.required && newState.items.length === 0) {
+        newState.items = undefined;
+      }
+
       this.asyncSetState(newState, {validate: true});
     };
   };
@@ -245,7 +250,7 @@ export default class ArrayField extends Component {
         <Tabs selectedTabId={this.state.selectedTabId}
           onChange={props => this.setState({selectedTabId: props})}>
           {
-            items.map((value, index) => {
+            items && items.map((value, index) => {
               const itemErrorSchema = errorSchema ? errorSchema[index] : undefined;
               const itemIdPrefix = idSchema.$id + '_' + index;
               const itemIdSchema = toIdSchema(itemsSchema, itemIdPrefix, definitions);
@@ -327,7 +332,7 @@ export default class ArrayField extends Component {
           helperClass="list-sortable-active" lockAxis="y"
           lockToContainerEdges={true}>
           {
-            items.map((value, index) => {
+            items && items.map((value, index) => {
               const itemErrorSchema = errorSchema ? errorSchema[index] : undefined;
               const itemIdPrefix = idSchema.$id + '_' + index;
               const itemIdSchema = toIdSchema(itemsSchema, itemIdPrefix, definitions);
@@ -461,7 +466,7 @@ export default class ArrayField extends Component {
         {schema.description ?
           <div className='field-description'>{schema.description}</div> : null}
         <div className='row array-item-list'>{
-          items.map((item, index) => {
+          items && items.map((item, index) => {
             const additional = index >= itemSchemas.length;
             const itemSchema = additional ?
               additionalSchema : itemSchemas[index];

@@ -19,8 +19,8 @@ $object-field-background: #ebf1f5;
     margin: 0;
   }
 }
-.pt-dialog > div.pt-toast {
-  margin: 20px 20px 0;
+.pt-dialog div.pt-toast{
+  margin: 5px 5px 20px 5px;
   max-width: initial;
 }
 @media (min-width: 768px) {
