@@ -52,7 +52,19 @@ class Select extends Component {
   };
 
   handleMenuItemClick = value => {
-    this.props.onChange(value);
+    if (Array.isArray(this.props.value)) {
+      const newValues = this.props.value.slice();
+
+      if (newValues.includes(value)) {
+        this.props.onChange(newValues.filter(item => item !== value));
+      } else {
+        newValues.push(value);
+        this.props.onChange(newValues);
+      }
+    } else {
+      this.props.onChange(value);
+    }
+
     this.setState({focused: !this.state.focused, searchQuery: ''});
   };
 
@@ -78,7 +90,7 @@ class Select extends Component {
       haystack,
       sort,
       disabled,
-      readonly
+      readonly,
     } = this.props;
 
     let nullable = false;
@@ -114,13 +126,27 @@ class Select extends Component {
       });
     }
 
-    const selectedItem = haystack.find(item => {
-      if (typeof item === 'object') {
-        return item.value === value;
-      } else if (typeof item === 'string') {
-        return value === value;
-      }
-    });
+    let selectedItem = '';
+
+    if (Array.isArray(value) && value.length !== 0) {
+      selectedItem = value.map(item => haystack.find(
+        hay => {
+          if (typeof hay === 'object') {
+            return hay.value === item;
+          } else if (typeof hay === 'string') {
+            return hay === item;
+          }
+        }
+      ).label).reduce((result, item) => `${result}, ${item}`);
+    } else {
+      selectedItem = haystack.find(item => {
+        if (typeof item === 'object') {
+          return item.value === value;
+        } else if (typeof item === 'string') {
+          return item === value;
+        }
+      });
+    }
 
     return (
       <div className={styles.select}
@@ -156,7 +182,10 @@ class Select extends Component {
                   return (
                     <li key={i}
                       onClick={() => this.handleMenuItemClick(item.value)}
-                      className={selectedItem && item.value === value ? styles.elementSelected : styles.element}>
+                      className={
+                        selectedItem && (item.value === value || (Array.isArray(value) && value.includes(item.value))) ?
+                          styles.elementSelected : styles.element
+                      }>
                       {item.label}
                     </li>
                   );
@@ -164,7 +193,10 @@ class Select extends Component {
                   return (
                     <li key={i}
                       onClick={() => this.handleMenuItemClick(item)}
-                      className={selectedItem && item.value === value ? styles.elementSelected : styles.element}>
+                      className={
+                        selectedItem && (item === value || (Array.isArray(value) && value.includes(item))) ?
+                          styles.elementSelected : styles.element
+                      }>
                       {item}
                     </li>
                   );
@@ -200,7 +232,8 @@ if (process.env.NODE_ENV !== 'production') {
     sort: PropTypes.bool,
     value: PropTypes.oneOfType([
       PropTypes.number,
-      PropTypes.string
+      PropTypes.string,
+      PropTypes.array
     ]),
     readonly: PropTypes.bool,
     disabled: PropTypes.bool
