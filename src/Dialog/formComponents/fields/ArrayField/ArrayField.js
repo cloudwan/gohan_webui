@@ -7,6 +7,7 @@ import Tabs from './../../../../components/Tabs/Tabs';
 import {ArraySortableItem} from './ArraySortableItem';
 
 import {
+  getUiOptions,
   getWidget,
   getDefaultFormState,
   isMultiSelect,
@@ -388,20 +389,30 @@ export default class ArrayField extends Component {
   }
 
   renderMultiSelect() {
-    const {schema, idSchema, uiSchema, disabled, readonly, autofocus} = this.props;
+    const {
+      schema,
+      idSchema,
+      uiSchema,
+      disabled,
+      readonly,
+      autofocus
+    } = this.props;
     const {items} = this.state;
     const {widgets, definitions} = this.props.registry;
     const itemsSchema = retrieveSchema(schema.items, definitions);
-
-    const Widget = getWidget(schema, uiSchema['ui:widget'] || 'select', widgets);
+    const enumOptions = optionsList(itemsSchema);
+    const {
+      widget = 'select',
+      ...options
+    } = {
+      ...getUiOptions(uiSchema),
+      enumOptions,
+    };
+    const Widget = getWidget(schema, widget, widgets);
     return (
       <Widget id={idSchema && idSchema.$id}
-        multiple={true}
         onChange={this.onSelectChange}
-        options={{
-          ...Widget.defaultProps.options,
-          enumOptions: optionsList(itemsSchema),
-        }}
+        options={options}
         schema={schema}
         value={items}
         disabled={disabled}
