@@ -32,6 +32,10 @@ class Tabs extends Component {
   render() {
     const {children} = this.props;
 
+    if (children === false) {
+      return null;
+    }
+
     return (
       <div>
         <div className={styles.tabsHeader}>
