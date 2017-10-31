@@ -32,6 +32,7 @@ function objectKeysHaveChanged(formData, state) {
 }
 
 class ObjectField extends Component {
+  nullValue = false;
   static defaultProps = {
     uiSchema: {},
     errorSchema: {},
@@ -44,7 +45,9 @@ class ObjectField extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {...this.getStateFromProps(props)};
+    this.nullValue = props.formData === null;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -86,8 +89,6 @@ class ObjectField extends Component {
       this.filterSchemaProperties(name, value, options);
     };
   };
-
-  nullValue = false;
 
   filterSchemaProperties = (name, value, options) => {
     const propertiesLogic = this.props.uiSchema['ui:logic'] || {};
@@ -138,8 +139,32 @@ class ObjectField extends Component {
     const {SchemaField, TitleField, DescriptionField} = fields;
     const baseSchema = retrieveSchema(this.props.schema, definitions);
     const title = (baseSchema.title === undefined) ? name : baseSchema.title;
-    const propertiesLogic = this.props.uiSchema['ui:logic'] || {};
     const schema = cloneDeep(baseSchema);
+
+    if (schema.nullable && this.nullValue) {
+      return (
+        <fieldset className="gohan-reset-fieldset">
+          {title && (
+            <TitleField id={`${idSchema.$id}__title`}
+              title={title}
+              required={required}
+              formContext={formContext}>
+              <Button iconName="add" className="pt-minimal"
+                onClick={this.onAddRemoveClick}
+              />
+            </TitleField>
+          )}
+          {schema.description && (
+            <DescriptionField id={`${idSchema.$id}__description`}
+              description={schema.description}
+              formContext={formContext}
+            />
+          )}
+        </fieldset>
+      );
+    }
+
+    const propertiesLogic = this.props.uiSchema['ui:logic'] || {};
 
     Object.keys(propertiesLogic).forEach(key => {
       const property = propertiesLogic[key];
@@ -190,7 +215,8 @@ class ObjectField extends Component {
             required={required}
             formContext={formContext}>
             {schema.nullable && (
-              <Button iconName={(schema.nullable && this.nullValue) ? 'add' : 'remove'} className="pt-minimal"
+              <Button iconName="remove"
+                className="pt-minimal"
                 onClick={this.onAddRemoveClick}
               />
             )}
