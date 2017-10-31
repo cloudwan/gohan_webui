@@ -13,6 +13,7 @@ export default Object.freeze({
   text: TextWidget,
   email: EmailWidget,
   cidr: CidrWidget,
+  'cidr-or-ipv4': CidrWidget,
   mac: MacWidget,
   uuid: UuidWidget,
   ipv4: Ipv4Widget,
