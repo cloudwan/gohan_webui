@@ -7,6 +7,7 @@ const tenant = state => state.authReducer.tenant;
 const tenants = state => state.authReducer.tenants;
 const user = state => state.authReducer.user;
 const inProgress = state => state.authReducer.inProgress;
+const showTokenRenewal = state => state.authReducer.showTokenRenewal;
 
 export const getLoggedState = createSelector(
   [isLogged],
@@ -65,4 +66,9 @@ export const getProgressState = createSelector(
   inProgress => {
     return inProgress;
   }
+);
+
+export const getShowTokenRenewal = createSelector(
+  [showTokenRenewal],
+  showTokenRenewal => showTokenRenewal
 );

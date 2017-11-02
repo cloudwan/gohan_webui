@@ -9,7 +9,10 @@ import {
   SELECT_TENANT_FAILURE,
   FETCH_TENANTS_SUCCESS,
   FETCH_TENANTS_FAILURE,
-  CLEAR_STORAGE
+  CLEAR_STORAGE,
+  SHOW_TOKEN_RENEWAL,
+  HIDE_TOKEN_RENEWAL,
+  LAUNCH_WAITING_FOR_TOKEN_EXPIRE
 } from './AuthActionTypes';
 
 const {sessionStorage, location} = window;
@@ -68,6 +71,10 @@ type ErrorActionType = {
   +error: string,
 };
 
+type SimpleType = {
+  +type: string,
+};
+
 export const loginSuccess = (
   tokenId: string,
   tokenExpires: string,
@@ -75,6 +82,7 @@ export const loginSuccess = (
   user: UserType
 ): LoginSuccessActionType => {
   sessionStorage.setItem('token', tokenId);
+  sessionStorage.setItem('tokenExpires', tokenExpires);
 
   return {
     type: LOGIN_SUCCESS,
@@ -173,3 +181,39 @@ export const selectTenant = (tenantName: string, tenantId: string): SelectTenant
   tenantName,
   tenantId
 });
+
+export const showTokenRenewal = (): () => void => {
+  return (dispatch: () => void) => {
+    dispatch({
+      type: SHOW_TOKEN_RENEWAL
+    });
+  };
+};
+
+export const hideTokenRenewal = (): SimpleType => {
+  return {
+    type: HIDE_TOKEN_RENEWAL
+  };
+};
+
+export const waitForTokenExpire = (): () => void => {
+  const tokenExpires = sessionStorage.getItem('tokenExpires');
+
+  return (dispatch: () => void) => {
+    const earlyWarningTime = 5 * 60 * 1000; // warn 5 minutes earlier
+    const now = new Date();
+    let offset = new Date(tokenExpires) - now;
+
+    if (offset > earlyWarningTime) {
+      offset -= earlyWarningTime;
+    }
+
+    dispatch({
+      type: LAUNCH_WAITING_FOR_TOKEN_EXPIRE
+    });
+
+    setTimeout(() => {
+      dispatch(showTokenRenewal());
+    }, offset);
+  };
+};
