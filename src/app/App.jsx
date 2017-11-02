@@ -5,6 +5,7 @@ import {FocusStyleManager} from '@blueprintjs/core';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import ErrorToaster from './../error/ErrorToaster';
+import TokenRenewal from './../auth/components/TokenRenewal';
 
 FocusStyleManager.onlyShowFocusOnTabs();
 
@@ -40,6 +41,7 @@ export default class App extends Component {
 
     return (
       <div>
+        <TokenRenewal/>
         <Navbar onToggleSidebar={this.handleToggleSidebar}
           isSidebarOpen={this.state.openSidebar}
         />
