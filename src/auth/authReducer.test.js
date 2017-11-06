@@ -11,7 +11,8 @@ describe('authReducer ', () => {
     reducer(undefined, {}).should.deep.equal(
       {
         inProgress: true,
-        logged: false
+        logged: false,
+        showTokenRenewal: false
       });
     reducer({}, {}).should.deep.equal({});
   });
@@ -46,7 +47,8 @@ describe('authReducer ', () => {
         },
         user: {
           username: 'Admin'
-        }
+        },
+        showTokenRenewal: false
       }
     );
   });
@@ -56,7 +58,8 @@ describe('authReducer ', () => {
       type: actionTypes.LOGIN_ERROR,
     }).should.deep.equal({
       inProgress: false,
-      logged: false
+      logged: false,
+      showTokenRenewal: false
     });
   });
 
@@ -65,7 +68,8 @@ describe('authReducer ', () => {
       type: actionTypes.LOGOUT,
     }).should.deep.equal({
       inProgress: false,
-      logged: false
+      logged: false,
+      showTokenRenewal: false
     });
   });
 
@@ -74,7 +78,8 @@ describe('authReducer ', () => {
       type: actionTypes.LOGIN_INPROGRESS,
     }).should.deep.equal({
       inProgress: true,
-      logged: false
+      logged: false,
+      showTokenRenewal: false
     });
   });
 
@@ -93,7 +98,8 @@ describe('authReducer ', () => {
         }
       ],
       inProgress: false,
-      logged: true
+      logged: true,
+      showTokenRenewal: false
     });
   });
 
@@ -102,7 +108,8 @@ describe('authReducer ', () => {
       type: actionTypes.CLEAR_STORAGE,
     }).should.deep.equal({
       inProgress: false,
-      logged: false
+      logged: false,
+      showTokenRenewal: false
     });
   });
 });

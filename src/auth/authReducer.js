@@ -6,7 +6,8 @@ import {
   FETCH_TENANTS_SUCCESS,
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
-  HIDE_TOKEN_RENEWAL
+  RENEW_TOKEN_SUCCESS,
+  RENEW_TOKEN_FAILURE
 } from './AuthActionTypes';
 
 export default function authReducer(state = {
@@ -64,10 +65,18 @@ export default function authReducer(state = {
         ...state,
         showTokenRenewal: true
       };
-    case HIDE_TOKEN_RENEWAL:
+    case RENEW_TOKEN_SUCCESS:
       return {
         ...state,
-        showTokenRenewal: false
+        showTokenRenewal: false,
+        tokenId: action.data.tokenId,
+        tokenExpires: action.data.tokenExpires,
+        tenant: action.data.tenant,
+        user: action.data.user
+      };
+    case RENEW_TOKEN_FAILURE:
+      return {
+        ...state
       };
     default:
       return state;
