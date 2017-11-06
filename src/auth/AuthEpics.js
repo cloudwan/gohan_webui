@@ -5,7 +5,8 @@ import {get, post, parseXHRError} from './../api';
 import {
   LOGIN,
   FETCH_TENANTS,
-  SELECT_TENANT
+  SELECT_TENANT,
+  RENEW_TOKEN
 } from './AuthActionTypes';
 import {
   loginSuccess,
@@ -13,8 +14,24 @@ import {
   fetchTenantSuccess,
   fetchTenantFailure,
   selectTenantSuccess,
-  selectTenantFailure
+  selectTenantFailure,
+  showTokenRenewal,
+  renewTokenSuccess,
+  renewTokenFailure,
+  renewTokenInBackground
 } from './AuthActions';
+
+const computeOffsetForTokenRenewal = date => {
+  const earlyWarningTime = 5 * 60 * 1000; // warn/renew 5 minutes earlier
+  const now = new Date();
+  let offset = new Date(date) - now;
+
+  if (offset > earlyWarningTime) {
+    offset -= earlyWarningTime;
+  }
+
+  return offset;
+};
 
 export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(LOGIN)
@@ -73,14 +90,21 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           headers,
           data
         )
-          .flatMap(response => Observable.concat(
-            Observable.of(loginSuccess(
-              response.xhr.getResponseHeader('X-Subject-Token'),
-              response.response.token.expires_at, // eslint-disable-line camelcase
-              tenantId ? response.response.token.project : undefined,
-              response.response.token.user
-            )),
-            Observable.of({type: FETCH_TENANTS}))
+          .flatMap(response => {
+            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+
+            return Observable.concat(
+                Observable.of(loginSuccess(
+                  response.xhr.getResponseHeader('X-Subject-Token'),
+                  response.response.token.expires_at, // eslint-disable-line camelcase
+                  tenantId ? response.response.token.project : undefined,
+                  response.response.token.user
+                )),
+                Observable.of({type: FETCH_TENANTS}),
+                Observable.of(renewTokenInBackground()).delay(offset)
+              );
+            }
+
           )
           .catch(error => Observable.of(loginFailure(parseXHRError(error))));
       } else if (/v2.0$/.test(authUrl)) {
@@ -231,4 +255,99 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
     });
 };
 
-export default combineEpics(login, selectTenant, fetchTenants);
+export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) => {
+  return action$.ofType(RENEW_TOKEN)
+    .mergeMap(({username, password, tenantId, token, tenant}) => {
+      const state = store.getState();
+      const {authUrl} = state.configReducer;
+      const {tokenId} = state.authReducer;
+      const headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': tokenId
+      };
+
+      const data = {
+        auth: {}
+      };
+
+      if (/v3$/.test(authUrl)) {
+        data.auth = {
+            identity: {
+              methods: [
+                'token'
+              ],
+              token: {
+                id: token
+              }
+            }
+          };
+
+          if (tenantId) {
+            data.auth.scope = {
+              project: {
+                id: tenantId
+              }
+            };
+          } else {
+            data.auth.scope = 'unscoped';
+          }
+
+        return call(
+          post,
+          `${authUrl}/auth/tokens`,
+          headers,
+          data
+        )
+          .flatMap(response => {
+            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+            return Observable.concat(
+                Observable.of(renewTokenSuccess(
+                  response.xhr.getResponseHeader('X-Subject-Token'),
+                  response.response.token.expires_at, // eslint-disable-line camelcase
+                  tenantId ? response.response.token.project : undefined,
+                  response.response.token.user
+                )),
+                Observable.of(renewTokenInBackground()).delay(offset));
+            }
+          )
+          .catch(error => Observable.of(renewTokenFailure(parseXHRError(error))));
+
+      } else if (/v2.0$/.test(authUrl)) {
+        if (password !== undefined) {
+          data.auth.passwordCredentials = {
+            username,
+            password
+          };
+        } else {
+          console.error('Password is not provided');
+        }
+
+        if (tenant) {
+          data.auth.tenantName = tenant;
+        }
+
+        return call(
+          post,
+          `${authUrl}/tokens`,
+          headers,
+          data
+        )
+          .flatMap(response => {
+            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+
+            return Observable.concat(
+                Observable.of(renewTokenSuccess(
+                  response.response.access.token.id,
+                  response.response.access.token.expires,
+                  response.response.access.token.tenant,
+                  response.response.access.user
+                )),
+                Observable.of(showTokenRenewal()).delay(offset));
+            }
+          )
+          .catch(error => Observable.of(loginFailure(parseXHRError(error))));
+      }
+    });
+};
+
+export default combineEpics(login, selectTenant, fetchTenants, renewToken);

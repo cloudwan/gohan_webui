@@ -11,8 +11,9 @@ import {
   FETCH_TENANTS_FAILURE,
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
-  HIDE_TOKEN_RENEWAL,
-  LAUNCH_WAITING_FOR_TOKEN_EXPIRE
+  RENEW_TOKEN,
+  RENEW_TOKEN_SUCCESS,
+  RENEW_TOKEN_FAILURE
 } from './AuthActionTypes';
 
 const {sessionStorage, location} = window;
@@ -71,8 +72,26 @@ type ErrorActionType = {
   +error: string,
 };
 
-type SimpleType = {
+type RenewTokenInBackgroundType = {
   +type: string,
+  +tenantId: string,
+  +token: string,
+};
+
+type RenewTokenType = {
+  +type: string,
+  +username: string,
+  +tenantId: string,
+  +tenant: string,
+};
+
+type ShowTokenRenewalType = {
+  +type: string,
+};
+
+type RenewTokenFailureType = {
+  +type: string,
+  +error: string,
 };
 
 export const loginSuccess = (
@@ -182,38 +201,61 @@ export const selectTenant = (tenantName: string, tenantId: string): SelectTenant
   tenantId
 });
 
-export const showTokenRenewal = (): () => void => {
-  return (dispatch: () => void) => {
-    dispatch({
-      type: SHOW_TOKEN_RENEWAL
-    });
-  };
-};
-
-export const hideTokenRenewal = (): SimpleType => {
+export const showTokenRenewal = (): ShowTokenRenewalType => {
   return {
-    type: HIDE_TOKEN_RENEWAL
+    type: SHOW_TOKEN_RENEWAL
   };
 };
 
-export const waitForTokenExpire = (): () => void => {
-  const tokenExpires = sessionStorage.getItem('tokenExpires');
+export const renewTokenInBackground = (): RenewTokenInBackgroundType => {
+  const tenantId = sessionStorage.getItem('tenantId');
+  const token = sessionStorage.getItem('token');
 
-  return (dispatch: () => void) => {
-    const earlyWarningTime = 5 * 60 * 1000; // warn 5 minutes earlier
-    const now = new Date();
-    let offset = new Date(tokenExpires) - now;
+  return {
+    type: RENEW_TOKEN,
+    tenantId,
+    token
+  };
+};
 
-    if (offset > earlyWarningTime) {
-      offset -= earlyWarningTime;
+export const renewToken = (username: string, password: string): RenewTokenType => {
+  const tenantId = sessionStorage.getItem('tenantId');
+  const tenant = sessionStorage.getItem('tenant');
+
+  return {
+    type: RENEW_TOKEN,
+    username,
+    password,
+    tenantId,
+    tenant
+  };
+};
+
+export const renewTokenSuccess = (
+  tokenId: string,
+  tokenExpires: string,
+  tenant: TenantType,
+  user: UserType
+): LoginSuccessActionType => {
+  sessionStorage.setItem('token', tokenId);
+  sessionStorage.setItem('tokenExpires', tokenExpires);
+
+  return {
+    type: RENEW_TOKEN_SUCCESS,
+    data: {
+      tokenId,
+      tokenExpires,
+      tenant,
+      user,
     }
-
-    dispatch({
-      type: LAUNCH_WAITING_FOR_TOKEN_EXPIRE
-    });
-
-    setTimeout(() => {
-      dispatch(showTokenRenewal());
-    }, offset);
   };
 };
+
+export const renewTokenFailure = (error: string): RenewTokenFailureType => {
+  return {
+    type: RENEW_TOKEN_FAILURE,
+    error
+  };
+};
+
+
