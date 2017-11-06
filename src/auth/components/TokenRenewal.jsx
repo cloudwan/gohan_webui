@@ -3,26 +3,23 @@ import {connect} from 'react-redux';
 
 import {
   getShowTokenRenewal,
-  getUserName
+  getUserName,
+  getTenant
 } from './../AuthSelectors';
 
 import {
-  hideTokenRenewal,
-  waitForTokenExpire,
-  login
+  login,
+  fetchTokenData,
+  renewToken
 } from '../AuthActions';
 
 
 class TokenRenewal extends PureComponent {
-  componentDidMount() {
-    this.props.waitForTokenExpire();
-  }
-
   handleRenewTokenClick = () => {
     const password = this.pass.value;
     const userName = this.props.userName;
 
-    this.props.login(userName, password);
+    this.props.renewToken(userName, password);
   };
 
   render() {
@@ -41,7 +38,6 @@ class TokenRenewal extends PureComponent {
             <span>Token renewal component</span>
             <input type={'password'} ref={input => {this.pass = input;}}/>
             <button onClick={this.handleRenewTokenClick}>renew</button>
-            <span>{ show.toString() } </span>
           </div>
           )}
       </div>
@@ -52,12 +48,13 @@ class TokenRenewal extends PureComponent {
 function mapStateToProps(state) {
   return {
     show: getShowTokenRenewal(state),
-    userName: getUserName(state)
+    userName: getUserName(state),
+    tenant: getTenant(state)
   };
 }
 
 export default connect(mapStateToProps, {
-  waitForTokenExpire,
-  hideTokenRenewal,
-  login
+  login,
+  fetchTokenData,
+  renewToken
 })(TokenRenewal);
