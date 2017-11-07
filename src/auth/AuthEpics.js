@@ -129,14 +129,19 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           headers,
           data
         )
-          .flatMap(response => Observable.concat(
-            Observable.of(loginSuccess(
-              response.response.access.token.id,
-              response.response.access.token.expires,
-              response.response.access.token.tenant,
-              response.response.access.user
-            )),
-            Observable.of({type: FETCH_TENANTS}))
+          .flatMap(response => {
+            const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
+
+            return Observable.concat(
+                Observable.of(loginSuccess(
+                  response.response.access.token.id,
+                  response.response.access.token.expires,
+                  response.response.access.token.tenant,
+                  response.response.access.user
+                )),
+                Observable.of({type: FETCH_TENANTS}),
+                Observable.of(showTokenRenewal()).delay(offset));
+            }
           )
           .catch(error => Observable.of(loginFailure(parseXHRError(error))));
       }
@@ -333,7 +338,7 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
           data
         )
           .flatMap(response => {
-            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+            const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
 
             return Observable.concat(
                 Observable.of(renewTokenSuccess(
@@ -345,7 +350,7 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
                 Observable.of(showTokenRenewal()).delay(offset));
             }
           )
-          .catch(error => Observable.of(loginFailure(parseXHRError(error))));
+          .catch(error => Observable.of(renewTokenFailure(parseXHRError(error))));
       }
     });
 };
