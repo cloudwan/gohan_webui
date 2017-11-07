@@ -26,18 +26,23 @@ class TokenRenewal extends PureComponent {
     const {show} = this.props;
 
     return (
-      <div style={{
-        position: 'absolute',
-        zIndex: 999999,
-        left: '50%',
-        transform: 'translate(-50%, 0)',
-        background: 'yellow'
-      }}>
+      <div className={'pt-overlay pt-overlay-open pt-toast-container pt-toast-container-top'}>
         {show && (
-          <div>
-            <span>Token renewal component</span>
-            <input type={'password'} ref={input => {this.pass = input;}}/>
-            <button onClick={this.handleRenewTokenClick}>renew</button>
+          <div className={'pt-toast pt-intent-warning pt-overlay-content'}
+            style={{
+              left: '50%',
+              transform: 'translate(-50%, 0)',
+              maxWidth: 880
+            }}>
+            <span>
+              <span className={'pt-toast-message'}>
+                The token will expire in less than 5 minutes.
+                Enter your password for extends token.
+              </span>
+              <input type={'password'} ref={input => {this.pass = input;}}/>
+              <button className={'pt-button pt-intent-warning pt-minimal'}
+                onClick={this.handleRenewTokenClick}>Extend</button>
+            </span>
           </div>
           )}
       </div>
