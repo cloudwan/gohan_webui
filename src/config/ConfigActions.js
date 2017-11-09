@@ -27,7 +27,7 @@ function fetchError(data) {
 }
 
 export function fetchConfig() {
-  return dispatch => axios.get('/config.json').then(response => {
+  return dispatch => axios.get('./config.json').then(response => {
     dispatch(fetchSuccess(response.data));
   }).catch(error => {
     dispatch(fetchError(error.response));
