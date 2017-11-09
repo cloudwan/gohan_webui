@@ -244,10 +244,12 @@ export default class ArrayField extends Component {
             description={schema.description}
           />
         }
-        <Button intent={Intent.PRIMARY} text="Add item"
-          iconName="add" onClick={this.onAddClick}
-          disabled={disabled || readonly} className="pt-minimal"
-        />
+        <div>
+          <Button intent={Intent.PRIMARY} text="Add item"
+            iconName="add" onClick={this.onAddClick}
+            disabled={disabled || readonly} className="pt-minimal"
+          />
+        </div>
         <Tabs selectedTabId={this.state.selectedTabId}
           onChange={props => this.setState({selectedTabId: props})}>
           {
