@@ -3,6 +3,11 @@ $select-options-background: #ffffff;
 $select-options-input-focus: #137cbd;
 $object-field-background: #ebf1f5;
 
+.pt-dialog-container {
+  user-select: auto;
+  -moz-user-select: auto;
+}
+
 .pt-dialog {
   background: #fff;
   position: relative;
@@ -10,8 +15,16 @@ $object-field-background: #ebf1f5;
   top: initial;
   max-height: 90vh;
   margin: 5vh auto;
+  .pt-dialog-header {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
   .pt-dialog-body {
     overflow-y: auto;
+    margin: 0;
+    padding: 20px;
+    font-size: 0.875rem;
+    color: #333;
   }
   .pt-dialog-footer {
     box-shadow: 0 -1px 0 rgba(16, 22, 26, 0.15);
@@ -171,8 +184,10 @@ $object-field-background: #ebf1f5;
 }
 
 .gohan-form-legend {
-  font-weight: bolder;
-  width: 100%;
+  font-weight: bold;
+  font-size: 0.9rem;
+  float:left;
+  width: auto;
   .gohan-caret-icon {
     float: right;
     cursor: pointer;
@@ -184,10 +199,11 @@ $object-field-background: #ebf1f5;
 
 .gohan-form-description {
   font-size: 0.8em;
-  font-style: italic;
   margin-top: 0;
-  margin-bottom: 2px;
-  padding-left: 2px;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  display: inline-block;
+  color: #999;
 }
 
 .gohan-reset-fieldset {
@@ -198,6 +214,10 @@ $object-field-background: #ebf1f5;
 
 .gohan-form-object-children {
   padding-left: 10px;
+  label {
+    font-size: 0.9rem;
+    font-weight: bold;
+  }
 
   &.gohan-shown-content {
     overflow: hidden;
@@ -227,4 +247,8 @@ $object-field-background: #ebf1f5;
 
 .pt-tab-list {
   flex-wrap: wrap;
+}
+
+.bootstrap_form-check-input_hwe {
+  margin-right: 0.5rem;
 }
