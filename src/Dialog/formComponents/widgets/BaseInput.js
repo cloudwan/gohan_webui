@@ -5,6 +5,7 @@ import {asNumber} from 'react-jsonschema-form/lib/utils';
 
 import validator from './../validator';
 import Input from './../../../components/forms/Input';
+import Error from './../../../components/forms/Error';
 
 class BaseInput extends Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class BaseInput extends Component {
 
     if (this.props.required && !value) {
       errors.push({
-        message: 'Required'
+        message: 'required'
       });
     }
 
@@ -55,12 +56,16 @@ class BaseInput extends Component {
     } = this.props;
 
     return (
-      <Input id={id}
-        value={value}
-        type={schema.type}
-        placeholder={placeholder}
-        onChange={this.onInputChange}
-      />
+      <div>
+        <Input id={id}
+          value={value}
+          type={schema.type}
+          placeholder={placeholder}
+          onChange={this.onInputChange}
+          isInvalid={this.state.errors.length > 0}
+        />
+        <Error errors={this.state.errors}/>
+      </div>
     );
   }
 }
@@ -70,7 +75,7 @@ BaseInput.defaultProps = {
   required: false,
   disabled: false,
   readonly: false,
-  autofocus: false,
+  autofocus: false
 };
 
 if (process.env.NODE_ENV !== 'production') {
@@ -82,7 +87,7 @@ if (process.env.NODE_ENV !== 'production') {
     disabled: PropTypes.bool,
     readonly: PropTypes.bool,
     autofocus: PropTypes.bool,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func
   };
 }
 

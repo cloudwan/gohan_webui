@@ -19,6 +19,7 @@ function Template(props) {
     hidden,
     rawErrors
   } = props;
+
   if (hidden) {
     return children;
   }
