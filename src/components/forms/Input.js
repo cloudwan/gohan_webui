@@ -1,5 +1,5 @@
 import React from 'react';
-import ProtoTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import bootstrap from 'bootstrap/dist/css/bootstrap.css';
 
@@ -10,9 +10,10 @@ export const Input = (
     onChange = () => {},
     type = 'text',
     placeholder = '',
+    isInvalid = false
   }
 ) => (
-  <input className={`${bootstrap['form-control']}`}
+  <input className={`${bootstrap['form-control']} ${isInvalid ? bootstrap['is-invalid'] : ''}`}
     id={id}
     type={type}
     value={value}
@@ -25,13 +26,14 @@ export default Input;
 
 if (process.env.NODE_ENV !== 'production') {
   Input.propTypes = {
-    id: ProtoTypes.string.isRequired,
-    value: ProtoTypes.oneOfType([
-      ProtoTypes.string,
-      ProtoTypes.number,
+    id: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
     ]),
-    onChange: ProtoTypes.func,
-    type: ProtoTypes.string,
-    placeholder: ProtoTypes.string,
+    onChange: PropTypes.func,
+    type: PropTypes.string,
+    placeholder: PropTypes.string,
+    isInvalid: PropTypes.bool
   };
 }
