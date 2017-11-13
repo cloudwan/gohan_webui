@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 
 import styles from './select.css';
+import bootstrap from 'bootstrap/dist/css/bootstrap.css';
 
 class Select extends Component {
   static defaultProps = {
@@ -91,6 +92,7 @@ class Select extends Component {
       sort,
       disabled,
       readonly,
+      isInvalid
     } = this.props;
 
     let nullable = false;
@@ -149,7 +151,8 @@ class Select extends Component {
     }
 
     return (
-      <div className={styles.select}
+      <div className={`${styles.select} ${bootstrap['form-control']} \
+      ${styles.singleBorder} ${isInvalid ? bootstrap['is-invalid'] : ''}`}
         ref={ref => {this.widget = ref;}}>
         <button disabled={disabled || readonly}
           className={styles.button}
