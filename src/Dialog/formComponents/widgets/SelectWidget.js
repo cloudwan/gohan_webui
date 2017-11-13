@@ -1,7 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+
 import {asNumber} from 'react-jsonschema-form/lib/utils';
+
 import Select from '../../../components/forms/Select/Select';
+import Error from './../../../components/forms/Error';
 
 /**
  * This is a silly limitation in the DOM where option change event values are
@@ -19,7 +22,24 @@ function processValue({type, items}, value) {
 }
 
 class SelectWidget extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      errors: []
+    };
+  }
+
   handleSelectChange = value => {
+    const errors = [];
+
+    if (this.props.required && !value) {
+      errors.push({
+        message: 'required'
+      });
+    }
+
+    this.setState({errors});
     this.props.onChange(processValue(this.props.schema, value));
   };
 
@@ -33,18 +53,22 @@ class SelectWidget extends Component {
       label,      // eslint-disable-line
       required,   // eslint-disable-line
       multiple,   // eslint-disable-line
-      autofocus,  // eslint-disable-line
+      autofocus  // eslint-disable-line
     } = this.props;
 
     return (
-      <Select id={id}
-        haystack={options.enumOptions}
-        value={value}
-        sort={true}
-        readonly={readonly}
-        disabled={disabled}
-        onChange={this.handleSelectChange}
-      />
+      <div>
+        <Select id={id}
+          haystack={options.enumOptions}
+          value={value}
+          sort={true}
+          readonly={readonly}
+          disabled={disabled}
+          onChange={this.handleSelectChange}
+          isInvalid={this.state.errors.length > 0}
+        />
+        <Error errors={this.state.errors}/>
+      </div>
     );
   }
 }
@@ -54,13 +78,13 @@ if (process.env.NODE_ENV !== 'production') {
     schema: PropTypes.object.isRequired,
     id: PropTypes.string.isRequired,
     options: PropTypes.shape({
-      enumOptions: PropTypes.array,
+      enumOptions: PropTypes.array
     }).isRequired,
     value: PropTypes.any,
     required: PropTypes.bool,
     multiple: PropTypes.bool,
     autofocus: PropTypes.bool,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func
   };
 }
 

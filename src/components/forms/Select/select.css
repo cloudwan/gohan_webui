@@ -78,3 +78,8 @@
 .searchInput:focus {
   border-bottom: 1px solid #80bdff;
 }
+
+.singleBorder {
+  border: none !important;
+  padding: 0 !important;
+}
