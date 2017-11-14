@@ -5,26 +5,24 @@ import * as selectors from './TableSelectors';
 chai.should();
 
 describe('TableSelectors ', () => {
-  describe('getActiveSchema() ', () => {
+  describe('getSchema() ', () => {
     it('should return test1 schema', () => {
-      selectors.getActiveSchema(
+      selectors.getSchema(
         {
           schemaReducer: {
             data: [
               {
-                plural: 'test1'
+                id: 'test1'
               },
               {
-                plural: 'test2'
+                id: 'test2'
               }
             ]
           }
         },
-        {
-          plural: 'test1'
-        }
+        'test1'
       ).should.deep.equal({
-        plural: 'test1'
+        id: 'test1'
       });
     });
   });
@@ -36,7 +34,7 @@ describe('TableSelectors ', () => {
           schemaReducer: {
             data: [
               {
-                plural: 'test1',
+                id: 'test1',
                 schema: {
                   properties: {},
                   propertiesOrder: [
@@ -48,9 +46,7 @@ describe('TableSelectors ', () => {
             ]
           }
         },
-        {
-          plural: 'test1'
-        }
+        'test1'
       ).should.deep.equal([]);
 
       selectors.getHeaders(
@@ -58,7 +54,7 @@ describe('TableSelectors ', () => {
           schemaReducer: {
             data: [
               {
-                plural: 'test2',
+                id: 'test2',
                 schema: {
                   properties: {},
                   propertiesOrder: [
@@ -70,9 +66,7 @@ describe('TableSelectors ', () => {
             ]
           }
         },
-        {
-          plural: 'test1'
-        }
+        'test1'
       ).should.deep.equal([]);
     });
 
@@ -82,7 +76,7 @@ describe('TableSelectors ', () => {
           schemaReducer: {
             data: [
               {
-                plural: 'test1',
+                id: 'test1',
                 schema: {
                   properties: {
                     id: {
@@ -106,9 +100,7 @@ describe('TableSelectors ', () => {
             ]
           }
         },
-        {
-          plural: 'test1'
-        }
+        'test1'
       ).should.deep.equal([
         {
           id: 'name',
@@ -122,7 +114,7 @@ describe('TableSelectors ', () => {
           schemaReducer: {
             data: [
               {
-                plural: 'test1',
+                id: 'test1',
                 schema: {
                   properties: {
                     id: {
@@ -148,9 +140,7 @@ describe('TableSelectors ', () => {
             ]
           }
         },
-        {
-          plural: 'test1'
-        }
+        'test1'
       ).should.deep.equal([{
         id: 'name',
         title: 'title',
@@ -169,7 +159,7 @@ describe('TableSelectors ', () => {
           schemaReducer: {
             data: [
               {
-                plural: 'test1',
+                id: 'test1',
                 schema: {
                   properties: {
                     id: {
@@ -196,9 +186,7 @@ describe('TableSelectors ', () => {
             ]
           }
         },
-        {
-          plural: 'test1'
-        }
+        'test1'
       ).should.deep.equal([{
         id: 'name',
         title: 'title',
@@ -226,9 +214,7 @@ describe('TableSelectors ', () => {
             pageLimit: 10
           }
         },
-        {
-          plural: 'test'
-        }
+        'test'
       ).should.equal(0);
 
       selectors.getActivePage(
@@ -239,9 +225,7 @@ describe('TableSelectors ', () => {
             pageLimit: 10
           }
         },
-        {
-          plural: 'test'
-        }
+        'test'
       ).should.equal(0);
     });
 
@@ -258,9 +242,7 @@ describe('TableSelectors ', () => {
             pageLimit: 10
           }
         },
-        {
-          plural: 'test'
-        }
+        'test'
       ).should.equal(1);
     });
   });
@@ -278,9 +260,7 @@ describe('TableSelectors ', () => {
             pageLimit: 10
           }
         },
-        {
-          plural: 'test'
-        }
+        'test'
       ).should.equal(0);
 
       selectors.getPageCount(
@@ -291,9 +271,7 @@ describe('TableSelectors ', () => {
             pageLimit: 10
           }
         },
-        {
-          plural: 'test'
-        }
+        'test'
       ).should.equal(0);
     });
 
@@ -309,9 +287,7 @@ describe('TableSelectors ', () => {
             pageLimit: 10
           }
         },
-        {
-          plural: 'test'
-        }
+        'test'
       ).should.equal(1);
     });
     it('should return 2', () => {
@@ -328,9 +304,7 @@ describe('TableSelectors ', () => {
             pageLimit: 10
           }
         },
-        {
-          plural: 'test'
-        }
+        'test'
       ).should.equal(2);
     });
   });

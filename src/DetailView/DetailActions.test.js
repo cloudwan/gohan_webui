@@ -20,14 +20,17 @@ describe('DetailActions ', () => {
   describe('fetch()', () => {
     it(`should dispatch ${actionTypes.FETCH} action`, () => {
       const store = mockStore({});
-      const url = 'test/url';
+      const schemaId = 'test';
+      const params = {param: 'test'};
 
-      store.dispatch(actions.fetch(url)());
+
+      store.dispatch(actions.fetch(schemaId, params)());
 
       store.getActions().should.deep.equal([
         {
           type: actionTypes.FETCH,
-          url,
+          schemaId,
+          params,
         },
       ]);
     });
@@ -73,14 +76,16 @@ describe('DetailActions ', () => {
   describe('updateSuccess()', () => {
     it(`should dispatch ${actionTypes.FETCH} action`, () => {
       const store = mockStore({});
-      const url = 'test/url';
+      const schemaId = 'test';
+      const params = {param: 'test'};
 
-      store.dispatch(actions.updateSuccess(url));
+      store.dispatch(actions.updateSuccess(schemaId, params));
 
       store.getActions().should.deep.equal([
         {
           type: actionTypes.FETCH,
-          url,
+          schemaId,
+          params
         },
       ]);
     });

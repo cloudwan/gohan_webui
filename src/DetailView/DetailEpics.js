@@ -1,10 +1,13 @@
+import {combineEpics} from 'redux-observable';
 import {Observable} from 'rxjs';
 import {
   FETCH,
   FETCH_CANCELLED,
   FETCH_FAILURE,
 } from './DetailActionTypes';
-import {combineEpics} from 'redux-observable';
+
+import {getSingularUrl} from './../schema/SchemaSelectors';
+
 import {fetchSuccess, fetchError} from './DetailActions';
 import {
   get,
@@ -14,7 +17,7 @@ import {
 const pollingInterval = 5000; // Time in ms
 
 export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH)
-  .switchMap(({url}) => Observable.timer(0, pollingInterval)
+  .switchMap(({schemaId, params}) => Observable.timer(0, pollingInterval)
       .startWith(0)
       .takeUntil(
         Observable.merge(
@@ -26,6 +29,7 @@ export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => ac
       .mergeMap(() => {
         const state = store.getState();
         const {url: gohanUrl} = state.configReducer.gohan;
+        const url = getSingularUrl(state, schemaId, params);
         const headers = {
           'Content-Type': 'application/json',
           'X-Auth-Token': state.authReducer.tokenId
