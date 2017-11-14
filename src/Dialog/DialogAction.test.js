@@ -480,7 +480,7 @@ describe('DialogActions ', () => {
     store.getActions().should.deep.equal([
       {
         type: actionTypes.PREPARE_FAILURE,
-        error: 'Cannot find related schema!'
+        error: 'Cannot find "animal" related schema!'
       }
     ]);
   });
