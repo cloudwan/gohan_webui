@@ -4,10 +4,9 @@ import configureStore from 'redux-mock-store';
 import chai from 'chai';
 import spies from 'chai-spies';
 import chaiEnzyme from 'chai-enzyme';
-import {shallow, mount} from 'enzyme';
+import {shallow} from 'enzyme';
 
-import ConnectedTableView from './TableView';
-import LoadingIndicator from '../components/LoadingIndicator';
+import {getTableView} from './TableView';
 
 chai.use(chaiEnzyme());
 chai.use(spies);
@@ -26,6 +25,7 @@ describe('< TableView />', () => {
     },
     schemaReducer: {
       data: [{
+        id: 'test',
         plural: 'test',
         schema: {
           permission: [],
@@ -50,52 +50,14 @@ describe('< TableView />', () => {
   });
 
   it('should exist', () => {
+    const ConnectedTableView = getTableView({id: 'test', plural: 'tests',title: 'Test'}, undefined, true);
+
     const wrapper = shallow(
-      <ConnectedTableView store={store} plural={'test'}/>
+      <ConnectedTableView store={store}
+        match={{params: {}}}
+      />
     );
 
     wrapper.should.not.equal(undefined);
-  });
-
-  it('should contain LoadingIndicator when component is loading', () => {
-    const context = {};
-    const store = mockStore({
-      activeSchema: [],
-      headers: null,
-      pageCount: null,
-      activePage: null,
-      configReducer: {
-        pageLimit: 5
-      },
-      schemaReducer: {
-        data: [{
-          plural: 'test',
-          schema: {
-            permission: [],
-            properties: [],
-            propertiesOrder: []
-          }
-        }]
-      },
-      tableReducer: {
-        test: {
-          data: [],
-          isLoading: true,
-          limit: 0,
-          offset: 0,
-          plural: 'test',
-          totalCount: 0
-        }
-      },
-      dialogReducer: {
-        isLoading: false
-      }
-    });
-    const wrapper = mount(
-      <ConnectedTableView store={store} plural={'test'}/>,
-      {context}
-    );
-
-    wrapper.find(LoadingIndicator).should.have.length(1);
   });
 });

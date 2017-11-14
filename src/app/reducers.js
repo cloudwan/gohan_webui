@@ -10,9 +10,13 @@ import dialogReducer from '../Dialog/dialogReducer';
 import customActionReducer from '../CustomActions/CustomActionReducer';
 import apiRequestReducer from '../apiRequest/ApiRequestReducer';
 import breadcrumbReducer from '../breadcrumb/breadcrumbReducer';
+import tableReducer from '../TableView/tableReducer';
+import detailReducer from '../DetailView/detailReducer';
 
 export const makeRootReducer = asyncReducers => {
   return combineReducers({
+    tableReducer,
+    detailReducer,
     configReducer,
     locationReducer,
     errorReducer,

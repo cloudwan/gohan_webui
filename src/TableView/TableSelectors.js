@@ -1,66 +1,66 @@
 import {createSelector} from 'reselect';
 
-const schemaReducer = state => state.schemaReducer.data;
-const plural = (state, props) => props.plural;
+const selectedSchema = (state, id) => state.schemaReducer.data.find(schema => schema.id === id);
+const totalCount = (state, id) => {
+  if (state.tableReducer[id]) {
+    return state.tableReducer[id].totalCount;
+  }
+  return 0;
+};
 const pageLimit = state => state.configReducer.pageLimit;
-const totalCount = (state, props) => {
-  if (state.tableReducer[props.plural]) {
-    return state.tableReducer[props.plural].totalCount;
+const limit = (state, id) => {
+  if (state.tableReducer[id]) {
+    return state.tableReducer[id].limit;
   }
   return 0;
 };
-const limit = (state, props) => {
-  if (state.tableReducer[props.plural]) {
-    return state.tableReducer[props.plural].limit;
+const offset = (state, id) => {
+  if (state.tableReducer[id]) {
+    return state.tableReducer[id].offset;
   }
   return 0;
 };
-const offset = (state, props) => {
-  if (state.tableReducer[props.plural]) {
-    return state.tableReducer[props.plural].offset;
-  }
-  return 0;
-};
-const data = (state, props) => {
-  if (state.tableReducer && state.tableReducer[props.plural] && state.tableReducer[props.plural].data) {
-    return state.tableReducer[props.plural].data;
+
+const id = (state, id) => id;
+const data = (state, id) => {
+  if (state.tableReducer && state.tableReducer[id] && state.tableReducer[id].data) {
+    return state.tableReducer[id].data;
   }
 
-  return {};
+  return [];
 };
-const parentUrl = (state, props) => props.parentUrl;
+const url = (state, id) => {
+  if (state.tableReducer[id]) {
+    return state.tableReducer[id].url;
+  }
+  return '';
+};
 const tableReducer = state => state.tableReducer;
-const isLoading = (state, props) => {
-  if (state.tableReducer && state.tableReducer[props.plural]) {
-    return state.tableReducer[props.plural].isLoading;
+const isLoading = (state, id) => {
+  if (state.tableReducer && state.tableReducer[id]) {
+    return state.tableReducer[id].isLoading;
   }
 
   return true;
 };
 
 export const getResourceTitle = createSelector(
-  [(state, props) => getActiveSchema(state, props)],
+  [(state, props) => getSchema(state, props)],
   schema => schema.title
 );
 
-export const getActiveSchema = createSelector(
-  [schemaReducer, plural],
-  (schemas, plural) => schemas.find(object => object.plural === plural)
+export const getSchema = createSelector(
+  [selectedSchema],
+  selectedSchema => selectedSchema
 );
 
 export const getLinkUrl = createSelector(
-  [(state, props) => getActiveSchema(state, props), parentUrl],
-  (schema, parentUrl) => {
-    if (schema) {
-      return `${(parentUrl || schema.prefix)}/${schema.plural}`;
-    }
-
-    return '';
-  }
+  [url],
+  url => url
 );
 
 export const getHeaders = createSelector(
-  [(state, props) => getActiveSchema(state, props)],
+  [(state, id) => getSchema(state, id)],
   schema => {
     if (schema) {
       const schemaProperties = schema.schema.properties;
@@ -122,12 +122,12 @@ export const getPageCount = createSelector(
 );
 
 export const getSortOptions = createSelector(
-  [tableReducer, plural],
-  (tableReducer, plural) => {
-    if (tableReducer && tableReducer[plural]) {
+  [tableReducer, id],
+  (tableReducer, id) => {
+    if (tableReducer && tableReducer[id]) {
       return {
-        sortKey: tableReducer[plural].sortKey,
-        sortOrder: tableReducer[plural].sortOrder
+        sortKey: tableReducer[id].sortKey,
+        sortOrder: tableReducer[id].sortOrder
       };
     }
 
@@ -139,10 +139,10 @@ export const getSortOptions = createSelector(
 );
 
 export const getFilters = createSelector(
-  [tableReducer, plural],
-  (tableReducer, plural) => {
-    if (tableReducer && tableReducer[plural]) {
-      return tableReducer[plural].filters;
+  [tableReducer, id],
+  (tableReducer, id) => {
+    if (tableReducer && tableReducer[id]) {
+      return tableReducer[id].filters;
     }
 
     return {};

@@ -29,7 +29,7 @@ class Breadcrumb extends Component {
               <li key={`breadcrumb-${index}`}>
                 <BlueprintBreadcrumb className={breadcrumbClassName}
                   text={element.title}
-                  href={element.url}
+                  href={`#${element.url}`}
                 />
               </li>
             );

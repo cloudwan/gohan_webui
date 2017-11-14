@@ -44,8 +44,15 @@ describe('SchemaActions ', () => {
       return Promise.resolve({
         data: {
           schemas: [
-            {path: 'sample1'},
-            {path: 'sample2'}
+            {
+              id: 'sample1',
+              path: 'sample1'
+            },
+            {
+              id: 'sample2',
+              parent: 'sample1',
+              path: 'sample2'
+            }
           ]
         }
       });
@@ -56,8 +63,19 @@ describe('SchemaActions ', () => {
       {
         type: actionTypes.FETCH_SUCCESS,
         data: [
-          {path: 'sample1'},
-          {path: 'sample2'}
+          {
+            id: 'sample1',
+            path: 'sample1',
+            children: [
+              'sample2'
+            ]
+          },
+          {
+            id: 'sample2',
+            path: 'sample2',
+            parent: 'sample1',
+            children: []
+          }
         ]
       }
     ]);
