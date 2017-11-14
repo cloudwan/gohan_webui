@@ -6,10 +6,8 @@ import spies from 'chai-spies';
 import {shallow, mount} from 'enzyme';
 
 import TableComponent from './index';
-import Table from './Table';
-import TableHeader from './TableHeader';
-import TableBody from './TableBody';
 import TableHeaderCell from './CellComponents/TableHeaderCell';
+import {MemoryRouter} from 'react-router-dom';
 
 chai.use(spies);
 chai.use(chaiEnzyme());
@@ -24,24 +22,9 @@ describe('< TableComponent />', () => {
       checkboxColumn: {},
       optionsColumn: {}
     };
-    const wrapper = shallow(<TableComponent {...props}/>);
+    const wrapper = shallow(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
     wrapper.should.not.be.equal(undefined);
-  });
-
-  it('should contain basic table components', () => {
-    const props = {
-      sortOptions: {},
-      data: [],
-      columns: [],
-      checkboxColumn: {},
-      optionsColumn: {}
-    };
-    const wrapper = shallow(<TableComponent {...props}/>);
-
-    wrapper.find(Table).should.have.length(1);
-    wrapper.find(TableHeader).should.have.length(1);
-    wrapper.find(TableBody).should.have.length(1);
   });
 
   it('should call onCheckboxClick() from row checkbox', () => {
@@ -64,7 +47,7 @@ describe('< TableComponent />', () => {
       },
       optionsColumn: {}
     };
-    const wrapper = mount(<TableComponent {...props}/>);
+    const wrapper = mount(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
     wrapper.find('input').should.have.length(2);
     wrapper.find('input').at(1).simulate('change');
@@ -92,7 +75,7 @@ describe('< TableComponent />', () => {
       },
       optionsColumn: {}
     };
-    const wrapper = mount(<TableComponent {...props}/>);
+    const wrapper = mount(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
     wrapper.find('input').should.have.length(2);
     wrapper.find('input').at(0).simulate('change');
@@ -118,7 +101,7 @@ describe('< TableComponent />', () => {
       checkboxColumn: {},
       optionsColumn: {}
     };
-    const wrapper = mount(<TableComponent {...props}/>);
+    const wrapper = mount(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
     wrapper.find(TableHeaderCell).should.have.length(2);
     wrapper.find('a').at(0).simulate('click');
@@ -147,7 +130,7 @@ describe('< TableComponent />', () => {
         }
       }
     };
-    const wrapper = mount(<TableComponent {...props}/>);
+    const wrapper = mount(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
     wrapper.find('.pt-icon-edit').should.have.length(1);
     wrapper.find('.pt-icon-edit').at(0).simulate('click');
@@ -176,7 +159,7 @@ describe('< TableComponent />', () => {
         }
       }
     };
-    const wrapper = mount(<TableComponent {...props}/>);
+    const wrapper = mount(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
     wrapper.find('.pt-icon-trash').should.have.length(1);
     wrapper.find('.pt-icon-trash').at(0).simulate('click');

@@ -15,6 +15,14 @@ describe('DetailEpics', () => {
   const mockStore = configureMockStore();
   const store = mockStore(
     {
+      schemaReducer: {
+        data: [
+          {
+            id: 'test',
+            parent: ''
+          }
+        ]
+      },
       configReducer: {
         polling: false,
         gohan: {
@@ -52,7 +60,10 @@ describe('DetailEpics', () => {
         action: ['(a)', {
           a: {
             type: actionTypes.FETCH,
-            url: '/test/url'
+            schemaId: 'test',
+            params: {
+              test_id: 'foo' // eslint-disable-line camelcase
+            }
           }
         }],
         response: ['-a|', {
@@ -78,7 +89,10 @@ describe('DetailEpics', () => {
         action: ['(a|)', {
           a: {
             type: actionTypes.FETCH,
-            url: 'test/url',
+            schemaId: 'test',
+            params: {
+              test_id: 'foo' // eslint-disable-line camelcase
+            }
           },
         }],
         response: [

@@ -1,9 +1,10 @@
-import {browserHistory} from 'react-router';
+import history from './../location/history';
 import {
   put,
   purge,
   parseXHRError
 } from './../api/index';
+import {getSingularUrl} from './../schema/SchemaSelectors';
 import {
   FETCH,
   FETCH_SUCCESS,
@@ -17,9 +18,10 @@ import {
 
 import {showError} from './../Dialog/DialogActions';
 
-export const fetch = url => () => dispatch => dispatch({
+export const fetch = (schemaId, params) => () => dispatch => dispatch({
   type: FETCH,
-  url,
+  schemaId,
+  params
 });
 
 export const fetchSuccess = data => ({
@@ -41,7 +43,7 @@ export const clearData = () => dispatch => {
   });
 };
 
-export const updateSuccess = url => dispatch => dispatch(fetch(url)());
+export const updateSuccess = (schemaId, params) => dispatch => dispatch(fetch(schemaId, params)());
 
 export const updateError = error => dispatch => {
   dispatch({
@@ -50,7 +52,7 @@ export const updateError = error => dispatch => {
   dispatch(showError(error));
 };
 
-export const update = url => (data, successCb, errorCb) => {
+export const update = (schemaId, params) => (data, successCb, errorCb) => {
   return (dispatch, getState) => {
     const state = getState();
     const {url: gohanUrl} = state.configReducer.gohan;
@@ -59,12 +61,13 @@ export const update = url => (data, successCb, errorCb) => {
       'Content-Type': 'application/json',
       'X-Auth-Token': tokenId
     };
+    const url = getSingularUrl(state, schemaId, params);
 
     put(gohanUrl + url, headers, data).subscribe(response => {
       const {status} = response;
 
       if (status === 200) {
-        dispatch(updateSuccess(url));
+        dispatch(updateSuccess(schemaId, params));
         if (successCb) {
           successCb();
         }
@@ -84,7 +87,7 @@ export const update = url => (data, successCb, errorCb) => {
 };
 
 export const removeSuccess = () => {
-  browserHistory.goBack();
+  history.goBack();
   return dispatch => {
     dispatch({type: DELETE_SUCCESS});
     dispatch({type: FETCH_CANCELLED});
@@ -96,7 +99,7 @@ export const removeError = error => dispatch => dispatch({
   error
 });
 
-export const remove = url => () => {
+export const remove = (schemaId, params) => () => {
   return (dispatch, getState) => {
     const state = getState();
     const {url: gohanUrl} = state.configReducer.gohan;
@@ -105,6 +108,7 @@ export const remove = url => () => {
       'Content-Type': 'application/json',
       'X-Auth-Token': tokenId
     };
+    const url = getSingularUrl(state, schemaId, params);
 
     purge(gohanUrl + url, headers).subscribe(
       response => {

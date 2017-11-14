@@ -28,8 +28,14 @@ export function fetchSchema() {
 
 
     return axios.get(url, {headers}).then(response => {
-      dispatch(fetchSuccess(response.data.schemas));
+      const schemas = response.data.schemas.map((schema, index, array) => {
+        schema.children = array.filter(item => item.parent && item.parent === schema.id).map(item => item.id);
+        return schema;
+      });
+
+      dispatch(fetchSuccess(schemas));
     }).catch(error => {
+      console.log(error);
       dispatch(fetchError(error.response));
     });
   };
@@ -56,7 +62,7 @@ export function toLocalSchema(schema, state, parentProperty) {
 
       const relatedSchema = state.schemaReducer.data.find(item => item.id === result.relation);
       if (relatedSchema === undefined) {
-        reject({data: 'Cannot find related schema!'});
+        reject({data: `Cannot find "${result.relation}" related schema!`});
       }
 
       axios.get(state.configReducer.gohan.url + relatedSchema.url, {headers}).then(response => {

@@ -4,6 +4,10 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
+import {getCollectionUrl} from './../schema/SchemaSelectors';
+
+import {update as updateBreadcrumb} from './../breadcrumb/breadcrumbActions';
+
 import LoadingIndicator from '../components/LoadingIndicator';
 import Detail from '../components/Detail';
 import Dialog from '../Dialog/Dialog';
@@ -21,7 +25,10 @@ import {
 } from '../Dialog/DialogActions';
 
 import {getUiSchema} from './../uiSchema/UiSchemaSelectors';
-import {getSchema} from './../schema/SchemaSelectors';
+import {
+  getSchema,
+  getBreadcrumb
+} from './../schema/SchemaSelectors';
 import {getGohanUrl} from '../config/ConfigSelectors';
 import {
   checkLoading,
@@ -30,7 +37,10 @@ import {
 
 import {Alert, Intent} from '@blueprintjs/core';
 
-export const getDetailView = (DetailComponent = Detail) => {
+export const getDetailView = (schema, DetailComponent = Detail, children = null) => {
+
+  const schemaId = schema.id;
+
   class DetailView extends PureComponent {
     constructor(props) {
       super(props);
@@ -48,11 +58,13 @@ export const getDetailView = (DetailComponent = Detail) => {
     }
 
     componentDidMount() {
+      this.props.updateBreadcrumb(this.props.breadcrumb);
       this.props.fetch();
     }
 
     componentWillUnmount() {
       this.props.clearData();
+      this.props.updateBreadcrumb();
     }
 
     handleOpenUpdateDialog = id => {
@@ -104,15 +116,13 @@ export const getDetailView = (DetailComponent = Detail) => {
           <LoadingIndicator/>
         );
       }
-
       const {
         data,
         activeSchema,
         url,
-        id,
         gohanUrl,
       } = this.props;
-      const UpdateDialog = dialog({name: `${this.props.schemaId}_update`})(
+      const UpdateDialog = dialog({name: `${schemaId}_update`})(
         props => (
           <Dialog {...props}
             action={'update'}
@@ -125,17 +135,20 @@ export const getDetailView = (DetailComponent = Detail) => {
       );
 
       return (
-        <div className="detail-container">
-          <UpdateDialog/>
-          {this.showAlert()}
-          <DetailComponent schema={activeSchema}
-            data={data}
-            onEdit={this.handleOpenUpdateDialog}
-            onDelete={this.handleOpenAlert}
-            url={url}
-            id={id}
-            gohanUrl={gohanUrl}
-          />
+        <div>
+          <div className="detail-container">
+            <UpdateDialog/>
+            {this.showAlert()}
+            <DetailComponent schema={activeSchema}
+              data={data}
+              onEdit={this.handleOpenUpdateDialog}
+              onDelete={this.handleOpenAlert}
+              url={url}
+              id={data.id}
+              gohanUrl={gohanUrl}
+            />
+          </div>
+          {children}
         </div>
       );
     }
@@ -145,8 +158,10 @@ export const getDetailView = (DetailComponent = Detail) => {
     clearData: PropTypes.func.isRequired,
   };
 
-  function mapStateToProps(state, {schemaId}) {
+  function mapStateToProps(state, {match}) {
     return {
+      url: getCollectionUrl(state, schemaId, match.params),
+      breadcrumb: getBreadcrumb(state, schemaId, match.params),
       activeSchema: getSchema(state, schemaId),
       uiSchema: getUiSchema(state, schemaId),
       isLoading: checkLoading(state),
@@ -155,18 +170,17 @@ export const getDetailView = (DetailComponent = Detail) => {
     };
   }
 
-  const mapDispatchToProps = (dispatch, {schemaId, params, url}) => {
+  const mapDispatchToProps = (dispatch, {match}) => {
     return bindActionCreators({
       openUpdateDialog: openDialog(`${schemaId}_update`),
       closeUpdateDialog: closeDialog(`${schemaId}_update`),
-      fetch: fetch(`${url}/${params.id}`),
+      fetch: fetch(schema.id, match.params),
       clearData,
-      remove: remove(`${url}/${params.id}`),
-      update: update(`${url}/${params.id}`)
+      remove: remove(schema.id, match.params),
+      update: update(schema.id, match.params),
+      updateBreadcrumb
     }, dispatch);
   };
 
   return connect(mapStateToProps, mapDispatchToProps)(DetailView);
 };
-
-export default getDetailView();
