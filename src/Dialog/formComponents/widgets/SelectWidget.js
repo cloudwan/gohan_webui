@@ -60,7 +60,7 @@ class SelectWidget extends Component {
       <div>
         <Select id={id}
           haystack={options.enumOptions}
-          value={value}
+          value={Array.isArray(value) ? value.filter(item => Boolean(item)) : value}
           sort={true}
           readonly={readonly}
           disabled={disabled}
