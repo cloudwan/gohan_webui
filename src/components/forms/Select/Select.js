@@ -1,7 +1,7 @@
-/* global window*/
+/* global window, document*/
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
+import Portal from 'react-portal';
 
 import styles from './select.css';
 import bootstrap from 'bootstrap/dist/css/bootstrap.css';
@@ -19,30 +19,20 @@ class Select extends Component {
 
     this.state = {
       focused: false,
-      searchQuery: ''
+      searchQuery: '',
+      left: 0,
+      top: 0,
+      width: 0
     };
   }
 
   componentWillMount() {
-    window.addEventListener('click', this.handleWindowClick, false);
     window.addEventListener('keydown', this.handleKeydown, false);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('click', this.handleWindowClick, false);
     window.removeEventListener('keydown', this.handleKeydown, false);
   }
-
-  handleWindowClick = event => {
-    const isParent = (reference, target) => (
-      target === reference || (target.parentNode && isParent(reference, target.parentNode))
-    );
-    if (this.state.focused) {
-      if (!isParent(ReactDOM.findDOMNode(this.widget), event.target)) {
-        this.handleBlur();
-      }
-    }
-  };
 
   handleKeydown = event => {
     if (this.state.focused) {
@@ -70,9 +60,21 @@ class Select extends Component {
   };
 
   handleShowAndHideMenu = event => {
+    const bodyRect = document.body.getBoundingClientRect();
+    const targetRect = event.target.getBoundingClientRect();
+    const bottomMargin = 15;
+
     event.stopPropagation();
     event.preventDefault();
-    this.setState({focused: !this.state.focused, searchQuery: ''});
+
+    this.setState({
+      focused: !this.state.focused,
+      searchQuery: '',
+      maxHeight: bodyRect.height - targetRect.bottom - bottomMargin,
+      top: targetRect.bottom - bodyRect.top,
+      left: targetRect.left - bodyRect.left,
+      width: targetRect.width
+    });
   };
 
   handleBlur = () => {
@@ -160,56 +162,67 @@ class Select extends Component {
           {selectedItem ? selectedItem.label || selectedItem : 'Nothing selected'}
         </button>
         {focused &&
-          <div className={styles.options}>
-            {(haystack.length >= searchThreshold) &&
-              <div className={styles.search}>
-                <span className={styles.searchIcon}/>
-                <input className={styles.searchInput}
-                  type="text"
-                  placeholder="Search input" dir="auto"
-                  value={this.state.searchQuery}
-                  onChange={this.handleSearchChange}
-                />
-              </div>
-            }
-            <ul className={styles.list}>
-              {this.state.searchQuery && (options.length === 0) &&
-                <li className={styles.element}>{`No results matched "${this.state.searchQuery}"`}</li>
+          <Portal closeOnOutsideClick={true}
+            onClose={this.handleBlur}
+            isOpened={focused}>
+            <div style={{
+              left: this.state.left,
+              top: this.state.top,
+              width: this.state.width,
+              maxHeight: this.state.maxHeight
+            }}
+              className={styles.options}>
+              {(haystack.length >= searchThreshold) &&
+                <div className={styles.search}>
+                  <span className={styles.searchIcon}/>
+                  <input className={styles.searchInput}
+                    type="text"
+                    placeholder="Search input" dir="auto"
+                    value={this.state.searchQuery}
+                    onChange={this.handleSearchChange}
+                  />
+                </div>
               }
-              {nullable &&
-              <li className={selectedItem && value === null ? styles.elementSelected : styles.element}
-                onClick={() => this.handleMenuItemClick(null)}>Not selected</li>
-              }
-              {options.map((item, i) => {
-                if (typeof item === 'object') {
-                  return (
-                    <li key={i}
-                      onClick={() => this.handleMenuItemClick(item.value)}
-                      className={
-                        selectedItem && (item.value === value || (Array.isArray(value) && value.includes(item.value))) ?
-                          styles.elementSelected : styles.element
-                      }>
-                      {item.label}
-                    </li>
-                  );
-                } else if (typeof item === 'string') {
-                  return (
-                    <li key={i}
-                      onClick={() => this.handleMenuItemClick(item)}
-                      className={
-                        selectedItem && (item === value || (Array.isArray(value) && value.includes(item))) ?
-                          styles.elementSelected : styles.element
-                      }>
-                      {item}
-                    </li>
-                  );
+              <ul className={styles.list}>
+                {this.state.searchQuery && (options.length === 0) &&
+                  <li className={styles.element}>{`No results matched "${this.state.searchQuery}"`}</li>
                 }
-                return (
-                  <li key={i}>{`Unsupported type of haystack items (${typeof item})`}</li>
-                );
-              })}
-            </ul>
-          </div>
+                {nullable &&
+                <li className={selectedItem && value === null ? styles.elementSelected : styles.element}
+                  onClick={() => this.handleMenuItemClick(null)}>Not selected</li>
+                }
+                {options.map((item, i) => {
+                  if (typeof item === 'object') {
+                    return (
+                      <li key={i}
+                        onClick={() => this.handleMenuItemClick(item.value)}
+                        className={
+                          selectedItem && (
+                            item.value === value || (Array.isArray(value) && value.includes(item.value))
+                          ) ? styles.elementSelected : styles.element
+                        }>
+                        {item.label}
+                      </li>
+                    );
+                  } else if (typeof item === 'string') {
+                    return (
+                      <li key={i}
+                        onClick={() => this.handleMenuItemClick(item)}
+                        className={
+                          selectedItem && (item === value || (Array.isArray(value) && value.includes(item))) ?
+                            styles.elementSelected : styles.element
+                        }>
+                        {item}
+                      </li>
+                    );
+                  }
+                  return (
+                    <li key={i}>{`Unsupported type of haystack items (${typeof item})`}</li>
+                  );
+                })}
+              </ul>
+            </div>
+          </Portal>
         }
       </div>
     );
