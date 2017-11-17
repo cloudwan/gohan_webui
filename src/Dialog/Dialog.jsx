@@ -81,6 +81,7 @@ export class GeneratedDialog extends Component {
 
     return (
       <Dialog title={title}
+        enforceFocus={false}
         {...this.props}>
         <div className="pt-dialog-body">
           <ErrorToast />
