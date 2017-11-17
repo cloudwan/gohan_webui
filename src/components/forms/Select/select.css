@@ -31,11 +31,10 @@
 
 .options {
   position: absolute;
-  right: 0;
-  left: 0;
-  z-index: 10;
+  z-index: 21;
   border: 1px solid #7b9dd4;
   background: #fff;
+  overflow-x: auto;
 }
 .list {
   list-style: none;
@@ -43,6 +42,9 @@
   margin: 0;
 }
 .element {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   padding: 3px 12px;
   font-size: 1rem;
 }
