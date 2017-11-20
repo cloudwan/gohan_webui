@@ -11,6 +11,7 @@ class Select extends Component {
     sort: false,
     disabled: false,
     readonly: false,
+    nullable: false,
     value: undefined
   };
 
@@ -94,26 +95,21 @@ class Select extends Component {
       sort,
       disabled,
       readonly,
-      isInvalid
+      isInvalid,
+      nullable
     } = this.props;
 
-    let nullable = false;
     let options = haystack.filter(item => {
       if (typeof item === 'object') {
         if (item.value === null) {
-          nullable = true;
-
           return false;
         }
 
         return item.label.includes(this.state.searchQuery);
       } else if (typeof item === 'string') {
         if (item === null) {
-          nullable = true;
-
           return false;
         }
-
         return item.includes(this.state.searchQuery);
       }
       throw new Error(`Unsupported type of haystack item (${typeof item})`);
@@ -185,10 +181,10 @@ class Select extends Component {
               }
               <ul className={styles.list}>
                 {this.state.searchQuery && (options.length === 0) &&
-                  <li className={styles.element}>{`No results matched "${this.state.searchQuery}"`}</li>
+                  <li className={styles.elementNotFound}>{`No results matched "${this.state.searchQuery}"`}</li>
                 }
                 {nullable &&
-                <li className={selectedItem && value === null ? styles.elementSelected : styles.element}
+                <li className={!selectedItem && !value ? styles.elementSelected : styles.element}
                   onClick={() => this.handleMenuItemClick(null)}>Not selected</li>
                 }
                 {options.map((item, i) => {
@@ -245,6 +241,7 @@ if (process.env.NODE_ENV !== 'production') {
       ])
     ).isRequired,
     onChange: PropTypes.func.isRequired,
+    nullable: PropTypes.bool,
     sort: PropTypes.bool,
     value: PropTypes.oneOfType([
       PropTypes.number,
