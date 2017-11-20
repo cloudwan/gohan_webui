@@ -8,7 +8,7 @@
   display: block;
   background-color: #fff;
   border-right: 1px solid #ddd;
-  z-index: 1035;
+  z-index: 15;
   transition: left 250ms;
   overflow-x: hidden;
   overflow-y: auto;

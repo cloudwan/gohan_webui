@@ -1,10 +1,13 @@
 import React from 'react';
-import ProtoTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import styles from './navContainer.css';
 
-export const NavContainer = ({children = null}) => (
-  <nav className={styles.navContainer}>
+export const NavContainer = ({
+  children = null,
+  withSidebar = true,
+}) => (
+  <nav className={styles[`navContainer${withSidebar ? 'WithSidebar' : ''}`]}>
     {children}
   </nav>
 );
@@ -13,6 +16,7 @@ export default NavContainer;
 
 if (process.env.NODE_ENV !== 'production') {
   NavContainer.propTypes = {
-    children: ProtoTypes.node
+    children: PropTypes.node,
+    withSidebar: PropTypes.bool,
   };
 }
