@@ -234,26 +234,35 @@ class ObjectField extends Component {
               !this.nullValue && (
                 orderedProperties.filter(
                   key => schema.properties[key].type === 'object' || schema.properties[key].type === 'array'
-                ).map((name, index) => (
-                  <Tab key={index}
-                    title={schema.properties[name].title || uiSchema[name].title}
-                    panel={
-                      <div className="tab-content">
-                        <SchemaField required={this.isRequired(name)}
-                          schema={{...schema.properties[name], title: undefined, description: undefined}}
-                          uiSchema={uiSchema[name]}
-                          errorSchema={errorSchema[name]}
-                          idSchema={idSchema[name]}
-                          formData={this.state[name]}
-                          onChange={this.onPropertyChange(name)}
-                          registry={this.props.registry}
-                          disabled={disabled}
-                          readonly={readonly}
-                        />
-                      </div>
-                    }
-                  />
-                ))
+                ).map((name, index) => {
+                  let title = name;
+                  if (schema.properties[name] && schema.properties[name].title) {
+                    title = schema.properties[name].title;
+                  } else if (uiSchema[name] && uiSchema[name].title) {
+                    title = uiSchema[name].title;
+                  }
+
+                  return (
+                    <Tab key={index}
+                      title={title}
+                      panel={
+                        <div className="tab-content">
+                          <SchemaField required={this.isRequired(name)}
+                            schema={{...schema.properties[name], title: undefined, description: undefined}}
+                            uiSchema={uiSchema[name]}
+                            errorSchema={errorSchema[name]}
+                            idSchema={idSchema[name]}
+                            formData={this.state[name]}
+                            onChange={this.onPropertyChange(name)}
+                            registry={this.props.registry}
+                            disabled={disabled}
+                            readonly={readonly}
+                          />
+                        </div>
+                      }
+                    />
+                  );
+                })
               )
             }
           </Tabs>
