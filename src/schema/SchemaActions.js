@@ -45,6 +45,8 @@ export function toLocalSchema(schema, state, parentProperty) {
   return new Promise((resolve, reject) => {
     const result = cloneDeep(schema);
 
+    result.nullable = false;
+
     if (Array.isArray(schema.type)) {
       if (schema.type.includes('null')) {
         result.nullable = true;

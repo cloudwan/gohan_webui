@@ -41,7 +41,8 @@
   padding: 0;
   margin: 0;
 }
-.element {
+
+.elementBasic {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -49,15 +50,23 @@
   font-size: 1rem;
 }
 
+.element {
+  composes: elementBasic;
+}
+
 .element:hover {
-  background: #1ebdff;
-  color: #fff;
+  background: #eeeeee;
+}
+
+.elementNotFound {
+  composes: elementBasic;
+  background-color: #dadada;
 }
 
 .elementSelected {
   composes: element;
   color: #fff;
-  background: #1e90ff;
+  background: #1976D2;
 }
 
 .search {

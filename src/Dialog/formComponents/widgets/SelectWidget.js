@@ -50,6 +50,7 @@ class SelectWidget extends Component {
       options,
       disabled,
       readonly,
+      schema,
       label,      // eslint-disable-line
       required,   // eslint-disable-line
       multiple,   // eslint-disable-line
@@ -62,6 +63,7 @@ class SelectWidget extends Component {
           haystack={options.enumOptions}
           value={Array.isArray(value) ? value.filter(item => Boolean(item)) : value}
           sort={true}
+          nullable={schema.nullable}
           readonly={readonly}
           disabled={disabled}
           onChange={this.handleSelectChange}

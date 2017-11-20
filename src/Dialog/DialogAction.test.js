@@ -202,9 +202,11 @@ describe('DialogActions ', () => {
       {
         type: actionTypes.PREPARE_SUCCESS,
         data: {
+          nullable: false,
           properties: {
             name: {
               description: 'Name',
+              nullable: false,
               permission: [
                 'create',
                 'update'
@@ -241,12 +243,14 @@ describe('DialogActions ', () => {
               ],
               title: 'Pet toys',
               type: 'array',
+              nullable: false,
               items: {
                 name: {
                   title: 'Name',
                   description: 'Toy name.',
-                  type: 'string'
-                }
+                  type: 'string',
+                },
+                nullable: false
               }
             },
             parts: {
@@ -260,10 +264,11 @@ describe('DialogActions ', () => {
                   value: {
                     name: {
                       title: 'Name',
-                      type: 'string'
+                      type: 'string',
                     },
                     title: 'value',
-                    type: 'object'
+                    type: 'object',
+                    nullable: false
                   }
                 },
                 propertiesOrder: [
@@ -274,7 +279,8 @@ describe('DialogActions ', () => {
                 type: 'object'
               },
               title: 'Parts',
-              type: 'array'
+              type: 'array',
+              nullable: false
             }
 
           },
