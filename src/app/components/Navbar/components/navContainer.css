@@ -1,16 +1,5 @@
 .navContainer {
   composes: pt-navbar from '@blueprintjs/core/dist/blueprint.css';
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
   background-color: #1976D2;
   border-color: #145ca4;
-  transition: left 250ms;
-}
-
-.navContainerWithSidebar {
-  composes: navContainer;
-  left: 230px;
-  transition: left 250ms;
 }
