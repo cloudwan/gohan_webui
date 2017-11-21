@@ -42,12 +42,12 @@ export default class App extends Component {
     return (
       <div>
         <TokenRenewal/>
+        <Navbar onToggleSidebar={this.handleToggleSidebar}
+          isSidebarOpen={this.state.openSidebar}
+        />
         <Sidebar open={this.state.openSidebar}/>
         <ErrorToaster/>
         <div className={`view-content ${this.state.contentClassNames}`}>
-          <Navbar onToggleSidebar={this.handleToggleSidebar}
-            isSidebarOpen={this.state.openSidebar}
-          />
           {children}
         </div>
       </div>
