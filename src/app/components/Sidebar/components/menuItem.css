@@ -1,9 +1,0 @@
-:global(.pt-large .pt-menu-item).item {
-  display: block;
-  padding: 10px 15px;
-}
-
-.active {
-  composes: pt-active pt-intent-primary from global;
-  composes: item;
-}

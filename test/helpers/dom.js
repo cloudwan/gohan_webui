@@ -11,7 +11,6 @@ var win = doc.defaultView;
 // natural in the test environment
 global.document = doc;
 global.window = win;
-global.gohanVersion = '2.0';
 
 // take all properties of the window object and also attach it to the
 // mocha global object

@@ -1,4 +1,3 @@
-/* global gohanVersion */
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
@@ -12,10 +11,6 @@ import Search from './components/Search';
 import Menu from './components/Menu';
 import MenuItem from './components/MenuItem';
 import MenuCategory from './components/MenuCategory';
-import Brand from './components/Brand';
-import Logo from '../Logo';
-
-import styles from './sidebar.css';
 
 export class Sidebar extends Component {
   shouldComponentUpdate(nextProps, nextState) {
@@ -51,23 +46,9 @@ export class Sidebar extends Component {
 
     return (
       <Container isOpen={open}>
-        <div className={styles.sidebarHead}>
-          <Brand className={styles.gohanLogo}
-            version={gohanVersion.version}
-            name={'Gohan WebUI'}
-            logoComponent={
-              <Logo width={40}
-                height={38}
-                paddingHorizontal={5}
-                paddingVertical={3}
-                logoPath={'../../../../img/gohan-logo-gray.png'}
-              />
-            }
-          />
-          <Search value={searchQuery}
-            onChange={this.handleSearchChange}
-          />
-        </div>
+        <Search value={searchQuery}
+          onChange={this.handleSearchChange}
+        />
         <Menu>
           {
             (categories && categories.length > 0) && categories.map((category, categoryIndex) => {
