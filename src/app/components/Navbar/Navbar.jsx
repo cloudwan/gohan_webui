@@ -52,7 +52,7 @@ export class Navbar extends Component {
     } = this.props;
 
     return (
-      <NavContainer withSidebar={isSidebarOpen}>
+      <NavContainer>
         <NavbarGroup isRight={false}>
           {
             !isSidebarOpen && (
