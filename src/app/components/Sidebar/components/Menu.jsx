@@ -2,18 +2,16 @@ import React from 'react';
 import ProtoTypes from 'prop-types';
 import {Menu as BlueprintMenu} from '@blueprintjs/core';
 
-import styles from './menu.css';
-
 export const Menu = ({children = null}) => (
-  <BlueprintMenu className={styles.menu}>
+  <BlueprintMenu className="pt-large">
     {children}
   </BlueprintMenu>
 );
+
+export default Menu;
 
 if (process.env.NODE_ENV !== 'production') {
   Menu.propTypes = {
     children: ProtoTypes.node,
   };
 }
-
-export default Menu;
