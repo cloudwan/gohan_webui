@@ -12,7 +12,7 @@ export class Sample extends Component {
 
   render() {
     return (
-      <div className="pt-card pt-elevation-3 detail">
+      <div className="sample-view">
         <h2>Sample Gohan webUI Component.</h2>
       </div>
     );

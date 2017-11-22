@@ -29,7 +29,7 @@ class TableComponent extends Component {
     return (
       <div className="table-container">
         {children}
-        <div className={'pt-card pt-elevation-3'}>
+        <div className={'pt-card pt-elevation-0'}>
           <TableToolbar deleteSelected={{
             disabled: table.checkboxColumn.checkedItems.length === 0,
             onClick: toolbar.onDeleteSelectedClick
