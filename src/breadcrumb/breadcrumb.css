@@ -1,9 +1,16 @@
 .breadcrumbs {
   composes: pt-breadcrumbs from '@blueprintjs/core/dist/blueprint.css';
+  line-height: 22px;
 }
 
 .breadcrumb {
   composes: pt-breadcrumb from '@blueprintjs/core/dist/blueprint.css';
+}
+
+.breadcrumbs > li:first-child {
+  margin-left: 0.7em;
+  border-left: 0.7px solid #5c7080;
+  padding-left: 1em;
 }
 
 .breadcrumbCurrent {

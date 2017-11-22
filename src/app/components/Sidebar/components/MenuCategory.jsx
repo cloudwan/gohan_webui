@@ -31,7 +31,7 @@ class MenuCategory extends Component {
         <li className={`pt-menu-header menu-category-header${collapsible ? ' menu-category-header-collapsible' : ''}`}
           onClick={this.handleCategoryToggle}>
           <h6>{title}</h6>
-          {collapsible && <span className={`pt-icon-standard pt-icon-caret-${isOpen ? 'up' : 'down'}`}/>}
+          {collapsible && <span className={`pt-icon-standard pt-icon-chevron-${isOpen ? 'up' : 'down'}`}/>}
         </li>
         <div>
           {isOpen && children}

@@ -2,7 +2,7 @@ import React from 'react';
 import ProtoTypes from 'prop-types';
 
 export const NavContainer = ({children = null}) => (
-  <nav className="pt-navbar pt-fixed-top">
+  <nav className="pt-navbar pt-fixed-top pt-dark">
     {children}
   </nav>
 );

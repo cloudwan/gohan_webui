@@ -30,7 +30,7 @@ class TableToolbar extends Component {
         middle={'xs'}>
         <Col>
           <Button text={`New ${this.props.newResource.title}`}
-            iconName={'add'}
+            iconName={'plus'}
             className={'pt-intent-primary'}
             onClick={this.handleNewResourceClick}
           />

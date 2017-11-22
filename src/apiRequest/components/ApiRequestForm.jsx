@@ -4,7 +4,7 @@ import {Row, Col} from 'react-flexbox-grid';
 
 export const ApiRequestForm = ({children = null}) => (
   <Row center="xs" className="request-form">
-    <Col xs={10}>
+    <Col xs={12}>
       {children}
     </Col>
   </Row>

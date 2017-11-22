@@ -42,7 +42,6 @@ export class Navbar extends Component {
 
   render() {
     const {
-      isSidebarOpen,
       tenants,
       tenant,
       userName,
@@ -51,11 +50,11 @@ export class Navbar extends Component {
     return (
       <NavContainer>
         <NavbarGroup isRight={false}>
-          <Button iconName={`menu-${isSidebarOpen ? 'closed' : 'open'}`}
+          <Button iconName={'menu'}
             isMinimal={true}
             onClick={this.handleMenuButtonClick}
-            text={'Gohan WebUI'}
           />
+          <span className="navbar-title">Gohan UI</span>
           <Breadcrumb />
         </NavbarGroup>
         <NavbarGroup isRight={true}>
