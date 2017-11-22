@@ -2,7 +2,7 @@ import React from 'react';
 import ProtoTypes from 'prop-types';
 
 export const Container = ({children = null, isOpen = false}) => (
-  <div className={`pt-elevation-2 pt-fixed-top sidebar${isOpen ? '' : ' sidebar-hidden'}`}>
+  <div className={`pt-elevation-0 pt-fixed-top sidebar${isOpen ? '' : ' sidebar-hidden'}`}>
     {children}
   </div>
 );

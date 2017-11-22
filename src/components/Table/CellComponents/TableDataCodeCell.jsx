@@ -11,7 +11,7 @@ import {
 } from '@blueprintjs/core';
 
 const TableDataCodeCell = ({children}) => {
-  const popoverContent = <CodeMirror value={jsyaml.safeDump(children)}
+  const popoverContent = <CodeMirror className="cm-s-monokai" value={jsyaml.safeDump(children)}
     options={{
       mode: 'yaml',
       lineNumbers: true,

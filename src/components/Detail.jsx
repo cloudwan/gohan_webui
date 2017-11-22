@@ -55,7 +55,7 @@ export default class Detail extends Component {
     } = this.props;
 
     return (
-      <div className="pt-card pt-elevation-3 detail">
+      <div className="pt-card pt-elevation-0 detail">
         <div className="detail-header">
           <h2 className="title">{title}</h2>
           <div className='actions pt-button-group pt-minimal'>
@@ -88,9 +88,9 @@ export default class Detail extends Component {
 
             if (property.type === 'array' || property.type === 'object') {
               return (
-                <div key={index}>
-                  <span className="property-title">{property.title}: </span>
-                  <CodeMirror value={jsyaml.safeDump(propertyValue)}
+                <div className="gohan-detail-property" key={index}>
+                  <div className="property-title">{property.title}: </div>
+                  <CodeMirror className="cm-s-monokai" value={jsyaml.safeDump(propertyValue)}
                     options={{
                       mode: 'yaml',
                       lineNumbers: true,
@@ -103,10 +103,10 @@ export default class Detail extends Component {
             }
 
             return (
-              <p key={index}>
-                <span className="property-title">{property.title}: </span>
-                <span>{this.renderPropertyValueAsText(propertyValue)}</span>
-              </p>
+              <div className="gohan-detail-property" key={index}>
+                <div className="property-title">{property.title}: </div>
+                <div className="property-value">{this.renderPropertyValueAsText(propertyValue)}</div>
+              </div>
             );
           })}
           <Button className={'pt-minimal toggle-request-form'}

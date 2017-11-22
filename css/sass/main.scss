@@ -19,13 +19,13 @@ $brand-warning:         #FF7518 !default;
 $brand-danger:          #FF0039 !default;
 
 .CodeMirror {
-  max-height: 45vh !important;
+  height: auto;
   pre {
     box-shadow: none;
     min-width: 200px;
   }
 }
-
+.cm-s-monokai .CodeMirror { background: #272822; color: #f8f8f2; }
 /*
  * Base structure
  */
@@ -143,11 +143,20 @@ body {
   .sidebar-search {
     padding-left: 10px;
     padding-right: 10px;
+    label.pt-label {
+      margin-bottom: 5px;
+    }
   }
 
   &.sidebar-hidden {
     margin-left: -260px;
     transition: margin-left 250ms ease-out;
+  }
+}
+
+.pt-menu-header {
+  > h6 {
+    font-size: 15px;
   }
 }
 /*
@@ -318,6 +327,54 @@ select.select {
   }
 }
 
+.menu-category {
+  border-bottom: 1px solid $gray-lighter;
+  margin-top: 10px;
+  padding-bottom: 10px;
+  &:first-child {
+     margin-top: 0;
+  }
+  &:last-child {
+     border-bottom: none;
+  }
+  .pt-menu-item {
+    font-size: 14px;
+  }
+}
+
+.pt-dark {
+  .pt-breadcrumb {
+    color: #fff;
+  }
+  .pt-button:not([class*="pt-intent-"])[class*="pt-icon-"]::before {
+    color: #fff;
+  }
+}
+
+.pt-card {
+  border-radius: 0;
+}
+
+.gohan-detail-property {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+  .property-title {
+    flex-grow: 1;
+    text-align: right;
+    margin-right: 1em;
+    color: #bbb;
+  }
+  .property-value, .ReactCodeMirror {
+    flex-grow: 0;
+    max-width: 75%;
+    flex-basis: 75%;
+  }
+}
+
+.pt-popover.pt-popover-content-sizing .pt-popover-content {
+  padding: 5px;
+}
 /*
  * Tabs
  */

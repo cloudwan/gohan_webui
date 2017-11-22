@@ -5,7 +5,7 @@ import {MenuItem as BlueprintMenuItem} from '@blueprintjs/core';
 export const MenuItem = ({text = '', href = '', isActive = false}) => (
   <BlueprintMenuItem text={text}
     href={href}
-    className={`item${(isActive ? ' pt-active pt-intent-primary' : '')}`}
+    className={`item${(isActive ? ' pt-active' : '')}`}
   />
 );
 
