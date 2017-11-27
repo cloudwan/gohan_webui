@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+
 import dialog from '../Dialog';
 import {
   parse as queryParse,
@@ -57,7 +58,7 @@ import {
 } from '../Dialog/DialogActions';
 import {Alert, Intent} from '@blueprintjs/core';
 
-export const getTableView = (schema, Table = TableComponent, isChildView = false) => {
+export const getTableView = (schema, Table = TableComponent, isChildView = false, options = {}) => {
   const schemaId = schema.id;
   const schemaTitle = schema.title;
   const schemaPlural = schema.plural;
@@ -92,6 +93,7 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         this.props.initialize(
           this.props.url,
           schemaPlural, {
+            ...options,
             sortKey,
             sortOrder,
             limit,
@@ -102,7 +104,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       } else {
         this.props.initialize(
           this.props.url,
-          schemaPlural, {}
+          schemaPlural,
+          {...options}
         );
       }
       this.props.fetchData(schemaPlural);
