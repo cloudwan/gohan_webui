@@ -121,6 +121,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
         activeSchema,
         url,
         gohanUrl,
+        className
       } = this.props;
       const UpdateDialog = dialog({name: `${schemaId}_update`})(
         props => (
@@ -136,10 +137,11 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
 
       return (
         <div>
-          <div className="detail-container">
+          <div {...{className}}>
             <UpdateDialog/>
             {this.showAlert()}
-            <DetailComponent schema={activeSchema}
+            <DetailComponent {...this.props}
+              schema={activeSchema}
               data={data}
               onEdit={this.handleOpenUpdateDialog}
               onDelete={this.handleOpenAlert}
