@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
 
 import Table from './Table';
 import TableHeader from './TableHeader';
@@ -180,6 +181,9 @@ class TableComponent extends Component {
 
                 {optionsColumn && (
                   <TableDataCell>
+                    <Link to={`${url}/${item.id}`}>
+                      <span className="pt-icon-standard pt-icon-link" />
+                    </Link>
                     {optionsColumn.edit && optionsColumn.edit.visible && (
                       <span onClick={() => optionsColumn.edit.onClick(item)}
                         className="pt-icon-standard pt-icon-edit"
