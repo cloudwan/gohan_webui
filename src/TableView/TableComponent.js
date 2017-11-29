@@ -79,50 +79,61 @@ class TableComponent extends Component {
   }
 }
 
-TableComponent.propTypes = {
-  headers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired
-    }),
-  ),
-  title: PropTypes.string,
-  url: PropTypes.string,
-  toolbar: PropTypes.shape(),
-  table: PropTypes.shape({
-    data: PropTypes.array,
-    checkboxColumn: PropTypes.shape({
-      onCheckboxClick: PropTypes.func,
-      checkedItems: PropTypes.arrayOf(
-        PropTypes.string
-      )
-    }),
-    optionsColumn: PropTypes.shape({
-      edit: PropTypes.shape({
-        onClick: PropTypes.func
+if (process.env.NODE_ENV !== 'production') {
+  TableComponent.propTypes = {
+    headers: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        type: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired
       }),
-      remove: PropTypes.shape({
-        onClick: PropTypes.func
+    ),
+    title: PropTypes.string,
+    url: PropTypes.string,
+    toolbar: PropTypes.shape({
+      onDeleteSelectedClick: PropTypes.func,
+      onAddResourceClick: PropTypes.func,
+      filter: PropTypes.shape({
+        onChange: PropTypes.func,
+        by: PropTypes.string,
+        value: PropTypes.string
       })
     }),
-    sort: PropTypes.shape({
-      sortKey: PropTypes.string,
-      sortOrder: PropTypes.string,
-      onChange: PropTypes.func
-    })
-  }),
-  pagination: PropTypes.shape({
-    activePage: PropTypes.number,
-    onChangePage: PropTypes.func,
-    pageCount: PropTypes.number
-  }),
-  permissions: PropTypes.shape({
-    create: PropTypes.bool,
-    update: PropTypes.bool,
-    remove: PropTypes.bool
-  }),
-  children: PropTypes.node,
-};
+    table: PropTypes.shape({
+      data: PropTypes.array,
+      checkboxColumn: PropTypes.shape({
+        onCheckboxClick: PropTypes.func,
+        checkedItems: PropTypes.arrayOf(
+          PropTypes.string
+        )
+      }),
+      optionsColumn: PropTypes.shape({
+        edit: PropTypes.shape({
+          onClick: PropTypes.func
+        }),
+        remove: PropTypes.shape({
+          onClick: PropTypes.func
+        })
+      }),
+      sort: PropTypes.shape({
+        sortKey: PropTypes.string,
+        sortOrder: PropTypes.string,
+        onChange: PropTypes.func
+      })
+    }),
+    pagination: PropTypes.shape({
+      activePage: PropTypes.number,
+      onChangePage: PropTypes.func,
+      pageCount: PropTypes.number
+    }),
+    permissions: PropTypes.shape({
+      create: PropTypes.bool,
+      update: PropTypes.bool,
+      remove: PropTypes.bool
+    }),
+    children: PropTypes.node,
+    isLoading: PropTypes.bool.isRequired
+  };
+}
 
 export default TableComponent;
