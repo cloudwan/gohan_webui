@@ -14,35 +14,34 @@ import {
   parseXHRError
 } from './../api/index';
 
-const pollingInterval = 5000; // Time in ms
-
 export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH)
-  .switchMap(({schemaId, params}) => Observable.timer(0, pollingInterval)
-      .startWith(0)
-      .takeUntil(
-        Observable.merge(
-          action$.ofType(FETCH),
-          action$.ofType(FETCH_FAILURE),
-          action$.ofType(FETCH_CANCELLED),
-        )
-      )
-      .mergeMap(() => {
-        const state = store.getState();
-        const {url: gohanUrl} = state.configReducer.gohan;
-        const url = getSingularUrl(state, schemaId, params);
-        const headers = {
-          'Content-Type': 'application/json',
-          'X-Auth-Token': state.authReducer.tokenId
-        };
+  .switchMap(({schemaId, params}) => {
+    const state = store.getState();
+    const {pollingInterval} = state.configReducer;
+    const {url: gohanUrl} = state.configReducer.gohan;
+    const url = getSingularUrl(state, schemaId, params);
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': state.authReducer.tokenId
+    };
 
-        return call(get, `${gohanUrl}${url}`, headers)
-          .map(response => fetchSuccess(response.response[Object.keys(response.response)[0]]))
-          .catch(error => {
-            console.error(error);
-            return Observable.of(fetchError(parseXHRError(error)));
-          });
+    return Observable.timer(0, pollingInterval)
+    .startWith(0)
+    .takeUntil(
+      Observable.merge(
+        action$.ofType(FETCH),
+        action$.ofType(FETCH_FAILURE),
+        action$.ofType(FETCH_CANCELLED),
+      )
+    )
+    .mergeMap(() => call(get, `${gohanUrl}${url}`, headers)
+      .map(response => fetchSuccess(response.response[Object.keys(response.response)[0]]))
+      .catch(error => {
+        console.error(error);
+        return Observable.of(fetchError(parseXHRError(error)));
       })
-  );
+    );
+  });
 
 export default combineEpics(
   fetch,
