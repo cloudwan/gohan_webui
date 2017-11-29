@@ -10,7 +10,7 @@ export class SuccessToaster extends Component {
     title: '',
     resultYAML: '',
     onDismiss: () => {},
-  }
+  };
 
   handleDismissClick = () => {
     this.props.onDismiss();

@@ -16,7 +16,7 @@ export const CustomActionsSuccessToaster = ({
 }) => (
   <SuccessToaster title='Custom action success:'
     onDismiss={clearResponse}
-    responseYAML={actionResultYAML}
+    resultYAML={actionResultYAML}
   />
 );
 
