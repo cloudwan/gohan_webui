@@ -23,6 +23,9 @@ import {
   openDialog,
   closeDialog
 } from '../Dialog/DialogActions';
+import {
+  getActionResultYAML
+} from './CustomActionsSelectors';
 
 export class CustomActions extends Component {
   handleActionClick = name => {
@@ -53,6 +56,7 @@ export class CustomActions extends Component {
   render() {
     const {
       actions,
+      actionResult
     } = this.props;
     const actionsKeys = Object.keys(actions);
     const actionsDialogs = actionsKeys.map(key => {
@@ -109,7 +113,7 @@ export class CustomActions extends Component {
             text={'Custom actions'}
           />
         </Popover>
-        <CustomActionsSuccessToaster />
+        <CustomActionsSuccessToaster resultYAML={actionResult}/>
         {actionsDialogs}
       </div>
     );
@@ -120,7 +124,9 @@ CustomActions.propTypes = {
   actions: PropTypes.object.isRequired
 };
 
-const mapStateToProps = () => ({});
+const mapStateToProps = state => ({
+  actionResult: getActionResultYAML(state)
+});
 
 const mapDispatchToProps = (dispatch, props) => {
   const actions = bindActionCreators({
