@@ -17,7 +17,7 @@ import {
 export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH)
   .switchMap(({schemaId, params}) => {
     const state = store.getState();
-    const {pollingInterval} = state.configReducer;
+    const {pollingInterval, polling} = state.configReducer;
     const {url: gohanUrl} = state.configReducer.gohan;
     const url = getSingularUrl(state, schemaId, params);
     const headers = {
@@ -27,6 +27,7 @@ export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => ac
 
     return Observable.timer(0, pollingInterval)
     .startWith(0)
+    .takeWhile(i => i === 0 ? true : Boolean(polling))
     .takeUntil(
       Observable.merge(
         action$.ofType(FETCH),
