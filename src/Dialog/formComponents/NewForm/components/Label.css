@@ -1,0 +1,5 @@
+.label {
+  composes: form-control-label from 'bootstrap/dist/css/bootstrap.css';
+  font-size: 0.9rem;
+  font-weight: bold;
+}

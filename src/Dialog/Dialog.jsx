@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import Form from 'react-jsonschema-form';
+// import Form from 'react-jsonschema-form';
+import Form from './formComponents/NewForm/Form';
 import {Dialog, ProgressBar, Intent} from '@blueprintjs/core';
 import Button from './../components/Button';
 import isEqual from 'lodash/isEqual';
@@ -95,10 +96,7 @@ export class GeneratedDialog extends Component {
             return (
               <div>
                 <Form ref={c => {this.form = c;}} schema={this.props.schema}
-                  fields={fields} widgets={widgets}
-                  FieldTemplate={Template}
-                  showErrorList={true}
-                  ErrorList={ErrorListTemplate}
+                  fields={fields}
                   formData={
                     this.props.schema.propertiesOrder.reduce(
                       (result, item) => {

@@ -1,0 +1,18 @@
+.listContainer {
+  counter-reset: section;
+  padding: 0;
+  margin-bottom: 5px;
+  min-height: 2em;
+}
+
+.listContainerActive {
+  z-index: 3000;
+  list-style: none;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-left: 5px solid #ccc;
+  margin-bottom: -1px;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
