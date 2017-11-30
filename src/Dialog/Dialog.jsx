@@ -26,6 +26,14 @@ import {getUiSchemaProperties, getUiSchemaLogic} from './../uiSchema/UiSchemaSel
  * @class GeneratedDialog
  */
 export class GeneratedDialog extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      showErrorList: false
+    };
+  }
+
   /**
    * Reference to Form component.
    * @type {ReactElement}
@@ -69,12 +77,23 @@ export class GeneratedDialog extends Component {
     this.props.onSubmit(formData, this.props.data.id);
   };
 
+  handleError = () => {
+    this.toggleErrorListVisibility(true);
+  };
+
+  toggleErrorListVisibility = isVisible => {
+    this.setState({
+      showErrorList: isVisible
+    });
+  };
+
   /**
    * Renders dialog component.
    * @override
    * @return {ReactElement} markup
    */
   render() {
+    const {showErrorList} = this.state;
     const {action, baseSchema, customTitle} = this.props;
     const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
       `${action === 'create' ? ' new ' : ' '}${baseSchema.title}`;
@@ -97,8 +116,11 @@ export class GeneratedDialog extends Component {
                 <Form ref={c => {this.form = c;}} schema={this.props.schema}
                   fields={fields} widgets={widgets}
                   FieldTemplate={Template}
-                  showErrorList={true}
-                  ErrorList={ErrorListTemplate}
+                  showErrorList={showErrorList}
+                  ErrorList={props => (
+                    <ErrorListTemplate {...props}
+                      toggleErrorListVisibility={this.toggleErrorListVisibility}
+                    />)}
                   formData={
                     this.props.schema.propertiesOrder.reduce(
                       (result, item) => {
@@ -112,6 +134,7 @@ export class GeneratedDialog extends Component {
                     ...this.props.jsonUiSchema,
                     ...this.props.uiSchema
                   }}
+                  onError={this.handleError}
                   onChange={this.props.onChange}
                   onSubmit={this.handleSubmit}>
                   <div/>
