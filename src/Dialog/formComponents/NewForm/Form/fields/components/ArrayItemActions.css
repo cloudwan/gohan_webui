@@ -1,0 +1,7 @@
+.actions {
+  width: 3em;
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
+  padding: 8px 5px 8px 10px;
+}

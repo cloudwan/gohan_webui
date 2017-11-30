@@ -1,0 +1,9 @@
+.field {
+  composes: form-check from 'bootstrap/dist/css/bootstrap.css';
+}
+.label {
+  composes: form-check-label from 'bootstrap/dist/css/bootstrap.css';
+}
+.checkboxInput {
+  composes: form-check-input from 'bootstrap/dist/css/bootstrap.css';
+}

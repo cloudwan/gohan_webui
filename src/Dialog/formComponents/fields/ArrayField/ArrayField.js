@@ -151,6 +151,7 @@ export default class ArrayField extends Component {
 
   onReorderMoved = ({oldIndex, newIndex}) => {
     const {items} = this.state;
+
     this.asyncSetState({
       items: ArrayField.reorderList(items, oldIndex, newIndex)
     }, {validate: true});

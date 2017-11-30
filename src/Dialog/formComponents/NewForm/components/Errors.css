@@ -1,0 +1,4 @@
+.container {
+  composes: invalid-feedback from 'bootstrap/dist/css/bootstrap.css';
+  display: block;
+}

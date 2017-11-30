@@ -1,0 +1,6 @@
+.sort {
+  width: 6em;
+  display: table-cell;
+  vertical-align: top;
+  padding: 8px 5px;
+}
