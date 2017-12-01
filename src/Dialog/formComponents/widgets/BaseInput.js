@@ -26,7 +26,7 @@ class BaseInput extends Component {
       });
     }
 
-    if (this.props.schema.type === 'number') {
+    if (this.props.schema.type === 'number' || this.props.schema.type === 'integer') {
       validator.validate(this.props.schema, asNumber(value));
     } else {
       validator.validate(this.props.schema, value);
@@ -54,12 +54,16 @@ class BaseInput extends Component {
       formContext,  // eslint-disable-line
       ...inputProps // eslint-disable-line
     } = this.props;
+    let type = schema.type;
 
+    if (type === 'integer') {
+      type = 'number';
+    }
     return (
       <div>
         <Input id={id}
           value={value}
-          type={schema.type}
+          type={type}
           placeholder={placeholder}
           onChange={this.onInputChange}
           isInvalid={this.state.errors.length > 0}

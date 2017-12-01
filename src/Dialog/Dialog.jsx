@@ -97,7 +97,8 @@ export class GeneratedDialog extends Component {
                 <Form ref={c => {this.form = c;}} schema={this.props.schema}
                   fields={fields} widgets={widgets}
                   FieldTemplate={Template}
-                  showErrorList={true}
+                  showErrorList={false}
+                  noValidate={true} // workaround for fix ESI-16110
                   ErrorList={ErrorListTemplate}
                   formData={
                     this.props.schema.propertiesOrder.reduce(
