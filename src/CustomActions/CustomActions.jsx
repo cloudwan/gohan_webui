@@ -24,7 +24,7 @@ import {
   closeDialog
 } from '../Dialog/DialogActions';
 import {
-  getActionResultYAML
+  getActionResult
 } from './CustomActionsSelectors';
 
 export class CustomActions extends Component {
@@ -125,7 +125,7 @@ CustomActions.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  actionResult: getActionResultYAML(state)
+  actionResult: getActionResult(state)
 });
 
 const mapDispatchToProps = (dispatch, props) => {
