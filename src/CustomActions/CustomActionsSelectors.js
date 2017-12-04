@@ -1,11 +1,11 @@
 import {
   createSelector,
 } from 'reselect';
-import jsyaml from 'js-yaml';
+import {plain as formatJson} from 'format-json';
 
-const result = state => jsyaml.safeDump(state.customActionReducer.result, {skipInvalid: true});
+const result = state => formatJson(state.customActionReducer.result);
 
-export const getActionResultYAML = createSelector(
+export const getActionResult = createSelector(
   [result],
-  result => result
+  result => result || ''
 );

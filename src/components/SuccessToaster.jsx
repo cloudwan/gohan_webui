@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import CodeMirror from 'react-codemirror';
-import 'codemirror/mode/yaml/yaml';
+import 'codemirror/mode/javascript/javascript';
 import {Toaster, Position} from '@blueprintjs/core';
 
 export class SuccessToaster extends Component {
   static defaultProps = {
     title: '',
-    resultYAML: '',
+    result: '',
     onDismiss: () => {},
   };
 
@@ -17,7 +17,7 @@ export class SuccessToaster extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.resultYAML && nextProps.resultYAML !== this.props.resultYAML) {
+    if (nextProps.result && nextProps.result !== this.props.result) {
       this.toaster.show({
         message: (<div style={{
           maxWidth: 415,
@@ -26,10 +26,10 @@ export class SuccessToaster extends Component {
           position: 'relative'
         }}>
           <span>{nextProps.title}</span>
-          <CodeMirror value={nextProps.resultYAML}
-            className="toaster-codemirror"
+          <CodeMirror value={nextProps.result}
+            className="toaster-codemirror cm-s-monokai"
             options={{
-                        mode: 'yaml',
+                        mode: 'javascript',
                         readOnly: true,
                         cursorBlinkRate: -1
                       }}
@@ -56,7 +56,7 @@ export class SuccessToaster extends Component {
 if (process.env.NODE_ENV !== 'production') {
   SuccessToaster.propTypes = {
     title: PropTypes.string,
-    resultYAML: PropTypes.string,
+    result: PropTypes.string,
     onDismiss: PropTypes.func,
   };
 }
