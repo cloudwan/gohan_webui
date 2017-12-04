@@ -6,19 +6,19 @@ import * as selectors from './CustomActionsSelectors';
 chai.should();
 
 describe('DetailSelectors', () => {
-  describe('getActionResultYAML', () => {
+  describe('getActionResult', () => {
     it('should return appropriate string', () => {
-      selectors.getActionResultYAML(
+      selectors.getActionResult(
         {
           customActionReducer: {
             result: {test: 1}
           }
         }
-      ).should.equal('test: 1\n');
+      ).should.equal('{\n  "test": 1\n}');
     });
 
     it('should return empty string', () => {
-      selectors.getActionResultYAML(
+      selectors.getActionResult(
         {
           customActionReducer: {
             result: undefined

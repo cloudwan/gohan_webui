@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {getActionResultYAML} from './CustomActionsSelectors';
+import {getActionResult} from './CustomActionsSelectors';
 
 import {
   clearResponse,
@@ -12,23 +12,23 @@ import SuccessToaster from '../components/SuccessToaster';
 
 export const CustomActionsSuccessToaster = ({
   clearResponse = '',
-  actionResultYAML = () => {},
+  result = '',
 }) => (
   <SuccessToaster title='Custom action success:'
     onDismiss={clearResponse}
-    resultYAML={actionResultYAML}
+    result={result}
   />
 );
 
 if (process.env.NODE_ENV !== 'production') {
   CustomActionsSuccessToaster.propTypes = {
-    actionResultYAML: PropTypes.string,
+    result: PropTypes.string,
     clearResponse: PropTypes.func
   };
 }
 
 const mapStateToProps = state => ({
-  actionResultYAML: getActionResultYAML(state)
+  result: getActionResult(state)
 });
 
 export default connect(mapStateToProps, {
