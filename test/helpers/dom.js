@@ -31,4 +31,5 @@ function propagateToGlobal(window) {
     global[key] = window[key];
   }
   window.sessionStorage = global.sessionStorage;
+  window.localStorage = global.localStorage;
 }
