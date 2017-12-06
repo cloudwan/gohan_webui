@@ -8,6 +8,7 @@ const tenants = state => state.authReducer.tenants;
 const user = state => state.authReducer.user;
 const inProgress = state => state.authReducer.inProgress;
 const showTokenRenewal = state => state.authReducer.showTokenRenewal;
+const storagePrefix = state => state.configReducer.storagePrefix;
 
 export const getLoggedState = createSelector(
   [isLogged],
@@ -39,7 +40,7 @@ export const getTenant = createSelector(
 
 export const getTenantName = createSelector(
   [tenant],
-  tenant => tenant.name
+  tenant => tenant ? tenant.name : ''
 );
 
 export const getTenants = createSelector(
@@ -58,7 +59,7 @@ export const getUser = createSelector(
 
 export const getUserName = createSelector(
   [user],
-  user => user.username || user.name
+  user => user ? (user.username || user.name) : ''
 );
 
 export const getProgressState = createSelector(
@@ -71,4 +72,9 @@ export const getProgressState = createSelector(
 export const getShowTokenRenewal = createSelector(
   [showTokenRenewal],
   showTokenRenewal => showTokenRenewal
+);
+
+export const getStoragePrefix = createSelector(
+  [storagePrefix],
+  storagePrefix => storagePrefix
 );

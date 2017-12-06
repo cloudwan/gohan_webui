@@ -3,7 +3,13 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-import {login, selectTenant, fetchTokenData} from './AuthActions';
+import {
+  login,
+  selectTenant,
+  fetchTokenData,
+  sessionStorageTransfer,
+  transferStorage
+} from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import LoadingIndicator from '../components/LoadingIndicator';
 import Login from './components/Login';
@@ -18,9 +24,18 @@ import {
   getTenants,
   getUser,
   getProgressState,
+  getStoragePrefix
 } from './AuthSelectors';
 
 export class Auth extends Component {
+  constructor(props) {
+    super(props);
+
+    window.addEventListener('storage', props.sessionStorageTransfer, false); // eslint-disable-line no-undef
+
+    props.transferStorage();
+  }
+
   componentDidMount() {
     this.props.fetchTokenData();
   }
@@ -124,6 +139,7 @@ function mapStateToProps(state) {
     user: getUser(state),
     inProgress: getProgressState(state),
     errorMessage: getError(state),
+    storagePrefix: getStoragePrefix(state)
   };
 }
 
@@ -131,5 +147,7 @@ export default connect(mapStateToProps, {
   login,
   selectTenant,
   fetchTokenData,
-  resetErrorMessage
+  resetErrorMessage,
+  sessionStorageTransfer,
+  transferStorage
 })(Auth);

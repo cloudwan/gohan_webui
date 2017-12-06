@@ -13,10 +13,12 @@ import {
   SHOW_TOKEN_RENEWAL,
   RENEW_TOKEN,
   RENEW_TOKEN_SUCCESS,
-  RENEW_TOKEN_FAILURE
+  RENEW_TOKEN_FAILURE,
+  INIT_SESSION_STORAGE_TRANSFER,
+  TRANSFER_STORAGE
 } from './AuthActionTypes';
 
-const {sessionStorage, location} = window;
+const {sessionStorage, localStorage, location} = window;
 
 type UserType = {
   +id: string,
@@ -155,6 +157,8 @@ export const clearStorage = (): () => void => {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('scopedToken');
   sessionStorage.removeItem('tenant');
+  sessionStorage.removeItem('tenantId');
+  sessionStorage.removeItem('tokenExpires');
 
   return {
     type: CLEAR_STORAGE
@@ -162,9 +166,16 @@ export const clearStorage = (): () => void => {
 };
 
 export const logout = (): () => void => {
-  return (dispatch: () => void) => {
+  return (dispatch: () => void, getState: () => void) => {
+    const {storagePrefix} = getState().configReducer;
+
+    localStorage.setItem(`${storagePrefix}clearSessionStorage`, 'true');
+    setTimeout(() => {
+      localStorage.removeItem(`${storagePrefix}clearSessionStorage`);
+    }, 0);
     dispatch(clearStorage());
     dispatch({type: LOGOUT});
+
     location.reload();
   };
 };
@@ -178,6 +189,7 @@ export const selectTenantSuccess = (
     sessionStorage.setItem('scopedToken', tokenId);
     sessionStorage.setItem('tenant', tenant.name);
     sessionStorage.setItem('tenantId', tenant.id);
+    sessionStorage.setItem('tokenExpires', tokenExpires);
 
     return {
       type: LOGIN_SUCCESS,
@@ -255,6 +267,55 @@ export const renewTokenFailure = (error: string): RenewTokenFailureType => {
   return {
     type: RENEW_TOKEN_FAILURE,
     error
+  };
+};
+
+export const sessionStorageTransfer = (event: object): () => void => {
+  return (dispatch: () => void, getState: () => void) => {
+    const {storagePrefix} = getState().configReducer;
+
+    dispatch({
+      type: INIT_SESSION_STORAGE_TRANSFER
+    });
+
+    if (!event.newValue) {
+      return;
+    }
+    if (event.key === `${storagePrefix}getSessionStorage`) {
+      localStorage.setItem(`${storagePrefix}sessionStorage`, JSON.stringify(sessionStorage));
+      setTimeout(() => {
+        localStorage.removeItem(`${storagePrefix}sessionStorage`);
+        localStorage.removeItem(`${storagePrefix}getSessionStorage`);
+      }, 0);
+    } else if (event.key === `${storagePrefix}sessionStorage` && !sessionStorage.length) {
+      const data = JSON.parse(event.newValue);
+      for (let key in data) {
+        sessionStorage.setItem(key, data[key]);
+      }
+
+      if (Object.keys(data).length > 0) {
+        location.reload();
+      }
+    } else if (event.key === `${storagePrefix}clearSessionStorage`) {
+      dispatch(logout());
+    }
+  };
+};
+
+export const transferStorage = (): () => void => {
+  return (dispatch: () => {}, getState: () => void) => {
+    const {storagePrefix} = getState().configReducer;
+
+    if (!sessionStorage.length) {
+      localStorage.setItem(`${storagePrefix}getSessionStorage`, 'true');
+      setTimeout(() => {
+        localStorage.removeItem(`${storagePrefix}getSessionStorage`);
+      }, 500);
+    }
+
+    dispatch({
+      type: TRANSFER_STORAGE
+    });
   };
 };
 

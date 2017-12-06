@@ -23,6 +23,9 @@ describe('< Auth />', () => {
   const store = mockStore({
     authReducer: {
       tokenId: 0
+    },
+    configReducer: {
+      storagePrefix: 'prefix'
     }
   });
 
@@ -38,7 +41,10 @@ describe('< Auth />', () => {
     const localStore = mockStore({});
     const wrapper = mount(
       <Provider store={localStore}>
-        <Auth fetchTokenData={() => {}} inProgress={true} />
+        <Auth fetchTokenData={() => {}}
+          inProgress={true}
+          transferStorage={() => {}}
+        />
       </Provider>
     );
 
@@ -49,7 +55,9 @@ describe('< Auth />', () => {
     const localStore = mockStore({});
     const wrapper = mount(
       <Provider store={localStore}>
-        <Auth fetchTokenData={() => {}} />
+        <Auth fetchTokenData={() => {}}
+          transferStorage={() => {}}
+        />
       </Provider>
     );
 
@@ -60,8 +68,11 @@ describe('< Auth />', () => {
     const localStore = mockStore({});
     const wrapper = mount(
       <Provider store={localStore}>
-        <Auth fetchTokenData={() => {}} inProgress={true}
-          tenants={['tenant1']} user={{username: 'test'}}
+        <Auth fetchTokenData={() => {}}
+          inProgress={true}
+          tenants={['tenant1']}
+          user={{username: 'test'}}
+          transferStorage={() => {}}
         />
       </Provider>
     );
@@ -73,7 +84,10 @@ describe('< Auth />', () => {
     const localStore = mockStore({});
     const wrapper = mount(
       <Provider store={localStore}>
-        <Auth fetchTokenData={() => {}} errorMessage={'error'}/>
+        <Auth fetchTokenData={() => {}}
+          errorMessage={'error'}
+          transferStorage={() => {}}
+        />
       </Provider>
     );
 
@@ -83,7 +97,10 @@ describe('< Auth />', () => {
   it('should call onLoginSuccess from componentWillReceiveProps', () => {
     const onLoginSuccess = chai.spy();
     const wrapper = mount(
-      <Auth fetchTokenData={() => {}} onLoginSuccess={onLoginSuccess} />
+      <Auth fetchTokenData={() => {}}
+        onLoginSuccess={onLoginSuccess}
+        transferStorage={() => {}}
+      />
     );
 
     wrapper.setProps({
@@ -99,8 +116,10 @@ describe('< Auth />', () => {
     const resetErrorMessage = chai.spy();
     const selectTenant = chai.spy();
     const wrapper = mount(
-      <Auth fetchTokenData={() => {}} resetErrorMessage={resetErrorMessage}
+      <Auth fetchTokenData={() => {}}
+        resetErrorMessage={resetErrorMessage}
         selectTenant={selectTenant}
+        transferStorage={() => {}}
       />
     );
 
@@ -114,8 +133,10 @@ describe('< Auth />', () => {
     const resetErrorMessage = chai.spy();
     const login = chai.spy();
     const wrapper = mount(
-      <Auth fetchTokenData={() => {}} resetErrorMessage={resetErrorMessage}
+      <Auth fetchTokenData={() => {}}
+        resetErrorMessage={resetErrorMessage}
         login={login}
+        transferStorage={() => {}}
       />
     );
 
