@@ -56,5 +56,6 @@
     "pageLimit": 5,
     "loginRequestTimeout": 30000,
     "polling": true,
-    "pollingInterval": 10000
+    "pollingInterval": 10000,
+    "storagePrefix": "gohan-webui"
 }
