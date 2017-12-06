@@ -1,4 +1,4 @@
-/* global it, afterEach, describe, sessionStorage */
+/* global it, afterEach, describe, sessionStorage, localStorage */
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
@@ -18,6 +18,8 @@ describe('AuthActions ', () => {
   afterEach(() => {
     sessionStorage.clear();
     sessionStorage.itemInsertionCallback = null;
+    localStorage.clear();
+    localStorage.itemInsertionCallback = null;
   });
 
   describe('loginSuccess()', () => {
@@ -118,7 +120,11 @@ describe('AuthActions ', () => {
 
   describe('logout() ', () => {
     it(`should dispatch ${actionTypes.CLEAR_STORAGE} action and ${actionTypes.LOGOUT}`, () => {
-      const store = mockStore({});
+      const store = mockStore({
+        configReducer: {
+          storagePrefix: 'prefix'
+        }
+      });
 
       store.dispatch(actions.logout());
 
