@@ -5,6 +5,7 @@ import Form from 'react-jsonschema-form';
 import {Dialog, ProgressBar, Intent} from '@blueprintjs/core';
 import Button from './../components/Button';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 
 import {getSchema, getLoadingState} from './DialogSelectors';
 import widgets from './formComponents/widgets';
@@ -66,7 +67,38 @@ export class GeneratedDialog extends Component {
    * @param formData
    */
   handleSubmit = ({formData}) => {
-    this.props.onSubmit(formData, this.props.data.id);
+    const removeEmpty = obj => {
+      if (Array.isArray(obj)) {
+        if (obj.length === 0) {
+          return obj;
+        }
+        return obj.filter(f => !(f === undefined || ((f !== null && typeof f === 'object') && isEmpty(f))))
+          .reduce((r, i) => {
+              if (i !== null && typeof i === 'object') {
+                const value = removeEmpty(i);
+
+                if (!((value !== null && typeof value === 'object') && isEmpty(value))) {
+                  return [...r, value];
+                }
+                return r;
+              }
+              return [...r, i];
+            },
+            []);
+      }
+
+      return Object.keys(obj)
+        .filter(f => !(obj[f] === undefined || ((obj[f] !== null && typeof obj[f] === 'object') && isEmpty(obj[f]))))
+        .reduce(
+          (r, i) =>
+            obj[i] !== null && typeof obj[i] === 'object' ?
+              {...r, [i]: removeEmpty(obj[i])} :
+              {...r, [i]: obj[i]},
+          {}
+        );
+    };
+
+    this.props.onSubmit(removeEmpty(formData), this.props.data.id);
   };
 
   /**
