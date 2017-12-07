@@ -15,7 +15,7 @@ export default function cidrFormat(data) {
   const address = data.slice(0, i);
   const mask = data.slice(i + 1, data.length);
 
-  if (mask <= 0) {
+  if (mask < 0) {
     return false;
   }
 
