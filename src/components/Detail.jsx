@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import jsyaml from 'js-yaml';
 import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/yaml/yaml';
+import {Link} from 'react-router-dom';
 import {
   Button
 } from '@blueprintjs/core';
@@ -99,6 +100,21 @@ export default class Detail extends Component {
                         cursorBlinkRate: -1
                       }}
                     />
+                  </div>
+                );
+              }
+
+              if (propertyValue && property.relation) {
+                const {relation, relation_property: relationProperty} = property;
+                const {name, url} = data[relationProperty || relation];
+                return (
+                  <div className="gohan-detail-property" key={index}>
+                    <div className="property-title">{property.title}: </div>
+                    <div className="property-value">
+                      <Link to={url}>
+                        {this.renderPropertyValueAsText(name || propertyValue)}
+                      </Link>
+                    </div>
                   </div>
                 );
               }
