@@ -167,7 +167,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
       activeSchema: getSchema(state, schemaId),
       uiSchema: getUiSchema(state, schemaId),
       isLoading: checkLoading(state),
-      data: getData(state),
+      data: getData(state, schemaId),
       gohanUrl: getGohanUrl(state),
     };
   }
