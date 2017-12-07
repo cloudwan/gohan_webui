@@ -7,6 +7,7 @@ import {
 import {getSingularUrl} from './../schema/SchemaSelectors';
 import {
   FETCH,
+  FETCH_PARENTS,
   FETCH_SUCCESS,
   FETCH_FAILURE,
   FETCH_CANCELLED,
@@ -22,6 +23,12 @@ export const fetch = (schemaId, params) => () => dispatch => dispatch({
   type: FETCH,
   schemaId,
   params
+});
+
+export const fetchParents = (data, withParents) => ({
+  type: FETCH_PARENTS,
+  data,
+  withParents,
 });
 
 export const fetchSuccess = data => ({
