@@ -139,28 +139,26 @@ class TableComponent extends Component {
                 )}
 
                 {columns && columns.length > 0 && columns.map((column, index) => {
-                  switch (column.type) {
-                    case 'boolean':
-                      return (
-                        <TableDataBooleanCell key={index}>
-                          {item[column.id]}
-                        </TableDataBooleanCell>
-                      );
-                    case 'link':
-                      return (
-                        <TableDataLinkCell url={item[column.id].url}
-                          id={item[column.id].id}
-                          key={index}>
-                          {item[column.id].name}
-                        </TableDataLinkCell>
-                      );
-                    case 'array':
-                    case 'object':
-                      return (
-                        <TableDataCodeCell key={index}>
-                          {item[column.id]}
-                        </TableDataCodeCell>
-                      );
+                  if (column.type.includes('boolean')) {
+                    return (
+                      <TableDataBooleanCell key={index}>
+                        {item[column.id]}
+                      </TableDataBooleanCell>
+                    );
+                  } else if (column.type.includes('link')) {
+                    return (
+                      <TableDataLinkCell url={item[column.id].url}
+                        id={item[column.id].id}
+                        key={index}>
+                        {item[column.id].name}
+                      </TableDataLinkCell>
+                    );
+                  } else if (column.type.includes('array') || column.type.includes('object')) {
+                    return (
+                      <TableDataCodeCell key={index}>
+                        {item[column.id]}
+                      </TableDataCodeCell>
+                    );
                   }
 
                   if (column.id === 'name') {
