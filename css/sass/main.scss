@@ -328,6 +328,10 @@ select.select {
     line-height: 20px;
     font-size: 16px;
   }
+
+  .pt-menu-item {
+    font-size: 14px;
+  }
 }
 
 .menu-category {
@@ -339,9 +343,6 @@ select.select {
   }
   &:last-child {
      border-bottom: none;
-  }
-  .pt-menu-item {
-    font-size: 14px;
   }
 }
 

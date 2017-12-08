@@ -31,6 +31,16 @@ export class Sidebar extends Component {
     this.setState({searchQuery});
   };
 
+  handleMenuItemClick = () => {
+    this.setState(prevState => {
+      if (prevState.searchQuery !== '') {
+        return {
+          searchQuery: ''
+        };
+      }
+    });
+  }
+
   render() {
     const {
       open = true,
@@ -44,33 +54,50 @@ export class Sidebar extends Component {
 
     const searchRegExp = new RegExp(searchQuery, 'i');
 
+    const renderMenuItems = (categories, query) => {
+      if (query) {
+        const items = categories.filter(category => category.title !== 'Favorites')
+          .reduce((result, category) => [...result, ...category.items], [])
+          .filter(item => searchRegExp.test(item.title));
+
+        return (
+          items.map((item, index) => (
+            <MenuItem key={`${item.title}-${index}`}
+              text={item.title}
+              href={item.path}
+              isActive={item.path.replace('#', '') === pathname}
+              onClick={this.handleMenuItemClick}
+            />
+          ))
+        );
+      }
+
+      return (categories && categories.length > 0) && categories
+        .map((category, categoryIndex) => ((category.items.length > 0) && (
+          <MenuCategory key={`${category.title}-${categoryIndex}`}
+            title={category.title}
+            items={category.items}>
+            {
+              category.items.map((item, index) => (
+                <MenuItem key={`${item.title}-${index}`}
+                  text={item.title}
+                  href={item.path}
+                  isActive={item.path.replace('#', '') === pathname}
+                  onClick={this.handleMenuItemClick}
+                />
+              ))
+            }
+          </MenuCategory>
+        )));
+    };
+
     return (
       <Container isOpen={open}>
         <Search value={searchQuery}
           onChange={this.handleSearchChange}
         />
         <Menu>
-          {
-            (categories && categories.length > 0) && categories.map((category, categoryIndex) => {
-              const filteredItems = category.items.filter(item => searchRegExp.test(item.title));
-
-              return (filteredItems.length > 0) && (
-                <MenuCategory key={`${category.title}-${categoryIndex}`}
-                  title={category.title}
-                  items={filteredItems}>
-                  {
-                    filteredItems.map((item, index) => (
-                      <MenuItem key={`${item.title}-${index}`}
-                        text={item.title}
-                        href={item.path}
-                        isActive={item.path.replace('#', '') === pathname}
-                      />
-                    ))
-                  }
-                </MenuCategory>
-              );
-            })
-          }
+          {renderMenuItems(categories, searchQuery)}
         </Menu>
       </Container>
     );
