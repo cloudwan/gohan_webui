@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {Menu as BlueprintMenu} from '@blueprintjs/core';
 
 export const Menu = ({children = null}) => (
-  <BlueprintMenu>
+  <BlueprintMenu className="menu">
     {children}
   </BlueprintMenu>
 );
