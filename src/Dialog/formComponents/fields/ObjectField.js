@@ -231,7 +231,7 @@ class ObjectField extends Component {
         {isTab && (
           <Tabs>
             {
-              !this.nullValue && (
+              !schema.nullable && (
                 orderedProperties.filter(
                   key => schema.properties[key].type === 'object' || schema.properties[key].type === 'array'
                 ).map((name, index) => {
@@ -267,7 +267,7 @@ class ObjectField extends Component {
             }
           </Tabs>
         )}
-        {isTab && !this.nullValue && orderedProperties.filter(
+        {isTab && !schema.nullable && orderedProperties.filter(
           key => schema.properties[key].type !== 'object' && schema.properties[key].type !== 'array'
         ).map((name, index) => (
           <SchemaField key={index} name={name}
@@ -286,7 +286,7 @@ class ObjectField extends Component {
         }
         {!isTab && (
           <div className={'gohan-form-object-children'}>
-            {!this.nullValue &&
+            {!schema.nullable &&
               orderedProperties.map((name, index) => {
                 return (
                   <SchemaField key={index}
