@@ -20,9 +20,10 @@ export const updateBreadcrumb = (action$, store, call = (fn, ...args) => fn(...a
       'Content-Type': 'application/json',
       'X-Auth-Token': state.authReducer.tokenId,
     };
+    const {initialDocTitle} = state.breadcrumbReducer;
 
     if (!elements) {
-      return Observable.of(updateFulfilled([]));
+      return Observable.of(updateFulfilled([], initialDocTitle));
     }
 
     const elementsWithoutTitle = elements
@@ -30,7 +31,7 @@ export const updateBreadcrumb = (action$, store, call = (fn, ...args) => fn(...a
       .filter(element => !element.title);
 
     if (elementsWithoutTitle.length === 0) {
-      return Observable.of(updateFulfilled(elements));
+      return Observable.of(updateFulfilled(elements, initialDocTitle));
     }
 
     return Observable.zip(
@@ -52,10 +53,10 @@ export const updateBreadcrumb = (action$, store, call = (fn, ...args) => fn(...a
 
       return updateFulfilled([
         ...elements.map((element, index) => (updatedElements[index] !== undefined) ? updatedElements[index] : element)
-      ]);
+      ], initialDocTitle);
     }).catch(error => {
       console.error(error);
-      return Observable.of(updateFailure(parseXHRError(error)));
+      return Observable.of(updateFailure(parseXHRError(error), initialDocTitle));
   });
 });
 
