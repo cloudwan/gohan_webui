@@ -4,7 +4,7 @@ import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow} from 'enzyme';
 
-import NotFound from './index';
+import {NotFound} from './NotFound';
 
 chai.use(chaiEnzyme());
 chai.should();
