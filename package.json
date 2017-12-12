@@ -1,6 +1,6 @@
 {
   "name": "gohan-webui",
-  "version": "2.12.8",
+  "version": "2.12.9",
   "description": "WebUI for Gohan project",
   "main": "./src/index.js",
   "scripts": {
