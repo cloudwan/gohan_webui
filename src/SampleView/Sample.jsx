@@ -1,7 +1,24 @@
+/* global document */
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
+import {getInitialDocTitle} from '../breadcrumb/breadcrumbSelectors';
+
 export class Sample extends Component {
+  componentDidMount() {
+    const {initialDocTitle} = this.props;
+
+    if (initialDocTitle && initialDocTitle.length > 0) {
+      document.title = `Sample | ${initialDocTitle}`;
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.initialDocTitle && (nextProps.initialDocTitle !== this.props.initialDocTitle)) {
+      document.title = `Sample | ${nextProps.initialDocTitle}`;
+    }
+  }
+
   static onEnter() {
     console.log('onEnter');
   }
@@ -25,8 +42,10 @@ Sample.contextTypes = {
 Sample.propTypes = {
 };
 
-function mapStateToProps() {
-  return {};
+function mapStateToProps(state) {
+  return {
+    initialDocTitle: getInitialDocTitle(state)
+  };
 }
 
 export default connect(mapStateToProps, {
