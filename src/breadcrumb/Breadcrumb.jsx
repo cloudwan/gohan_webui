@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Breadcrumb as BlueprintBreadcrumb} from '@blueprintjs/core';
 
+import {setInitialDocTitle} from './breadcrumbActions';
+
 import {getBreadcrumbContent} from './breadcrumbSelectors';
 
 import styles from './breadcrumb.css';
@@ -11,6 +13,10 @@ class Breadcrumb extends Component {
   static defaultProps = {
     elements: [],
     className: '',
+  };
+
+  componentDidMount() {
+    this.props.setInitialDocTitle();
   }
 
   render() {
@@ -51,4 +57,8 @@ export const mapStateToProps = state => ({
   elements: getBreadcrumbContent(state),
 });
 
-export default connect(mapStateToProps)(Breadcrumb);
+export const mapDispatchToProps = {
+  setInitialDocTitle
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Breadcrumb);
