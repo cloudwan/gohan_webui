@@ -8,7 +8,9 @@ function CodeWidget(props) {
   const {readonly, value, onChange} = props;
   const {format} = props.schema;
 
-  return <CodeMirror value={value} onChange={onChange}
+  return <CodeMirror value={value}
+    className={'cm-s-monokai'}
+    onChange={onChange}
     options={{
       mode: format,
       lineNumbers: true,

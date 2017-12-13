@@ -131,9 +131,12 @@ export function toLocalSchema(schema, state, parentProperty) {
         reject(error);
       });
     } else {
-      result.format = 'yaml';
-      result.originalType = 'object';
-      resolve(result);
+      resolve({
+        ...result,
+        format: 'yaml',
+        originalType: 'object',
+        type: 'string'
+      });
     }
   });
 }

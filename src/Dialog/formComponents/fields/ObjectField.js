@@ -185,7 +185,14 @@ class ObjectField extends Component {
     try {
       const properties = Object.keys(schema.properties);
       orderedProperties = orderProperties(
-        properties, schema.propertiesOrder.filter(item => properties.includes(item)) || uiSchema['ui:order']
+        properties, Object.keys(schema.properties).reduce((result, item) => {
+        if (!result.includes(item)) {
+          result.push(item);
+        }
+
+        return result;
+      }, schema.propertiesOrder)
+        .filter(item => properties.includes(item)) || uiSchema['ui:order']
       );
     } catch (err) {
       return (
@@ -286,7 +293,7 @@ class ObjectField extends Component {
         }
         {!isTab && (
           <div className={'gohan-form-object-children'}>
-            {!schema.nullable &&
+            {!this.nullValue &&
               orderedProperties.map((name, index) => {
                 return (
                   <SchemaField key={index}
