@@ -69,7 +69,6 @@ export const getHeaders = createSelector(
 
       return schemaPropertiesOrder.reduce((result, item) => {
         const property = schemaProperties[item];
-
         if (exclude.includes(item)) {
           return result;
         }
@@ -79,6 +78,14 @@ export const getHeaders = createSelector(
         }
 
         if (item.includes(`${property.relation}_id`)) {
+          const transformedItem = {
+            id: property.relation_property, // eslint-disable-line camelcase
+            title: property.title,
+            type: property.type
+          };
+
+          result.push(transformedItem);
+
           return result;
         }
 
@@ -88,8 +95,8 @@ export const getHeaders = createSelector(
 
         const transformedItem = {
           id: item,
-          title: schemaProperties[item].title,
-          type: schemaProperties[item].type
+          title: property.title,
+          type: property.type
         };
 
         result.push(transformedItem);
