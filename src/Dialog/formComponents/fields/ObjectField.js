@@ -293,7 +293,7 @@ class ObjectField extends Component {
         }
         {!isTab && (
           <div className={'gohan-form-object-children'}>
-            {!this.nullValue &&
+            {(!schema.nullable || !this.nullValue) &&
               orderedProperties.map((name, index) => {
                 return (
                   <SchemaField key={index}
