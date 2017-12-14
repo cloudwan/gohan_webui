@@ -170,6 +170,14 @@ class TableComponent extends Component {
                     );
                   }
 
+                  if (item[column.id] !== null && typeof item[column.id] === 'object') {
+                    return (
+                      <TableDataCell key={index}>
+                        {item[column.id].name}
+                      </TableDataCell>
+                    );
+                  }
+
                   return (
                     <TableDataCell key={index}>
                       {item[column.id]}
