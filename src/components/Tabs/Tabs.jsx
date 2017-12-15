@@ -7,6 +7,8 @@ class Tabs extends Component {
   static defaultProps = {
     onChange: () => {},
     children: [],
+    className: undefined,
+    style: undefined
   };
 
   constructor(props) {
@@ -36,8 +38,10 @@ class Tabs extends Component {
       return null;
     }
 
+    const {className, style} = this.props;
+
     return (
-      <div>
+      <div {...{className, style}}>
         <div className={styles.tabsHeader}>
           {React.Children.map(children, (child, index) => (
             React.cloneElement(
@@ -68,5 +72,7 @@ if (process.env.NODE_ENV !== 'production') {
   Tabs.propTypes = {
     children: PropTypes.node,
     onChange: PropTypes.func,
+    className: PropTypes.string,
+    style: PropTypes.string
   };
 }

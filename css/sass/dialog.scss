@@ -15,6 +15,13 @@ $object-field-background: #ebf1f5;
   top: initial;
   max-height: 90vh;
   margin: 5vh auto;
+  .object-tabs {
+    &::before {
+      display: block;
+      content: "";
+      clear: both;
+    }
+  }
   .pt-dialog-header {
     padding-top: 10px;
     padding-bottom: 10px;
