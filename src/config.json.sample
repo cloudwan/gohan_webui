@@ -57,5 +57,6 @@
     "loginRequestTimeout": 30000,
     "polling": true,
     "pollingInterval": 10000,
-    "storagePrefix": "gohan-webui"
+    "storagePrefix": "gohan-webui",
+    "title": "Gohan Web UI"
 }

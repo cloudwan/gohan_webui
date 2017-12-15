@@ -1,6 +1,10 @@
-/* global location */
+/* global location, document */
 import axios from 'axios';
-import {FETCH_SUCCESS, FETCH_ERROR} from './ConfigActionTypes';
+import {
+  FETCH_SUCCESS,
+  FETCH_ERROR,
+  SET_TITLE
+} from './ConfigActionTypes';
 
 function fetchSuccess(data) {
   return dispatch => {
@@ -32,4 +36,16 @@ export function fetchConfig() {
   }).catch(error => {
     dispatch(fetchError(error.response));
   });
+}
+
+export function setTitle(firstPart) {
+  return (dispatch, getState) => {
+    const {title} = getState().configReducer;
+
+    document.title = `${firstPart} | ${title}`;
+
+    dispatch({
+      type: SET_TITLE
+    });
+  };
 }
