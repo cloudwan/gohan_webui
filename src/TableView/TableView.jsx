@@ -177,15 +177,12 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         });
       } else {
         itemsIds.forEach(id => {
-          const idPosition = checkedRowsIds.indexOf(id);
-          if (idPosition === -1) {
-            checkedRowsIds.push(id);
+          if (checkedRowsIds.includes(id)) {
+            this.setState({checkedRowsIds: [...checkedRowsIds.filter(i => i === id)]});
           } else {
-            checkedRowsIds.splice(idPosition, 1);
+            this.setState({checkedRowsIds: [...checkedRowsIds, id]});
           }
         });
-
-        this.setState({checkedRowsIds});
       }
     };
 

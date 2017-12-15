@@ -83,7 +83,7 @@ if (process.env.NODE_ENV !== 'production') {
   TableComponent.propTypes = {
     headers: PropTypes.arrayOf(
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
+        id: PropTypes.string,
         title: PropTypes.string.isRequired,
         type: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired
       }),
