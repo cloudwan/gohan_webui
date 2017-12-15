@@ -3,7 +3,6 @@ import {
   UPDATE,
   UPDATE_FULFILLED,
   UPDATE_FAILURE,
-  SET_INITIAL_DOC_TITLE
 } from './breadcrumbActionTypes.js';
 
 export const update = data => dispatch => dispatch({
@@ -28,11 +27,4 @@ export const updateFailure = (error, initialDocTitle) => {
       type: UPDATE_FAILURE,
       error,
     };
-};
-
-export const setInitialDocTitle = () => {
-  return {
-    type: SET_INITIAL_DOC_TITLE,
-    initialDocTitle: document.title
-  };
 };
