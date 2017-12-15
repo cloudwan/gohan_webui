@@ -11,6 +11,7 @@ import {optionsListObject} from './../utils';
 import widgets from './../widgets';
 
 import TextWidget from '../widgets/TextWidget';
+import CodeWidget from '../widgets/CodeWidget';
 import SelectWidget from '../widgets/SelectWidget';
 
 
@@ -65,7 +66,10 @@ function StringField(props) {
     }
 
     return <SelectWidget options={{enumOptions}} {...commonProps} />;
+  } else if (schema.format === 'text') {
+    return <CodeWidget {...commonProps} placeholder={placeholder}/>;
   }
+
   if (widget) {
     const Widget = getWidget(schema, widget, widgets);
     return <Widget {...commonProps} placeholder={placeholder} />;
