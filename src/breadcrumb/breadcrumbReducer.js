@@ -1,15 +1,13 @@
 import {
   UPDATE_FULFILLED,
-  UPDATE_FAILURE,
-  SET_INITIAL_DOC_TITLE
+  UPDATE_FAILURE
 } from './breadcrumbActionTypes';
 
 export const breadcrumbReducer = (state = {data: []}, action) => {
   const {
     type,
     data,
-    error,
-    initialDocTitle
+    error
   } = action;
 
   switch (type) {
@@ -22,11 +20,6 @@ export const breadcrumbReducer = (state = {data: []}, action) => {
       return {
         ...state,
         error
-      };
-    case SET_INITIAL_DOC_TITLE:
-      return {
-        ...state,
-        initialDocTitle
       };
     default:
       return state;
