@@ -187,7 +187,8 @@ class TableComponent extends Component {
 
                 {optionsColumn && (
                   <TableDataCell>
-                    <Link to={`${url}/${item.id}`}>
+                    <Link to={`${url}/${item.id}`}
+                      className="detail-link">
                       <span className="pt-icon-standard pt-icon-link" />
                     </Link>
                     {optionsColumn.edit && optionsColumn.edit.visible && (
