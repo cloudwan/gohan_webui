@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash/cloneDeep';
-import {Button} from '@blueprintjs/core';
+import {Button, Intent} from '@blueprintjs/core';
 
 import {
   deepEquals,
@@ -149,7 +149,9 @@ class ObjectField extends Component {
               title={title}
               required={required}
               formContext={formContext}>
-              <Button iconName="add" className="pt-minimal"
+              <Button iconName="add"
+                className="pt-minimal"
+                intent={Intent.PRIMARY}
                 onClick={this.onAddRemoveClick}
               />
             </TitleField>
@@ -223,6 +225,7 @@ class ObjectField extends Component {
             formContext={formContext}>
             {schema.nullable && (
               <Button iconName="remove"
+                intent={Intent.PRIMARY}
                 className="pt-minimal"
                 onClick={this.onAddRemoveClick}
               />
@@ -236,9 +239,9 @@ class ObjectField extends Component {
           />
         )}
         {isTab && (
-          <Tabs>
+          <Tabs className={'object-tabs'}>
             {
-              !schema.nullable && (
+              (!schema.nullable || !this.nullValue) && (
                 orderedProperties.filter(
                   key => schema.properties[key].type === 'object' || schema.properties[key].type === 'array'
                 ).map((name, index) => {
@@ -274,7 +277,7 @@ class ObjectField extends Component {
             }
           </Tabs>
         )}
-        {isTab && !schema.nullable && orderedProperties.filter(
+        {isTab && (!schema.nullable || !this.nullValue) && orderedProperties.filter(
           key => schema.properties[key].type !== 'object' && schema.properties[key].type !== 'array'
         ).map((name, index) => (
           <SchemaField key={index} name={name}
