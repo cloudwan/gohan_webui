@@ -1,4 +1,4 @@
-export const FETCH = 'FETCH';
-export const FETCH_SUCCESS = 'FETCH_SUCCESS';
-export const FETCH_FAILURE = 'FETCH_FAILURE';
-export const CLEAR_DATA = 'CLEAR_DATA';
+export const FETCH = 'API_REQUEST_FETCH';
+export const FETCH_SUCCESS = 'API_REQUEST_FETCH_SUCCESS';
+export const FETCH_FAILURE = 'API_REQUEST_FETCH_FAILURE';
+export const CLEAR_DATA = 'API_REQUEST_CLEAR_DATA';
