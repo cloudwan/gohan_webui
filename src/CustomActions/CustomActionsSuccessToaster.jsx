@@ -22,7 +22,7 @@ export const CustomActionsSuccessToaster = ({
 
 if (process.env.NODE_ENV !== 'production') {
   CustomActionsSuccessToaster.propTypes = {
-    result: PropTypes.string,
+    result: PropTypes.object,
     clearResponse: PropTypes.func
   };
 }
