@@ -14,17 +14,7 @@ describe('DetailSelectors', () => {
             result: {test: 1}
           }
         }
-      ).should.equal('{\n  "test": 1\n}');
-    });
-
-    it('should return empty string', () => {
-      selectors.getActionResult(
-        {
-          customActionReducer: {
-            result: undefined
-          }
-        }
-      ).should.equal('');
+      ).should.deep.equal({test: 1});
     });
   });
 });
