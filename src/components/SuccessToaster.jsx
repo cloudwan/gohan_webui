@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import isEqual from 'lodash/isEqual';
+import {Inspector} from 'react-inspector';
 
 import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/javascript/javascript';
@@ -17,23 +19,29 @@ export class SuccessToaster extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.result && nextProps.result !== this.props.result) {
+    if (nextProps.result && !isEqual(nextProps.result,this.props.result)) {
       this.toaster.show({
         message: (<div style={{
+          overflow: 'auto',
           maxWidth: 415,
           minWidth: 215,
           maxHeight: '50vh',
           position: 'relative'
         }}>
           <span>{nextProps.title}</span>
-          <CodeMirror value={nextProps.result}
-            className="toaster-codemirror cm-s-monokai"
-            options={{
-                        mode: 'javascript',
-                        readOnly: true,
-                        cursorBlinkRate: -1
-                      }}
-          />
+          {typeof nextProps.result === 'object' && (
+            <Inspector data={nextProps.result}/>
+          )}
+          {typeof nextProps.result !== 'object' && (
+            <CodeMirror value={nextProps.result}
+              className="toaster-codemirror cm-s-monokai"
+              options={{
+                mode: 'javascript',
+                readOnly: true,
+                cursorBlinkRate: -1
+               }}
+            />
+          )}
         </div>),
         className: 'pt-intent-success',
         iconName: 'tick',
@@ -56,7 +64,10 @@ export class SuccessToaster extends Component {
 if (process.env.NODE_ENV !== 'production') {
   SuccessToaster.propTypes = {
     title: PropTypes.string,
-    result: PropTypes.string,
+    result: PropTypes.oneOf(
+      PropTypes.object,
+      PropTypes.string
+    ),
     onDismiss: PropTypes.func,
   };
 }
