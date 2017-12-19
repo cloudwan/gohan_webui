@@ -1,7 +1,6 @@
 /* global it, describe */
 
 import chai from 'chai';
-import jsyaml from 'js-yaml';
 
 import * as selectors from './ApiRequestSelectors';
 
@@ -27,23 +26,15 @@ describe('ApiRequestSelectors', () => {
   });
 
   describe('getApiResponse()', () => {
-    it('should return appropriate yaml for undefined', () => {
-      selectors.getApiResponse({
-        apiRequestReducer: {
-          response: undefined,
-        }
-      }).should.equal(jsyaml.safeDump(undefined, {skipInvalid: true}));
-    });
-
-    it('should return appropriate yaml for empty object', () => {
+    it('should return appropriate empty object', () => {
       selectors.getApiResponse({
         apiRequestReducer: {
           response: {},
         }
-      }).should.equal(jsyaml.safeDump({}, {skipInvalid: true}));
+      }).should.deep.equal({});
     });
 
-    it('should return appropriate yaml', () => {
+    it('should return appropriate object', () => {
       selectors.getApiResponse({
         apiRequestReducer: {
           response: {
@@ -53,12 +44,12 @@ describe('ApiRequestSelectors', () => {
             }
           },
         }
-      }).should.equal(jsyaml.safeDump({
+      }).should.deep.equal({
         testObject: {
           id: 123,
           name: 'test',
         }
-      }, {skipInvalid: true}));
+      });
     });
   });
 });

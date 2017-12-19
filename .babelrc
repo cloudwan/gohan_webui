@@ -12,7 +12,11 @@
     "transform-strict-mode",
     "transform-object-rest-spread",
     "syntax-async-functions",
-    "syntax-trailing-function-commas"
+    "syntax-trailing-function-commas",
+    ["transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }]
   ],
   "env": {
     "dev-server": {
@@ -31,7 +35,11 @@
         "transform-strict-mode",
         "transform-object-rest-spread",
         "syntax-async-functions",
-        "syntax-trailing-function-commas"
+        "syntax-trailing-function-commas",
+        ["transform-runtime", {
+          "polyfill": false,
+          "regenerator": true
+        }]
       ]
     },
     "test": {
@@ -46,7 +54,11 @@
         "transform-strict-mode",
         "transform-object-rest-spread",
         "syntax-async-functions",
-        "syntax-trailing-function-commas"
+        "syntax-trailing-function-commas",
+        ["transform-runtime", {
+          "polyfill": false,
+          "regenerator": true
+        }]
       ]
     }
   }

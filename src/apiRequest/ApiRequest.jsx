@@ -2,12 +2,12 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Row, Col} from 'react-flexbox-grid';
+import {Inspector} from 'react-inspector';
 
 import UrlInput from './components/UrlInput';
 import HttpMethodInput from './components/HttpMethodInput';
 import BodyData from './components/BodyData';
 import ApiRequestForm from './components/ApiRequestForm';
-import SuccessToaster from '../components/SuccessToaster';
 import Button from '../components/Button';
 
 import {getApiResponse} from './ApiRequestSelectors';
@@ -60,7 +60,6 @@ export class ApiRequest extends Component {
       queryList,
       httpMethods,
       apiResponse,
-      clearData,
     } = this.props;
 
     const {
@@ -88,12 +87,19 @@ export class ApiRequest extends Component {
             <Button text="Submit"
               onClick={this.handleSubmit}
             />
-            <SuccessToaster title='Success:'
-              onDismiss={clearData}
-              resultYAML={apiResponse}
-            />
           </Col>
         </Row>
+        {apiResponse !== undefined && (
+          <div className="request-form-section">
+            <Row start="xs">
+              <Col xs={12}>
+                <div className="pt-card">
+                  <Inspector data={apiResponse} />
+                </div>
+              </Col>
+            </Row>
+          </div>
+        )}
       </ApiRequestForm>
     );
   }
@@ -113,6 +119,6 @@ if (process.env.NODE_ENV !== 'production') {
     baseUrl: PropTypes.string.isRequired,
     queryList: PropTypes.array,
     httpMethods: PropTypes.array,
-    apiResponse: PropTypes.string,
+    apiResponse: PropTypes.object,
   };
 }
