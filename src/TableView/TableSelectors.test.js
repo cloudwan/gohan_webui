@@ -5,14 +5,15 @@ import * as selectors from './TableSelectors';
 chai.should();
 
 describe('TableSelectors ', () => {
-  describe('getSchema() ', () => {
-    it('should return test1 schema', () => {
-      selectors.getSchema(
+  describe('getResourceTitle() ', () => {
+    it('should return correct schema title', () => {
+      selectors.getResourceTitle(
         {
           schemaReducer: {
             data: [
               {
-                id: 'test1'
+                id: 'test1',
+                title: 'foobarbaz'
               },
               {
                 id: 'test2'
@@ -21,9 +22,7 @@ describe('TableSelectors ', () => {
           }
         },
         'test1'
-      ).should.deep.equal({
-        id: 'test1'
-      });
+      ).should.equal('foobarbaz');
     });
   });
 
@@ -200,18 +199,68 @@ describe('TableSelectors ', () => {
     });
   });
 
+  describe('getData() ', () => {
+    it('should return data array', () => {
+      selectors.getData(
+        {
+          tableReducer: {
+            test1: {
+              data: [
+                {
+                  id: 'test1',
+                }
+              ]
+            }
+          }
+        },
+        'test1'
+      ).should.deep.equal([
+        {
+          id: 'test1',
+        }
+      ]);
+    });
+    it('should return empty array', () => {
+      selectors.getData(
+        {},
+        'test1'
+      ).should.deep.equal([]);
+    });
+  });
+
+  describe('getOffset() ', () => {
+    it('should return data from store', () => {
+      selectors.getOffset(
+        {
+          tableReducer: {
+            test1: {
+              offset: 61
+            }
+          }
+        },
+        'test1'
+      ).should.equal(61);
+    });
+
+    it('should return 0', () => {
+      selectors.getOffset(
+        {
+          tableReducer: {}
+        },
+        'test1'
+      ).should.equal(0);
+    });
+  });
+
   describe('getActivePage() ', () => {
     it('should return 0', () => {
       selectors.getActivePage(
         {
           tableReducer: {
             test: {
-              totalCount: 10,
+              limit: 10,
               offset: 0
             }
-          },
-          configReducer: {
-            pageLimit: 10
           }
         },
         'test'
@@ -219,33 +268,26 @@ describe('TableSelectors ', () => {
 
       selectors.getActivePage(
         {
-          tableReducer: {
-          },
-          configReducer: {
-            pageLimit: 10
-          }
+          tableReducer: {},
         },
         'test'
       ).should.equal(0);
     });
 
-    it('should return 1', () => {
-      selectors.getActivePage(
-        {
-          tableReducer: {
-            test: {
-              totalCount: 10,
-              offset: 5
+      it('should return 1', () => {
+        selectors.getActivePage(
+          {
+            tableReducer: {
+              test: {
+                offset: 5,
+                limit: 5
+              }
             }
           },
-          configReducer: {
-            pageLimit: 10
-          }
-        },
-        'test'
-      ).should.equal(1);
+          'test'
+        ).should.equal(1);
+      });
     });
-  });
 
   describe('getPageCount() ', () => {
     it('should return 0', () => {
@@ -253,12 +295,10 @@ describe('TableSelectors ', () => {
         {
           tableReducer: {
             test: {
-              totalCount: 0
+              totalCount: 0,
+              limit: 10
             }
           },
-          configReducer: {
-            pageLimit: 10
-          }
         },
         'test'
       ).should.equal(0);
@@ -267,9 +307,6 @@ describe('TableSelectors ', () => {
         {
           tableReducer: {
           },
-          configReducer: {
-            pageLimit: 10
-          }
         },
         'test'
       ).should.equal(0);
@@ -280,11 +317,9 @@ describe('TableSelectors ', () => {
         {
           tableReducer: {
             test: {
-              totalCount: 10
+              totalCount: 10,
+              limit: 10
             }
-          },
-          configReducer: {
-            pageLimit: 10
           }
         },
         'test'
@@ -308,4 +343,140 @@ describe('TableSelectors ', () => {
       ).should.equal(2);
     });
   });
+
+  describe('getSortOptions() ', () => {
+    it('should return correct sort data from store', () => {
+      selectors.getSortOptions(
+        {
+          tableReducer: {
+            test1: {
+              sortKey: 'test',
+              sortOrder: 'asc'
+            }
+          }
+        },
+        'test1'
+      ).should.deep.equal({
+        sortKey: 'test',
+        sortOrder: 'asc'
+      });
+    });
+
+    it('should return empty sort data', () => {
+      selectors.getSortOptions(
+        {
+          tableReducer: {}
+        },
+        'test1'
+      ).should.deep.equal({
+        sortKey: '',
+        sortOrder: ''
+      });
+    });
+  });
+
+  describe('getFilters() ', () => {
+    it('should return correct filter from store', () => {
+      selectors.getFilters(
+        {
+          tableReducer: {
+            test1: {
+              filters: [
+                {
+                  name: 'test'
+                }
+              ]
+            }
+          }
+        },
+        'test1'
+      ).should.deep.equal([
+        {
+          name: 'test'
+        }
+      ]);
+    });
+
+    it('should return empty sort data', () => {
+      selectors.getFilters(
+        {
+          tableReducer: {}
+        },
+        'test1'
+      ).should.deep.equal([]);
+    });
+  });
+
+  describe('getLimit() ', () => {
+    it('should return correct limit from store', () => {
+      selectors.getLimit(
+        {
+          tableReducer: {
+            test1: {
+              limit: 12
+            }
+          }
+        },
+        'test1'
+      ).should.equal(12);
+    });
+
+    it('should return empty 0', () => {
+      selectors.getLimit(
+        {
+          tableReducer: {}
+        },
+        'test1'
+      ).should.equal(0);
+    });
+  });
+
+  describe('getTotalCount() ', () => {
+    it('should return correct total count from store', () => {
+      selectors.getTotalCount(
+        {
+          tableReducer: {
+            test1: {
+              totalCount: 12
+            }
+          }
+        },
+        'test1'
+      ).should.equal(12);
+    });
+
+    it('should return empty 0', () => {
+      selectors.getTotalCount(
+        {
+          tableReducer: {}
+        },
+        'test1'
+      ).should.equal(0);
+    });
+  });
+
+  describe('getIsLoading() ', () => {
+    it('should return correct loading state from store', () => {
+      selectors.getIsLoading(
+        {
+          tableReducer: {
+            test1: {
+              isLoading: false
+            }
+          }
+        },
+        'test1'
+      ).should.equal(false);
+    });
+
+    it('should return empty 0', () => {
+      selectors.getIsLoading(
+        {
+        },
+        'test1'
+      ).should.equal(true);
+    });
+  });
+
+
 });
