@@ -33,6 +33,10 @@ export class ApiRequest extends Component {
     };
   }
 
+  componentWillUnmount() {
+    this.props.clearData();
+  }
+
   handleQueryChange = event => this.setState({query: event.target.value})
 
   handleMethodChange = event => this.setState({method: event.target.value});
