@@ -1,21 +1,24 @@
 import {createSelector} from 'reselect';
 
-const selectedSchema = (state, id) => state.schemaReducer.data.find(schema => schema.id === id);
+import {getSchema} from './../schema/SchemaSelectors';
+
 const totalCount = (state, id) => {
-  if (state.tableReducer[id]) {
-    return state.tableReducer[id].totalCount;
+  if (state.tableReducer && state.tableReducer[id]) {
+    return state.tableReducer[id].totalCount || 0;
   }
+
   return 0;
 };
-const pageLimit = state => state.configReducer.pageLimit;
+
 const limit = (state, id) => {
-  if (state.tableReducer[id]) {
-    return state.tableReducer[id].limit;
+  if (state.tableReducer && state.tableReducer[id]) {
+    return state.tableReducer[id].limit || 0;
   }
   return 0;
 };
+
 const offset = (state, id) => {
-  if (state.tableReducer[id]) {
+  if (state.tableReducer && state.tableReducer[id]) {
     return state.tableReducer[id].offset;
   }
   return 0;
@@ -29,12 +32,6 @@ const data = (state, id) => {
 
   return [];
 };
-const url = (state, id) => {
-  if (state.tableReducer[id]) {
-    return state.tableReducer[id].url;
-  }
-  return '';
-};
 const tableReducer = state => state.tableReducer;
 const isLoading = (state, id) => {
   if (state.tableReducer && state.tableReducer[id]) {
@@ -45,18 +42,8 @@ const isLoading = (state, id) => {
 };
 
 export const getResourceTitle = createSelector(
-  [(state, props) => getSchema(state, props)],
+  [getSchema],
   schema => schema.title
-);
-
-export const getSchema = createSelector(
-  [selectedSchema],
-  selectedSchema => selectedSchema
-);
-
-export const getLinkUrl = createSelector(
-  [url],
-  url => url
 );
 
 export const getHeaders = createSelector(
@@ -113,19 +100,19 @@ export const getData = createSelector(
   [data],
   data => data
 );
+export const getOffset = createSelector(
+  [offset],
+  offset => offset || 0
+);
 
 export const getActivePage = createSelector(
-  [offset, limit, pageLimit],
-  (offset, limit, pageLimit) => {
-    return Math.ceil(offset / (limit || pageLimit));
-  }
+  [offset, limit],
+  (offset, limit) => limit !== 0 ? Math.ceil(offset / limit) : 0
 );
 
 export const getPageCount = createSelector(
-  [totalCount, limit, pageLimit],
-  (totalCount, limit, pageLimit) => {
-    return Math.ceil(totalCount / (limit || pageLimit));
-  }
+  [totalCount, limit],
+  (totalCount, limit) => (totalCount !== 0 && limit !== 0) ? Math.ceil(totalCount / limit) : 0
 );
 
 export const getSortOptions = createSelector(
@@ -140,7 +127,7 @@ export const getSortOptions = createSelector(
 
     return {
       sortKey: '',
-      sortOrder: 'asc'
+      sortOrder: ''
     };
   }
 );
@@ -152,13 +139,8 @@ export const getFilters = createSelector(
       return tableReducer[id].filters;
     }
 
-    return {};
+    return [];
   }
-);
-
-export const getPageLimit = createSelector(
-  [pageLimit],
-  pageLimit => pageLimit
 );
 
 export const getLimit = createSelector(
