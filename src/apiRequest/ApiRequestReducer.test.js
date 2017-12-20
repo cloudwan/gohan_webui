@@ -11,14 +11,30 @@ describe('ApiRequestReducer', () => {
     apiRequestReducer(undefined, {}).should.deep.equal({
       response: undefined,
       error: undefined,
+      isLoading: false
     });
 
     apiRequestReducer({
       response: {},
       error: undefined,
+      isLoading: false
     }, {}).should.deep.equal({
       response: {},
       error: undefined,
+      isLoading: false
+    });
+  });
+
+  it(`should handle ${actionTypes.FETCH} action type`, () => {
+    apiRequestReducer({
+      response: {a: 'test'},
+      error: undefined,
+    }, {
+      type: actionTypes.FETCH,
+    }).should.deep.equal({
+      error: undefined,
+      response: undefined,
+      isLoading: true
     });
   });
 
@@ -29,12 +45,14 @@ describe('ApiRequestReducer', () => {
         name: 'test',
         id: 'test123',
       },
+      isLoading: true
     }).should.deep.equal({
       response: {
         name: 'test',
         id: 'test123',
       },
       error: undefined,
+      isLoading: false
     });
   });
 
@@ -44,11 +62,13 @@ describe('ApiRequestReducer', () => {
       error: {
         message: 'test error message',
       },
+      isLoading: true
     }).should.deep.equal({
       response: undefined,
       error: {
         message: 'test error message',
       },
+      isLoading: false
     });
   });
 
@@ -58,6 +78,7 @@ describe('ApiRequestReducer', () => {
     }).should.deep.equal({
       response: undefined,
       error: undefined,
+      isLoading: false
     });
   });
 });
