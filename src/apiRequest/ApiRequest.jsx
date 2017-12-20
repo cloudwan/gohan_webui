@@ -10,7 +10,10 @@ import BodyData from './components/BodyData';
 import ApiRequestForm from './components/ApiRequestForm';
 import Button from '../components/Button';
 
-import {getApiResponse} from './ApiRequestSelectors';
+import {
+  getApiResponse,
+  checkLoading
+} from './ApiRequestSelectors';
 import {
   fetch,
   clearData,
@@ -56,6 +59,7 @@ export class ApiRequest extends Component {
 
   render() {
     const {
+      isLoading,
       baseUrl,
       queryList,
       httpMethods,
@@ -86,6 +90,7 @@ export class ApiRequest extends Component {
           <Col xs={12}>
             <Button text="Submit"
               onClick={this.handleSubmit}
+              loading={isLoading}
             />
           </Col>
         </Row>
@@ -107,6 +112,7 @@ export class ApiRequest extends Component {
 
 const mapStateToProps = state => ({
   apiResponse: getApiResponse(state),
+  isLoading: checkLoading(state)
 });
 
 export default connect(mapStateToProps, {
@@ -117,6 +123,7 @@ export default connect(mapStateToProps, {
 if (process.env.NODE_ENV !== 'production') {
   ApiRequest.propTypes = {
     baseUrl: PropTypes.string.isRequired,
+    isLoading: PropTypes.bool.isRequired,
     queryList: PropTypes.array,
     httpMethods: PropTypes.array,
     apiResponse: PropTypes.object,
