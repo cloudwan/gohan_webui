@@ -57,12 +57,10 @@ export const openDialog = name => () => dispatch => dispatch(
   }
 );
 
-export const closeDialog = name => () => dispatch => dispatch(
-  {
-    type: CLOSE,
-    name
-  }
-);
+export const closeDialog = name => () => ({
+  type: CLOSE,
+  name
+});
 
 export const closeActiveDialog = () => ({type: CLOSE_ALL});
 
@@ -72,9 +70,7 @@ export const clearError = () => dispatch => dispatch(
   }
 );
 
-export const showError = message => dispatch => dispatch(
-  {
-    type: ERROR,
-    message,
-  }
-);
+export const showError = message => ({
+  type: ERROR,
+  message
+});
