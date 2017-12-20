@@ -5,6 +5,7 @@ import AuthEpics from './../auth/AuthEpics';
 import ApiRequestEpics from '../apiRequest/ApiRequestEpics';
 import BreadcrumbEpics from '../breadcrumb/breadcrumbEpics';
 import DetailEpics from '../DetailView/DetailEpics';
+import TableEpics from '../TableView/TableEpics';
 import CustomActionsEpic from '../CustomActions/CustomActionsEpics';
 
 const epic$ = new BehaviorSubject(combineEpics(
@@ -12,6 +13,7 @@ const epic$ = new BehaviorSubject(combineEpics(
   ApiRequestEpics,
   BreadcrumbEpics,
   DetailEpics,
+  TableEpics,
   CustomActionsEpic
 ));
 

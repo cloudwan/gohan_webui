@@ -15,17 +15,16 @@ import TableComponent from './TableComponent';
 
 import {update as updateBreadcrumb} from './../breadcrumb/breadcrumbActions';
 
+import {getSchema} from './../schema/SchemaSelectors';
+
 import {
-  getSchema,
   getHeaders,
   getPageCount,
   getActivePage,
   getData,
-  getLinkUrl,
   getSortOptions,
   getResourceTitle,
   getFilters,
-  getPageLimit,
   getLimit,
   getTotalCount,
   getIsLoading
@@ -38,16 +37,12 @@ import {
   hasDeletePermission
 } from './../schema/SchemaSelectors';
 import {
-  initialize,
-  fetchData,
-  clearData,
-  createData,
-  updateData,
-  deleteData,
-  sortData,
-  setOffset,
-  filterData,
-  deleteMultipleResources
+  fetch,
+  cancelFetch,
+  clear,
+  create,
+  update,
+  purge,
 } from './TableActions';
 
 import Dialog from '../Dialog/Dialog';
@@ -61,59 +56,39 @@ import {Alert, Intent} from '@blueprintjs/core';
 export const getTableView = (schema, Table = TableComponent, isChildView = false, options = {}) => {
   const schemaId = schema.id;
   const schemaTitle = schema.title;
-  const schemaPlural = schema.plural;
 
   class TableView extends Component {
     componentDidMount() {
       if (!isChildView) {
-        const query = queryParse(this.props.location.search);
-
+        const query = queryParse(this.props.location.search, {arrayFormat: 'bracket'});
         this.props.updateBreadcrumb([
           {
             title: schemaTitle,
             url: this.props.url,
           }
         ]);
-        let {filters} = query;
-        if (filters) {
+
+        if (query.filters) {
           try {
-            filters = JSON.parse(filters);
+            query.filters = query.filters
+              .map(item => queryParse(item))
+              .map(item => ({
+                key: Object.keys(item)[0],
+                value: item[Object.keys(item)[0]]
+              }));
           } catch (error) {
             console.error(error);
           }
         }
-
-        const {
-          sortKey,
-          sortOrder,
-          limit = 0,
-          offset = 0,
-        } = query;
-
-        this.props.initialize(
-          this.props.url,
-          schemaPlural, {
-            ...options,
-            sortKey,
-            sortOrder,
-            limit,
-            offset,
-            filters
-          }
-        );
+        this.props.fetch({...options, ...query});
       } else {
-        this.props.initialize(
-          this.props.url,
-          schemaPlural,
-          {...options}
-        );
+        this.props.fetch({...options});
       }
-      this.props.fetchData(schemaPlural);
-
     }
 
     componentWillUnmount() {
-      this.props.clearData(schemaPlural);
+      this.props.cancelFetch();
+      this.props.clear();
       if (!isChildView) {
         this.props.updateBreadcrumb();
       }
@@ -144,7 +119,7 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     };
 
     handleDeleteItem = () => {
-      this.props.deleteData(this.state.removedItemId, this.props.activeSchema.plural);
+      this.props.purge(this.state.removedItemId);
       this.handleCloseRemovalSingleItemAlert();
     };
 
@@ -158,10 +133,9 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
 
     handleDeleteSelected = () => {
       const {checkedRowsIds} = this.state;
-      const {plural} = this.props.activeSchema;
 
       if (checkedRowsIds.length > 0) {
-        this.props.deleteMultipleResources(checkedRowsIds, plural, this.clearCheckedRows);
+        this.props.purge(checkedRowsIds);
       }
 
       if (this.state.removalSelectedItemsAlertOpen) {
@@ -192,8 +166,7 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
 
     handlePageChange = page => {
       const {totalCount, limit} = this.props;
-      const {pageLimit} = this.props;
-      const newOffset = page * (limit || pageLimit);
+      const newOffset = page * limit;
 
       if (newOffset > totalCount) {
         console.error('newOffset > totalCount');
@@ -209,25 +182,31 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
           })
         });
       }
-      const {plural} = this.props.activeSchema;
 
-      this.props.setOffset(newOffset, plural);
+      this.props.fetch({
+        offset: newOffset
+      });
+
       this.setState({
         checkedRowsIds: []
       });
     };
 
     handleFilterData = property => {
-      const {plural} = this.props.activeSchema;
-
-      this.props.filterData(property, plural);
       if (!isChildView) {
         this.props.history.replace({
           ...this.props.location,
           search: queryStringify({
-            ...queryParse(this.props.location.search),
-            filters: JSON.stringify(property)
-          })
+            ...queryParse(this.props.location.search, {arrayFormat: 'bracket'}),
+            filters: property === undefined ? undefined : [queryStringify(property)]
+          }, {arrayFormat: 'bracket'})
+        });
+        this.props.fetch({
+          offset: 0,
+          filters: property === undefined ? [] : [{
+            key: Object.keys(property)[0],
+            value: property[Object.keys(property)[0]]
+          }]
         });
       }
     };
@@ -243,9 +222,10 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
           })
         });
       }
-      const {plural} = this.props.activeSchema;
-
-      this.props.sortData(sortKey, sortOrder, plural);
+      this.props.fetch({
+        sortKey: sortOrder === '' ? '' : sortKey,
+        sortOrder: sortOrder === '' ? '' : sortOrder,
+      });
     };
 
     handleOpenCreateDialog = () => {
@@ -257,7 +237,7 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     };
 
     handleSubmitCreateDialog = data => {
-      this.props.createData(data, schemaPlural, this.props.closeCreateDialog);
+      this.props.create(data);
     };
 
     handleOpenUpdateDialog = item => {
@@ -269,7 +249,7 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     };
 
     handleSubmitUpdateDialog = (data, id) => {
-      this.props.updateData(id, data, schemaPlural, this.props.closeUpdateDialog);
+      this.props.update(data, id);
     };
 
     renderRemovalSingleItemAlert = () => {
@@ -312,8 +292,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         updatePermission,
         deletePermission
       } = this.props;
-      const filterValue = filters ? filters[Object.keys(filters)[0]] : '';
-      const filterBy = filters ? Object.keys(filters)[0] : '';
+      const filterValue = filters && filters[0] ? filters[0].value : '';
+      const filterBy = filters && filters[0] ? filters[0].key : '';
 
       const CreateDialog = dialog({name: `${schemaId}_create`})(
         props => (
@@ -400,9 +380,34 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
   };
 
   TableView.propTypes = {
+    url: PropTypes.string.isRequired,
+    activeSchema: PropTypes.object.isRequired,
+    headers: PropTypes.array.isRequired,
+    pageCount: PropTypes.number.isRequired,
+    activePage: PropTypes.number.isRequired,
+    data: PropTypes.array.isRequired,
+    linkUrl: PropTypes.string.isRequired,
+    sortOptions: PropTypes.object.isRequired,
+    resourceTitle: PropTypes.string.isRequired,
+    filters: PropTypes.array.isRequired,
+    totalCount: PropTypes.number.isRequired,
+    isLoading: PropTypes.bool.isRequired,
+    createPermission: PropTypes.bool.isRequired,
+    updatePermission: PropTypes.bool.isRequired,
+    deletePermission: PropTypes.bool.isRequired,
+    openCreateDialog: PropTypes.func.isRequired,
+    closeCreateDialog: PropTypes.func.isRequired,
+    openUpdateDialog: PropTypes.func.isRequired,
+    closeUpdateDialog: PropTypes.func.isRequired,
+    updateBreadcrumb: PropTypes.func.isRequired,
+    fetch: PropTypes.func.isRequired,
+    cancelFetch: PropTypes.func.isRequired,
+    create: PropTypes.func.isRequired,
+    update: PropTypes.func.isRequired,
+    clear: PropTypes.func.isRequired,
+    purge: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
-    fetchData: PropTypes.func.isRequired,
-    clearData: PropTypes.func.isRequired
+    limit: PropTypes.number
   };
 
   function mapStateToProps(state, {match}) {
@@ -410,40 +415,35 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       url: getCollectionUrl(state, schemaId, match.params),
       activeSchema: getSchema(state, schemaId),
       headers: getHeaders(state, schemaId),
-      pageCount: getPageCount(state, schemaPlural),
-      activePage: getActivePage(state, schemaPlural),
-      data: getData(state, schemaPlural),
-      linkUrl: getLinkUrl(state, schemaPlural),
-      sortOptions: getSortOptions(state, schemaPlural),
+      pageCount: getPageCount(state, schemaId),
+      activePage: getActivePage(state, schemaId),
+      data: getData(state, schemaId),
+      linkUrl: getCollectionUrl(state, schemaId, match.params),
+      sortOptions: getSortOptions(state, schemaId),
       resourceTitle: getResourceTitle(state, schemaId),
-      filters: getFilters(state, schemaPlural),
-      pageLimit: getPageLimit(state, schemaPlural),
-      limit: getLimit(state, schemaPlural),
-      totalCount: getTotalCount(state, schemaPlural),
-      isLoading: getIsLoading(state, schemaPlural),
+      filters: getFilters(state, schemaId),
+      limit: getLimit(state, schemaId),
+      totalCount: getTotalCount(state, schemaId),
+      isLoading: getIsLoading(state, schemaId),
       createPermission: hasCreatePermission(state, schemaId),
       updatePermission: hasUpdatePermission(state, schemaId),
       deletePermission: hasDeletePermission(state, schemaId)
     };
   }
 
-  function mapDispatchToProps(dispatch) {
+  function mapDispatchToProps(dispatch, {match}) {
     return bindActionCreators({
       openCreateDialog: openDialog(`${schemaId}_create`),
       closeCreateDialog: closeDialog(`${schemaId}_create`),
       openUpdateDialog: openDialog(`${schemaId}_update`),
       closeUpdateDialog: closeDialog(`${schemaId}_update`),
       updateBreadcrumb,
-      initialize,
-      fetchData,
-      clearData,
-      createData,
-      deleteData,
-      sortData,
-      setOffset,
-      filterData,
-      updateData,
-      deleteMultipleResources
+      fetch: fetch(schemaId, match.params),
+      cancelFetch: cancelFetch(schemaId),
+      create: create(schemaId, match.params),
+      update: update(schemaId, match.params),
+      clear: clear(schemaId, match.params),
+      purge: purge(schemaId, match.params),
     }, dispatch);
   }
 
