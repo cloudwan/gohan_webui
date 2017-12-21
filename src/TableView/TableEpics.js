@@ -56,7 +56,7 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
       const polling = isPolling(state);
       const pageLimit = getPageLimit(state);
 
-      return Observable.timer(pollingInterval)
+      return Observable.timer(0, pollingInterval)
         .startWith(0)
         .takeWhile(i => i === 0 ? true : Boolean(polling))
         .takeUntil(
