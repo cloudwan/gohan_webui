@@ -58,7 +58,7 @@ export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => ac
           } = properties[prop] || {};
           const relationSchema = getSchema(state, relation);
 
-          if (relation && relationSchema.parent) {
+          if (relation && relationSchema.parent && Boolean(data[prop])) {
             return {
               ...result,
               [relation]: {
