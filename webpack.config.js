@@ -128,7 +128,7 @@ const config = {
           }
         },
         {
-          loader: 'sass-loader',
+          loader: 'fast-sass-loader',
           options: {
             sourceMap: isDevelopment,
             minimize: !isDevelopment
@@ -163,7 +163,8 @@ const config = {
       name: 'vendor',
       minChunks: module => module.context && module.context.indexOf('node_modules') !== -1
     }),
-    new webpack.optimize.OccurrenceOrderPlugin()
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin()
   ],
   performance: {
     hints: false

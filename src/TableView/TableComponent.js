@@ -5,6 +5,7 @@ import Table from '../components/Table';
 import TableToolbar from '../components/Table/TableToolbar';
 import TablePagination from '../components/Table/TablePagination';
 import LoadingIndicator from '../components/LoadingIndicator';
+import Card from '../components/Card';
 
 class TableComponent extends Component {
   render() {
@@ -12,7 +13,7 @@ class TableComponent extends Component {
 
     if (isLoading) {
       return (
-        <LoadingIndicator/>
+        <LoadingIndicator />
       );
     }
     const {
@@ -29,7 +30,7 @@ class TableComponent extends Component {
     return (
       <div className="table-container">
         {children}
-        <div className={'pt-card pt-elevation-0'}>
+        <Card>
           <TableToolbar deleteSelected={{
             disabled: table.checkboxColumn.checkedItems.length === 0,
             onClick: toolbar.onDeleteSelectedClick
@@ -73,7 +74,7 @@ class TableComponent extends Component {
             activePage={pagination.activePage}
             handlePageClick={pagination.onChangePage}
           />
-        </div>
+        </Card>
       </div>
     );
   }

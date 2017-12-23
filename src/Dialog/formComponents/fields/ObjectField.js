@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import cloneDeep from 'lodash/cloneDeep';
 import {Button, Intent} from '@blueprintjs/core';
 
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import {faPlusCircle, faMinusCircle} from '@fortawesome/fontawesome-free-solid';
+
 import {
   deepEquals,
   getDefaultFormState,
@@ -148,19 +151,26 @@ class ObjectField extends Component {
             <TitleField id={`${idSchema.$id}__title`}
               title={title}
               required={required}
-              formContext={formContext}>
-              <Button iconName="add"
-                className="pt-minimal"
-                intent={Intent.PRIMARY}
-                onClick={this.onAddRemoveClick}
-              />
-            </TitleField>
+              formContext={formContext}
+            />
           )}
           {schema.description && (
             <DescriptionField id={`${idSchema.$id}__description`}
               description={schema.description}
               formContext={formContext}
             />
+          )}
+          {!schema.description && (
+            <div className="clearfix" />
+          )}
+          {title && (
+            <div className="add-object-button">
+              <Button className="pt-minimal pt-small"
+                intent={Intent.PRIMARY}
+                onClick={this.onAddRemoveClick}>
+                <FontAwesomeIcon className="faicon" icon={faPlusCircle} />Add {title}
+              </Button>
+            </div>
           )}
         </fieldset>
       );
@@ -222,21 +232,26 @@ class ObjectField extends Component {
           <TitleField id={`${idSchema.$id}__title`}
             title={title}
             required={required}
-            formContext={formContext}>
-            {schema.nullable && (
-              <Button iconName="remove"
-                intent={Intent.PRIMARY}
-                className="pt-minimal"
-                onClick={this.onAddRemoveClick}
-              />
-            )}
-          </TitleField>
+            formContext={formContext}
+          />
         )}
         {schema.description && (
           <DescriptionField id={`${idSchema.$id}__description`}
             description={schema.description}
             formContext={formContext}
           />
+        )}
+        {!schema.description && (
+          <div className="clearfix" />
+        )}
+        {schema.nullable && (
+          <div className="add-object-button">
+            <Button intent={Intent.PRIMARY}
+              className="pt-minimal pt-small"
+              onClick={this.onAddRemoveClick}>
+              <FontAwesomeIcon className="faicon" icon={faMinusCircle} />Remove {title}
+            </Button>
+          </div>
         )}
         {isTab && (
           <Tabs className={'object-tabs'}>
@@ -256,7 +271,7 @@ class ObjectField extends Component {
                     <Tab key={index}
                       title={title}
                       panel={
-                        <div className="tab-content">
+                        <div className="tab-pane-object">
                           <SchemaField required={this.isRequired(name)}
                             schema={{...schema.properties[name], title: undefined, description: undefined}}
                             uiSchema={uiSchema[name]}

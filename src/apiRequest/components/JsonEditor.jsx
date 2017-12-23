@@ -7,23 +7,21 @@ import 'codemirror/addon/edit/closebrackets';
 const JsonEditor = ({
   text = '',
   onChange = () => {},
-}) => {
-  return (
-    <div>
-      <CodeMirror value={text}
-        onChange={onChange}
-        options={{
-          lineNumbers: true,
-          mode: 'application/json',
-          theme: 'monokai',
-          lineWiseCopyCut: true,
-          autoCloseBrackets: true,
-        }}
-      />
-      <span className="editor-description">Put JSON here</span>
-    </div>
-  );
-};
+}) => (
+  <div>
+    <CodeMirror value={text}
+      onChange={onChange}
+      options={{
+        lineNumbers: true,
+        mode: 'application/json',
+        theme: 'material',
+        lineWiseCopyCut: true,
+        autoCloseBrackets: true,
+      }}
+    />
+    <span className="form-text text-muted">Put JSON here</span>
+  </div>
+);
 
 export default JsonEditor;
 

@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import styles from './styles.css';
-
 const Tab = props => {
   const {
     onClick = () => {},
@@ -11,7 +9,7 @@ const Tab = props => {
   } = props;
 
   return (
-    <a className={isActive ? styles.tabHeaderActive : styles.tabHeader}
+    <a className={`nav-item nav-link ${isActive ? 'active' : ''}`}
       onClick={onClick}>
       {title}
     </a>

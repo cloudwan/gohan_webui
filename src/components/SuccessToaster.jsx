@@ -8,11 +8,23 @@ import 'codemirror/mode/javascript/javascript';
 import {Toaster, Position} from '@blueprintjs/core';
 
 export class SuccessToaster extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      isDetailOpen: false
+    };
+  }
+
   static defaultProps = {
     title: '',
     result: '',
     onDismiss: () => {},
   };
+
+  handleDetailOpenToggle = () => this.setState(prevState => ({
+    isDetailOpen: !prevState.isDetailOpen,
+  }));
 
   handleDismissClick = () => {
     this.props.onDismiss();
@@ -23,28 +35,28 @@ export class SuccessToaster extends Component {
       this.toaster.show({
         message: (<div style={{
           overflow: 'auto',
-          maxWidth: 415,
-          minWidth: 215,
+          maxWidth: 480,
+          minWidth: 480,
           maxHeight: '50vh',
           position: 'relative'
         }}>
-          <span>{nextProps.title}</span>
+          <h5 className="custom-action-success">{nextProps.title}</h5>
           {typeof nextProps.result === 'object' && (
             <Inspector data={nextProps.result}/>
           )}
           {typeof nextProps.result !== 'object' && (
             <CodeMirror value={nextProps.result}
-              className="toaster-codemirror cm-s-monokai"
+              className="toaster-codemirror"
               options={{
                 mode: 'javascript',
+                theme: 'base16-light',
                 readOnly: true,
                 cursorBlinkRate: -1
                }}
             />
           )}
         </div>),
-        className: 'pt-intent-success',
-        iconName: 'tick',
+        className: 'success-toaster',
         timeout: 0,
         onDismiss: this.handleDismissClick,
       });

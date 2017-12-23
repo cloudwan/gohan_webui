@@ -1,13 +1,10 @@
 import React from 'react';
 import ProtoTypes from 'prop-types';
 
-import bootstrap from 'bootstrap/dist/css/bootstrap.css';
-
 function Label(props) {
   const {children, htmlFor} = props;
-
   return (
-    <label className={bootstrap['form-control-label']} {...{htmlFor}}>
+    <label className="form-control-label" {...{htmlFor}}>
       {children}
     </label>
   );

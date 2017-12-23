@@ -29,7 +29,6 @@ describe('< Sample />', () => {
       <Sample/>
     );
 
-    wrapper.find('div').should.have.length(1);
-    wrapper.find('h2').should.have.length(1);
+    wrapper.find('h1').should.have.length(1);
   });
 });

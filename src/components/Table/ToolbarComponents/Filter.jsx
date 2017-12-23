@@ -46,28 +46,25 @@ class Filter extends Component {
     const {properties} = this.props;
 
     return (
-      <div className={'pt-control-group'}>
-        <div className={'pt-select'}>
-          <select value={this.state.by}
-            ref={select => {this.select = select;}}
-            onChange={this.handleFilterKeyChange}>
-            {properties && properties.length > 0 && (
-              properties.map((item, index) => {
-                return (
-                  <option key={index} value={item.id}>{item.title}</option>
-                );
-              })
-            )}
-          </select>
-        </div>
-        <div className={'pt-input-group'}>
-          <input type="text"
-            className={'pt-input'}
-            ref={input => {this.input = input;}}
-            value={this.state.value}
-            onChange={this.handleFilterValueChange}
-          />
-        </div>
+      <div>
+        <select className="form-control mr-sm-1" value={this.state.by}
+          ref={select => {this.select = select;}}
+          onChange={this.handleFilterKeyChange}>
+          {properties && properties.length > 0 && (
+            properties.map((item, index) => {
+              return (
+                <option key={index} value={item.id}>{item.title}</option>
+              );
+            })
+          )}
+        </select>
+        <input type="text"
+          className="form-control mr-sm-1"
+          placeholder="Search"
+          ref={input => {this.input = input;}}
+          value={this.state.value}
+          onChange={this.handleFilterValueChange}
+        />
       </div>
     );
   }

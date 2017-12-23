@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import bootstrap from 'bootstrap/dist/css/bootstrap.css';
-
 export const Input = (
   {
     id,
@@ -13,7 +11,7 @@ export const Input = (
     isInvalid = false
   }
 ) => (
-  <input className={`${bootstrap['form-control']} ${isInvalid ? bootstrap['is-invalid'] : ''}`}
+  <input className={`form-control ${isInvalid ? 'is-invalid' : ''}`}
     id={id}
     type={type}
     value={value}
