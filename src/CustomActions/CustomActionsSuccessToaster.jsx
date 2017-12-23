@@ -14,7 +14,7 @@ export const CustomActionsSuccessToaster = ({
   clearResponse = '',
   result = '',
 }) => (
-  <SuccessToaster title='Custom action success:'
+  <SuccessToaster title='The Custom Action was Successful'
     onDismiss={clearResponse}
     result={result}
   />

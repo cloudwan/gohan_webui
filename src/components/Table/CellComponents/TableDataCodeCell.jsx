@@ -4,17 +4,15 @@ import PropTypes from 'prop-types';
 import jsyaml from 'js-yaml';
 import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/yaml/yaml';
-import {
-  Popover,
-  PopoverInteractionKind,
-  Position
-} from '@blueprintjs/core';
+
+import {Popover2} from '@blueprintjs/labs';
 
 const TableDataCodeCell = ({children}) => {
-  const popoverContent = <CodeMirror className="cm-s-monokai" value={jsyaml.safeDump(children)}
+  const popoverContent = <CodeMirror value={jsyaml.safeDump(children)}
     options={{
       mode: 'yaml',
-      lineNumbers: true,
+      lineNumbers: false,
+      theme: 'base16-light',
       readOnly: true,
       cursorBlinkRate: -1
     }}
@@ -23,13 +21,10 @@ const TableDataCodeCell = ({children}) => {
   return (
     <td>
       {
-        children === null ? '' : <Popover content={popoverContent}
-          interactionKind={PopoverInteractionKind.CLICK}
-          popoverClassName="pt-popover-content-sizing"
-          position={Position.RIGHT}
-          tetherOptions={{constraints: [{attachment: 'together', to: 'scrollParent'}]}}>
-          <button className="pt-button">view</button>
-        </Popover>
+        children === null ? '' : <Popover2 content={popoverContent}
+          placement="auto">
+          <button type="button" className="btn btn-outline-secondary btn-sm">detail</button>
+        </Popover2>
       }
     </td>
   );

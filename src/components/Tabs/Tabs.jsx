@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import styles from './styles.css';
-
 class Tabs extends Component {
   static defaultProps = {
     onChange: () => {},
@@ -42,7 +40,7 @@ class Tabs extends Component {
 
     return (
       <div {...{className, style}}>
-        <div className={styles.tabsHeader}>
+        <div className="nav nav-tabs">
           {React.Children.map(children, (child, index) => (
             React.cloneElement(
               child,
@@ -53,9 +51,9 @@ class Tabs extends Component {
             )
           ))}
         </div>
-        <div className={styles.tabsContent}>
+        <div className="tab-content">
           {children.map((item, index) => (
-            <div className={index === this.state.activeTab ? styles.tabPanelActive : styles.tabPanel}
+            <div className={`tab-pane fade ${index === this.state.activeTab ? 'show active' : ''}`}
               key={index}>
               {item.props.panel}
             </div>

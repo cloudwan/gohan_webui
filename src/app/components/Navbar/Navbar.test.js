@@ -6,7 +6,7 @@ import spies from 'chai-spies';
 import {shallow} from 'enzyme';
 
 import {Navbar} from './Navbar';
-import Button from '../../../components/Button';
+import {Button} from '@blueprintjs/core';
 
 chai.use(spies);
 chai.use(chaiEnzyme());
@@ -47,7 +47,10 @@ describe('< Navbar />', function () {
         tenants={tenants}
       />
     );
-    wrapper.find(Button).findWhere(item => item.props().iconName === 'user').props().text.should.equal(userName);
-    wrapper.find(Button).findWhere(item => item.props().iconName === 'projects').props().text.should.equal(tenant);
+
+    wrapper.find(Button).findWhere(item => item.props().className === 'pt-minimal user')
+      .props().children[1].should.equal(userName);
+    wrapper.find(Button).findWhere(item => item.props().className === 'pt-minimal tenant')
+      .props().children[1].should.equal(tenant);
   });
 });

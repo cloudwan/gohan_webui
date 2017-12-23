@@ -4,13 +4,14 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {update} from '../breadcrumb/breadcrumbActions';
+import Card from '../components/Card';
 
 export class Sample extends Component {
   componentDidMount() {
     const {updateBreadcrumb} = this.props;
 
     updateBreadcrumb([{
-      title: 'Sample',
+      title: 'Home',
       url: '/',
     }]);
   }
@@ -25,8 +26,15 @@ export class Sample extends Component {
 
   render() {
     return (
-      <div className="sample-view">
-        <h2>Sample Gohan webUI Component.</h2>
+      <div>
+        <div className="detail-container">
+          <Card>
+            <h1>Gohan Web UI</h1>
+            <p>Gohan Web UI is javascript based webui project for Gohan.</p>
+            <p><a href="https://github.com/cloudwan/gohan">Gohan Github Page</a></p>
+            <p><a href="https://github.com/cloudwan/gohan_webui">Gohan Web UI Github Page</a></p>
+          </Card>
+        </div>
       </div>
     );
   }

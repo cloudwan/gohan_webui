@@ -6,7 +6,7 @@ import spies from 'chai-spies';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow} from 'enzyme';
 
-import Button from './../components/Button';
+import {Button} from '@blueprintjs/core';
 import {ProgressBar} from '@blueprintjs/core';
 import ConnectedDialog, {GeneratedDialog} from './Dialog';
 

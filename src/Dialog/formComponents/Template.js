@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import bootstrap from 'bootstrap/dist/css/bootstrap.css';
+// import bootstrap from 'bootstrap/dist/css/bootstrap.css';
 
 import Label from './Label';
 
@@ -23,8 +23,9 @@ function Template(props) {
   if (hidden) {
     return children;
   }
+
   return (
-    <div className={`${bootstrap['form-group']} ${rawErrors ? bootstrap['has-danger'] : ''}`}>
+    <div className={`form-group ${rawErrors ? 'has-danger' : ''}`}>
       {displayLabel ? <Label label={label} required={required}
         id={id}
       /> : null}

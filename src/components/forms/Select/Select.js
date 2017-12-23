@@ -3,9 +3,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Portal from 'react-portal';
 
-import styles from './select.css';
-import bootstrap from 'bootstrap/dist/css/bootstrap.css';
-
 class Select extends Component {
   static defaultProps = {
     sort: false,
@@ -149,13 +146,13 @@ class Select extends Component {
     }
 
     return (
-      <div className={`${styles.select} ${bootstrap['form-control']} \
-      ${styles.singleBorder} ${isInvalid ? bootstrap['is-invalid'] : ''}`}
-        ref={ref => {this.widget = ref;}}>
+      <div className="gohan-select-container" ref={ref => {this.widget = ref;}}>
         <button disabled={disabled || readonly}
-          className={styles.button}
+          className={`form-control gohan-select-control
+          ${selectedItem ? '' : 'not-selected'}
+          ${isInvalid ? 'is-invalid' : ''}`}
           onClick={this.handleShowAndHideMenu}>
-          {selectedItem ? selectedItem.label || selectedItem : 'Nothing selected'}
+          {selectedItem ? selectedItem.label || selectedItem : 'Not selected'}
         </button>
         {focused &&
           <Portal closeOnOutsideClick={true}
@@ -167,24 +164,23 @@ class Select extends Component {
               width: this.state.width,
               maxHeight: this.state.maxHeight
             }}
-              className={styles.options}>
+              className="gohan-select-options">
               {(haystack.length >= searchThreshold) &&
-                <div className={styles.search}>
-                  <span className={styles.searchIcon}/>
-                  <input className={styles.searchInput}
+                <div className="search-container">
+                  <input className="form-control"
                     type="text"
-                    placeholder="Search input" dir="auto"
+                    placeholder="Search" dir="auto"
                     value={this.state.searchQuery}
                     onChange={this.handleSearchChange}
                   />
                 </div>
               }
-              <ul className={styles.list}>
+              <ul className="gohan-select-list">
                 {this.state.searchQuery && (options.length === 0) &&
-                  <li className={styles.elementNotFound}>{`No results matched "${this.state.searchQuery}"`}</li>
+                  <li className="gohan-list not-found">{`No results matched "${this.state.searchQuery}"`}</li>
                 }
                 {nullable &&
-                <li className={!selectedItem && !value ? styles.elementSelected : styles.element}
+                <li className={!selectedItem && !value ? 'gohan-list selected' : 'gohan-list'}
                   onClick={() => this.handleMenuItemClick(null)}>Not selected</li>
                 }
                 {options.map((item, i) => {
@@ -195,7 +191,7 @@ class Select extends Component {
                         className={
                           selectedItem && (
                             item.value === value || (Array.isArray(value) && value.includes(item.value))
-                          ) ? styles.elementSelected : styles.element
+                          ) ? 'gohan-list selected' : 'gohan-list'
                         }>
                         {item.label}
                       </li>
@@ -206,7 +202,7 @@ class Select extends Component {
                         onClick={() => this.handleMenuItemClick(item)}
                         className={
                           selectedItem && (item === value || (Array.isArray(value) && value.includes(item))) ?
-                            styles.elementSelected : styles.element
+                            'gohan-list selected' : 'gohan-list'
                         }>
                         {item}
                       </li>

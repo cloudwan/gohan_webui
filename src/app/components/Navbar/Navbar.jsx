@@ -3,13 +3,15 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import isEqual from 'lodash/isEqual';
 import {logout, selectTenant} from './../../../auth/AuthActions';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import {faUserCircle, faBars} from '@fortawesome/fontawesome-free-solid';
+
 import {
   getUserName,
   getTenantName,
   getTenants,
 } from './../../../auth/AuthSelectors';
 
-import Button from '../../../components/Button';
 import NavContainer from './components/NavContainer';
 import NavbarGroup from './components/NavbarGroup';
 import TenantMenuItem from './components/TenantMenuItem';
@@ -18,10 +20,10 @@ import Breadcrumb from '../../../breadcrumb/Breadcrumb';
 import {
   Menu,
   MenuItem,
-  Popover,
-  PopoverInteractionKind,
-  Position
+  Button
 } from '@blueprintjs/core';
+
+import {Popover2} from '@blueprintjs/labs';
 
 export class Navbar extends Component {
   shouldComponentUpdate(nextProps) {
@@ -45,20 +47,21 @@ export class Navbar extends Component {
       tenants,
       tenant,
       userName,
+      brand,
     } = this.props;
 
     return (
       <NavContainer>
         <NavbarGroup isRight={false}>
-          <Button iconName={'menu'}
-            isMinimal={true}
-            onClick={this.handleMenuButtonClick}
-          />
-          <span className="navbar-title">Gohan UI</span>
+          <Button className="pt-minimal"
+            onClick={this.handleMenuButtonClick}>
+            <FontAwesomeIcon className="faicon-menu" icon={faBars} />
+          </Button>
+          <a href="#/" className="brand-link">{brand}</a>
           <Breadcrumb />
         </NavbarGroup>
         <NavbarGroup isRight={true}>
-          <Popover content={
+          <Popover2 content={
             <Menu>
               {tenants.map(item => (
                 <TenantMenuItem key={item.id}
@@ -68,31 +71,30 @@ export class Navbar extends Component {
                 />
               ))}
             </Menu>
-          } interactionKind={PopoverInteractionKind.CLICK}
-            position={Position.BOTTOM}>
-            <Button isMinimal={true}
-              iconName={'projects'}
-              rightIconName="caret-down"
-              text={tenant}
-            />
-          </Popover>
+          } placement="bottom-end"
+            minimal={true}
+            inheritDarkTheme={false}>
+            <Button type="button" rightIconName="caret-down"
+              className="pt-minimal tenant">
+              Tenant: {tenant}
+            </Button>
+          </Popover2>
 
-          <Popover content={
+          <Popover2 content={
             <Menu>
               <MenuItem text={'Log Out'}
-                iconName={'log-out'}
                 onClick={this.handleLogoutClick}
               />
             </Menu>
           }
-            interactionKind={PopoverInteractionKind.CLICK}
-            position={Position.BOTTOM_RIGHT}>
-            <Button isMinimal={true}
-              iconName={'user'}
-              rightIconName="caret-down"
-              text={userName}
-            />
-          </Popover>
+            placement="bottom-end"
+            minimal={true}
+            inheritDarkTheme={false}>
+            <Button type="button" rightIconName="caret-down"
+              className="pt-minimal user">
+              <FontAwesomeIcon className="faicon" icon={faUserCircle} />{userName}
+            </Button>
+          </Popover2>
         </NavbarGroup>
       </NavContainer>
     );
@@ -103,6 +105,7 @@ Navbar.defaultProps = {
   tenants: [],
   onToggleSidebar: () => {},
   isSidebarOpen: false,
+  brand: <span className="brand-title pt-button pt-minimal">Gohan Web UI</span>
 };
 
 if (process.env.NODE_ENV !== 'production') {
@@ -112,6 +115,7 @@ if (process.env.NODE_ENV !== 'production') {
     tenants: PropTypes.array,
     onToggleSidebar: PropTypes.func,
     isSidebarOpen: PropTypes.bool,
+    brand: PropTypes.node.isRequired
   };
 }
 

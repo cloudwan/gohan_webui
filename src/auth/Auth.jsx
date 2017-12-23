@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import {
   login,
@@ -62,14 +61,15 @@ export class Auth extends Component {
     if (this.props.errorMessage) {
       return (
         <Toast message={this.props.errorMessage} className={'pt-intent-danger'}
-          iconName={'error'} onDismiss={this.props.resetErrorMessage}
+          iconName={'error'} timeout="0"
+          onDismiss={this.props.resetErrorMessage}
         />
       );
     }
     return null;
   };
 
-  getActiveStep() {
+  render() {
     const {Login, SelectTenant, Loading} = this.props;
 
     if (!this.props.inProgress && this.props.tokenId === undefined) {
@@ -87,16 +87,7 @@ export class Auth extends Component {
       );
     }
     return (
-      <Loading key={2}/>
-    );
-  }
-  render() {
-    return (
-      <ReactCSSTransitionGroup transitionName="gohan-auth"
-        transitionEnter={true} transitionEnterTimeout={200}
-        transitionLeave={true} transitionLeaveTimeout={100}>
-        {this.getActiveStep()}
-      </ReactCSSTransitionGroup>
+      <Loading key={2} />
     );
   }
 }

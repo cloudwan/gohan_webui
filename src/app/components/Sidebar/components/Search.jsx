@@ -1,19 +1,13 @@
 import React from 'react';
 import ProtoTypes from 'prop-types';
 
-import Input from '../../../../components/Input';
-import InputLabel from '../../../../components/InputLabel';
-
 export const Search = ({value = '', onChange = () => {}}) => (
-  <div className="sidebar-search">
-    <InputLabel>
-      <Input type="text"
-        value={value}
-        placeholder="Search"
-        isFill={true}
-        onChange={onChange}
-      />
-    </InputLabel>
+  <div className="sidebar-search mb-1">
+    <input className="form-control" type="text"
+      placeholder="Search"
+      onChange={onChange}
+      value={value}
+    />
   </div>
 );
 

@@ -1,0 +1,62 @@
+/* Custom variables for bootstrap. Also, this variables are shared by blueprint.scss and mainscss too. */
+
+$line-height-base: 1.5;
+
+// stylelint-disable
+$white:    #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black:    #000;
+
+$blue:    #007bff;
+$indigo:  #6610f2;
+$purple:  #6f42c1;
+$pink:    #e83e8c;
+$red:     #dc3545;
+$orange:  #fd7e14;
+$yellow:  #ffc107;
+$green:   #28a745;
+$teal:    #20c997;
+$cyan:    #17a2b8;
+
+$primary:       $blue;
+$secondary:     $gray-600;
+$success:       $green;
+$info:          $cyan;
+$warning:       $yellow;
+$danger:        $red;
+$light:         $gray-100;
+$dark:          $gray-800;
+
+$font-size-base: 1rem; // Assumes the browser default, typically `16px`
+$font-size-lg: ($font-size-base * 1.25);
+$font-size-sm: ($font-size-base * .875);
+
+$link-color: $primary;
+$link-hover-color: darken($link-color, 15%);
+
+$line-height-base: 1.5;
+$input-btn-focus-width: .2rem;
+$input-btn-focus-color: rgba($blue, .25);
+$input-focus-border-color: lighten($blue, 25%);
+$input-btn-focus-box-shadow: 0 0 0 $input-btn-focus-width $input-btn-focus-color;
+
+$pagination-disabled-color:         $gray-600;
+$pagination-disabled-bg:            $white;
+$pagination-disabled-border-color:  $gray-300;
+
+$border-width: 1px;
+$pagination-padding-y: .5rem;
+$pagination-padding-x: .75rem;
+$pagination-padding-y-sm: .25rem;
+$pagination-padding-x-sm: .5rem;
+$pagination-line-height: 1.5;
+$pagination-border-width: $border-width;
+$pagination-border-color: $gray-300;

@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
-import {Checkbox} from '@blueprintjs/core';
+import {Checkbox, ProgressBar, Intent} from '@blueprintjs/core';
+import {Tooltip2} from '@blueprintjs/labs';
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import {faLink, faPencilAlt} from '@fortawesome/fontawesome-free-solid';
+import {faTrashAlt} from '@fortawesome/fontawesome-free-regular';
 
 import Table from './Table';
 import TableHeader from './TableHeader';
@@ -100,13 +105,16 @@ class TableComponent extends Component {
       checkedAll
     } = this.state;
     const {checkedItems} = checkboxColumn;
+    let columnsLength = columns.length;
+    if (checkboxColumn && checkboxColumn.visible) columnsLength++;
+    if (optionsColumn) columnsLength++;
 
     return (
-      <Table className={'table pt-table pt-interactive'}>
+      <Table className={'gohan-table table'}>
         <TableHeader>
           <TableRow>
             {checkboxColumn && checkboxColumn.visible && (
-              <TableHeaderCell>
+              <TableHeaderCell className={'checkbox'}>
                 <Checkbox indeterminate={
                   (checkboxColumn.checkedItems.length > 0) &&
                   (data.length !== checkboxColumn.checkedItems.length)
@@ -119,7 +127,8 @@ class TableComponent extends Component {
 
             {columns && columns.length > 0 && columns.map((column, index) => {
               return (
-                <TableHeaderCell key={index}>
+                <TableHeaderCell key={index}
+                  className={(sortKey === column.id && sortOrder !== '') ? 'active' : ''}>
                   <a onClick={() => this.handleSortClick(column.id)}>
                     {column.title}
                     {(sortKey === column.id) && (
@@ -130,9 +139,7 @@ class TableComponent extends Component {
               );
             })}
             {optionsColumn && (
-              <TableHeaderCell>
-                Options
-              </TableHeaderCell>
+              <TableHeaderCell className="text-right column-action" />
             )}
           </TableRow>
         </TableHeader>
@@ -191,6 +198,15 @@ class TableComponent extends Component {
                     );
                   }
 
+                  if (column.id === 'status') {
+                    return (
+                      <TableDataCell key={index}
+                        className={`${column.id} ${item[column.id]}`}>
+                        {item[column.id]}
+                      </TableDataCell>
+                    );
+                  }
+
                   return (
                     <TableDataCell key={index}>
                       {item[column.id]}
@@ -200,25 +216,30 @@ class TableComponent extends Component {
 
                 {item.deleting && (
                   <TableDataCell>
-                    <span className="deleting">Deleting...</span>
+                    <ProgressBar intent={Intent.PRIMARY} />
                   </TableDataCell>
                 )}
                 {!item.deleting && optionsColumn && (
-                  <TableDataCell>
-                    <Link to={`${url}/${item.id}`}
-                      className="detail-link">
-                      <span className="pt-icon-standard pt-icon-link" />
-                    </Link>
+                  <TableDataCell className="text-right column-action">
+                    <Tooltip2 content="Detail" placement="auto">
+                      <Link to={`${url}/${item.id}`}
+                        className="action-icon link mr-2">
+                        <FontAwesomeIcon className="faicon" icon={faLink} />
+                      </Link>
+                    </Tooltip2>
                     {optionsColumn.edit && optionsColumn.edit.visible && (
-                      <span onClick={() => optionsColumn.edit.onClick(item)}
-                        className="pt-icon-standard pt-icon-edit"
-                      />
+                      <Tooltip2 content="Edit" placement="auto">
+                        <span onClick={() => optionsColumn.edit.onClick(item)} className="action-icon edit mr-2">
+                          <FontAwesomeIcon className="faicon" icon={faPencilAlt} />
+                        </span>
+                      </Tooltip2>
                     )}
                     {optionsColumn.remove && optionsColumn.remove.visible && (
-                    <span onClick={() => optionsColumn.remove.onClick(item.id)}
-                      className="pt-icon-standard pt-icon-trash"
-                      style={{marginLeft: 3}}
-                    />
+                      <Tooltip2 content="Delete" placement="auto">
+                        <span onClick={() => optionsColumn.remove.onClick(item.id)} className="action-icon delete mr-2">
+                          <FontAwesomeIcon className="faicon" icon={faTrashAlt} />
+                        </span>
+                      </Tooltip2>
                     )}
                   </TableDataCell>
                 )}
@@ -227,6 +248,13 @@ class TableComponent extends Component {
             );
           })
           }
+          {data && data.length === 0 && (
+            <TableRow>
+              <TableDataCell className="no-data" colSpan={columnsLength}>
+                No Data
+              </TableDataCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     );
