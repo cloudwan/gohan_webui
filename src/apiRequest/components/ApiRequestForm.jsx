@@ -1,13 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Row, Col} from 'react-flexbox-grid';
 
 export const ApiRequestForm = ({children = null}) => (
-  <Row center="xs" className="request-form">
-    <Col xs={12}>
-      {children}
-    </Col>
-  </Row>
+  <div className="api-request-form container-fluid">
+    {children}
+  </div>
 );
 
 export default ApiRequestForm;

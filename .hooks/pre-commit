@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Check JavaScript code style
 RUN_ESLINT=1
@@ -14,7 +14,7 @@ elif [ -z "$ESLINT_PATH" ]; then
 fi
 # Ensuring proper coding style
 if [ $RUN_ESLINT -ne 0 ]; then
-     echo -e '\e[38;5;4m\e[1m'"Checking JS style errors:\e[0m"
+    echo -e '\e[38;5;4m\e[1m'"Checking JS style errors:\e[0m"
     echo -e '\e[38;5;4m\e[1m'$JSFILES"\e[0m" | tr " " "\n"
     OUT=`$ESLINT_PATH -c ./.eslintrc $JSFILES`
     CODE=$?

@@ -4,7 +4,6 @@ import chai from 'chai';
 import spies from 'chai-spies';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow, mount} from 'enzyme';
-import {Button} from '@blueprintjs/core';
 
 import SelectTenant from './SelectTenant';
 
@@ -27,13 +26,6 @@ describe('< SelectTenant />', function () {
     );
 
     wrapper.find('select').should.have.length(1);
-  });
-
-  it('should render 1 button', () => {
-    const wrapper = shallow(
-      <SelectTenant tenants={['sample1', 'sample2']} onTenantSubmit={() => {}}/>
-    );
-    wrapper.find(Button).should.have.length(1);
   });
 
   it('should call handleTenantChange', () => {

@@ -9,11 +9,11 @@ function CodeWidget(props) {
   const {format} = props.schema;
 
   return <CodeMirror value={value}
-    className={'cm-s-monokai'}
     onChange={onChange}
     options={{
       mode: format,
       lineNumbers: true,
+      theme: 'material',
       readonly
     }}
   />;

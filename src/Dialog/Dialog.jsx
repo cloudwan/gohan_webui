@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
-import {Dialog, ProgressBar, Intent} from '@blueprintjs/core';
-import Button from './../components/Button';
+import {Dialog, ProgressBar, Intent, Button} from '@blueprintjs/core';
 import isEqual from 'lodash/isEqual';
 
 import {removeEmpty, toServerData} from './utils';
@@ -83,7 +82,7 @@ export class GeneratedDialog extends Component {
       customButtonLabel,
     } = this.props;
     const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
-      `${action === 'create' ? ' new ' : ' '}${baseSchema.title}`;
+      ` ${baseSchema.title}`;
     const submitButtonLabel = customButtonLabel ? customButtonLabel : `${action[0].toUpperCase()}${action.slice(1)}`;
 
     return (
@@ -95,7 +94,7 @@ export class GeneratedDialog extends Component {
           {(() => {
             if (this.props.isLoading || this.props.schema === undefined) {
               return (
-                <ProgressBar/>
+                <ProgressBar intent= {Intent.PRIMARY} />
               );
             }
 

@@ -2,7 +2,10 @@
 import React from 'react';
 import {render} from 'react-dom';
 
-import '../css/sass/main.scss';
+import '../css/blueprint/blueprint.scss';
+import '../css/bootstrap/bootstrap.scss';
+import '../css/codemirror.scss';
+import '../css/main.scss';
 
 import history from './location/history';
 

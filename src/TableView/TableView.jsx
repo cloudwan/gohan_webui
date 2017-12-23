@@ -250,13 +250,13 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     renderRemovalSingleItemAlert = () => {
       if (this.state.removalSingleItemAlertOpen) {
         return (
-          <Alert intent={Intent.PRIMARY}
+          <Alert intent={Intent.DANGER}
             isOpen={this.state.removalSingleItemAlertOpen}
             confirmButtonText='Delete'
             cancelButtonText='Cancel'
             onConfirm={this.handleDeleteItem}
             onCancel={this.handleCloseRemovalSingleItemAlert}>
-            <p>Delete item?</p>
+            <p>Are you sure to delete?</p>
           </Alert>
         );
       }
@@ -265,13 +265,13 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     renderRemovalSelectedItemsAlert = () => {
       if (this.state.removalSelectedItemsAlertOpen) {
         return (
-          <Alert intent={Intent.PRIMARY}
+          <Alert intent={Intent.DANGER}
             isOpen={this.state.removalSelectedItemsAlertOpen}
             confirmButtonText='Delete'
             cancelButtonText='Cancel'
             onConfirm={this.handleDeleteSelected}
             onCancel={this.handleCloseRemovalSelectedItemsAlert}>
-            <p>Delete item(s)?</p>
+            <p>Are you sure to delete?</p>
           </Alert>
         );
       }

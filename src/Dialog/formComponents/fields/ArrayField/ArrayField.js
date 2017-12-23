@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Button, Intent} from '@blueprintjs/core';
 
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import {faPlusCircle, faMinusCircle} from '@fortawesome/fontawesome-free-solid';
+
 import Tab from './../../../../components/Tabs/Tab';
 import Tabs from './../../../../components/Tabs/Tabs';
 import {ArraySortableItem} from './ArraySortableItem';
@@ -244,11 +247,15 @@ export default class ArrayField extends Component {
             description={schema.description}
           />
         }
+        {!schema.description && (
+          <div className="clearfix" />
+        )}
         <div>
-          <Button intent={Intent.PRIMARY} text="Add item"
-            iconName="add" onClick={this.onAddClick}
-            disabled={disabled || readonly} className="pt-minimal"
-          />
+          <Button intent={Intent.PRIMARY}
+            onClick={this.onAddClick}
+            disabled={disabled || readonly} className="pt-minimal pt-small">
+            <FontAwesomeIcon className="faicon" icon={faPlusCircle} />Add {title ? title.toLowerCase() : ''} Item
+          </Button>
         </div>
         <Tabs selectedTabId={this.state.selectedTabId}
           onChange={props => this.setState({selectedTabId: props})}>
@@ -261,17 +268,23 @@ export default class ArrayField extends Component {
               return (
                 <Tab key={index}
                   disabled={!orderable}
-                  title={<span>{`Item ${index + 1}`} <Button intent={Intent.PRIMARY} iconName="remove"
-                    className="pt-minimal" onClick={this.onDropIndexClick(index)}
-                  /></span>}
-                  panel={<div className="tab-content">
+                  title={
+                    <span className="tab-item">{`Item ${index + 1}`}
+                      <Button className="pt-minimal pt-small"
+                        onClick={this.onDropIndexClick(index)}><FontAwesomeIcon className="faicon minus"
+                          icon={faMinusCircle}
+                        />
+                      </Button>
+                    </span>
+                  }
+                  panel={<div className="tab-pane-array">
                     <div className={'sort'}>
                       <Button intent={Intent.PRIMARY} iconName="chevron-left"
-                        text="Move Left" className="pt-minimal"
+                        text="Move Left" className="pt-minimal pt-small"
                         disabled={index === 0} onClick={this.onReorderObjectClick(index, index - 1)}
                       />
                       <Button intent={Intent.PRIMARY} rightIconName="chevron-right"
-                        text="Move Right" className="pt-minimal"
+                        text="Move Right" className="pt-minimal pt-small"
                         disabled={index === items.length - 1} onClick={this.onReorderObjectClick(index, index + 1)}
                       />
                     </div>
@@ -330,7 +343,9 @@ export default class ArrayField extends Component {
               description={schema.description}
             />
         }
-
+        {!schema.description && (
+          <div className="clearfix" />
+        )}
         <ArraySortableList pressDelay={500} onSortEnd={this.onReorderMoved}
           helperClass="list-sortable-active" lockAxis="y"
           lockToContainerEdges={true}>
@@ -344,9 +359,10 @@ export default class ArrayField extends Component {
                 <ArraySortableItem key={index} index={index}
                   disabled={!orderable}>
                   <div className="action">
-                    <Button intent={Intent.PRIMARY} iconName="remove"
-                      className="pt-minimal" onClick={this.onDropIndexClick(index)}
-                    />
+                    <Button className="pt-minimal pt-small"
+                      onClick={this.onDropIndexClick(index)}>
+                      <FontAwesomeIcon className="faicon minus" icon={faMinusCircle} />
+                    </Button>
                   </div>
                   <div className="body">
                     {
@@ -367,11 +383,11 @@ export default class ArrayField extends Component {
                     orderable && (
                     <div className="sort">
                       <Button intent={Intent.PRIMARY} iconName="chevron-up"
-                        text="Up" className="pt-minimal"
+                        text="Up" className="pt-minimal pt-small"
                         disabled={index === 0} onClick={this.onReorderClick(index, index - 1)}
                       />
                       <Button intent={Intent.PRIMARY} iconName="chevron-down"
-                        text="Down" className="pt-minimal"
+                        text="Down" className="pt-minimal pt-small"
                         disabled={index === items.length - 1} onClick={this.onReorderClick(index, index + 1)}
                       />
                     </div>
@@ -381,10 +397,11 @@ export default class ArrayField extends Component {
               );
             })
           }
-          <Button intent={Intent.PRIMARY} text="Add item"
-            iconName="add" onClick={this.onAddClick}
-            disabled={disabled || readonly} className="pt-minimal"
-          />
+          <Button intent={Intent.PRIMARY}
+            onClick={this.onAddClick}
+            disabled={disabled || readonly} className="pt-minimal pt-small">
+            <FontAwesomeIcon className="faicon" icon={faPlusCircle} />Add {title ? title.toLowerCase() : ''} Item
+          </Button>
         </ArraySortableList>
       </div>
     );

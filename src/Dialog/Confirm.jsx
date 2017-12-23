@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Dialog, Intent} from '@blueprintjs/core';
-import Button from './../components/Button';
+import {Dialog, Intent, Button} from '@blueprintjs/core';
 
 import ErrorToast from './components/ErrorToast';
 
@@ -33,10 +32,10 @@ export class Confirm extends Component {
         </div>
         <div className="pt-dialog-footer">
           <div className="pt-dialog-footer-actions">
-            <Button text="No"
+            <Button text="Cancel"
               onClick={this.props.onClose}
             />
-            <Button text="Yes"
+            <Button text="Execute"
               intent={Intent.PRIMARY}
               onClick={onSubmit}
             />

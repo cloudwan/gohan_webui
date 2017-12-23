@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const TableHeaderCell = ({children}) => {
+const TableHeaderCell = ({children, className}) => {
   return (
-    <th>{children}</th>
+    <th {...{className}}>{children}</th>
   );
 };
 

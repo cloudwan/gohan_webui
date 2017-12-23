@@ -26,24 +26,30 @@ class TokenRenewal extends PureComponent {
     const {show} = this.props;
 
     return (
-      <div className={'pt-overlay pt-overlay-open pt-toast-container pt-toast-container-top'}>
+      <div className={'pt-overlay pt-toast-container pt-toast-container-top'}>
         {show && (
-          <div className={'pt-toast pt-intent-warning pt-overlay-content'}
-            style={{
-              left: '50%',
-              transform: 'translate(-50%, 0)',
-              maxWidth: 880
-            }}>
-            <span>
-              <span className={'pt-toast-message'}>
-                The token will expire in less than 5 minutes.
-                Enter your password for extends token.
-              </span>
-              <input type={'password'} ref={input => {this.pass = input;}}/>
-              <button className={'pt-button pt-intent-warning pt-minimal'}
-                onClick={this.handleRenewTokenClick}>Extend</button>
-            </span>
-          </div>
+          <span>
+            <div className={'pt-toast pt-overlay-content'}
+              style={{
+                width: 480
+              }}>
+              <div className="form-row align-items-center token-renewal-message-container">
+                <div className="col-6">
+                  <p className="token-renewal-message">The token will expire in less than 5 minutes.
+                  Enter your password for extends token.</p>
+                </div>
+                <div className="col-4">
+                  <input type={'password'} className="form-control form-control-sm"
+                    ref={input => { this.pass = input; }}
+                  />
+                </div>
+                <div className="col-2">
+                  <button className={'btn btn-primary btn-sm'}
+                    onClick={this.handleRenewTokenClick}>Extend</button>
+                </div>
+              </div>
+            </div>
+          </span>
           )}
       </div>
     );

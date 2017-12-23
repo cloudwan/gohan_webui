@@ -9,8 +9,13 @@ import {
   Button
 } from '@blueprintjs/core';
 
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import {faPencilAlt} from '@fortawesome/fontawesome-free-solid';
+import {faTrashAlt} from '@fortawesome/fontawesome-free-regular';
+
 import ApiRequest from '../apiRequest';
 import CustomActions from '../CustomActions';
+import Card from './Card';
 
 export default class Detail extends Component {
   constructor(props) {
@@ -58,29 +63,33 @@ export default class Detail extends Component {
 
     return (
       <div className="detail-container">
-        <div className="pt-card pt-elevation-0 detail">
-          <div className="detail-header">
-            <h2 className="title">{title}</h2>
-            <div className='actions pt-button-group pt-minimal'>
-              <Button className={'pt-minimal'}
-                iconName="edit"
-                text={'Edit'}
-                onClick={this.handleEditClick}
-              />
-              <Button className={'pt-minimal'}
-                iconName="trash"
-                text={'Delete'}
-                onClick={this.handleRemoveClick}
-              />
-              {!isEmpty(actions) && (
-                <CustomActions actions={actions}
-                  baseUrl={url}
-                  id={id}
-                />
-              )}
+        <Card>
+          <div className="container-fluid gohan-detail-header">
+            <div className="row justify-content-between align-items-center">
+              <div className="col-auto resource-name">
+                <h3 className="text-muted">{title}</h3>
+              </div>
+              <div className="col-auto">
+                <div className="actions pt-button-group pt-minimal">
+                  <Button className={'pt-minimal'}
+                    onClick={this.handleEditClick}>
+                    <FontAwesomeIcon className="faicon" icon={faPencilAlt} />Edit
+                  </Button>
+                  <Button className={'pt-minimal'}
+                    onClick={this.handleRemoveClick}>
+                    <FontAwesomeIcon className="faicon" icon={faTrashAlt} />Delete
+                  </Button>
+                  {!isEmpty(actions) && (
+                    <CustomActions actions={actions}
+                      baseUrl={url}
+                      id={id}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="detail-content">
+          <div className="container-fluid gohan-detail-content">
             {schema.propertiesOrder.map((key, index) => {
               const property = schema.properties[key];
               const propertyValue = data[key];
@@ -91,16 +100,20 @@ export default class Detail extends Component {
 
               if (property.type === 'array' || property.type === 'object') {
                 return (
-                  <div className="gohan-detail-property" key={index}>
-                    <div className="property-title">{property.title}: </div>
-                    <CodeMirror className="cm-s-monokai" value={jsyaml.safeDump(propertyValue)}
-                      options={{
-                        mode: 'yaml',
-                        lineNumbers: true,
-                        readOnly: true,
-                        cursorBlinkRate: -1
-                      }}
-                    />
+                  <div className="row gohan-detail-property mb-4" key={index}>
+                    <div className="property-name col-sm-3 text-right text-muted">{property.title}</div>
+                    <div className="property-value col-sm-9">
+                      <div className="codemirror-container">
+                        <CodeMirror value={jsyaml.safeDump(propertyValue)}
+                          options={{
+                            mode: 'yaml',
+                            theme: 'base16-light',
+                            readOnly: true,
+                            cursorBlinkRate: -1
+                          }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 );
               }
@@ -109,12 +122,15 @@ export default class Detail extends Component {
                 const {relation, relation_property: relationProperty} = property;
                 const {name, url} = data[relationProperty || relation];
                 const text = this.renderPropertyValueAsText(name || propertyValue);
-                const value = followableRelations ? (<Link to={url}>{text}</Link>) : text;
+                const value =
+                  followableRelations ?
+                    (<span className="relation-property"><Link to={url}>{text} »</Link></span>) :
+                    <span className="relation-property">{text}</span>;
 
                 return (
-                  <div className="gohan-detail-property" key={index}>
-                    <div className="property-title">{property.title}: </div>
-                    <div className="property-value">
+                  <div className="row gohan-detail-property mb-4" key={index}>
+                    <div className="property-name col-sm-3 text-right text-muted">{property.title}</div>
+                    <div className="property-value col-sm-9">
                       {value}
                     </div>
                   </div>
@@ -122,24 +138,31 @@ export default class Detail extends Component {
               }
 
               return (
-                <div className="gohan-detail-property" key={index}>
-                  <div className="property-title">{property.title}: </div>
-                  <div className="property-value">{this.renderPropertyValueAsText(propertyValue)}</div>
+                <div className="row gohan-detail-property mb-4" key={index}>
+                  <div className="property-name col-sm-3 text-right text-muted">{property.title}</div>
+                  <div className={`property-value col-sm-9 ${(propertyValue === null) ? ' null' : ''}
+                    ${(key === 'status') ? 'status ' + this.renderPropertyValueAsText(propertyValue) : ''}`}>
+                    {this.renderPropertyValueAsText(propertyValue)}
+                  </div>
                 </div>
               );
             })}
-            <Button className={'pt-minimal toggle-request-form'}
-              iconName={isApiRequestFormOpen ? 'chevron-up' : 'chevron-down'}
-              text={'API Request Form'}
-              onClick={this.handleApiRequestFormToggle}
-            />
-            {
-              isApiRequestFormOpen && <div className="detail-request-form">
-                <ApiRequest baseUrl={`${gohanUrl}${this.props.schema.url}/${data.id}`} />
+            <div className="row">
+              <div className="col text-right">
+                <Button className={'pt-minimal pt-intent-primary toggle-request-form'}
+                  iconName={isApiRequestFormOpen ? 'chevron-up' : 'chevron-down'}
+                  text={'API Request Form'}
+                  onClick={this.handleApiRequestFormToggle}
+                />
               </div>
-            }
+            </div>
           </div>
-        </div>
+          {
+            isApiRequestFormOpen && <div className="api-request-form-container">
+              <ApiRequest baseUrl={`${gohanUrl}${this.props.schema.url}/${data.id}`} />
+            </div>
+          }
+        </Card>
       </div>
     );
   }
