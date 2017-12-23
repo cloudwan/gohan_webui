@@ -6,7 +6,6 @@ import spies from 'chai-spies';
 import {shallow, mount} from 'enzyme';
 
 import TableToolbar from './TableToolbar';
-import {Button} from '@blueprintjs/core';
 
 chai.use(spies);
 chai.use(chaiEnzyme());
@@ -29,8 +28,7 @@ describe('< TableToolbar />', () => {
     };
     const wrapper = mount(<TableToolbar {...props}/>);
 
-    wrapper.find(Button).should.have.length(2);
-    wrapper.find(Button).at(0).simulate('click');
+    wrapper.find('.btn-primary').at(0).simulate('click');
 
     onNewResourceClick.should.have.been.called.once; // eslint-disable-line
   });
@@ -45,8 +43,7 @@ describe('< TableToolbar />', () => {
     };
     const wrapper = mount(<TableToolbar {...props}/>);
 
-    wrapper.find(Button).should.have.length(2);
-    wrapper.find(Button).at(1).simulate('click');
+    wrapper.find('.btn-danger').at(0).simulate('click');
 
     onDeleteSelectedClick.should.have.been.called.once; // eslint-disable-line
   });

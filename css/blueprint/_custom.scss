@@ -1,0 +1,81 @@
+/* Custom values for blueprint.js */
+$icon-font-path: "~@blueprintjs/core/resources/icons";
+
+// Bootstrap variables
+@import "../bootstrap/_custom";
+
+// Common
+$pt-font-family: 'Roboto', "Helvetica Neue", sans-serif;
+$pt-border-radius: 4px;
+$pt-grid-size: 12px;
+$pt-font-size: $pt-grid-size * 1.3333;
+
+// Colors
+$pt-intent-primary: $primary;
+$pt-intent-warning: $warning;
+$pt-intent-success: $success;
+$pt-intent-danger: $danger;
+
+// Typography
+$pt-text-color: $gray-900;
+$pt-link-color: $primary;
+$pt-dark-link-color: $white;
+$pt-text-color-disabled: $gray-600;
+
+$pt-divider-black: $gray-500;
+$pt-icon-color: $gray-600;
+$pt-icon-color-hover: $gray-600;
+
+// Navbar
+$dark-navbar-background-color: #0050cb;
+$navbar-padding: $pt-grid-size;
+
+
+// Button common
+$button-background-color: $gray-300;
+$button-background-color-hover: darken($button-background-color, 7.5%);
+$button-background-color-active: darken($button-background-color, 10%);
+$button-box-shadow: none;
+$button-box-shadow-active: 0 0 0 .2rem rgba($button-background-color, .25);
+$button-intent-box-shadow: none;
+$button-intent-box-shadow-active: 0 0 0 .2rem rgba($pt-intent-primary, .25);
+$button-gradient: none;
+$button-intent-gradient: none;
+
+$minimal-button-background-color-hover: $gray-200;
+$minimal-button-background-color-active: $gray-300;
+
+$dark-button-background-color: $dark-navbar-background-color;
+$dark-button-background-color-hover: darken($dark-navbar-background-color, 7.5%);
+$dark-button-background-color-active: darken($dark-navbar-background-color, 7.5%);
+$dark-button-box-shadow: none;
+$dark-button-box-shadow-active: 0 0 0 .2rem rgba($dark-navbar-background-color, .25);
+$dark-button-gradient: none;
+
+$button-intents: (
+  "primary": ($pt-intent-primary, darken($pt-intent-primary, 7.5%), darken($pt-intent-primary, 10%)),
+  "success": ($pt-intent-success, darken($pt-intent-success, 7.5%), darken($pt-intent-success, 10%)),
+  "warning": ($pt-intent-warning, darken($pt-intent-warning, 7.5%), darken($pt-intent-warning, 10%)),
+  "danger": ($pt-intent-danger, darken($pt-intent-danger, 7.5%), darken($pt-intent-danger, 10%))
+);
+
+$pt-intent-text-colors: (
+  "primary": $pt-intent-primary,
+  "success": $pt-intent-success,
+  "warning": $pt-intent-warning,
+  "danger" : $pt-intent-danger,
+);
+
+// Tooltip
+$tooltip-background-color: $white;
+$tooltip-text-color: $gray-900;
+$tooltip-padding-vertical: 8px;
+$tooltip-padding-horizontal: 10px;
+
+//Input
+// $pt-input-height: 34px;
+// $pt-input-box-shadow: none;
+// $input-shadow-color-focus: rgba(0, 0, 0, 0);
+
+// Dialog
+$pt-dialog-box-shadow: none;

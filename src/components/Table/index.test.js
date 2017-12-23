@@ -132,8 +132,8 @@ describe('< TableComponent />', () => {
     };
     const wrapper = mount(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
-    wrapper.find('.pt-icon-edit').should.have.length(1);
-    wrapper.find('.pt-icon-edit').at(0).simulate('click');
+    wrapper.find('.action-icon.edit').should.have.length(1);
+    wrapper.find('.action-icon.edit').at(0).simulate('click');
 
     onEditClick.should.have.been.called.once; // eslint-disable-line
   });
@@ -161,8 +161,8 @@ describe('< TableComponent />', () => {
     };
     const wrapper = mount(<MemoryRouter><TableComponent {...props}/></MemoryRouter>);
 
-    wrapper.find('.pt-icon-trash').should.have.length(1);
-    wrapper.find('.pt-icon-trash').at(0).simulate('click');
+    wrapper.find('.action-icon.delete').should.have.length(1);
+    wrapper.find('.action-icon.delete').at(0).simulate('click');
 
     onRemoveClick.should.have.been.called.once; // eslint-disable-line
   });

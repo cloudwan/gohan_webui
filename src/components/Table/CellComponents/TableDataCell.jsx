@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const TableDataCell = ({children}) => {
+const TableDataCell = ({children, className, colSpan}) => {
   return (
-    <td>{children}</td>
+    <td {...{className}} {...{colSpan}}>{children}</td>
   );
 };
 

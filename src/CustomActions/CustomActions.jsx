@@ -2,30 +2,22 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import {faTerminal} from '@fortawesome/fontawesome-free-solid';
+
+import {Menu, MenuItem, Button} from '@blueprintjs/core';
+import {Popover2} from '@blueprintjs/labs';
+
 import dialog from '../Dialog';
 import Dialog from '../Dialog/Dialog';
 import Confirm from '../Dialog/Confirm';
 
 import CustomActionsSuccessToaster from './CustomActionsSuccessToaster';
+import {execute} from './CustomActionsActions';
 
-import {
-  Position,
-  Popover,
-  Menu,
-  MenuItem,
-  Button
-} from '@blueprintjs/core';
-import {
-  execute,
-} from './CustomActionsActions';
-
-import {
-  openDialog,
-  closeDialog
-} from '../Dialog/DialogActions';
-import {
-  getActionResult
-} from './CustomActionsSelectors';
+import {openDialog, closeDialog} from '../Dialog/DialogActions';
+import {getActionResult} from './CustomActionsSelectors';
 
 export class CustomActions extends Component {
   handleActionClick = name => {
@@ -64,8 +56,7 @@ export class CustomActions extends Component {
         const ActionConfirm = dialog({name: key})(
           props => (
             <Confirm {...props}
-              iconName="help"
-              title={`Custom action ${key.replace(/_/g, ' ').trim()}`}
+              title={`Custom Action ${key.replace(/_/g, ' ').trim()}`}
               text={`Are you sure to perform "${key.replace(/_/g, ' ').trim()}" custom action?`}
               onClose={this.props.customActions[key].closeDialog}
               onSubmit={() => this.handleCustomActionConfirm(key)}
@@ -96,7 +87,7 @@ export class CustomActions extends Component {
 
     return (
       <div>
-        <Popover content={
+        <Popover2 content={
           <Menu>
             {actionsKeys.map(key => (
               <MenuItem key={key}
@@ -107,13 +98,13 @@ export class CustomActions extends Component {
             ))}
           </Menu>
         }
-          position={Position.BOTTOM}>
-          <Button className={'pt-minimal'}
-            iconName="share"
-            rightIconName="caret-down"
-            text={'Custom actions'}
-          />
-        </Popover>
+          placement="bottom-end"
+          minimal={true}>
+          <Button className={'pt-minimal custom-actions'}
+            rightIconName="caret-down">
+            <FontAwesomeIcon className="faicon" icon={faTerminal} />Custom Actions
+          </Button>
+        </Popover2>
         <CustomActionsSuccessToaster resultYAML={actionResult}/>
         {actionsDialogs}
       </div>

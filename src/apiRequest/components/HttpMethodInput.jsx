@@ -1,29 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Row, Col} from 'react-flexbox-grid';
-
-import Select from '../../components/Select.jsx';
 
 const HttpMethodInput = ({
   methods = [],
   onChange = () => {},
   selectedMethod
 }) => (
-  <div className="request-form-section">
-    <Row>
-      <Col xs={12}
-        className="input-label">
-        <p>HTTP Method</p>
-      </Col>
-    </Row>
-    <Row>
-      <Col xs={12}>
-        <Select items={methods}
-          onSelect={onChange}
-          selectedItem={selectedMethod}
-        />
-      </Col>
-    </Row>
+  <div className="row form-group">
+    <div className="col-sm-3 col-form-label text-sm-right">
+      HTTP Method
+    </div>
+    <div className="col-sm-9">
+      <select className="form-control" onChange={onChange}
+        value={selectedMethod}>
+        {
+          methods && methods.map((item, index) => (
+            <option key={index}
+              value={item}>
+              {item}
+            </option>
+          ))
+        }
+      </select>
+    </div>
   </div>
 );
 

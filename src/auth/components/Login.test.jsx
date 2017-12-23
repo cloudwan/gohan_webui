@@ -3,7 +3,6 @@ import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow, mount} from 'enzyme';
-import {Button} from '@blueprintjs/core';
 
 import Login from './Login';
 
@@ -21,11 +20,6 @@ describe('< Login />', function () {
     const wrapper = shallow(<Login onLoginSubmit={() => {}}/>);
 
     wrapper.find('input').should.have.length(2);
-  });
-
-  it('should render 1 button', () => {
-    const wrapper = shallow(<Login onLoginSubmit={() => {}}/>);
-    wrapper.find(Button).should.have.length(1);
   });
 
   it('should call submit after login button click', () => {

@@ -2,28 +2,24 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Breadcrumb as BlueprintBreadcrumb} from '@blueprintjs/core';
-
 import {getBreadcrumbContent} from './breadcrumbSelectors';
-
-import styles from './breadcrumb.css';
 
 class Breadcrumb extends Component {
   static defaultProps = {
     elements: [],
-    className: '',
   };
 
   render() {
     const {
-      className,
       elements,
     } = this.props;
 
     return (
-      <ul className={`${styles.breadcrumbs} ${className ? ` ${className}` : ''}`}>
+      <ul className="pt-breadcrumbs">
         {
           elements.map((element, index) => {
-            const breadcrumbClassName = styles[(index === elements.length - 1) ? 'breadcrumbCurrent' : 'breadcrumb'];
+            const breadcrumbClassName = (index === elements.length - 1) ?
+              'pt-button pt-minimal current' : 'pt-button pt-minimal';
 
             return (
               <li key={`breadcrumb-${index}`}>
@@ -44,7 +40,6 @@ class Breadcrumb extends Component {
 if (process.env.NODE_ENV !== 'production') {
   Breadcrumb.propTypes = {
     elements: PropTypes.array,
-    className: PropTypes.string,
   };
 }
 

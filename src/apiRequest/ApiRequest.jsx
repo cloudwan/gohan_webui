@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Row, Col} from 'react-flexbox-grid';
 import {Inspector} from 'react-inspector';
 
+import BaseUrl from './components/BaseUrl';
 import UrlInput from './components/UrlInput';
 import HttpMethodInput from './components/HttpMethodInput';
 import BodyData from './components/BodyData';
 import ApiRequestForm from './components/ApiRequestForm';
-import Button from '../components/Button';
+import {Button, Intent} from '@blueprintjs/core';
 
 import {
   getApiResponse,
@@ -33,6 +33,7 @@ export class ApiRequest extends Component {
       body: '',
       method: 'GET',
       query: (props.queryList && props.queryList.length > 0) ? props.queryList[0] : '',
+      additionalQuery: ''
     };
   }
 
@@ -41,6 +42,8 @@ export class ApiRequest extends Component {
   }
 
   handleQueryChange = event => this.setState({query: event.target.value})
+
+  handleAdditionalQueryChange = event => this.setState({additionalQuery: event.target.value})
 
   handleMethodChange = event => this.setState({method: event.target.value});
 
@@ -51,6 +54,7 @@ export class ApiRequest extends Component {
       method,
       body,
       query,
+      additionalQuery
     } = this.state;
 
     const {
@@ -58,7 +62,7 @@ export class ApiRequest extends Component {
       fetch,
     } = this.props;
 
-    fetch(method, `${baseUrl}${query}`, body);
+    fetch(method, `${baseUrl}${query}${additionalQuery}`, body);
   }
 
   render() {
@@ -74,14 +78,18 @@ export class ApiRequest extends Component {
       body,
       method,
       query,
+      AdditionalQuery
     } = this.state;
 
     return (
       <ApiRequestForm>
-        <UrlInput baseUrl={baseUrl}
+        <BaseUrl baseUrl={baseUrl}
           queryList={queryList}
           onChange={this.handleQueryChange}
           query={query}
+        />
+        <UrlInput onChange={this.handleAdditionalQueryChange}
+          AdditionalQuery={AdditionalQuery}
         />
         <HttpMethodInput methods={httpMethods}
           onChange={this.handleMethodChange}
@@ -90,23 +98,25 @@ export class ApiRequest extends Component {
         <BodyData code={body}
           onChange={this.handleBodyChange}
         />
-        <Row start="xs">
-          <Col xs={12}>
+        <div className="row form-group">
+          <div className="col-sm-9 offset-sm-3">
             <Button text="Submit"
               onClick={this.handleSubmit}
               loading={isLoading}
+              intent={Intent.PRIMARY}
             />
-          </Col>
-        </Row>
+          </div>
+        </div>
         {apiResponse !== undefined && (
-          <div className="request-form-section">
-            <Row start="xs">
-              <Col xs={12}>
-                <div className="pt-card">
-                  <Inspector data={apiResponse} />
-                </div>
-              </Col>
-            </Row>
+          <div className="row form-group">
+            <div className="col-sm-3 col-form-label text-sm-right">
+              API Response
+            </div>
+            <div className="col-sm-9">
+              <div className="api-esponse">
+                <Inspector data={apiResponse} />
+              </div>
+            </div>
           </div>
         )}
       </ApiRequestForm>
@@ -130,6 +140,6 @@ if (process.env.NODE_ENV !== 'production') {
     isLoading: PropTypes.bool.isRequired,
     queryList: PropTypes.array,
     httpMethods: PropTypes.array,
-    apiResponse: PropTypes.object,
+    apiResponse: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   };
 }

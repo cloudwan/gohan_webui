@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Button} from '@blueprintjs/core';
 
 export default class SelectTenant extends Component {
   constructor(props) {
@@ -10,6 +9,13 @@ export default class SelectTenant extends Component {
       value: '',
       id: ''
     };
+  }
+
+  componentWillMount() {
+    this.setState({
+      value: this.props.tenants[0].name,
+      id: this.props.tenants[0].id
+    });
   }
 
   handleSelectTenantSubmit = event => {
@@ -41,28 +47,25 @@ export default class SelectTenant extends Component {
     );
   };
 
-
   render() {
     return (
-      <div className="pt-card pt-elevation-3 auth-card">
-        {this.props.Error}
-        <form onSubmit={this.handleSelectTenantSubmit}>
-          <label className="pt-label">
-              Select tenant
-            <div className="pt-select pt-large">
-              <select onChange={this.handleTenantChange}
+      <div className="auth-container d-flex justify-content-center align-items-center">
+        <div className="auth-box">
+          <form className="auth-body" onSubmit={this.handleSelectTenantSubmit}>
+            <h3 className="card-title text-center">{`Hello ${this.props.username}!`}</h3>
+            <p className="card-subtitle mb-2 text-muted text-center">Select a Tenant</p>
+            {this.props.Error}
+            <div className="form-group">
+              <select className="form-control" onChange={this.handleTenantChange}
                 defaultValue={''}>
-                <option value={''} />
                 {this.buildSelectOptions()}
               </select>
             </div>
-          </label>
-
-          <Button type="submit" className="pt-intent-primary auth-submit"
-            disabled={!this.state.value}>
-            Select tenant
-          </Button>
-        </form>
+            <button type="submit" className="btn btn-primary btn-block">
+              Continue
+            </button>
+          </form>
+        </div>
       </div>
     );
   }

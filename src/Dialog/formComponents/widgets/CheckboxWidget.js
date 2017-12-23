@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import bootstrap from 'bootstrap/dist/css/bootstrap.css';
 
 function CheckboxWidget({
   schema,  // eslint-disable-line
@@ -16,9 +15,9 @@ function CheckboxWidget({
   const checked = typeof value === 'undefined' ? defaultValue : value;
 
   return (
-    <div className={bootstrap['form-check']}>
-      <label className={bootstrap['form-check-label']}>
-        <input className={bootstrap['form-check-input']}
+    <div className="form-check">
+      <label className="form-check-label">
+        <input className="form-check-input"
           type='checkbox'
           id={id}
           checked={checked}
