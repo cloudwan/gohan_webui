@@ -421,13 +421,13 @@ describe('TableSelectors ', () => {
       ).should.equal(12);
     });
 
-    it('should return empty 0', () => {
-      selectors.getLimit(
+    it('should return undefined', () => {
+      chai.should(selectors.getLimit(
         {
           tableReducer: {}
         },
         'test1'
-      ).should.equal(0);
+      )).equal(undefined);
     });
   });
 

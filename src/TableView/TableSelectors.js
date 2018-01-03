@@ -12,9 +12,9 @@ const totalCount = (state, id) => {
 
 const limit = (state, id) => {
   if (state.tableReducer && state.tableReducer[id]) {
-    return state.tableReducer[id].limit || 0;
+    return state.tableReducer[id].limit;
   }
-  return 0;
+  return undefined;
 };
 
 const offset = (state, id) => {
@@ -107,7 +107,7 @@ export const getOffset = createSelector(
 
 export const getActivePage = createSelector(
   [offset, limit],
-  (offset, limit) => limit !== 0 ? Math.ceil(offset / limit) : 0
+  (offset, limit) => (limit !== undefined && limit !== 0) ? Math.ceil(offset / limit) : 0
 );
 
 export const getPageCount = createSelector(
