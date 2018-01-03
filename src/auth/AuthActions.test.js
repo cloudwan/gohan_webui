@@ -89,7 +89,7 @@ describe('AuthActions ', () => {
 
     it(`should returns ${actionTypes.LOGIN} action if session storage contains credentials`, () => {
       sessionStorage.setItem('token', 'test token');
-      sessionStorage.setItem('tenant', 'test tenant');
+      sessionStorage.setItem('tenantName', 'test tenant');
       sessionStorage.setItem('tenantId', 'tenantId');
 
       actions.fetchTokenData()
@@ -105,7 +105,7 @@ describe('AuthActions ', () => {
     it(`should returns ${actionTypes.CLEAR_STORAGE} action and clear session storage`, () => {
       sessionStorage.setItem('token', 'test token');
       sessionStorage.setItem('scopedToken', 'test scoped token');
-      sessionStorage.setItem('tenant', 'test tenant');
+      sessionStorage.setItem('tenantName', 'test tenant');
 
       actions.clearStorage()
         .should.deep.equal({
@@ -114,7 +114,7 @@ describe('AuthActions ', () => {
 
       should.equal(sessionStorage.getItem('token'), null);
       should.equal(sessionStorage.getItem('scopedToken'), null);
-      should.equal(sessionStorage.getItem('tenant'), null);
+      should.equal(sessionStorage.getItem('tenantName'), null);
     });
   });
 
@@ -153,7 +153,7 @@ describe('selectTenantSuccess()', () => {
       }
     });
     sessionStorage.getItem('scopedToken').should.equal('tokenId');
-    sessionStorage.getItem('tenant').should.equal('tenant');
+    sessionStorage.getItem('tenantName').should.equal('tenant');
   });
 });
 

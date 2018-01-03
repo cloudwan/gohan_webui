@@ -139,7 +139,7 @@ export const fetchTenantFailure = (error: string): ErrorActionType => ({
 
 export const fetchTokenData = (): FetchTokenActionType => {
   const token = sessionStorage.getItem('token');
-  const tenant = sessionStorage.getItem('tenant');
+  const tenant = sessionStorage.getItem('tenantName');
   const tenantId = sessionStorage.getItem('tenantId');
 
   if (token) {
@@ -156,7 +156,7 @@ export const fetchTokenData = (): FetchTokenActionType => {
 export const clearStorage = (): () => void => {
   sessionStorage.removeItem('token');
   sessionStorage.removeItem('scopedToken');
-  sessionStorage.removeItem('tenant');
+  sessionStorage.removeItem('tenantName');
   sessionStorage.removeItem('tenantId');
   sessionStorage.removeItem('tokenExpires');
 
@@ -187,7 +187,7 @@ export const selectTenantSuccess = (
   user: UserType
 ): LoginSuccessActionType => {
     sessionStorage.setItem('scopedToken', tokenId);
-    sessionStorage.setItem('tenant', tenant.name);
+    sessionStorage.setItem('tenantName', tenant.name);
     sessionStorage.setItem('tenantId', tenant.id);
     sessionStorage.setItem('tokenExpires', tokenExpires);
 
@@ -220,26 +220,19 @@ export const showTokenRenewal = (): ShowTokenRenewalType => {
 };
 
 export const renewTokenInBackground = (): RenewTokenInBackgroundType => {
-  const tenantId = sessionStorage.getItem('tenantId');
   const token = sessionStorage.getItem('token');
 
   return {
     type: RENEW_TOKEN,
-    tenantId,
     token
   };
 };
 
 export const renewToken = (username: string, password: string): RenewTokenType => {
-  const tenantId = sessionStorage.getItem('tenantId');
-  const tenant = sessionStorage.getItem('tenant');
-
   return {
     type: RENEW_TOKEN,
     username,
-    password,
-    tenantId,
-    tenant
+    password
   };
 };
 
