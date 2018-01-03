@@ -262,10 +262,13 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
 
 export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(RENEW_TOKEN)
-    .mergeMap(({username, password, tenantId, token, tenant}) => {
+    .mergeMap(({username, password, token}) => {
       const state = store.getState();
       const {authUrl} = state.configReducer;
-      const {tokenId} = state.authReducer;
+      const {
+        tokenId,
+        tenant
+      } = state.authReducer;
       const headers = {
         'Content-Type': 'application/json',
         'X-Auth-Token': tokenId
@@ -287,10 +290,10 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
             }
           };
 
-          if (tenantId) {
+          if (tenant && tenant.id) {
             data.auth.scope = {
               project: {
-                id: tenantId
+                id: tenant.id
               }
             };
           } else {
@@ -309,7 +312,7 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
                 Observable.of(renewTokenSuccess(
                   response.xhr.getResponseHeader('X-Subject-Token'),
                   response.response.token.expires_at, // eslint-disable-line camelcase
-                  tenantId ? response.response.token.project : undefined,
+                  tenant && tenant.id ? response.response.token.project : undefined,
                   response.response.token.user
                 )),
                 Observable.of(renewTokenInBackground()).delay(offset));
@@ -327,8 +330,8 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
           console.error('Password is not provided');
         }
 
-        if (tenant) {
-          data.auth.tenantName = tenant;
+        if (tenant && tenant.name) {
+          data.auth.tenantName = tenant.name;
         }
 
         return call(
