@@ -53,6 +53,7 @@ export default class Detail extends Component {
       url,
       id,
       gohanUrl,
+      followableRelations,
     } = this.props;
 
     return (
@@ -107,13 +108,14 @@ export default class Detail extends Component {
               if (propertyValue && property.relation) {
                 const {relation, relation_property: relationProperty} = property;
                 const {name, url} = data[relationProperty || relation];
+                const text = this.renderPropertyValueAsText(name || propertyValue);
+                const value = followableRelations ? (<Link to={url}>{text}</Link>) : text;
+
                 return (
                   <div className="gohan-detail-property" key={index}>
                     <div className="property-title">{property.title}: </div>
                     <div className="property-value">
-                      <Link to={url}>
-                        {this.renderPropertyValueAsText(name || propertyValue)}
-                      </Link>
+                      {value}
                     </div>
                   </div>
                 );

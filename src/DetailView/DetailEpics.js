@@ -21,11 +21,13 @@ import {
   get,
   parseXHRError
 } from './../api/index';
+import {getFollowableRelationsState} from './../config/ConfigSelectors';
 
 export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH)
   .switchMap(({schemaId, params}) => {
     const state = store.getState();
     const schema = getSchema(state, schemaId);
+    const followableRelations = getFollowableRelationsState(state);
     const {properties} = schema.schema;
     const {
       pollingInterval,
@@ -51,6 +53,11 @@ export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => ac
     .mergeMap(() => call(get, `${gohanUrl}${url}`, headers)
       .mergeMap(({response}) => {
         const data = response[Object.keys(response)[0]];
+
+        if (!followableRelations) {
+          return Observable.of(fetchSuccess(data));
+        }
+
         const withParents = Object.keys(data).reduce((result, prop) => {
           const {
             relation,
