@@ -29,7 +29,10 @@ import {
   getSchema,
   getBreadcrumb
 } from './../schema/SchemaSelectors';
-import {getGohanUrl} from '../config/ConfigSelectors';
+import {
+  getGohanUrl,
+  getFollowableRelationsState,
+} from '../config/ConfigSelectors';
 import {
   checkLoading,
   getData,
@@ -121,7 +124,8 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
         activeSchema,
         url,
         gohanUrl,
-        className
+        className,
+        followableRelations,
       } = this.props;
       const UpdateDialog = dialog({name: `${schemaId}_update`})(
         props => (
@@ -148,6 +152,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
               url={url}
               id={data.id}
               gohanUrl={gohanUrl}
+              followableRelations={followableRelations}
             />
           </div>
           {children}
@@ -169,6 +174,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
       isLoading: checkLoading(state),
       data: getData(state, schemaId),
       gohanUrl: getGohanUrl(state),
+      followableRelations: getFollowableRelationsState(state),
     };
   }
 

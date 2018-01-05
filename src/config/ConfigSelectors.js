@@ -6,6 +6,7 @@ const title = state => state.configReducer.title;
 const polling = state => state.configReducer.polling;
 const pollingInterval = state => state.configReducer.pollingInterval;
 const pageLimit = state => state.configReducer.pageLimit;
+const followableRelations = state => state.configReducer.followableRelations;
 
 export const getSidebar = createSelector(
   [sidebar],
@@ -46,4 +47,9 @@ export const getPollingInterval = createSelector(
 export const getPageLimit = createSelector(
   [pageLimit],
   pageLimit => pageLimit || 0
+);
+
+export const getFollowableRelationsState = createSelector(
+  [followableRelations],
+  followableRelations => Boolean(followableRelations)
 );

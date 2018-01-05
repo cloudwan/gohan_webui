@@ -94,4 +94,20 @@ describe('ConfigSelectors', () => {
       }).should.equal(0);
     });
   });
+
+  describe('getFollowableRelationsState', () => {
+    it('should return false.', () => {
+      selectors.getFollowableRelationsState({
+        configReducer: {},
+      }).should.deep.equal(false);
+    });
+
+    it('should return true.', () => {
+      selectors.getFollowableRelationsState({
+        configReducer: {
+          followableRelations: true
+        },
+      }).should.deep.equal(true);
+    });
+  });
 });
