@@ -66,7 +66,7 @@ export const getHeaders = createSelector(
 
         if (item.includes(`${property.relation}_id`)) {
           const transformedItem = {
-            id: property.relation_property, // eslint-disable-line camelcase
+            id: property.relation_property || `${property.relation}_id`, // eslint-disable-line camelcase
             title: property.title,
             type: property.type
           };
