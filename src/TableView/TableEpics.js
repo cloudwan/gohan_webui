@@ -11,7 +11,10 @@ import {
   parseXHRError
 } from './../api/index';
 
-import {getCollectionUrl} from './../schema/SchemaSelectors';
+import {
+  getCollectionUrl,
+  getSchema,
+} from './../schema/SchemaSelectors';
 import {getTokenId} from './../auth/AuthSelectors';
 import {
   getGohanUrl,
@@ -30,11 +33,13 @@ import {
   UPDATE,
   PURGE,
   FETCH,
+  FETCH_PARENTS,
   FETCH_CANCELLED,
   FETCH_FAILURE,
 } from './TableActionTypes';
 import {
   fetch,
+  fetchParents,
   fetchSuccess,
   fetchFailure,
   createSuccess,
@@ -61,12 +66,14 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
         .takeWhile(i => i === 0 ? true : Boolean(polling))
         .takeUntil(
           action$.filter(action => {
-            return [FETCH, FETCH_CANCELLED, FETCH_FAILURE].includes(action.type) && action.schemaId === schemaId;
+            return [FETCH, FETCH_CANCELLED, FETCH_FAILURE, ].includes(action.type) && action.schemaId === schemaId;
 
           })
         )
         .mergeMap(() => {
           const state = store.getState();
+          const schema = getSchema(state, schemaId);
+          const {properties} = schema.schema;
           const url = getCollectionUrl(state, schemaId, params);
           const query = {};
           const sortOptions = getSortOptions(state, schemaId);
@@ -162,17 +169,55 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
           };
           const urlQuery = queryStringify(query);
 
+
           return call(get, `${gohanUrl}${url}${urlQuery !== '' ? `?${urlQuery}` : ''}`, headers)
-            .map(response => fetchSuccess({
-              schemaId,
-              sortKey: query.sort_key || '',
-              sortOrder: query.sort_order || '',
-              limit: query.limit || 0,
-              offset: query.offset || 0,
-              filters: options.filters || filters || [],
-              totalCount: parseInt(response.xhr.getResponseHeader('X-Total-Count'), 10),
-              payload: response.response[Object.keys(response.response)[0]]
-            }))
+            .mergeMap(({response, xhr}) => {
+              const data = response[Object.keys(response)[0]];
+              console.log('data:', data);
+              const withParents = data.map(d => {
+                return Object.keys(d).reduce((result, prop) => {
+                  const {
+                    relation,
+                    relation_property: relationProperty
+                  } = properties[prop] || {};
+                  const relationSchema = getSchema(state, relation);
+
+                  if (relation && relationSchema.parent) {
+                    return {
+                      ...result,
+                      [relation]: {
+                        url: relationSchema.url,
+                        relationName: relationProperty || relation,
+                        childSchemaId: relationProperty || relation,
+                        parent: relationSchema.parent,
+                        id: d[prop],
+                      }
+                    };
+                  }
+
+                  return result;
+                }, {});
+              }).filter(item => (Object.keys(item).length > 0) && item.id !== null);
+              console.log('withParents:', withParents);
+
+              const resultData = {
+                schemaId,
+                sortKey: query.sort_key || '',
+                sortOrder: query.sort_order || '',
+                limit: query.limit || 0,
+                offset: query.offset || 0,
+                filters: options.filters || filters || [],
+                totalCount: parseInt(xhr.getResponseHeader('X-Total-Count'), 10),
+                payload: response[Object.keys(response)[0]]
+              };
+
+              // console.log('filtered withParents', withParents.filter(item => (Object.keys(item).length > 0) && item.id !== null));
+              if (withParents.length === 0) {
+                return Observable.of(fetchSuccess(resultData));
+              }
+
+              return Observable.of(fetchParents(resultData, withParents));
+            })
             .takeUntil(
               action$.filter(action => {
                 return [FETCH, FETCH_CANCELLED, FETCH_FAILURE].includes(action.type) && action.schemaId === schemaId;
@@ -181,6 +226,56 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
             );
         }).catch(error => Observable.of(fetchFailure(parseXHRError(error))));
     });
+
+export const fetchWithParents = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH_PARENTS)
+  .mergeMap(({data, withParents}) => {
+    const state = store.getState();
+    const {url: gohanUrl} = state.configReducer.gohan;
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': state.authReducer.tokenId
+    };
+
+    console.log('fetchWithPatents urls:',
+      withParents.reduce((result, d) => [
+        ...result,
+        ...Object.keys(d).map(prop => {
+          const propData = d[prop];
+
+          return `${gohanUrl}${propData.url}/${propData.id}`;
+        })
+      ], [])
+    );
+
+    if (Object.keys(withParents).length > 0) {
+      return Observable.zip(
+        ...withParents.reduce((result, d) => [
+          ...result,
+          ...Object.keys(d).map(prop => {
+            const propData = d[prop];
+
+            return call(
+              (url, headers) => get(url, headers),
+              `${gohanUrl}${propData.url}/${propData.id}`,
+              headers,
+            );
+          })
+        ], [])
+      ).mergeMap(responseArray => {
+        console.log('responseArray:', responseArray);
+
+        // if (Object.keys(propsWithParents).length > 0) {
+        //   return Observable.of(fetchParents(dataWithParents, propsWithParents));
+        // }
+
+        return Observable.of(fetchSuccess(data));
+      })
+      .catch(error => {
+        console.error(error);
+        return Observable.of(fetchFailure(parseXHRError(error)));
+      });
+    }
+  });
 
 export const createEpic = (action$, store, call = (fn, ...args) => fn(...args)) =>
   action$.ofType(CREATE).mergeMap(({schemaId, params, data}) => {
@@ -252,6 +347,7 @@ export const purgeEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
   });
 export default combineEpics(
   fetchEpic,
+  fetchWithParents,
   createEpic,
   updateEpic,
   purgeEpic

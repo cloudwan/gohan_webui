@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 const TableDataLinkCell = ({children, url, id}) => {
   return (
     <td>
-      <Link to={`${url}/${id}`}>
+      <Link to={id ? `${url}/${id}` : url}>
         {children}
       </Link>
     </td>

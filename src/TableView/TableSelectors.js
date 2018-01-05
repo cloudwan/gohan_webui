@@ -41,6 +41,67 @@ const isLoading = (state, id) => {
   return true;
 };
 
+const schema = (state, id) => {
+  if (!state.schemaReducer || !state.schemaReducer.data) {
+    return {};
+  }
+
+  return state.schemaReducer.data.find(item => item.id === id);
+};
+
+const schemaParents = (state, id) => {
+  const result = [];
+
+  let parentSchema = schema(state, id);
+
+  result.unshift(parentSchema);
+
+  while (parentSchema.parent) {
+    parentSchema = schema(state, parentSchema.parent);
+    result.unshift(parentSchema);
+  }
+  return result;
+};
+
+const singularSchemaUrl = (state, id, params) => {
+  const parents = schemaParents(state, id);
+
+  return parents.reduce(
+    (result, parent, index) => (
+      `${result}${(index === 0) ? parent.prefix : ''}/${parent.plural}/${params[`${parent.id}_id`]}`
+    ),
+    ''
+  );
+};
+
+const relationsUrls = (state, id) => {
+  const detailData = data(state, id);
+
+  const propSchema = schema(state, id);
+  const {properties} = propSchema.schema || {properties: {}};
+  const propertiesNames = detailData.length > 0 ? Object.keys(detailData[0]) : [];
+
+  return detailData.map(d => {
+    return propertiesNames
+      .filter(prop => properties[prop] && properties[prop].relation)
+      .reduce((result, prop) => {
+        const {
+          relation,
+          relation_property: relationProperty
+        } = properties[prop];
+        const parentsIds = (d[relation] && d[relation].parents) ? d[relation].parents : [];
+        const url = singularSchemaUrl(state, relation, {
+          ...parentsIds,
+          [`${relation}_id`]: d[prop],
+        });
+        return {
+          ...result,
+          [relationProperty || relation]: url,
+        };
+      }, {});
+  });
+};
+
 export const getResourceTitle = createSelector(
   [getSchema],
   schema => schema.title
@@ -66,7 +127,7 @@ export const getHeaders = createSelector(
 
         if (item.includes(`${property.relation}_id`)) {
           const transformedItem = {
-            id: property.relation_property, // eslint-disable-line camelcase
+            id: property.relation_property || property.relation, // eslint-disable-line camelcase
             title: property.title,
             type: property.type
           };
@@ -83,7 +144,7 @@ export const getHeaders = createSelector(
         const transformedItem = {
           id: item,
           title: property.title,
-          type: property.type
+          type: property.type || 'relation'
         };
 
         result.push(transformedItem);
@@ -97,8 +158,23 @@ export const getHeaders = createSelector(
 );
 
 export const getData = createSelector(
-  [data],
-  data => data
+  [data, relationsUrls],
+  (data, relationsUrls) => {
+
+    if (Object.keys(relationsUrls).length === 0) {
+      return data || {};
+    }
+
+    return data.map((d, i) => {
+      return Object.keys(relationsUrls[i]).reduce((result, name) => ({
+        ...result,
+        [name]: {
+          ...result[name],
+          url: relationsUrls[i][name],
+        }
+      }), d);
+    });
+  }
 );
 export const getOffset = createSelector(
   [offset],

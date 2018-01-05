@@ -172,9 +172,10 @@ class TableComponent extends Component {
 
                   if (item[column.id] !== null && typeof item[column.id] === 'object') {
                     return (
-                      <TableDataCell key={index}>
-                        {item[column.id].name}
-                      </TableDataCell>
+                      <TableDataLinkCell key={index}
+                        url={item[column.id].url}>
+                        {item[column.id].name || item[`${column.id}_id`]}
+                      </TableDataLinkCell>
                     );
                   }
 

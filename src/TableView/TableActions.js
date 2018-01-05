@@ -1,5 +1,6 @@
 import {
   FETCH,
+  FETCH_PARENTS,
   FETCH_SUCCESS,
   FETCH_FAILURE,
   FETCH_CANCELLED,
@@ -20,6 +21,12 @@ export const fetch = (schemaId, params) => options => ({
   schemaId,
   params,
   options
+});
+
+export const fetchParents = (data, withParents) => ({
+  type: FETCH_PARENTS,
+  data,
+  withParents,
 });
 
 export const fetchSuccess = data => ({
