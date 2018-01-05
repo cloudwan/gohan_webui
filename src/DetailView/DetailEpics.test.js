@@ -88,7 +88,8 @@ describe('DetailEpics', () => {
         pollingInterval: 10000,
         gohan: {
           url: 'http://gohan.io'
-        }
+        },
+        followableRelations: true,
       },
       authReducer: {
         tokenId: 'sampleTokenId'
