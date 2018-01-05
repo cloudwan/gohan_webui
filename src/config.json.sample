@@ -58,5 +58,6 @@
     "polling": true,
     "pollingInterval": 10000,
     "storagePrefix": "gohan-webui",
-    "title": "Gohan Web UI"
+    "title": "Gohan Web UI",
+    "followableRelations": false
 }
