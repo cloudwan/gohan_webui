@@ -14,7 +14,7 @@ describe('API', () => {
     Ajax.ajax = _ajax;
   });
 
-  describe('get()', () => {
+  describe('get() alias for getSingular()', () => {
     it('should calls RxJS ajax method with appropriate params', () => {
       // noinspection JSAnnotator
       Ajax.ajax = options => {
@@ -23,6 +23,40 @@ describe('API', () => {
         options.headers.should.equal('headers');
       };
       api.get('http://sample.url', 'headers');
+    });
+  });
+
+  describe('getSingular()', () => {
+    it('should calls RxJS ajax method with appropriate params', () => {
+      // noinspection JSAnnotator
+      Ajax.ajax = options => {
+        options.method.should.equal('GET');
+        options.url.should.equal('http://sample.url');
+        options.headers.should.equal('headers');
+      };
+      api.getSingular('http://sample.url', 'headers');
+    });
+  });
+
+  describe('getCollection()', () => {
+    it('should calls RxJS ajax method with appropriate params and default limit', () => {
+      // noinspection JSAnnotator
+      Ajax.ajax = options => {
+        options.method.should.equal('GET');
+        options.url.should.equal('http://sample.url?limit=10');
+        options.headers.should.equal('headers');
+      };
+      api.getCollection('http://sample.url', 'headers', {});
+    });
+
+    it('should calls RxJS ajax method with appropriate params and settted limit', () => {
+      // noinspection JSAnnotator
+      Ajax.ajax = options => {
+        options.method.should.equal('GET');
+        options.url.should.equal('http://sample.url?limit=66&offset=10');
+        options.headers.should.equal('headers');
+      };
+      api.getCollection('http://sample.url', 'headers', {offset: 10, limit: 66});
     });
   });
 

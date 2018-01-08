@@ -1,10 +1,9 @@
 /* globals parseInt*/
 import {combineEpics} from 'redux-observable';
 import {Observable} from 'rxjs';
-import {stringify as queryStringify} from 'query-string';
 
 import {
-  get,
+  getCollection,
   post,
   put,
   purge,
@@ -160,9 +159,8 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
             'Content-Type': 'application/json',
             'X-Auth-Token': getTokenId(state)
           };
-          const urlQuery = queryStringify(query);
 
-          return call(get, `${gohanUrl}${url}${urlQuery !== '' ? `?${urlQuery}` : ''}`, headers)
+          return call(getCollection, `${gohanUrl}${url}`, headers, query)
             .map(response => fetchSuccess({
               schemaId,
               sortKey: query.sort_key || '',

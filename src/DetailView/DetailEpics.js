@@ -18,7 +18,7 @@ import {
   fetchError
 } from './DetailActions';
 import {
-  get,
+  getSingular,
   parseXHRError
 } from './../api/index';
 
@@ -48,7 +48,7 @@ export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => ac
         action$.ofType(FETCH_CANCELLED),
       )
     )
-    .mergeMap(() => call(get, `${gohanUrl}${url}`, headers)
+    .mergeMap(() => call(getSingular, `${gohanUrl}${url}`, headers)
       .mergeMap(({response}) => {
         const data = response[Object.keys(response)[0]];
         const withParents = Object.keys(data).reduce((result, prop) => {
@@ -102,7 +102,7 @@ export const fetchWithParents = (action$, store, call = (fn, ...args) => fn(...a
           const propData = withParents[prop];
 
           return call(
-            (url, headers) => get(url, headers),
+            (url, headers) => getSingular(url, headers),
             `${gohanUrl}/${propData.url}/${propData.id}`,
             headers,
           );

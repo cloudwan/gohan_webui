@@ -1,6 +1,19 @@
 import {ajax} from 'rxjs/observable/dom/ajax';
+import {stringify as queryStringify} from 'query-string';
 
-export const get = (url, headers) => ajax({method: 'GET', url, headers, crossDomain: true});
+export const getSingular = (url, headers) => ajax({method: 'GET', url, headers, crossDomain: true});
+
+export const get = (...params) => { // backward compatibility
+  console.warn('[Gohan API] get method was deprecated please use getSingular or getCollection method.');
+  return getSingular(...params);
+};
+
+export const getCollection = (url, headers, query: {}) => ajax({
+  method: 'GET',
+  url: `${url}?${queryStringify({limit: 10, ...query})}`,
+  headers,
+  crossDomain: true
+});
 
 export const post = (url, headers, body) => ajax({method: 'POST', url, body, headers, crossDomain: true});
 
