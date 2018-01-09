@@ -1,7 +1,7 @@
 import {
   FETCH_SUCCESS,
   CLEAR_DATA,
-} from './TableActionTypes';
+} from './tableActionTypes';
 
 export default function tableReducer(state = {}, action) {
   const {data} = action;

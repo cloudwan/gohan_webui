@@ -6,7 +6,7 @@ import dialog from '../Dialog';
 import Dialog from '../Dialog/Dialog';
 import Confirm from '../Dialog/Confirm';
 
-import CustomActionsSuccessToaster from './CustomActionsSuccessToaster';
+import CustomActionsSuccessToaster from './components/CustomActionsSuccessToaster';
 
 import {
   Position,
@@ -17,15 +17,15 @@ import {
 } from '@blueprintjs/core';
 import {
   execute,
-} from './CustomActionsActions';
+} from './customActionsActions';
 
 import {
   openDialog,
   closeDialog
-} from '../Dialog/DialogActions';
+} from '../Dialog/dialogActions';
 import {
   getActionResult
-} from './CustomActionsSelectors';
+} from './customActionsSelectors';
 
 export class CustomActions extends Component {
   handleActionClick = name => {

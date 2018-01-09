@@ -1,4 +1,4 @@
-import {FETCH_SUCCESS} from './SchemaActionTypes';
+import {FETCH_SUCCESS} from './schemaActionTypes';
 
 export default function schemaReducer(
   state = {

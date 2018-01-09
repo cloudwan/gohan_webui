@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {getInitialDocTitle} from '../breadcrumb/breadcrumbSelectors';
+import {getInitialDocTitle} from './../Breadcrumbs/breadcrumbSelectors';
 
 export class NotFound extends Component {
   componentDidMount() {

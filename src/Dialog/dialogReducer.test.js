@@ -1,6 +1,6 @@
 /* global it, describe */
 import chai from 'chai';
-import * as actionTypes from './DialogActionTypes';
+import * as actionTypes from './dialogActionTypes';
 import dialogReducer from './dialogReducer';
 
 chai.should();

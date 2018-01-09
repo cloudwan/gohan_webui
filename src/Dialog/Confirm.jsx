@@ -8,7 +8,7 @@ import ErrorToast from './components/ErrorToast';
 
 import {
   clearError,
-} from './DialogActions';
+} from './dialogActions';
 
 export class Confirm extends Component {
   handleSubmit = ({formData}) => {

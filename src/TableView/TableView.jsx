@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 
-import dialog from '../Dialog';
+import dialog from './../Dialog';
 import {
   parse as queryParse,
   stringify as queryStringify
@@ -11,11 +11,11 @@ import {
 
 import isEqual from 'lodash/isEqual';
 
-import TableComponent from './TableComponent';
+import TableComponent from './components/Table';
 
-import {update as updateBreadcrumb} from './../breadcrumb/breadcrumbActions';
+import {update as updateBreadcrumb} from './../Breadcrumbs/breadcrumbsActions';
 
-import {getSchema} from './../schema/SchemaSelectors';
+import {getSchema} from './../schema/schemaSelectors';
 
 import {
   getHeaders,
@@ -28,14 +28,14 @@ import {
   getLimit,
   getTotalCount,
   getIsLoading
-} from './TableSelectors';
+} from './tableSelectors';
 
 import {
   getCollectionUrl,
   hasCreatePermission,
   hasUpdatePermission,
   hasDeletePermission
-} from './../schema/SchemaSelectors';
+} from '../schema/schemaSelectors';
 import {
   fetch,
   cancelFetch,
@@ -43,14 +43,14 @@ import {
   create,
   update,
   purge,
-} from './TableActions';
+} from './tableActions';
 
 import Dialog from '../Dialog/Dialog';
 
 import {
   openDialog,
   closeDialog
-} from '../Dialog/DialogActions';
+} from '../Dialog/dialogActions';
 import {Alert, Intent} from '@blueprintjs/core';
 
 export const getTableView = (schema, Table = TableComponent, isChildView = false, options = {}) => {

@@ -6,11 +6,11 @@ import '../css/sass/main.scss';
 
 import history from './location/history';
 
-import Root from './app/Root';
-import createStore from './app/store';
-import {fetchConfig} from './config/ConfigActions';
-import {fetchUiSchema} from './uiSchema/UiSchemaActions';
-import {updateLocation} from './location/LocationActions';
+import Root from './App/Root';
+import createStore from './App/store';
+import {fetchConfig} from './config/configActions';
+import {fetchUiSchema} from './uiSchema/uiSchemaActions';
+import {updateLocation} from './location/locationActions';
 
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
 

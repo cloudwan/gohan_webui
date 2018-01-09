@@ -1,6 +1,6 @@
 /* global it, describe */
 import chai from 'chai';
-import * as actionTypes from './SchemaActionTypes';
+import * as actionTypes from './schemaActionTypes';
 import schemaReducer from './schemaReducer';
 
 chai.should();
