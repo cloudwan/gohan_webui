@@ -1,6 +1,6 @@
 /* global it, describe */
 import chai from 'chai';
-import * as actionTypes from './ConfigActionTypes';
+import * as actionTypes from './configActionTypes';
 import configReducer from './configReducer';
 
 chai.should();

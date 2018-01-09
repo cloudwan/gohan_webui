@@ -9,8 +9,8 @@ import {
   Button
 } from '@blueprintjs/core';
 
-import ApiRequest from '../apiRequest';
-import CustomActions from '../CustomActions';
+import ApiRequest from './../ApiRequest';
+import CustomActions from './../CustomActions';
 
 export default class Detail extends Component {
   constructor(props) {

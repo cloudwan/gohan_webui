@@ -1,0 +1,32 @@
+import {combineEpics} from 'redux-observable';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+
+import AuthEpics from './../Auth/authEpics';
+import ApiRequestEpics from './../ApiRequest/apiRequestEpics';
+import BreadcrumbEpics from './../Breadcrumbs/breadcrumbsEpics';
+import DetailEpics from './../DetailView/detailViewEpics';
+import TableEpics from './../TableView/tableEpics';
+import CustomActionsEpic from './../CustomActions/customActionsEpics';
+
+const epic$ = new BehaviorSubject(combineEpics(
+  AuthEpics,
+  ApiRequestEpics,
+  BreadcrumbEpics,
+  DetailEpics,
+  TableEpics,
+  CustomActionsEpic
+));
+
+export const rootEpic = (action$, store) =>
+  epic$.mergeMap(epic =>
+    epic(action$, store)
+  );
+
+export const injectEpic = (store, {key, epic}) => {
+  if (store.asyncEpics[key] === epic) {
+    return;
+  }
+
+  store.asyncEpics[key] = epic;
+  epic$.next(epic);
+};

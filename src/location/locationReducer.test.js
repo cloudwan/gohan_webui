@@ -1,6 +1,6 @@
 /* global it, describe */
 import chai from 'chai';
-import * as actionTypes from './LocationActionsTypes';
+import * as actionTypes from './locationActionTypes';
 import reducer from './locationReducer';
 
 chai.should();

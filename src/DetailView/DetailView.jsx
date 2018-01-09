@@ -4,39 +4,39 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import isEqual from 'lodash/isEqual';
 
-import {getCollectionUrl} from './../schema/SchemaSelectors';
+import {getCollectionUrl} from './../schema/schemaSelectors';
 
-import {update as updateBreadcrumb} from './../breadcrumb/breadcrumbActions';
+import {update as updateBreadcrumb} from './../Breadcrumbs/breadcrumbsActions';
 
-import LoadingIndicator from '../components/LoadingIndicator';
-import Detail from '../components/Detail';
-import Dialog from '../Dialog/Dialog';
+import LoadingIndicator from './../components/LoadingIndicator';
+import Detail from './../components/Detail';
+import Dialog from './../Dialog/Dialog';
 import {
   fetch,
   clearData,
   remove,
   update
-} from './DetailActions';
-import dialog from '../Dialog';
+} from './detailViewActions';
+import dialog from './../Dialog';
 
 import {
   openDialog,
   closeDialog
-} from '../Dialog/DialogActions';
+} from '../Dialog/dialogActions';
 
-import {getUiSchema} from './../uiSchema/UiSchemaSelectors';
+import {getUiSchema} from './../uiSchema/uiSchemaSelectors';
 import {
   getSchema,
   getBreadcrumb
-} from './../schema/SchemaSelectors';
+} from './../schema/schemaSelectors';
 import {
   getGohanUrl,
   getFollowableRelationsState,
-} from '../config/ConfigSelectors';
+} from './../config/configSelectors';
 import {
   checkLoading,
   getData,
-} from './DetailSelectors';
+} from './detailViewSelectors';
 
 import {Alert, Intent} from '@blueprintjs/core';
 

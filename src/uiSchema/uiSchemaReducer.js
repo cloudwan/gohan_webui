@@ -1,4 +1,4 @@
-import {FETCH_SUCCESS} from './UiSchemaActionTypes';
+import {FETCH_SUCCESS} from './uiSchemaActionTypes';
 
 const uiSchemaReducer = (
   state = {

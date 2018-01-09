@@ -6,7 +6,7 @@ import {
   CLEAR_DATA,
   ERROR,
   CLEAR_ERROR,
-} from './DialogActionTypes';
+} from './dialogActionTypes';
 
 export default function dialogReducer(
   state = {
