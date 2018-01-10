@@ -5,7 +5,6 @@ import chai from 'chai';
 import spies from 'chai-spies';
 
 import * as actionTypes from './DetailActionTypes';
-import * as dialogActionTypes from './../Dialog/DialogActionTypes';
 import * as actions from './DetailActions';
 
 chai.use(spies);
@@ -56,6 +55,14 @@ describe('DetailActions ', () => {
     });
   });
 
+  describe('fetchCancelled()', () => {
+    it(`should return ${actionTypes.FETCH_CANCELLED} action`, () => {
+      actions.fetchCancelled().should.deep.equal({
+        type: actionTypes.FETCH_CANCELLED,
+      });
+    });
+  });
+
   describe('clearData()', () => {
     it(`should dispatch ${actionTypes.CLEAR_DATA} and ${actionTypes.FETCH_CANCELLED} actions`, () => {
       const store = mockStore({});
@@ -83,7 +90,7 @@ describe('DetailActions ', () => {
 
       store.getActions().should.deep.equal([
         {
-          type: actionTypes.FETCH,
+          type: actionTypes.UPDATE_SUCCESS,
           schemaId,
           params
         },
@@ -101,10 +108,6 @@ describe('DetailActions ', () => {
         {
           type: actionTypes.UPDATE_FAILURE,
         },
-        {
-          type: dialogActionTypes.ERROR,
-          message: 'Error message',
-        }
       ]);
     });
   });
@@ -119,9 +122,6 @@ describe('DetailActions ', () => {
       store.getActions().should.deep.equal([
         {
           type: actionTypes.DELETE_SUCCESS,
-        },
-        {
-          type: actionTypes.FETCH_CANCELLED,
         },
       ]);
     });

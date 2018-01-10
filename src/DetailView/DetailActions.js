@@ -1,11 +1,5 @@
 import history from './../location/history';
 import {
-  put,
-  purge,
-  parseXHRError
-} from './../api/index';
-import {getSingularUrl} from './../schema/SchemaSelectors';
-import {
   FETCH,
   FETCH_PARENTS,
   FETCH_SUCCESS,
@@ -14,10 +8,11 @@ import {
   CLEAR_DATA,
   DELETE_SUCCESS,
   DELETE_FAILURE,
+  UPDATE,
+  UPDATE_SUCCESS,
   UPDATE_FAILURE,
+  DELETE,
 } from './DetailActionTypes';
-
-import {showError} from './../Dialog/DialogActions';
 
 export const fetch = (schemaId, params) => () => dispatch => dispatch({
   type: FETCH,
@@ -41,6 +36,10 @@ export const fetchError = error => ({
   error,
 });
 
+export const fetchCancelled = () => ({
+  type: FETCH_CANCELLED
+});
+
 export const clearData = () => dispatch => {
   dispatch({
     type: FETCH_CANCELLED
@@ -50,84 +49,35 @@ export const clearData = () => dispatch => {
   });
 };
 
-export const updateSuccess = (schemaId, params) => dispatch => dispatch(fetch(schemaId, params)());
+export const updateSuccess = (schemaId, params) => ({
+  type: UPDATE_SUCCESS,
+  schemaId,
+  params,
+});
 
-export const updateError = error => dispatch => {
-  dispatch({
-    type: UPDATE_FAILURE,
-  });
-  dispatch(showError(error));
-};
+export const updateError = () => ({
+  type: UPDATE_FAILURE,
+});
 
-export const update = (schemaId, params) => (data, successCb, errorCb) => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const {url: gohanUrl} = state.configReducer.gohan;
-    const {tokenId} = state.authReducer;
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': tokenId
-    };
-    const url = getSingularUrl(state, schemaId, params);
-
-    put(gohanUrl + url, headers, data).subscribe(response => {
-      const {status} = response;
-
-      if (status === 200) {
-        dispatch(updateSuccess(schemaId, params));
-        if (successCb) {
-          successCb();
-        }
-      } else {
-        dispatch(updateError(parseXHRError(response)));
-        if (errorCb) {
-          errorCb();
-        }
-      }
-    }, error => {
-      dispatch(updateError(parseXHRError(error)));
-      if (errorCb) {
-        errorCb();
-      }
-    });
-  };
-};
+export const update = (schemaId, params) => data => dispatch => dispatch({
+  type: UPDATE,
+  schemaId,
+  params,
+  data,
+});
 
 export const removeSuccess = () => {
   history.goBack();
-  return dispatch => {
-    dispatch({type: DELETE_SUCCESS});
-    dispatch({type: FETCH_CANCELLED});
-  };
+  return {type: DELETE_SUCCESS};
 };
 
-export const removeError = error => dispatch => dispatch({
+export const removeError = error => ({
   type: DELETE_FAILURE,
   error
 });
 
-export const remove = (schemaId, params) => () => {
-  return (dispatch, getState) => {
-    const state = getState();
-    const {url: gohanUrl} = state.configReducer.gohan;
-    const {tokenId} = state.authReducer;
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': tokenId
-    };
-    const url = getSingularUrl(state, schemaId, params);
-
-    purge(gohanUrl + url, headers).subscribe(
-      response => {
-        if (response.status === 204) {
-          dispatch(removeSuccess());
-        } else {
-          dispatch(removeError(parseXHRError(response)));
-        }
-      },
-      error => {
-        dispatch(removeError(parseXHRError(error)));
-      }
-    );
-  };
-};
+export const remove = (schemaId, params) => () => dispatch => dispatch({
+  type: DELETE,
+  schemaId,
+  params,
+});
