@@ -50,6 +50,7 @@ export const getHeaders = createSelector(
   [(state, id) => getSchema(state, id)],
   schema => {
     if (schema) {
+      const parentProperty = `${schema.parent}_id`;
       const schemaProperties = schema.schema.properties;
       const schemaPropertiesOrder = schema.schema.propertiesOrder;
       let exclude = ['id'];
@@ -59,8 +60,11 @@ export const getHeaders = createSelector(
         if (exclude.includes(item)) {
           return result;
         }
-
         if (property === undefined) {
+          return result;
+        }
+
+        if (property.view && !property.view.includes('list') || item === parentProperty) {
           return result;
         }
 
@@ -73,10 +77,6 @@ export const getHeaders = createSelector(
 
           result.push(transformedItem);
 
-          return result;
-        }
-
-        if (property && property.view && !property.view.includes('list')) {
           return result;
         }
 
