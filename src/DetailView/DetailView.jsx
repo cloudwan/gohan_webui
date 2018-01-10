@@ -79,8 +79,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
     };
 
     handleSubmitUpdateDialog = data => {
-
-      this.props.update(data, this.props.closeUpdateDialog);
+      this.props.update(data);
     };
 
     handleDelete = () => {

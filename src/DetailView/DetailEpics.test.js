@@ -5,9 +5,12 @@ import chai from 'chai';
 import expectEpic from './../../test/helpers/expectEpic';
 
 import * as actionTypes from './DetailActionTypes';
+import * as dialogActionTypes from '../Dialog/DialogActionTypes';
 import {
   fetch,
   fetchWithParents,
+  update,
+  remove,
 } from './DetailEpics';
 
 chai.should();
@@ -376,6 +379,159 @@ describe('DetailEpics', () => {
               }
             }
           },
+        }],
+        response: [
+          '-#|',
+          null,
+          {
+            xhr: response
+          }
+        ],
+        store
+      });
+    });
+  });
+
+  describe('update', () => {
+    it(`should dispatch ${actionTypes.UPDATE_SUCCESS} and ${dialogActionTypes.CLOSE_ALL} actions`, () => {
+      const response = {
+        response: {},
+      };
+
+      expectEpic(update, {
+        expected: [
+          '-(ab)',
+          {
+            a: {
+              type: actionTypes.UPDATE_SUCCESS,
+              schemaId: 'testSchemaId1',
+              params: {
+                testSchemaId1: '123'
+              },
+            },
+            b: {
+              type: dialogActionTypes.CLOSE_ALL,
+            },
+          }
+        ],
+        action: ['(a)', {
+          a: {
+            type: actionTypes.UPDATE,
+            schemaId: 'testSchemaId1',
+            params: {
+              testSchemaId1: '123'
+            },
+            data: {
+              name: 'test',
+            },
+          }
+        }],
+        response: ['-a|', {
+          a: response,
+        }],
+        store,
+      });
+    });
+
+    it(`should dispatch ${actionTypes.UPDATE_FAILURE} and ${dialogActionTypes.ERROR} actions`, () => {
+      const response = {
+        response: {},
+      };
+
+      expectEpic(update, {
+        expected: [
+          '-(ab|)',
+          {
+            a: {
+              type: actionTypes.UPDATE_FAILURE,
+            },
+            b: {
+              type: dialogActionTypes.ERROR,
+              message: 'Unknown error!',
+            }
+          }
+        ],
+        action: ['(a|)', {
+          a: {
+            type: actionTypes.UPDATE,
+            schemaId: 'testSchemaId1',
+            params: {
+              testSchemaId1: '123',
+            },
+            data: {
+              name: 'test',
+            },
+          }
+        }],
+        response: [
+          '-#|',
+          null,
+          {
+            xhr: response,
+          }
+        ],
+        store
+      });
+    });
+  });
+
+  describe('remove', () => {
+    it(`should dispatch ${actionTypes.DELETE_SUCCESS} action`, () => {
+      const response = {
+        response: {},
+      };
+
+      expectEpic(remove, {
+        expected: [
+          '-(ab)',
+          {
+            a: {
+              type: actionTypes.DELETE_SUCCESS,
+            },
+            b: {
+              type: actionTypes.FETCH_CANCELLED,
+            },
+          }
+        ],
+        action: ['(a)', {
+          a: {
+            type: actionTypes.DELETE,
+            schemaId: 'testSchemaId1',
+            params: {
+              testSchemaId1: '123',
+            },
+          }
+        }],
+        response: ['-a|', {
+          a: response,
+        }],
+        store,
+      });
+    });
+
+    it(`should dispatch ${actionTypes.DELETE_FAILURE} action`, () => {
+      const response = {
+        response: {},
+      };
+
+      expectEpic(remove, {
+        expected: [
+          '-(a|)',
+          {
+            a: {
+              type: actionTypes.DELETE_FAILURE,
+              error: 'Unknown error!',
+            },
+          }
+        ],
+        action: ['(a|)', {
+          a: {
+            type: actionTypes.DELETE,
+            schemaId: 'testSchemaId1',
+            params: {
+              testSchemaId1: '123'
+            },
+          }
         }],
         response: [
           '-#|',
