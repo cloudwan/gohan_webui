@@ -160,6 +160,12 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       }
     };
 
+    componentWillReceiveProps(nextProps) {
+      this.setState({
+        checkedRowsIds: this.state.checkedRowsIds.filter(id => Boolean(nextProps.data.find(item => item.id === id)))
+      });
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
       return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
     }
