@@ -5,6 +5,9 @@ import {
   FETCH_PARENTS,
   FETCH_CANCELLED,
   FETCH_FAILURE,
+  UPDATE,
+  UPDATE_SUCCESS,
+  DELETE,
 } from './DetailActionTypes';
 
 import {
@@ -15,15 +18,30 @@ import {
 import {
   fetchParents,
   fetchSuccess,
-  fetchError
+  fetchError,
+  fetchCancelled,
+  updateSuccess,
+  updateError,
+  removeSuccess,
+  removeError,
 } from './DetailActions';
 import {
+  closeActiveDialog,
+  showError,
+} from '../Dialog/DialogActions.js';
+import {
   get,
+  put,
+  purge,
   parseXHRError
 } from './../api/index';
-import {getFollowableRelationsState} from './../config/ConfigSelectors';
+import {
+  getGohanUrl,
+  getFollowableRelationsState,
+} from './../config/ConfigSelectors';
+import {getTokenId} from './../auth/AuthSelectors';
 
-export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH)
+export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH, UPDATE_SUCCESS)
   .switchMap(({schemaId, params}) => {
     const state = store.getState();
     const schema = getSchema(state, schemaId);
@@ -176,7 +194,59 @@ export const fetchWithParents = (action$, store, call = (fn, ...args) => fn(...a
     return Observable.of(fetchSuccess(data));
   });
 
+export const update = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(UPDATE)
+  .mergeMap(({schemaId, params, data}) => {
+    const state = store.getState();
+    const gohanUrl = getGohanUrl(state);
+    const tokenId = getTokenId(state);
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': tokenId
+    };
+    const url = `${gohanUrl}${getSingularUrl(state, schemaId, params)}`;
+
+    return call(put, url, headers, data)
+      .mergeMap(() => {
+        return Observable.concat(
+          Observable.of(updateSuccess(schemaId, params)),
+          Observable.of(closeActiveDialog()),
+        );
+      })
+      .catch(error => {
+        console.error(error);
+        return Observable.concat(
+          Observable.of(updateError()),
+          Observable.of(showError(parseXHRError(error))),
+        );
+      });
+  });
+
+export const remove = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(DELETE)
+  .mergeMap(({schemaId, params}) => {
+    const state = store.getState();
+    const gohanUrl = getGohanUrl(state);
+    const tokenId = getTokenId(state);
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': tokenId
+    };
+    const url = `${gohanUrl}${getSingularUrl(state, schemaId, params)}`;
+    return call(purge, url, headers)
+      .mergeMap(() => {
+        return Observable.concat(
+          Observable.of(removeSuccess()),
+          Observable.of(fetchCancelled()),
+        );
+      })
+      .catch(error => {
+        console.error(error);
+        return Observable.of(removeError(parseXHRError(error)));
+      });
+  });
+
 export default combineEpics(
   fetch,
   fetchWithParents,
+  update,
+  remove,
 );
