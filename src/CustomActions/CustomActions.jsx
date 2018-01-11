@@ -81,6 +81,7 @@ export class CustomActions extends Component {
         props => (
           <Dialog {...props}
             customTitle={`Custom action: ${key.replace(/_/g, ' ').trim()}`}
+            customButtonLabel={'Submit'}
             onClose={this.props.customActions[key].closeDialog}
             onSubmit={data => this.handleCustomActionSubmit(key, data)}
             data={{}}
