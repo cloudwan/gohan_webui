@@ -76,9 +76,15 @@ export class GeneratedDialog extends Component {
    * @return {ReactElement} markup
    */
   render() {
-    const {action, baseSchema, customTitle} = this.props;
+    const {
+      action,
+      baseSchema,
+      customTitle,
+      customButtonLabel,
+    } = this.props;
     const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
       `${action === 'create' ? ' new ' : ' '}${baseSchema.title}`;
+    const submitButtonLabel = customButtonLabel ? customButtonLabel : `${action[0].toUpperCase()}${action.slice(1)}`;
 
     return (
       <Dialog title={title}
@@ -127,7 +133,7 @@ export class GeneratedDialog extends Component {
             <Button text="Cancel"
               onClick={this.props.onClose}
             />
-            <Button text="Submit"
+            <Button text={submitButtonLabel}
               intent={Intent.PRIMARY}
               onClick={event => {this.form.onSubmit(event);}}
             />
@@ -166,7 +172,8 @@ if (process.env.NODE_ENV !== 'production') {
     onChange: PropTypes.func,
     onClose: PropTypes.func,
     onSubmit: PropTypes.func,
-    customTitle: PropTypes.string
+    customTitle: PropTypes.string,
+    customButtonLabel: PropTypes.string,
   };
 }
 
