@@ -1,6 +1,6 @@
 /* global it, describe */
 import chai from 'chai';
-import * as actionTypes from './UiSchemaActionTypes';
+import * as actionTypes from './uiSchemaActionTypes';
 import uiSchemaReducer from './uiSchemaReducer';
 
 chai.should();

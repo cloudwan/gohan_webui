@@ -7,9 +7,9 @@ import Button from './../components/Button';
 import isEqual from 'lodash/isEqual';
 
 import {removeEmpty, toServerData} from './utils';
-import {getSchema, getLoadingState} from './DialogSelectors';
-import widgets from './formComponents/widgets';
-import fields from './formComponents/fields';
+import {getSchema, getLoadingState} from './dialogSelectors';
+import widgets from './formComponents/Widgets';
+import fields from './formComponents/Fields';
 import Template from './formComponents/Template';
 import ErrorListTemplate from './formComponents/ErrorListTemplate';
 
@@ -19,8 +19,8 @@ import {
   prepareSchema,
   clearData,
   clearError,
-} from './DialogActions';
-import {getUiSchemaProperties, getUiSchemaLogic} from './../uiSchema/UiSchemaSelectors';
+} from './dialogActions';
+import {getUiSchemaProperties, getUiSchemaLogic} from './../uiSchema/uiSchemaSelectors';
 /**
  * Dialog component for creating and editing resources.
  *

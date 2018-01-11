@@ -1,4 +1,4 @@
-import {FETCH_SUCCESS} from './ConfigActionTypes';
+import {FETCH_SUCCESS} from './configActionTypes';
 
 export default function configReducer(state = {}, action) {
   switch (action.type) {

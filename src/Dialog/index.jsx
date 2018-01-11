@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {isOpen} from './DialogSelectors';
+import {isOpen} from './dialogSelectors';
 
 const dialog = defaults => {
   const {

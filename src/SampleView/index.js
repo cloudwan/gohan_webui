@@ -1,3 +1,3 @@
-import Sample from './Sample';
+import Sample from './SampleView';
 
 export default Sample;
