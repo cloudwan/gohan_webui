@@ -62,6 +62,52 @@ describe('tableReducer ', () => {
     );
   });
 
+  it(`should handle ${actionTypes.PURGE}`, () => {
+    schemaReducer(
+      {
+        test1: {
+          isLoading: false,
+          data: [
+            {
+              id: 'sampleId',
+              name: 'test123'
+            }
+          ],
+          totalCount: 1,
+          offset: 0,
+          limit: 10,
+          sortKey: '',
+          sortOrder: '',
+          filters: []
+        }
+      },
+      {
+        type: actionTypes.PURGE,
+        schemaId: 'test1',
+        id: ['sampleId', 'wrongId']
+      }
+    ).should.deep.equal(
+      {
+        test1: {
+          isLoading: false,
+          data: [
+            {
+              id: 'sampleId',
+              name: 'test123',
+              deleting: true
+            }
+          ],
+          totalCount: 1,
+          offset: 0,
+          limit: 10,
+          sortKey: '',
+          sortOrder: '',
+          filters: []
+        }
+      }
+    );
+  });
+
   it(`should handle ${actionTypes.CLEAR_DATA}`, () => {
     schemaReducer(
       {
