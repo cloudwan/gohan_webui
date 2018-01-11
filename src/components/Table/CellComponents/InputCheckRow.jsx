@@ -1,7 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {Checkbox} from '@blueprintjs/core';
 
 class InputCheckRow extends Component {
+  static defaultProps = {
+    disabled: false
+  };
+
   constructor(props) {
     super(props);
 
@@ -24,9 +29,9 @@ class InputCheckRow extends Component {
 
   render() {
     return (
-      <input type={'checkbox'}
-        ref={input => {this.input = input;}}
+      <Checkbox inputRef={input => {this.input = input;}}
         checked={this.state.checked}
+        disabled={this.props.disabled}
         onChange={this.handleCheckOnChange}
       />
     );
@@ -34,6 +39,7 @@ class InputCheckRow extends Component {
 }
 
 InputCheckRow.propTypes = {
+  disabled: PropTypes.bool,
   checked: PropTypes.bool,
   onChange: PropTypes.func,
   id: PropTypes.string

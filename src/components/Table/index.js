@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
+import {Checkbox} from '@blueprintjs/core';
 
 import Table from './Table';
 import TableHeader from './TableHeader';
@@ -25,6 +26,14 @@ class TableComponent extends Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data.length !== 0 && nextProps.data.length === nextProps.checkboxColumn.checkedItems.length) {
+      this.setState({checkedAll: true});
+    } else {
+      this.setState({checkedAll: false});
+    }
+  }
+
   extractIdsFromData = () => {
     const {data} = this.props;
 
@@ -32,23 +41,23 @@ class TableComponent extends Component {
   };
 
   handleCheckAllChange = () => {
-    const {checked: checkboxValue} = this.checkAllCheckbox;
+    const {checkedAll: checkboxValue} = this.state;
     const {checkboxColumn} = this.props;
 
-    if (checkboxValue) {
-      checkboxColumn.onCheckboxClick(this.extractIdsFromData(), true);
+    if (!checkboxValue) {
+      checkboxColumn.onCheckboxClick(this.extractIdsFromData());
     } else {
-      checkboxColumn.onCheckboxClick([], true);
+      checkboxColumn.onCheckboxClick([]);
     }
 
     this.setState({checkedAll: checkboxValue});
   };
 
   handleRowCheckboxChange = id => {
-    const {checked: checkboxValue} = this.checkAllCheckbox;
-    this.props.checkboxColumn.onCheckboxClick([id], false);
-    if (checkboxValue) {
-      this.setState({checkedAll: false});
+    if (this.props.checkboxColumn.checkedItems.includes(id)) {
+      this.props.checkboxColumn.onCheckboxClick(this.props.checkboxColumn.checkedItems.filter(i => i !== id));
+    } else {
+      this.props.checkboxColumn.onCheckboxClick([...this.props.checkboxColumn.checkedItems, id]);
     }
   };
 
@@ -98,9 +107,11 @@ class TableComponent extends Component {
           <TableRow>
             {checkboxColumn && checkboxColumn.visible && (
               <TableHeaderCell>
-                <input type="checkbox"
+                <Checkbox indeterminate={
+                  (checkboxColumn.checkedItems.length > 0) &&
+                  (data.length !== checkboxColumn.checkedItems.length)
+                }
                   onChange={this.handleCheckAllChange}
-                  ref={input => {this.checkAllCheckbox = input;}}
                   checked={checkedAll}
                 />
               </TableHeaderCell>
@@ -128,12 +139,14 @@ class TableComponent extends Component {
         <TableBody>
           {data && data.length > 0 && data.map(item => {
             return (
-              <TableRow key={item.id}>
+              <TableRow key={item.id}
+                active={item.deleting}>
                 {checkboxColumn && checkboxColumn.visible && (
                   <TableDataCell>
                     <InputCheckRow id={item.id}
                       onChange={this.handleRowCheckboxChange}
                       checked={checkedItems.includes(item.id)}
+                      disabled={Boolean(item.deleting)}
                     />
                   </TableDataCell>
                 )}
@@ -185,7 +198,12 @@ class TableComponent extends Component {
                   );
                 })}
 
-                {optionsColumn && (
+                {item.deleting && (
+                  <TableDataCell>
+                    <span className="deleting">Deleting...</span>
+                  </TableDataCell>
+                )}
+                {!item.deleting && optionsColumn && (
                   <TableDataCell>
                     <Link to={`${url}/${item.id}`}
                       className="detail-link">
