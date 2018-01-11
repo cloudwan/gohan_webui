@@ -143,21 +143,10 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       }
     };
 
-    handleCheckItems = (itemsIds, checkedAll) => {
-      const {checkedRowsIds} = this.state;
-      if (checkedAll) {
-        this.setState({
-          checkedRowsIds: itemsIds
-        });
-      } else {
-        itemsIds.forEach(id => {
-          if (checkedRowsIds.includes(id)) {
-            this.setState({checkedRowsIds: [...checkedRowsIds.filter(i => i === id)]});
-          } else {
-            this.setState({checkedRowsIds: [...checkedRowsIds, id]});
-          }
-        });
-      }
+    handleCheckItems = itemsIds => {
+      this.setState({
+        checkedRowsIds: itemsIds
+      });
     };
 
     componentWillReceiveProps(nextProps) {
