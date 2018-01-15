@@ -30,6 +30,7 @@ class Breadcrumb extends Component {
                 <BlueprintBreadcrumb className={breadcrumbClassName}
                   text={element.title}
                   href={`#${element.url}`}
+                  disabled={!element.url}
                 />
               </li>
             );

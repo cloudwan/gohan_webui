@@ -1,22 +1,18 @@
-/* global document */
+/* global*/
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {getInitialDocTitle} from '../breadcrumb/breadcrumbSelectors';
+import {update} from '../breadcrumb/breadcrumbActions';
 
 export class Sample extends Component {
   componentDidMount() {
-    const {initialDocTitle} = this.props;
+    const {updateBreadcrumb} = this.props;
 
-    if (initialDocTitle && initialDocTitle.length > 0) {
-      document.title = `Sample | ${initialDocTitle}`;
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.initialDocTitle && (nextProps.initialDocTitle !== this.props.initialDocTitle)) {
-      document.title = `Sample | ${nextProps.initialDocTitle}`;
-    }
+    updateBreadcrumb([{
+      title: 'Sample',
+      url: '/',
+    }]);
   }
 
   static onEnter() {
@@ -39,14 +35,12 @@ export class Sample extends Component {
 Sample.contextTypes = {
 };
 
-Sample.propTypes = {
-};
-
-function mapStateToProps(state) {
-  return {
-    initialDocTitle: getInitialDocTitle(state)
+if (process.env.NODE_ENV !== 'production') {
+  Sample.propTypes = {
+    updateBreadcrumb: PropTypes.func,
   };
 }
 
-export default connect(mapStateToProps, {
+export default connect(null, {
+  updateBreadcrumb: update,
 })(Sample);
