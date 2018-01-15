@@ -1,23 +1,17 @@
-/* global document */
+/* global*/
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {getInitialDocTitle} from '../breadcrumb/breadcrumbSelectors';
+import {update} from '../breadcrumb/breadcrumbActions';
 
 export class NotFound extends Component {
   componentDidMount() {
-    const {initialDocTitle} = this.props;
+    const {updateBreadcrumb} = this.props;
 
-    if (initialDocTitle && initialDocTitle.length > 0) {
-      document.title = `Page not found | ${initialDocTitle}`;
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.initialDocTitle && (nextProps.initialDocTitle !== this.props.initialDocTitle)) {
-      document.title = `Page not found | ${nextProps.initialDocTitle}`;
-    }
+    updateBreadcrumb([{
+      title: 'Page not found',
+    }]);
   }
 
   render() {
@@ -32,12 +26,10 @@ export class NotFound extends Component {
 
 if (process.env.NODE_ENV !== 'production') {
   NotFound.propTypes = {
-    initialDocTitle: PropTypes.string
+    updateBreadcrumb: PropTypes.func,
   };
 }
 
-export const mapStateToProps = state => ({
-  initialDocTitle: getInitialDocTitle(state)
-});
-
-export default connect(mapStateToProps)(NotFound);
+export default connect(null, {
+  updateBreadcrumb: update,
+})(NotFound);
