@@ -73,7 +73,7 @@ export function toLocalSchema(schema, state, parentProperty) {
         for (let key in data) {
           data[key].forEach(value => {
             enumValues.push(value.id);
-            options[value.id] = value.name;
+            options[value.id] = value.name || value.id;
           });
         }
         result.enum = enumValues;
