@@ -1,3 +1,6 @@
-export const FETCH_SUCCESS = 'CONFIG_FETCH_SUCCESS';
-export const FETCH_ERROR = 'CONFIG_FETCH_ERROR';
-export const SET_TITLE = 'CONFIG_SET_TITLE';
+const prefix = 'CONFIG_';
+
+export const FETCH = `${prefix}FETCH`;
+export const FETCH_SUCCESS = `${prefix}FETCH_SUCCESS`;
+export const FETCH_FAILURE = `${prefix}FETCH_FAILURE`;
+export const SET_TITLE = `${prefix}SET_TITLE`;

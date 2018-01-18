@@ -14,7 +14,18 @@ describe('uiSchemaReducer ', () => {
     });
   });
 
-  it('should handle FETCH_SUCCESS', () => {
+  it(`should handle ${actionTypes.FETCH} action`, () => {
+    uiSchemaReducer(
+      undefined, {
+        type: actionTypes.FETCH,
+      }
+    ).should.deep.equal({
+      isLoading: true,
+      data: [],
+    });
+  });
+
+  it(`should handle ${actionTypes.FETCH_SUCCESS} action`, () => {
     uiSchemaReducer(
       undefined, {
         type: actionTypes.FETCH_SUCCESS,
@@ -37,6 +48,19 @@ describe('uiSchemaReducer ', () => {
         }
       ],
       isLoading: false
+    });
+  });
+
+  it(`should handle ${actionTypes.FETCH_FAILURE} action`, () => {
+    uiSchemaReducer(
+      undefined, {
+        type: actionTypes.FETCH_FAILURE,
+        error: 'Unknown error!',
+      }
+    ).should.deep.equal({
+      error: 'Unknown error!',
+      data: [],
+      isLoading: false,
     });
   });
 });

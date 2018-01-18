@@ -1,4 +1,8 @@
-import {FETCH_SUCCESS} from './UiSchemaActionTypes';
+import {
+  FETCH,
+  FETCH_SUCCESS,
+  FETCH_FAILURE,
+} from './UiSchemaActionTypes';
 
 const uiSchemaReducer = (
   state = {
@@ -6,11 +10,29 @@ const uiSchemaReducer = (
     data: []
   },
   action) => {
-  switch (action.type) {
+  const {
+    type,
+    data,
+    error,
+  } = action;
+
+  switch (type) {
+    case FETCH:
+      return {
+        ...state,
+        isLoading: true,
+      };
     case FETCH_SUCCESS:
       return {
+        ...state,
         isLoading: false,
-        data: [...action.data]
+        data: [...data],
+      };
+    case FETCH_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
+        error,
       };
     default:
       return state;
