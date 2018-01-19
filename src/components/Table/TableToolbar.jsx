@@ -41,10 +41,12 @@ class TableToolbar extends Component {
                   onClick={this.handleDeleteSelectedClick}>
                   Delete Selected
                 </button>
-                <button className="btn btn-primary"
-                  onClick={this.handleNewResourceClick}>
-                  <strong>+</strong> New
-                </button>
+                {this.props.newResource.visible && (
+                  <button className="btn btn-primary"
+                    onClick={this.handleNewResourceClick}>
+                    <strong>+</strong> New
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -76,6 +78,7 @@ TableToolbar.defaultProps = {
 
 TableToolbar.propTypes = {
   newResource: PropTypes.shape({
+    visible: PropTypes.bool,
     title: PropTypes.string,
     onClick: PropTypes.func
   }),
