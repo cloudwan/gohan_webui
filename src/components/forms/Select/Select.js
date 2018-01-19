@@ -97,17 +97,21 @@ class Select extends Component {
     } = this.props;
 
     let options = haystack.filter(item => {
+      const searchQuery = this.state.searchQuery.toLocaleLowerCase();
       if (typeof item === 'object') {
         if (item.value === null) {
           return false;
         }
 
-        return item.label.includes(this.state.searchQuery);
+        const itemValue = item.label.toLocaleLowerCase();
+        return itemValue.includes(searchQuery);
       } else if (typeof item === 'string') {
         if (item === null) {
           return false;
         }
-        return item.includes(this.state.searchQuery);
+
+        const itemValue = item.toLocaleLowerCase();
+        return itemValue.includes(searchQuery);
       }
       throw new Error(`Unsupported type of haystack item (${typeof item})`);
     });
