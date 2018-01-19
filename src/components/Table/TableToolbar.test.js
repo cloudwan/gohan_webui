@@ -22,6 +22,7 @@ describe('< TableToolbar />', () => {
     const onNewResourceClick = chai.spy();
     const props = {
       newResource: {
+        visible: true,
         title: 'resource',
         onClick: onNewResourceClick
       }

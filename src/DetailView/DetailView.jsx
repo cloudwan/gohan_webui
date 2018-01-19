@@ -27,7 +27,9 @@ import {
 import {getUiSchema} from './../uiSchema/UiSchemaSelectors';
 import {
   getSchema,
-  getBreadcrumb
+  getBreadcrumb,
+  hasUpdatePermission,
+  hasDeletePermission,
 } from './../schema/SchemaSelectors';
 import {
   getGohanUrl,
@@ -162,6 +164,8 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
 
   DetailView.propTypes = {
     clearData: PropTypes.func.isRequired,
+    updatePermission: PropTypes.bool.isRequired,
+    deletePermission: PropTypes.bool.isRequired,
   };
 
   function mapStateToProps(state, {match}) {
@@ -174,6 +178,8 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
       data: getData(state, schemaId),
       gohanUrl: getGohanUrl(state),
       followableRelations: getFollowableRelationsState(state),
+      updatePermission: hasUpdatePermission(state, schemaId),
+      deletePermission: hasDeletePermission(state, schemaId),
     };
   }
 
