@@ -59,6 +59,8 @@ export default class Detail extends Component {
       id,
       gohanUrl,
       followableRelations,
+      updatePermission,
+      deletePermission,
     } = this.props;
 
     return (
@@ -71,14 +73,18 @@ export default class Detail extends Component {
               </div>
               <div className="col-auto">
                 <div className="actions pt-button-group pt-minimal">
-                  <Button className={'pt-minimal'}
-                    onClick={this.handleEditClick}>
-                    <FontAwesomeIcon className="faicon" icon={faPencilAlt} />Edit
-                  </Button>
-                  <Button className={'pt-minimal'}
-                    onClick={this.handleRemoveClick}>
-                    <FontAwesomeIcon className="faicon" icon={faTrashAlt} />Delete
-                  </Button>
+                  {updatePermission && (
+                    <Button className={'pt-minimal'}
+                      onClick={this.handleEditClick}>
+                      <FontAwesomeIcon className="faicon" icon={faPencilAlt} />Edit
+                    </Button>
+                  )}
+                  {deletePermission && (
+                    <Button className={'pt-minimal'}
+                      onClick={this.handleRemoveClick}>
+                      <FontAwesomeIcon className="faicon" icon={faTrashAlt} />Delete
+                    </Button>
+                  )}
                   {!isEmpty(actions) && (
                     <CustomActions actions={actions}
                       baseUrl={url}
@@ -170,5 +176,7 @@ export default class Detail extends Component {
 
 Detail.propTypes = {
   schema: PropTypes.object.isRequired,
-  data: PropTypes.object.isRequired
+  data: PropTypes.object.isRequired,
+  updatePermission: PropTypes.bool.isRequired,
+  deletePermission: PropTypes.bool.isRequired,
 };

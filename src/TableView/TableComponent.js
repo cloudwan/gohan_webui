@@ -36,6 +36,7 @@ class TableComponent extends Component {
             onClick: toolbar.onDeleteSelectedClick
           }}
             newResource={{
+              visible: permissions.create,
               onClick: toolbar.onAddResourceClick,
               title
             }}
