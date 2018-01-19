@@ -159,6 +159,12 @@ class TableComponent extends Component {
                 )}
 
                 {columns && columns.length > 0 && columns.map((column, index) => {
+                  if (item[column.id] === undefined) {
+                    return (
+                      <TableDataCell />
+                    );
+                  }
+
                   if (column.type.includes('boolean')) {
                     return (
                       <TableDataBooleanCell key={index}>
