@@ -17,6 +17,7 @@ import {updateLocation} from './location/LocationActions';
 
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
 
+updateLocation(store)({pathname: history.location.pathname});
 store.unsubscribeHistory = history.listen(updateLocation(store));
 
 console.log(`Gohan version: ${gohanVersion.version}, repo tag: ${gohanVersion.tag}`);
