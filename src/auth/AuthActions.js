@@ -74,12 +74,6 @@ type ErrorActionType = {
   +error: string,
 };
 
-type RenewTokenInBackgroundType = {
-  +type: string,
-  +tenantId: string,
-  +token: string,
-};
-
 type RenewTokenType = {
   +type: string,
   +username: string,
@@ -216,15 +210,6 @@ export const selectTenant = (tenantName: string, tenantId: string): SelectTenant
 export const showTokenRenewal = (): ShowTokenRenewalType => {
   return {
     type: SHOW_TOKEN_RENEWAL
-  };
-};
-
-export const renewTokenInBackground = (): RenewTokenInBackgroundType => {
-  const token = sessionStorage.getItem('token');
-
-  return {
-    type: RENEW_TOKEN,
-    token
   };
 };
 
