@@ -7,6 +7,8 @@ import BreadcrumbEpics from '../breadcrumb/breadcrumbEpics';
 import DetailEpics from '../DetailView/DetailEpics';
 import TableEpics from '../TableView/TableEpics';
 import CustomActionsEpic from '../CustomActions/CustomActionsEpics';
+import ConfigEpics from '../config/configEpics';
+import UiSchemaEpics from '../uiSchema/uiSchemaEpics';
 
 const epic$ = new BehaviorSubject(combineEpics(
   AuthEpics,
@@ -14,7 +16,9 @@ const epic$ = new BehaviorSubject(combineEpics(
   BreadcrumbEpics,
   DetailEpics,
   TableEpics,
-  CustomActionsEpic
+  CustomActionsEpic,
+  ConfigEpics,
+  UiSchemaEpics,
 ));
 
 export const rootEpic = (action$, store) =>

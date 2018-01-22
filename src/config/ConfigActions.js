@@ -1,42 +1,24 @@
-/* global location, document */
-import axios from 'axios';
+/* global document */
 import {
+  FETCH,
   FETCH_SUCCESS,
-  FETCH_ERROR,
+  FETCH_FAILURE,
   SET_TITLE
 } from './ConfigActionTypes';
 
-function fetchSuccess(data) {
-  return dispatch => {
-    if (data.authUrl.includes('__HOST__')) {
-      data.authUrl = data.authUrl.replace(
-        '__HOST__', location.hostname);
-    }
+export const fetchSuccess = data => ({
+  type: FETCH_SUCCESS,
+  data,
+});
 
-    if (data.gohan.url.includes('__HOST__')) {
-      data.gohan.url = data.gohan.url.replace(
-        '__HOST__', location.hostname);
-    }
+export const fetchFailure = error => ({
+  type: FETCH_FAILURE,
+  error,
+});
 
-    dispatch({data, type: FETCH_SUCCESS});
-  };
-}
-
-function fetchError(data) {
-  return dispatch => {
-    const error = data.data;
-
-    dispatch({type: FETCH_ERROR, error});
-  };
-}
-
-export function fetchConfig() {
-  return dispatch => axios.get('./config.json').then(response => {
-    dispatch(fetchSuccess(response.data));
-  }).catch(error => {
-    dispatch(fetchError(error.response));
-  });
-}
+export const fetch = () => ({
+  type: FETCH,
+});
 
 export function setTitle(firstPart) {
   return (dispatch, getState) => {

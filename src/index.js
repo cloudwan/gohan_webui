@@ -11,23 +11,24 @@ import history from './location/history';
 
 import Root from './app/Root';
 import createStore from './app/store';
-import {fetchConfig} from './config/ConfigActions';
-import {fetchUiSchema} from './uiSchema/UiSchemaActions';
+import {fetch} from './config/ConfigActions';
 import {updateLocation} from './location/LocationActions';
 
 const store = createStore(window.devToolsExtension && window.devToolsExtension());
 
-store.unsubscribeHistory = history.listen(updateLocation(store));
-
 console.log(`Gohan version: ${gohanVersion.version}, repo tag: ${gohanVersion.tag}`);
 
-store.dispatch(fetchConfig()).then(() => {
-  store.dispatch(fetchUiSchema()).then(() => {
+store.unsubscribeHistory = history.listen(updateLocation(store));
+store.dispatch(fetch());
+
+const unsubscribe = store.subscribe((() => {
+  if (!store.getState().uiSchemaReducer.isLoading) {
+    unsubscribe();
     render(
       (
         <Root store={store} history={history}/>
       ),
       document.getElementById('root')
     );
-  });
-});
+  }
+}));

@@ -1,9 +1,8 @@
-/* global it, describe, afterEach */
+/* global it, describe */
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
 import spies from 'chai-spies';
-import axios from 'axios';
 
 import * as actionTypes from './UiSchemaActionTypes';
 import * as actions from './UiSchemaActions';
@@ -12,40 +11,58 @@ chai.use(spies);
 
 chai.should();
 
-const _get = axios.get;
-
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('UiSchemaActions ', () => {
-  describe('fetchUiSchema ', () => {
-    afterEach(() => {
-      axios.get = _get;
-    });
-
-    it(`should create when ${actionTypes.FETCH_SUCCESS} fetching uiSchema has finished`, async () => {
+describe('UiSchemaActions', () => {
+  describe('fetch()', () => {
+    it(`should dispatch ${actionTypes.FETCH} action`, () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
-      axios.get = chai.spy(url => {
-        url.should.equal('/locales/en-us/uiSchema.json');
+      store.dispatch(actions.fetch());
 
-        return Promise.resolve({
-          data: [
-            {path: 'sample1'},
-            {path: 'sample2'}
-          ]
-        });
-      });
-      await store.dispatch(actions.fetchUiSchema());
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.FETCH,
+        }
+      ]);
+    });
+  });
+
+  describe('fetchSuccess', () => {
+    it(`should dispatch ${actionTypes.FETCH_SUCCESS} action`, () => {
+      const storeObject = {};
+      const store = mockStore(storeObject);
+
+      store.dispatch(actions.fetchSuccess([
+        {path: 'sample1'},
+        {path: 'sample2'},
+      ]));
 
       store.getActions().should.deep.equal([
         {
           type: actionTypes.FETCH_SUCCESS,
           data: [
             {path: 'sample1'},
-            {path: 'sample2'}
-          ]
+            {path: 'sample2'},
+          ],
+        }
+      ]);
+    });
+  });
+
+  describe('fetchFailure', () => {
+    it(`should dispatch ${actionTypes.FETCH_FAILURE} action`, () => {
+      const storeObject = {};
+      const store = mockStore(storeObject);
+
+      store.dispatch(actions.fetchFailure('Unknown error!'));
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.FETCH_FAILURE,
+          error: 'Unknown error!',
         }
       ]);
     });
