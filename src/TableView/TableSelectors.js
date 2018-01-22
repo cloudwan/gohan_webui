@@ -72,7 +72,8 @@ export const getHeaders = createSelector(
           const transformedItem = {
             id: property.relation_property || `${property.relation}_id`, // eslint-disable-line camelcase
             title: property.title,
-            type: property.type
+            type: property.type,
+            sortingKey: item,
           };
 
           result.push(transformedItem);
