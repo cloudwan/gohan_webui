@@ -128,10 +128,10 @@ class TableComponent extends Component {
             {columns && columns.length > 0 && columns.map((column, index) => {
               return (
                 <TableHeaderCell key={index}
-                  className={(sortKey === column.id && sortOrder !== '') ? 'active' : ''}>
-                  <a onClick={() => this.handleSortClick(column.id)}>
+                  className={(sortKey === (column.sortingKey || column.id) && sortOrder !== '') ? 'active' : ''}>
+                  <a onClick={() => this.handleSortClick(column.sortingKey || column.id)}>
                     {column.title}
-                    {(sortKey === column.id) && (
+                    {(sortKey === (column.sortingKey || column.id)) && (
                       <SortIcon sortOrder={sortOrder}/>
                     )}
                   </a>
