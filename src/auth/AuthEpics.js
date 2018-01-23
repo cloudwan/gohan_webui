@@ -18,10 +18,11 @@ import {
   showTokenRenewal,
   renewTokenSuccess,
   renewTokenFailure,
+  renewTokenInBackground
 } from './AuthActions';
 
 const computeOffsetForTokenRenewal = date => {
-  const earlyWarningTime = 300000; // warn 5 minutes earlier
+  const earlyWarningTime = 5 * 60 * 1000; // warn/renew 5 minutes earlier
   const now = new Date();
   let offset = new Date(date) - now;
 
@@ -90,9 +91,9 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           data
         )
           .flatMap(response => {
-              const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
 
-              return Observable.concat(
+            return Observable.concat(
                 Observable.of(loginSuccess(
                   response.xhr.getResponseHeader('X-Subject-Token'),
                   response.response.token.expires_at, // eslint-disable-line camelcase
@@ -100,9 +101,10 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
                   response.response.token.user
                 )),
                 Observable.of({type: FETCH_TENANTS}),
-                Observable.of(showTokenRenewal()).delay(offset)
+                Observable.of(renewTokenInBackground()).delay(offset)
               );
             }
+
           )
           .catch(error => Observable.of(loginFailure(parseXHRError(error))));
       } else if (/v2.0$/.test(authUrl)) {
@@ -128,9 +130,9 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           data
         )
           .flatMap(response => {
-              const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
+            const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
 
-              return Observable.concat(
+            return Observable.concat(
                 Observable.of(loginSuccess(
                   response.response.access.token.id,
                   response.response.access.token.expires,
@@ -260,7 +262,7 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
 
 export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(RENEW_TOKEN)
-    .mergeMap(({username, password}) => {
+    .mergeMap(({username, password, token}) => {
       const state = store.getState();
       const {authUrl} = state.configReducer;
       const {
@@ -277,32 +279,26 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
       };
 
       if (/v3$/.test(authUrl)) {
-        if (password !== undefined) {
-          data.auth.identity = {
-            methods: [
-              'password'
-            ],
-            password: {
-              user: {
-                domain: {
-                  name: 'default'
-                },
-                name: username,
-                password
+        data.auth = {
+            identity: {
+              methods: [
+                'token'
+              ],
+              token: {
+                id: token
               }
             }
           };
-        }
 
-        if (tenant && tenant.id) {
-          data.auth.scope = {
-            project: {
-              id: tenant.id
-            }
-          };
-        } else {
-          data.auth.scope = 'unscoped';
-        }
+          if (tenant && tenant.id) {
+            data.auth.scope = {
+              project: {
+                id: tenant.id
+              }
+            };
+          } else {
+            data.auth.scope = 'unscoped';
+          }
 
         return call(
           post,
@@ -311,15 +307,15 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
           data
         )
           .flatMap(response => {
-              const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
-              return Observable.concat(
+            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+            return Observable.concat(
                 Observable.of(renewTokenSuccess(
                   response.xhr.getResponseHeader('X-Subject-Token'),
                   response.response.token.expires_at, // eslint-disable-line camelcase
                   tenant && tenant.id ? response.response.token.project : undefined,
                   response.response.token.user
                 )),
-                Observable.of(showTokenRenewal()).delay(offset));
+                Observable.of(renewTokenInBackground()).delay(offset));
             }
           )
           .catch(error => Observable.of(renewTokenFailure(parseXHRError(error))));
@@ -345,9 +341,9 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
           data
         )
           .flatMap(response => {
-              const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
+            const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
 
-              return Observable.concat(
+            return Observable.concat(
                 Observable.of(renewTokenSuccess(
                   response.response.access.token.id,
                   response.response.access.token.expires,
