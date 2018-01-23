@@ -44,9 +44,10 @@ export const updateBreadcrumb = (action$, store, call = (fn, ...args) => fn(...a
       )
     ).map(responseArray => {
       const updatedElements = responseArray.reduce((result, item, index) => {
-        result[elementsWithoutTitle[index].index] = {
-          title: item.response[elementsWithoutTitle[index].singular].name,
-          url: elementsWithoutTitle[index].url,
+        const element = elementsWithoutTitle[index];
+        result[element.index] = {
+          title: item.response[element.singular].name || item.response[element.singular].id,
+          url: element.url,
         };
         return result;
       }, {});
