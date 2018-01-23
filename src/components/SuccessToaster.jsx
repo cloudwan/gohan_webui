@@ -76,7 +76,7 @@ export class SuccessToaster extends Component {
 if (process.env.NODE_ENV !== 'production') {
   SuccessToaster.propTypes = {
     title: PropTypes.string,
-    result: PropTypes.oneOf([
+    result: PropTypes.oneOfType([
       PropTypes.object,
       PropTypes.string
     ]),
