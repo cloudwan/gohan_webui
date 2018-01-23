@@ -252,7 +252,7 @@ body {
   .token-renewal-message {
     font-size: 0.875rem;
     margin-bottom: 0;
-    color: $gray-700; 
+    color: $gray-700;
   }
 }
 
@@ -328,6 +328,10 @@ table.gohan-table {
     padding-bottom: 0;
     background-color: #fff;
   }
+}
+
+.pt-dialog .CodeMirror pre span {
+  padding-left: 20px;
 }
 
 .gohan-table-header {
