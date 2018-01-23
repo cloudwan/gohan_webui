@@ -1,68 +1,64 @@
 /*
  * Forms
  */
+
 .list-sortable {
   counter-reset: section;
   padding: 0;
   margin: 0;
   min-height: 2em;
-  .list-item-container {
-    list-style: none;
-    background-color: $white;
-    border: 1px solid $gray-300;
-    border-left: 5px solid $gray-300;
-    margin-bottom: -1px;
-    display: flex;
-    align-items: center;
-    > div.body {
-      flex-basis: auto;
-      flex-grow: 1;
-      padding-top: 0.5rem;
-    }
-    > div.action {
-      flex-basis: 3rem;
-      padding-left: 0.5rem;
-    }
-    > div.sort {
-      flex-basis: 6rem;
-    }
-    .gohan-form-array-item {
-      label, .gohan-form-description {
-        font-weight: normal;
-        font-size: 0.8rem;
-        margin-bottom: 1px;
+}
+
+.list-item-container {
+  list-style: none;
+  background-color: $white;
+  border: 1px solid $gray-300;
+  border-left: 5px solid $gray-300;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  > div.body {
+    flex-basis: auto;
+    flex-grow: 1;
+    padding-top: 0.5rem;
+  }
+  > div.action {
+    flex-basis: 3rem;
+    padding-left: 0.5rem;
+  }
+  > div.sort {
+    flex-basis: 6rem;
+  }
+  > div.draggable {
+    flex-basis: 2.7rem;
+    > span.drag {
+      text-align: center;
+      display: inline-block;
+      width: 1.5rem;
+      height: 1.5rem;
+      color: $gray-500;
+      cursor: move;
+      transition: color .15s ease-in-out;
+      &:hover {
+        color: $gray-900;
       }
     }
   }
-  .list-sortable-active {
-    z-index: 3000;
-    list-style: none;
-    background-color: $white;
-    border: 1px solid $gray-300;
-    border-left: 5px solid $gray-300;
-    margin-bottom: -1px;
-    display: flex;
-    align-items: center;
-    > div.body {
-      flex-basis: auto;
-      flex-grow: 1;
-      padding-top: 0.5rem;
-    }
-    > div.action {
-      flex-basis: 3rem;
-      padding-left: 0.5rem;
-    }
-    > div.sort {
-      flex-basis: 6rem;
-    }
-    .gohan-form-array-item {
-      label, .gohan-form-description {
-        font-weight: normal;
-        font-size: 0.8rem;
-        margin-bottom: 1px;
-      }
+  .gohan-form-array-item {
+    label, .gohan-form-description {
+      font-weight: normal;
+      font-size: 0.8rem;
+      line-height: 1.5rem;
+      margin-bottom: 1px;
     }
   }
+}
+
+.list-sortable-active {
+  z-index: 100;
+  opacity: 0.9;
+  cursor: move;
+  box-shadow: 0px 0px 3px 1px rgba(0,0,0,0.1);
 }
 
 .gohan-form-asterisk {
