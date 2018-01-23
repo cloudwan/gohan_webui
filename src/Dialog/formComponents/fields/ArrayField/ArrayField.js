@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {Button, Intent} from '@blueprintjs/core';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import {faPlusCircle, faMinusCircle} from '@fortawesome/fontawesome-free-solid';
+import {faPlusCircle, faMinusCircle, faBars} from '@fortawesome/fontawesome-free-solid';
 
 import Tab from './../../../../components/Tabs/Tab';
 import Tabs from './../../../../components/Tabs/Tabs';
@@ -346,7 +346,7 @@ export default class ArrayField extends Component {
         {!schema.description && (
           <div className="clearfix" />
         )}
-        <ArraySortableList pressDelay={500} onSortEnd={this.onReorderMoved}
+        <ArraySortableList pressDelay={300} onSortEnd={this.onReorderMoved}
           helperClass="list-sortable-active" lockAxis="y"
           lockToContainerEdges={true}>
           {
@@ -391,8 +391,13 @@ export default class ArrayField extends Component {
                         disabled={index === items.length - 1} onClick={this.onReorderClick(index, index + 1)}
                       />
                     </div>
-                  )
+                    )
                   }
+                  <div className="draggable">
+                    <span className="drag">
+                      <FontAwesomeIcon className="faicon" icon={faBars} />
+                    </span>
+                  </div>
                 </ArraySortableItem>
               );
             })

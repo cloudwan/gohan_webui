@@ -13,14 +13,14 @@ const BaseUrl = ({
     </div>
     {
       (queryList.length > 0) && (
-        <div className="col-sm-5 text-muted">
+        <div className="col-auto text-muted">
           {baseUrl}
         </div>
       )
     }
     {
       (queryList.length > 0) && (
-        <div className="col-sm-6">
+        <div className="col-auto">
           <select className="form-control" onChange={onChange}
             value={query}>
             {
@@ -37,7 +37,7 @@ const BaseUrl = ({
     }
     {
       (queryList.length === 0) && (
-        <div className="col-sm-9 text-muted">
+        <div className="col-auto text-muted">
           {baseUrl}
         </div>
       )
