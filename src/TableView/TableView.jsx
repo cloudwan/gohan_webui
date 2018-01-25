@@ -196,14 +196,14 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
             filters: property === undefined ? undefined : [queryStringify(property)]
           }, {arrayFormat: 'bracket'})
         });
-        this.props.fetch({
-          offset: 0,
-          filters: property === undefined ? [] : [{
-            key: Object.keys(property)[0],
-            value: property[Object.keys(property)[0]]
-          }]
-        });
       }
+      this.props.fetch({
+        offset: 0,
+        filters: property === undefined ? [] : [{
+          key: Object.keys(property)[0],
+          value: property[Object.keys(property)[0]]
+        }]
+      });
     };
 
     handleSortData = (sortKey, sortOrder) => {
