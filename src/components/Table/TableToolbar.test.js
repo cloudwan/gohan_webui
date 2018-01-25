@@ -2,12 +2,12 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {shallow, mount} from 'enzyme';
-
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import TableToolbar from './TableToolbar';
 
-chai.use(spies);
+chai.use(sinonChai);
 chai.use(chaiEnzyme());
 chai.should();
 
@@ -19,7 +19,7 @@ describe('< TableToolbar />', () => {
   });
 
   it('should call creating resource onClick()', () => {
-    const onNewResourceClick = chai.spy();
+    const onNewResourceClick = sinon.spy();
     const props = {
       newResource: {
         visible: true,
@@ -31,11 +31,11 @@ describe('< TableToolbar />', () => {
 
     wrapper.find('.btn-primary').at(0).simulate('click');
 
-    onNewResourceClick.should.have.been.called.once; // eslint-disable-line
+    onNewResourceClick.should.callCount(1);
   });
 
   it('should call delete selected onClick()', () => {
-    const onDeleteSelectedClick = chai.spy();
+    const onDeleteSelectedClick = sinon.spy();
     const props = {
       deleteSelected: {
         disabled: false,
@@ -46,6 +46,6 @@ describe('< TableToolbar />', () => {
 
     wrapper.find('.btn-danger').at(0).simulate('click');
 
-    onDeleteSelectedClick.should.have.been.called.once; // eslint-disable-line
+    onDeleteSelectedClick.should.callCount(1);
   });
 });

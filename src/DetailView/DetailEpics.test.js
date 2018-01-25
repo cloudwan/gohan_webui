@@ -1,19 +1,21 @@
-/* global it, describe */
+/* global it, beforeEach, afterEach, describe */
 import configureMockStore from 'redux-mock-store';
 import chai from 'chai';
-
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import {Observable} from 'rxjs';
 import expectEpic from './../../test/helpers/expectEpic';
-
+import * as api from './../api';
 import * as actionTypes from './DetailActionTypes';
 import * as dialogActionTypes from '../Dialog/DialogActionTypes';
 import {
-  fetch,
-  fetchWithParents,
-  update,
-  remove,
+  fetchEpic,
+  updateEpic,
+  removeEpic
 } from './DetailEpics';
 
 chai.should();
+chai.use(sinonChai);
 
 describe('DetailEpics', () => {
   const mockStore = configureMockStore();
@@ -92,7 +94,7 @@ describe('DetailEpics', () => {
         gohan: {
           url: 'http://gohan.io'
         },
-        followableRelations: true,
+        followableRelations: false,
       },
       authReducer: {
         tokenId: 'sampleTokenId'
@@ -101,16 +103,22 @@ describe('DetailEpics', () => {
   );
 
   describe('fetch()', () => {
+    beforeEach(() => {
+      sinon.stub(api, 'getPollingTimer').callsFake(() => Observable.of(0));
+    });
+
+    afterEach(() => {
+      api.getPollingTimer.restore();
+    });
+
     it(`should dispatch ${actionTypes.FETCH_SUCCESS} action when there are no relations with parents`, () => {
       const response = {
-        response: {
-          testSchemaId1: {
-            prop1: 'testId1',
-          },
+        payload: {
+          prop1: 'testId1',
         },
       };
 
-      expectEpic(fetch, {
+      expectEpic(fetchEpic, {
         expected: [
           '-a',
           {
@@ -138,44 +146,33 @@ describe('DetailEpics', () => {
       });
     });
 
-    it(`should dispatch ${actionTypes.FETCH_PARENTS} action when there are relations with parents`, () => {
+    it(`should dispatch ${actionTypes.FETCH_SUCCESS} action when there are relations with parents`, () => {
       const response = {
-        response: {
-          testSchemaId2: {
-            prop1: 'testId1',
-            prop2: 'testId2',
-            prop2RelationPropId: {
-              id: 'testId2',
-              name: 'Test Prop 2',
-            },
+        payload: {
+          prop1: 'testId1',
+          prop2: 'testId2',
+          prop2RelationPropId: {
+            id: 'testId2',
+            name: 'Test Prop 2',
           },
         },
       };
 
-      expectEpic(fetch, {
+      expectEpic(fetchEpic, {
         expected: [
           '-a',
           {
             a: {
-              type: actionTypes.FETCH_PARENTS,
+              type: actionTypes.FETCH_SUCCESS,
               data: {
                 prop1: 'testId1',
                 prop2: 'testId2',
                 prop2RelationPropId: {
                   id: 'testId2',
                   name: 'Test Prop 2',
-                },
-              },
-              withParents: {
-                prop2SchemaId: {
-                  url: '/v1.0/prop2',
-                  relationName: 'prop2RelationPropId',
-                  childSchemaId: 'prop2RelationPropId',
-                  parent: 'parent1SchemaId',
-                  id: 'testId2',
                 }
-              },
-            },
+              }
+            }
           }
         ],
         action: ['(a)', {
@@ -195,11 +192,9 @@ describe('DetailEpics', () => {
     });
 
     it(`should dispatch ${actionTypes.FETCH_FAILURE} action`, () => {
-      const response = {};
-
-      expectEpic(fetch, {
+      expectEpic(fetchEpic, {
         expected: [
-          '-a',
+          '-(a|)',
           {
             a: {
               type: actionTypes.FETCH_FAILURE,
@@ -219,188 +214,22 @@ describe('DetailEpics', () => {
         response: [
           '-#|',
           null,
-          {
-            xhr: response
-          }
+          'Unknown error!'
         ],
         store
       });
     });
   });
 
-  describe('fetchWithParents()', () => {
-    it(`should dispatch ${actionTypes.FETCH_SUCCESS} action when there are no relations with parents`, () => {
-      const response = {
-        response: {
-          prop3SchemaId: {
-            id: 'idProp3',
-            parent2SchemaId_id: 'idParent2', // eslint-disable-line camelcase
-          },
-        },
-      };
-
-      expectEpic(fetchWithParents, {
-        expected: [
-          '-a',
-          {
-            a: {
-              type: actionTypes.FETCH_SUCCESS,
-              data: {
-                prop3: 'idProp3',
-                prop3RelationPropId: {
-                  id: 'idProp3',
-                  name: 'Test Prop 3',
-                  parents: {
-                    parent2SchemaId_id: 'idParent2', // eslint-disable-line camelcase
-                  }
-                }
-              },
-            },
-          }
-        ],
-        action: ['(a)', {
-          a: {
-            type: actionTypes.FETCH_PARENTS,
-            data: {
-              prop3: 'idProp3',
-              prop3RelationPropId: {
-                id: 'idProp3',
-                name: 'Test Prop 3',
-              },
-            },
-            withParents: {
-              prop3SchemaId: {
-                url: '/v1.0/prop3',
-                relationName: 'prop3RelationPropId',
-                childSchemaId: 'prop3RelationPropId',
-                parent: 'parent2SchemaId',
-                id: 'idProp3',
-              }
-            },
-          }
-        }],
-        response: ['-a|', {
-          a: response
-        }],
-        store
-      });
-    });
-
-    it(`should dispatch ${actionTypes.FETCH_PARENTS} action when there are relations with parents`, () => {
-      const response = {
-        response: {
-          prop2SchemaId: {
-            id: 'idProp2',
-            parent1SchemaId_id: 'idParent1', // eslint-disable-line camelcase
-          },
-        },
-      };
-
-      expectEpic(fetchWithParents, {
-        expected: [
-          '-a',
-          {
-            a: {
-              type: actionTypes.FETCH_PARENTS,
-              data: {
-                prop2: 'idProp2',
-                parent1SchemaId: {
-                  parents: {
-                    parent1SchemaId_id: 'idParent1', // eslint-disable-line camelcase
-                  }
-                }
-              },
-              withParents: {
-                parent1SchemaId: {
-                  url: '/v1.0/parent1',
-                  relationName: 'parent1SchemaId',
-                  childSchemaId: 'prop2SchemaId',
-                  parent: 'parent2SchemaId',
-                  id: 'idParent1',
-                }
-              }
-            },
-          }
-        ],
-        action: ['(a)', {
-          a: {
-            type: actionTypes.FETCH_PARENTS,
-            data: {
-              prop2: 'idProp2',
-            },
-            withParents: {
-              prop2SchemaId: {
-                url: '/v1.0/prop2',
-                relationName: 'parent1SchemaId',
-                childSchemaId: 'prop2SchemaId',
-                parent: 'parent1SchemaId',
-                id: 'idProp2',
-              },
-            },
-          }
-        }],
-        response: ['-a|', {
-          a: response,
-        }],
-        store
-      });
-    });
-
-    it(`should dispatch ${actionTypes.FETCH_FAILURE} action`, () => {
-      const response = {};
-
-      expectEpic(fetchWithParents, {
-        expected: [
-          '-(a|)',
-          {
-            a: {
-              type: actionTypes.FETCH_FAILURE,
-              error: 'Unknown error!'
-            }
-          }
-        ],
-        action: ['(a|)', {
-          a: {
-            type: actionTypes.FETCH_PARENTS,
-            data: {
-              prop2: 'idProp2',
-              prop2SchemaId: {
-                parents: {
-                  parent1SchemaId_id: 'idParent1', // eslint-disable-line camelcase
-                }
-              }
-            },
-            withParents: {
-              parent1SchemaId: {
-                url: '/v1.0/parent1',
-                name: 'parent1SchemaId',
-                parent: 'parent2SchemaId',
-                id: 'idParent1',
-              }
-            }
-          },
-        }],
-        response: [
-          '-#|',
-          null,
-          {
-            xhr: response
-          }
-        ],
-        store
-      });
-    });
-  });
-
-  describe('update', () => {
+  describe('updateEpic', () => {
     it(`should dispatch ${actionTypes.UPDATE_SUCCESS} and ${dialogActionTypes.CLOSE_ALL} actions`, () => {
       const response = {
         response: {},
       };
 
-      expectEpic(update, {
+      expectEpic(updateEpic, {
         expected: [
-          '-(ab)',
+          '-(abc)',
           {
             a: {
               type: actionTypes.UPDATE_SUCCESS,
@@ -412,6 +241,13 @@ describe('DetailEpics', () => {
             b: {
               type: dialogActionTypes.CLOSE_ALL,
             },
+            c: {
+              type: actionTypes.FETCH,
+              params: {
+                testSchemaId1: '123'
+              },
+              schemaId: 'testSchemaId1'
+            }
           }
         ],
         action: ['(a)', {
@@ -434,11 +270,7 @@ describe('DetailEpics', () => {
     });
 
     it(`should dispatch ${actionTypes.UPDATE_FAILURE} and ${dialogActionTypes.ERROR} actions`, () => {
-      const response = {
-        response: {},
-      };
-
-      expectEpic(update, {
+      expectEpic(updateEpic, {
         expected: [
           '-(ab|)',
           {
@@ -466,22 +298,20 @@ describe('DetailEpics', () => {
         response: [
           '-#|',
           null,
-          {
-            xhr: response,
-          }
+          'Unknown error!'
         ],
         store
       });
     });
   });
 
-  describe('remove', () => {
+  describe('removeEpic', () => {
     it(`should dispatch ${actionTypes.DELETE_SUCCESS} action`, () => {
       const response = {
         response: {},
       };
 
-      expectEpic(remove, {
+      expectEpic(removeEpic, {
         expected: [
           '-(ab)',
           {
@@ -510,11 +340,7 @@ describe('DetailEpics', () => {
     });
 
     it(`should dispatch ${actionTypes.DELETE_FAILURE} action`, () => {
-      const response = {
-        response: {},
-      };
-
-      expectEpic(remove, {
+      expectEpic(removeEpic, {
         expected: [
           '-(a|)',
           {
@@ -536,9 +362,7 @@ describe('DetailEpics', () => {
         response: [
           '-#|',
           null,
-          {
-            xhr: response
-          }
+          'Unknown error!'
         ],
         store
       });

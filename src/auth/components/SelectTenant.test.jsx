@@ -1,14 +1,14 @@
 /* global it, describe */
 import React from 'react';
 import chai from 'chai';
-import spies from 'chai-spies';
+import sinon from 'sinon'; import sinonChai from 'sinon-chai';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow, mount} from 'enzyme';
 
 import SelectTenant from './SelectTenant';
 
 chai.use(chaiEnzyme());
-chai.use(spies);
+chai.use(sinonChai);
 chai.should();
 
 describe('< SelectTenant />', function () {
@@ -40,7 +40,7 @@ describe('< SelectTenant />', function () {
   });
 
   it('should call handleSelectTenantSubmit', () => {
-    const handleSelectTenantSubmit = chai.spy();
+    const handleSelectTenantSubmit = sinon.spy();
     const wrapper = mount(
       <SelectTenant tenants={[{name: 'sample1', id: 's1'}, {name: 'sample2', id: 's2'}]}
         onTenantSubmit={handleSelectTenantSubmit}
@@ -48,6 +48,6 @@ describe('< SelectTenant />', function () {
     );
 
     wrapper.find('form').at(0).simulate('submit', {preventDefault: () => {}, stopPropagation: () => {}});
-    handleSelectTenantSubmit.should.have.been.called.once; // eslint-disable-line no-unused-expressions
+    handleSelectTenantSubmit.should.callCount(1); // eslint-disable-line no-unused-expressions
   });
 });

@@ -2,7 +2,6 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {mount} from 'enzyme';
 import {Provider} from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -10,7 +9,6 @@ import configureMockStore from 'redux-mock-store';
 import {Breadcrumb as BlueprintBreadcrumb} from '@blueprintjs/core';
 import Breadcrumb from './Breadcrumb';
 
-chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 

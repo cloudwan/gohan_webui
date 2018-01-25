@@ -2,14 +2,12 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import chai from 'chai';
-import spies from 'chai-spies';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow} from 'enzyme';
 
 import ConnectedSample, {Sample} from './Sample';
 
 chai.use(chaiEnzyme());
-chai.use(spies);
 chai.should();
 
 const mockStore = configureStore();
