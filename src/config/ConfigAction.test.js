@@ -2,13 +2,14 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import spies from 'chai-spies';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import axios from 'axios';
 
 import * as actionTypes from './ConfigActionTypes';
 import * as actions from './ConfigActions';
 
-chai.use(spies);
+chai.use(sinonChai);
 
 chai.should();
 
@@ -25,7 +26,7 @@ describe('ConfigActions ', () => {
   it('should creates FETCH_SUCCESS when fetching config has been done', async () => {
     const store = mockStore({});
 
-    axios.get = chai.spy(() => Promise.resolve({
+    axios.get = sinon.spy(() => Promise.resolve({
       data: {
         authUrl: 'http://__HOST__:9091/v2.0',
         gohan: {
@@ -50,7 +51,7 @@ describe('ConfigActions ', () => {
     // Else statements
     store.clearActions();
 
-    axios.get = chai.spy(() => Promise.resolve({
+    axios.get = sinon.spy(() => Promise.resolve({
       data: {
         authUrl: 'http://192.168.1.11:9091/v2.0',
         gohan: {
@@ -74,7 +75,7 @@ describe('ConfigActions ', () => {
   });
 
   it('should creates FETCH_ERROR when fetching config has been done', async () => {
-    axios.get = chai.spy(() => Promise.reject({
+    axios.get = sinon.spy(() => Promise.reject({
       response: {
         data: 'Cannot fetch data'
       }

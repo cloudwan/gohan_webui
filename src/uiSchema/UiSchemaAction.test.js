@@ -2,13 +2,14 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import spies from 'chai-spies';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import axios from 'axios';
 
 import * as actionTypes from './UiSchemaActionTypes';
 import * as actions from './UiSchemaActions';
 
-chai.use(spies);
+chai.use(sinonChai);
 
 chai.should();
 
@@ -27,7 +28,7 @@ describe('UiSchemaActions ', () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
-      axios.get = chai.spy(url => {
+      axios.get = sinon.spy(url => {
         url.should.equal('/locales/en-us/uiSchema.json');
 
         return Promise.resolve({

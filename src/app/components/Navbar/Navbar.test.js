@@ -2,13 +2,11 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {shallow} from 'enzyme';
 
 import {Navbar} from './Navbar';
 import {Button} from '@blueprintjs/core';
 
-chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 

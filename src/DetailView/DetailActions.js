@@ -1,7 +1,6 @@
 import history from './../location/history';
 import {
   FETCH,
-  FETCH_PARENTS,
   FETCH_SUCCESS,
   FETCH_FAILURE,
   FETCH_CANCELLED,
@@ -14,16 +13,10 @@ import {
   DELETE,
 } from './DetailActionTypes';
 
-export const fetch = (schemaId, params) => () => dispatch => dispatch({
+export const fetch = (schemaId, params) => () => ({
   type: FETCH,
   schemaId,
   params
-});
-
-export const fetchParents = (data, withParents) => ({
-  type: FETCH_PARENTS,
-  data,
-  withParents,
 });
 
 export const fetchSuccess = data => ({
@@ -59,7 +52,7 @@ export const updateError = () => ({
   type: UPDATE_FAILURE,
 });
 
-export const update = (schemaId, params) => data => dispatch => dispatch({
+export const update = (schemaId, params) => data => ({
   type: UPDATE,
   schemaId,
   params,
@@ -76,7 +69,7 @@ export const removeError = error => ({
   error
 });
 
-export const remove = (schemaId, params) => () => dispatch => dispatch({
+export const remove = (schemaId, params) => () => ({
   type: DELETE,
   schemaId,
   params,

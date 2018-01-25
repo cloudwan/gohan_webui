@@ -2,7 +2,6 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {shallow, mount} from 'enzyme';
 
 import {Sidebar} from './Sidebar';
@@ -13,7 +12,6 @@ import MenuItem from './components/MenuItem';
 import MenuCategory from './components/MenuCategory';
 import Container from './components/Container';
 
-chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 

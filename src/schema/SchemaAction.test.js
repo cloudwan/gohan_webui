@@ -2,13 +2,14 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import spies from 'chai-spies';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import axios from 'axios';
 
 import * as actionTypes from './SchemaActionTypes';
 import * as actions from './SchemaActions';
 
-chai.use(spies);
+chai.use(sinonChai);
 
 chai.should();
 
@@ -36,7 +37,7 @@ describe('SchemaActions ', () => {
     };
     const store = mockStore(storeObject);
 
-    axios.get = chai.spy((url, headers) => {
+    axios.get = sinon.spy((url, headers) => {
       url.should.equal('http://localhost/schema');
       headers.headers['Content-Type'].should.equal('application/json');
       headers.headers['X-Auth-Token'].should.equal('tokenId');
@@ -95,7 +96,7 @@ describe('SchemaActions ', () => {
     };
     const store = mockStore(storeObject);
 
-    axios.get = chai.spy((url, headers) => {
+    axios.get = sinon.spy((url, headers) => {
       url.should.equal('http://localhost/schema');
       headers.headers['Content-Type'].should.equal('application/json');
       headers.headers['X-Auth-Token'].should.equal('tokenId');

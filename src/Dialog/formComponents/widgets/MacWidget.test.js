@@ -2,13 +2,11 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {shallow} from 'enzyme';
 
 import MacWidget from './MacWidget';
 import BaseInput from './BaseInput';
 
-chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 

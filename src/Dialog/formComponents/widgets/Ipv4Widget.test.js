@@ -2,13 +2,11 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {shallow} from 'enzyme';
 
 import Ipv4Widget from './Ipv4Widget';
 import BaseInput from './BaseInput';
 
-chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 
