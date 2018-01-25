@@ -4,6 +4,11 @@ const isLoading = state => state.dialogReducer.isLoading;
 const schema = state => state.dialogReducer.schema;
 const errorMessage = state => state.dialogReducer.errorMessage;
 const dialog = (state, name) => state.dialogReducer.dialogs[name];
+const anyDialogOpen = (state, names = []) => {
+  const dialogs = state.dialogReducer.dialogs;
+
+  return names.some(name => dialogs[name]);
+};
 
 /**
  * Returns loading state selector.
@@ -30,4 +35,8 @@ export const isOpen = createSelector(
 
 export const getError = createSelector(
   [errorMessage], errorMessage => errorMessage
+);
+
+export const isAnyDialogOpen = createSelector(
+  [anyDialogOpen], anyDialogOpen => anyDialogOpen
 );
