@@ -1,14 +1,10 @@
 /* global it, describe */
-
 import chai from 'chai';
-import spies from 'chai-spies';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
 import * as actionTypes from './ApiRequestActionTypes';
 import * as actions from './ApiRequestActions';
-
-chai.use(spies);
 
 chai.should();
 

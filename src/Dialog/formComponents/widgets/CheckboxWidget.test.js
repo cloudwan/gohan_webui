@@ -2,12 +2,12 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
+import sinon from 'sinon'; import sinonChai from 'sinon-chai';
 import {shallow} from 'enzyme';
 
 import CheckboxWidget from './CheckboxWidget';
 
-chai.use(spies);
+chai.use(sinonChai);
 chai.use(chaiEnzyme());
 chai.should();
 
@@ -65,7 +65,7 @@ describe('< CheckboxWidget />', function () {
   });
 
   it('should call onChange event', () => {
-    const onChange = chai.spy();
+    const onChange = sinon.spy();
     const wrapper = shallow(
       <CheckboxWidget schema={{}} id={'0'}
         value={false} onChange={onChange}
@@ -73,7 +73,7 @@ describe('< CheckboxWidget />', function () {
     );
 
     wrapper.find('input').at(0).simulate('change', {target: {checked: true}});
-    onChange.should.have.been.called.once; // eslint-disable-line no-unused-expressions
+    onChange.should.have.been.callCount(1); // eslint-disable-line no-unused-expressions
   });
 
 });

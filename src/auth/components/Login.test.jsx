@@ -3,10 +3,12 @@ import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow, mount} from 'enzyme';
-
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import Login from './Login';
 
 chai.use(chaiEnzyme());
+chai.use(sinonChai);
 chai.should();
 
 describe('< Login />', function () {
@@ -23,7 +25,7 @@ describe('< Login />', function () {
   });
 
   it('should call submit after login button click', () => {
-    const onLoginSubmit = chai.spy();
+    const onLoginSubmit = sinon.spy();
     const wrapper = mount(
       <Login onLoginSubmit={onLoginSubmit}/>
     );

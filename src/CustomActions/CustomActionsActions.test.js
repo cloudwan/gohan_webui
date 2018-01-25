@@ -2,12 +2,10 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import spies from 'chai-spies';
 
 import * as actionTypes from './CustomActionsActionTypes';
 import * as dialogActionsTypes from './../Dialog/DialogActionTypes';
 import * as actions from './CustomActionsActions';
-chai.use(spies);
 
 chai.should();
 

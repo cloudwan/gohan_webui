@@ -2,21 +2,16 @@ import {combineEpics} from 'redux-observable';
 import {Observable} from 'rxjs';
 import {
   FETCH,
-  FETCH_PARENTS,
   FETCH_CANCELLED,
   FETCH_FAILURE,
   UPDATE,
-  UPDATE_SUCCESS,
   DELETE,
 } from './DetailActionTypes';
 
-import {
-  getSingularUrl,
-  getSchema
-} from './../schema/SchemaSelectors';
+import {getSchema} from './../schema/SchemaSelectors';
 
 import {
-  fetchParents,
+  fetch,
   fetchSuccess,
   fetchError,
   fetchCancelled,
@@ -30,223 +25,78 @@ import {
   showError,
 } from '../Dialog/DialogActions.js';
 import {
-  get,
-  put,
-  purge,
-  parseXHRError
-} from './../api/index';
-import {
-  getGohanUrl,
-  getFollowableRelationsState,
-} from './../config/ConfigSelectors';
-import {getTokenId} from './../auth/AuthSelectors';
-
-export const fetch = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH, UPDATE_SUCCESS)
-  .switchMap(({schemaId, params}) => {
-    const state = store.getState();
-    const schema = getSchema(state, schemaId);
-    const followableRelations = getFollowableRelationsState(state);
-    const {properties} = schema.schema;
-    const {
-      pollingInterval,
-      polling,
-    } = state.configReducer;
-    const {url: gohanUrl} = state.configReducer.gohan;
-    const url = getSingularUrl(state, schemaId, params);
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': state.authReducer.tokenId
-    };
-
-    return Observable.timer(0, pollingInterval)
-    .startWith(0)
-    .takeWhile(i => i === 0 ? true : Boolean(polling))
-    .takeUntil(
-      Observable.merge(
-        action$.ofType(FETCH),
-        action$.ofType(FETCH_FAILURE),
-        action$.ofType(FETCH_CANCELLED),
-      )
-    )
-    .mergeMap(() => call(get, `${gohanUrl}${url}`, headers)
-      .mergeMap(({response}) => {
-        const data = response[Object.keys(response)[0]];
-
-        if (!followableRelations) {
-          return Observable.of(fetchSuccess(data));
-        }
-
-        const withParents = Object.keys(data).reduce((result, prop) => {
-          const {
-            relation,
-            relation_property: relationProperty
-          } = properties[prop] || {};
-          const relationSchema = getSchema(state, relation);
-
-          if (relation && relationSchema.parent && Boolean(data[prop])) {
-            return {
-              ...result,
-              [relation]: {
-                url: relationSchema.url,
-                relationName: relationProperty || relation,
-                childSchemaId: relationProperty || relation,
-                parent: relationSchema.parent,
-                id: data[prop]
-              }
-            };
-          }
-
-          return result;
-        }, {});
-
-        if (Object.keys(withParents).length === 0) {
-          return Observable.of(fetchSuccess(data));
-        }
-
-        return Observable.of(fetchParents(data, withParents));
-      })
-      .catch(error => {
-        console.error(error);
-        return Observable.of(fetchError(parseXHRError(error)));
-      })
-    );
-  });
-
-export const fetchWithParents = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(FETCH_PARENTS)
-  .mergeMap(({data, withParents}) => {
-    const state = store.getState();
-    const {url: gohanUrl} = state.configReducer.gohan;
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': state.authReducer.tokenId
-    };
-
-    if (Object.keys(withParents).length > 0) {
-      return Observable.zip(
-        ...Object.keys(withParents).map(prop => {
-          const propData = withParents[prop];
-
-          return call(
-            (url, headers) => get(url, headers),
-            `${gohanUrl}/${propData.url}/${propData.id}`,
-            headers,
-          );
-        })
-      ).mergeMap(responseArray => {
-        const currentParents = responseArray.map(({response}) => {
-          const prop = Object.keys(response)[0];
-          const propData = withParents[prop];
-
-          return {
-            relationName: propData.relationName,
-            childSchemaId: propData.childSchemaId,
-            schemaId: propData.parent,
-            id: response[prop][`${propData.parent}_id`],
-          };
-        });
-
-        const dataWithParents = currentParents.reduce((result, parent) => {
-          const props = data[parent.childSchemaId] || {};
-
-          return {
-            ...result,
-            [parent.relationName]: {
-              ...props,
-              parents: {
-                ...props.parents,
-                [`${parent.schemaId}_id`]: parent.id,
-              },
-            }
-          };
-        }, data);
-
-        const propsWithParents = currentParents.reduce((result, prop) => {
-          const propSchema = getSchema(state, prop.schemaId);
-
-          if (propSchema.parent) {
-            return {
-              ...result,
-              [prop.schemaId]: {
-                url: propSchema.url,
-                relationName: prop.relationName,
-                childSchemaId: prop.childSchemaId,
-                parent: propSchema.parent,
-                id: prop.id
-              }
-            };
-          }
-
-          return result;
-        }, {});
-
-        if (Object.keys(propsWithParents).length > 0) {
-          return Observable.of(fetchParents(dataWithParents, propsWithParents));
-        }
-
-        return Observable.of(fetchSuccess(dataWithParents));
-      })
-      .catch(error => {
-        console.error(error);
-        return Observable.of(fetchError(parseXHRError(error)));
-      });
-    }
-
-    return Observable.of(fetchSuccess(data));
-  });
-
-export const update = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(UPDATE)
-  .mergeMap(({schemaId, params, data}) => {
-    const state = store.getState();
-    const gohanUrl = getGohanUrl(state);
-    const tokenId = getTokenId(state);
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': tokenId
-    };
-    const url = `${gohanUrl}${getSingularUrl(state, schemaId, params)}`;
-
-    return call(put, url, headers, data)
-      .mergeMap(() => {
-        return Observable.concat(
-          Observable.of(updateSuccess(schemaId, params)),
-          Observable.of(closeActiveDialog()),
-        );
-      })
-      .catch(error => {
-        console.error(error);
-        return Observable.concat(
-          Observable.of(updateError()),
-          Observable.of(showError(parseXHRError(error))),
-        );
-      });
-  });
-
-export const remove = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(DELETE)
-  .mergeMap(({schemaId, params}) => {
-    const state = store.getState();
-    const gohanUrl = getGohanUrl(state);
-    const tokenId = getTokenId(state);
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Auth-Token': tokenId
-    };
-    const url = `${gohanUrl}${getSingularUrl(state, schemaId, params)}`;
-    return call(purge, url, headers)
-      .mergeMap(() => {
-        return Observable.concat(
-          Observable.of(removeSuccess()),
-          Observable.of(fetchCancelled()),
-        );
-      })
-      .catch(error => {
-        console.error(error);
-        return Observable.of(removeError(parseXHRError(error)));
-      });
-  });
-
-export default combineEpics(
-  fetch,
-  fetchWithParents,
   update,
   remove,
+  getPollingTimer,
+  getSingular,
+} from './../api/index';
+import {getFollowableRelationsState} from './../config/ConfigSelectors';
+
+export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =>
+  action$.ofType(FETCH).mergeMap(({schemaId, params}) => getPollingTimer(
+    store.getState(),
+    action$.filter(
+      action => [FETCH, FETCH_CANCELLED, FETCH_FAILURE].includes(action.type)
+    )
+  )
+    .mergeMap(() => call(getSingular, store.getState(), schemaId, params)
+      .mergeMap(response => {
+        const {payload} = response;
+        const state = store.getState();
+
+        if (getFollowableRelationsState(state)) {
+          const properties = getSchema(state, schemaId).schema.properties;
+          const relationProperties = Object.keys(properties)
+            .filter(key => Boolean(properties[key].relation) && Boolean(payload[key]))
+            .map(key => ({key: properties[key].relation, id: payload[key]}))
+            .filter(({key}) => !payload[key]);
+
+          if (relationProperties.length !== 0) {
+            return Observable.zip(
+              ...relationProperties
+                .map(({key, id}) => call(getSingular, state, key, {[`${key}_id`]: id}))
+            ).map(value => {
+              relationProperties.forEach(({key}, index) => {
+                payload[key] = value[index].payload;
+              });
+
+              return fetchSuccess(payload);
+            });
+          }
+        }
+        return Observable.of(fetchSuccess(payload));
+      })
+      .takeUntil(
+        action$.filter(action => [FETCH, FETCH_CANCELLED, FETCH_FAILURE].includes(action.type))
+      ))
+    .catch(error => Observable.of(fetchError(error)))
+  );
+
+export const updateEpic = (action$, store, call = (fn, ...args) => fn(...args)) =>
+  action$.ofType(UPDATE).mergeMap(({schemaId, params, data}) =>
+    call(update, store.getState(), schemaId, params, data)
+      .mergeMap(() => Observable.concat(
+        Observable.of(updateSuccess(schemaId, params)),
+        Observable.of(closeActiveDialog()),
+        Observable.of(fetch(schemaId, params)())
+      ))
+      .catch(error => Observable.concat(
+        Observable.of(updateError()),
+        Observable.of(showError(error)),
+      ))
+  );
+export const removeEpic = (action$, store, call = (fn, ...args) => fn(...args)) =>
+  action$.ofType(DELETE).mergeMap(({schemaId, params}) =>
+    call(remove, store.getState(), schemaId, params)
+      .mergeMap(() => Observable.concat(
+        Observable.of(removeSuccess()),
+        Observable.of(fetchCancelled())
+      ))
+      .catch(error => Observable.of(removeError(error)))
+  );
+
+export default combineEpics(
+  fetchEpic,
+  updateEpic,
+  removeEpic,
 );

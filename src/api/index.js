@@ -1,12 +1,151 @@
 import {ajax} from 'rxjs/observable/dom/ajax';
+import {stringify as queryStringify} from 'query-string';
+import {AjaxObservable} from 'rxjs/observable/dom/AjaxObservable';
+import {Observable} from 'rxjs/Rx';
 
-export const get = (url, headers) => ajax({method: 'GET', url, headers, crossDomain: true});
+import {getTokenId} from './../auth/AuthSelectors';
+import {
+  getSchema,
+  getCollectionUrl,
+  getSingularUrl
+} from './../schema/SchemaSelectors';
+import {getGohanUrl} from './../config/ConfigSelectors';
+import {getPageLimit, getPollingInterval, isPolling} from '../config/ConfigSelectors';
 
-export const post = (url, headers, body) => ajax({method: 'POST', url, body, headers, crossDomain: true});
+export const getPollingTimer = (state, until$) => {
+  const pollingInterval = getPollingInterval(state);
+  const polling = isPolling(state);
 
-export const put = (url, headers, body) => ajax({method: 'PUT', url, body, headers, crossDomain: true});
+  return Observable.timer(0, pollingInterval)
+    .takeWhile(i => i === 0 ? true : Boolean(polling))
+    .takeUntil(until$);
+};
 
-export const purge = (url, headers) => ajax({method: 'DELETE', url, headers, crossDomain: true});
+export class GetCollectionObservable extends AjaxObservable {
+  constructor(state, schemaId, urlParams, query) {
+    const url = getCollectionUrl(state, schemaId, urlParams);
+    const gohanUrl = getGohanUrl(state);
+    const defaultPageLimit = getPageLimit(state);
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': getTokenId(state)
+    };
+
+    super({
+      method: 'GET',
+      url: `${gohanUrl}${url}?${queryStringify({limit: defaultPageLimit, ...query})}`,
+      headers,
+      crossDomain: true
+    });
+  }
+}
+
+export class GetSingularObservable extends AjaxObservable {
+  constructor(state, schemaId, urlParams, query) {
+    const url = getSingularUrl(state, schemaId, urlParams);
+    const gohanUrl = getGohanUrl(state);
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': getTokenId(state)
+    };
+
+    super({
+      method: 'GET',
+      url: `${gohanUrl}${url}${query ? `?${queryStringify({...query})}` : ''}`,
+      headers,
+      crossDomain: true
+    });
+  }
+}
+
+export const getCollection = (state, schemaId, urlParams, query) => {
+  return new GetCollectionObservable(state, schemaId, urlParams, query)
+    .map(response => ({
+      totalCount: parseInt(response.xhr.getResponseHeader('X-Total-Count'), 10),
+      payload: response.response[getSchema(state, schemaId).plural]
+    }))
+    .catch(error => {
+      throw parseXHRError(error);
+    });
+};
+
+export const getSingular = (state, schemaId, urlParams, query) =>
+  new GetSingularObservable(state, schemaId, urlParams, query)
+    .map(response => ({
+      payload: response.response[getSchema(state, schemaId).singular]
+    }))
+    .catch(error => {
+      throw parseXHRError(error);
+    });
+
+
+export const create = (state, schemaId, urlParams, body) => {
+  const url = getCollectionUrl(state, schemaId, urlParams);
+  const gohanUrl = getGohanUrl(state);
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Auth-Token': getTokenId(state)
+  };
+
+  return new AjaxObservable({
+    method: 'POST',
+    url: `${gohanUrl}${url}`,
+    body,
+    headers,
+    crossDomain: true
+  })
+    .map(response => ({
+      payload: response.response[getSchema(state, schemaId).singular]
+    }))
+    .catch(error => {
+      throw parseXHRError(error);
+    });
+};
+
+export const update = (state, schemaId, urlParams, body) => {
+  const url = getSingularUrl(state, schemaId, urlParams);
+  const gohanUrl = getGohanUrl(state);
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Auth-Token': getTokenId(state)
+  };
+
+  return new AjaxObservable({
+    method: 'PUT',
+    url: `${gohanUrl}${url}`,
+    body,
+    headers,
+    crossDomain: true
+  })
+    .map(response => ({
+      payload: response.response[getSchema(state, schemaId).singular]
+    }))
+    .catch(error => {
+      throw parseXHRError(error);
+    });
+};
+
+export const remove = (state, schemaId, urlParams) => {
+  const url = getSingularUrl(state, schemaId, urlParams);
+  const gohanUrl = getGohanUrl(state);
+  const headers = {
+    'Content-Type': 'application/json',
+    'X-Auth-Token': getTokenId(state)
+  };
+
+  return new AjaxObservable({
+    method: 'DELETE',
+    url: `${gohanUrl}${url}`,
+    headers,
+    crossDomain: true
+  })
+    .map(response => ({
+      payload: response.response
+    }))
+    .catch(error => {
+      throw parseXHRError(error);
+    });
+};
 
 export const parseXHRError = error => {
   if (error) {
@@ -38,3 +177,11 @@ export const parseXHRError = error => {
   }
   return 'Unknown error!';
 };
+
+export const get = (url, headers) => ajax({method: 'GET', url, headers, crossDomain: true});
+
+export const post = (url, headers, body) => ajax({method: 'POST', url, body, headers, crossDomain: true});
+
+export const put = (url, headers, body) => ajax({method: 'PUT', url, body, headers, crossDomain: true});
+
+export const purge = (url, headers) => ajax({method: 'DELETE', url, headers, crossDomain: true});

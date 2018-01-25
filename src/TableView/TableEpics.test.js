@@ -1,8 +1,11 @@
-/* global it, describe */
+/* global it, describe, beforeEach ,afterEach */
 import configureMockStore from 'redux-mock-store';
 import chai from 'chai';
+import sinon from 'sinon';
+import {Observable} from 'rxjs/Rx';
 
 import expectEpic from './../../test/helpers/expectEpic';
+import * as api from '../api';
 
 import {CLOSE, ERROR} from './../Dialog/DialogActionTypes';
 import * as actionTypes from './TableActionTypes';
@@ -10,9 +13,8 @@ import {
   fetchEpic,
   createEpic,
   updateEpic,
-  purgeEpic
+  removeEpic
 } from './TableEpics';
-
 
 chai.should();
 
@@ -44,20 +46,20 @@ describe('TableEpics', () => {
   );
 
   describe('fetchEpic()', () => {
+    beforeEach(() => {
+      sinon.stub(api, 'getPollingTimer').callsFake(() => Observable.of(0));
+    });
+
+    afterEach(() => {
+      api.getPollingTimer.restore();
+    });
+
     it(`should dispatch ${actionTypes.FETCH_SUCCESS} action`, () => {
       const response = {
-        response: {
-          test: {
-            name: 'foo',
-          },
+        payload: {
+          name: 'foo',
         },
-        xhr: {
-          getResponseHeader: header => {
-            header.should.equal('X-Total-Count');
-
-            return 1;
-          }
-        }
+        totalCount: 1
       };
 
       expectEpic(fetchEpic, {
@@ -95,8 +97,6 @@ describe('TableEpics', () => {
     });
 
     it(`should dispatch ${actionTypes.FETCH_FAILURE} action`, () => {
-      const response = {};
-
       expectEpic(fetchEpic, {
         expected: [
           '-(a|)',
@@ -119,9 +119,7 @@ describe('TableEpics', () => {
         response: [
           '-#|',
           null,
-          {
-            xhr: response
-          }
+          'Unknown error!'
         ],
         store
       });
@@ -169,8 +167,6 @@ describe('TableEpics', () => {
     });
 
     it(`should dispatch ${ERROR} action`, () => {
-      const response = {};
-
       expectEpic(createEpic, {
         expected: [
           '-(a|)',
@@ -191,9 +187,7 @@ describe('TableEpics', () => {
         response: [
           '-#|',
           null,
-          {
-            xhr: response
-          }
+         'Unknown error!'
         ],
         store
       });
@@ -241,8 +235,6 @@ describe('TableEpics', () => {
     });
 
     it(`should dispatch ${ERROR} action`, () => {
-      const response = {};
-
       expectEpic(updateEpic, {
         expected: [
           '-(a|)',
@@ -263,22 +255,20 @@ describe('TableEpics', () => {
         response: [
           '-#|',
           null,
-          {
-            xhr: response
-          }
+          'Unknown error!'
         ],
         store
       });
     });
   });
 
-  describe('purgeEpic()', () => {
-    it(`should dispatch ${actionTypes.PURGE_SUCCESS}, ${CLOSE} and ${actionTypes.FETCH} actions`, () => {
+  describe('removeEpic()', () => {
+    it(`should dispatch ${actionTypes.PURGE_SUCCESS} and ${actionTypes.FETCH} actions`, () => {
       const response = {
         response: {}
       };
 
-      expectEpic(purgeEpic, {
+      expectEpic(removeEpic, {
         expected: [
           '-(ab)',
           {
@@ -308,12 +298,12 @@ describe('TableEpics', () => {
       });
     });
 
-    it(`should dispatch ${actionTypes.PURGE_SUCCESS}, ${CLOSE} and ${actionTypes.FETCH} actions for ids list`, () => {
+    it(`should dispatch ${actionTypes.PURGE_SUCCESS} and ${actionTypes.FETCH} actions for ids list`, () => {
       const response = {
         response: {}
       };
 
-      expectEpic(purgeEpic, {
+      expectEpic(removeEpic, {
         expected: [
           '--(ab)',
           {
@@ -347,15 +337,19 @@ describe('TableEpics', () => {
     });
 
     it(`should dispatch ${actionTypes.PURGE_FAILURE} action`, () => {
-      const response = {};
-
-      expectEpic(purgeEpic, {
+      expectEpic(removeEpic, {
         expected: [
-          '-(a|)',
+          '-(ab|)',
           {
             a: {
               type: actionTypes.PURGE_FAILURE,
               error: 'Unknown error!'
+            },
+            b: {
+              type: actionTypes.FETCH,
+              options: undefined,
+              params: undefined,
+              schemaId: 'test'
             }
           }
         ],
@@ -369,9 +363,7 @@ describe('TableEpics', () => {
         response: [
           '-#|',
           null,
-          {
-            xhr: response
-          }
+          'Unknown error!'
         ],
         store
       });
