@@ -1,26 +1,52 @@
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import CodeMirror from 'react-codemirror';
+import jsyaml from 'js-yaml';
 import 'codemirror/mode/yaml/yaml';
 import 'codemirror/mode/javascript/javascript';
 
-function CodeWidget(props) {
-  const {readonly, value, onChange} = props;
-  const {format} = props.schema;
+class CodeWidget extends Component {
+  componentDidMount() {
+    setTimeout(() => {
+      this.editor.getCodeMirror().refresh();
+    }, 200);
+  }
 
-  return <CodeMirror value={value}
-    onChange={onChange}
-    options={{
-      mode: format,
-      lineNumbers: true,
-      theme: 'material',
-      readonly
-    }}
-  />;
+  render() {
+    const {
+      readonly,
+      value,
+      onChange,
+      schema
+    } = this.props;
+    const {format} = schema;
+
+    return (
+      <CodeMirror onChange={onChange}
+        value={format === 'yaml' ? jsyaml.safeDump(value) : value}
+        ref={editor => {this.editor = editor;}}
+        options={{
+          mode: format,
+          lineNumbers: true,
+          theme: 'material',
+          readonly
+        }}
+      />
+    );
+  }
 }
+
+CodeWidget.defaultProps = {
+  value: '',
+  readonly: true,
+};
+
 if (process.env.NODE_ENV !== 'production') {
   CodeWidget.propTypes = {
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.object,
+    ]),
     readonly: PropTypes.bool,
     schema: PropTypes.object.isRequired
   };

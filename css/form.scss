@@ -189,6 +189,10 @@
   .CodeMirror {
     font-size: 0.875rem;
     height: 16rem;
+
+    &-scroll {
+      max-width: 850px;
+    }
   }
 }
 
