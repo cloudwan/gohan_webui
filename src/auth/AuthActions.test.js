@@ -2,15 +2,11 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import spies from 'chai-spies';
 
 import * as actionTypes from './AuthActionTypes';
 import * as actions from './AuthActions';
 
-chai.use(spies);
 const should = chai.should();
-
-
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 

@@ -2,12 +2,10 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {shallow, mount} from 'enzyme';
 
 import FileWidget from './FileWidget';
 
-chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 

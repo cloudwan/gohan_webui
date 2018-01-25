@@ -2,15 +2,11 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import spies from 'chai-spies';
 
 import * as actionTypes from './DetailActionTypes';
 import * as actions from './DetailActions';
 
-chai.use(spies);
-
 chai.should();
-
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -18,20 +14,14 @@ const mockStore = configureMockStore(middlewares);
 describe('DetailActions ', () => {
   describe('fetch()', () => {
     it(`should dispatch ${actionTypes.FETCH} action`, () => {
-      const store = mockStore({});
       const schemaId = 'test';
       const params = {param: 'test'};
 
-
-      store.dispatch(actions.fetch(schemaId, params)());
-
-      store.getActions().should.deep.equal([
-        {
-          type: actionTypes.FETCH,
-          schemaId,
-          params,
-        },
-      ]);
+      actions.fetch(schemaId, params)().should.deep.equal({
+        type: actionTypes.FETCH,
+        schemaId,
+        params
+      });
     });
   });
 
@@ -112,6 +102,22 @@ describe('DetailActions ', () => {
     });
   });
 
+  describe('update()', () => {
+    it(`should dispatch ${actionTypes.DELETE} action`, () => {
+      const schemaId = 'test';
+      const params = {param: 'test'};
+
+      actions.update(schemaId, params)({name: 'test'}).should.deep.equal({
+        type: actionTypes.UPDATE,
+        schemaId,
+        params,
+        data: {
+          name: 'test'
+        }
+      });
+    });
+  });
+
   describe('removeSuccess()', () => {
     it(`should dispatch ${actionTypes.DELETE_SUCCESS} and ${actionTypes.FETCH_CANCELLED} actions`, () => {
       const store = mockStore({});
@@ -124,6 +130,19 @@ describe('DetailActions ', () => {
           type: actionTypes.DELETE_SUCCESS,
         },
       ]);
+    });
+  });
+
+  describe('remove()', () => {
+    it(`should dispatch ${actionTypes.DELETE} action`, () => {
+      const schemaId = 'test';
+      const params = {param: 'test'};
+
+      actions.remove(schemaId, params)().should.deep.equal({
+        type: actionTypes.DELETE,
+        schemaId,
+        params
+      });
     });
   });
 });

@@ -3,7 +3,8 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import configureStore from 'redux-mock-store';
 import chai from 'chai';
-import spies from 'chai-spies';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow, mount} from 'enzyme';
 
@@ -14,8 +15,8 @@ import {Toast} from '@blueprintjs/core';
 import ConnectedAuth, {Auth} from './Auth';
 
 chai.use(chaiEnzyme());
-chai.use(spies);
 chai.should();
+chai.use(sinonChai);
 
 const mockStore = configureStore({});
 
@@ -95,7 +96,7 @@ describe('< Auth />', () => {
   });
 
   it('should call onLoginSuccess from componentWillReceiveProps', () => {
-    const onLoginSuccess = chai.spy();
+    const onLoginSuccess = sinon.spy();
     const wrapper = mount(
       <Auth fetchTokenData={() => {}}
         onLoginSuccess={onLoginSuccess}
@@ -109,12 +110,12 @@ describe('< Auth />', () => {
       tenants: []
     });
 
-    onLoginSuccess.should.have.been.called.once; // eslint-disable-line no-unused-expressions
+    onLoginSuccess.should.have.been.callCount(1);
   });
 
   it('should call resetErrorMessage and selectTenant from handleSelectTenantSubmit', () => {
-    const resetErrorMessage = chai.spy();
-    const selectTenant = chai.spy();
+    const resetErrorMessage = sinon.spy();
+    const selectTenant = sinon.spy();
     const wrapper = mount(
       <Auth fetchTokenData={() => {}}
         resetErrorMessage={resetErrorMessage}
@@ -124,14 +125,13 @@ describe('< Auth />', () => {
     );
 
     wrapper.node.handleSelectTenantSubmit({});
-
-    resetErrorMessage.should.have.been.called.once; // eslint-disable-line no-unused-expressions
-    selectTenant.should.have.been.called.once; // eslint-disable-line no-unused-expressions
+    resetErrorMessage.should.have.been.callCount(1);
+    selectTenant.should.have.been.callCount(1);
   });
 
   it('should call resetErrorMessage and login from handleLoginSubmit', () => {
-    const resetErrorMessage = chai.spy();
-    const login = chai.spy();
+    const resetErrorMessage = sinon.spy();
+    const login = sinon.spy();
     const wrapper = mount(
       <Auth fetchTokenData={() => {}}
         resetErrorMessage={resetErrorMessage}
@@ -141,8 +141,7 @@ describe('< Auth />', () => {
     );
 
     wrapper.node.handleLoginSubmit({});
-
-    resetErrorMessage.should.have.been.called.once; // eslint-disable-line no-unused-expressions
-    login.should.have.been.called.once; // eslint-disable-line no-unused-expressions
+    resetErrorMessage.should.have.been.callCount(1);
+    login.should.callCount(1);
   });
 });

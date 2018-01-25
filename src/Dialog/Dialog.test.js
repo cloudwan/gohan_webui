@@ -2,7 +2,6 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 import chai from 'chai';
-import spies from 'chai-spies';
 import chaiEnzyme from 'chai-enzyme';
 import {shallow} from 'enzyme';
 
@@ -11,7 +10,6 @@ import {ProgressBar} from '@blueprintjs/core';
 import ConnectedDialog, {GeneratedDialog} from './Dialog';
 
 chai.use(chaiEnzyme());
-chai.use(spies);
 chai.should();
 
 const mockStore = configureStore();

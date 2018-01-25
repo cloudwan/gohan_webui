@@ -2,13 +2,11 @@
 import React from 'react';
 import chai from 'chai';
 import chaiEnzyme from 'chai-enzyme';
-import spies from 'chai-spies';
 import {shallow} from 'enzyme';
 
 import CodeWidget from './CodeWidget';
 import CodeMirror from 'react-codemirror';
 
-chai.use(spies);
 chai.use(chaiEnzyme());
 chai.should();
 

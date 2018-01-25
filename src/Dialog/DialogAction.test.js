@@ -2,13 +2,13 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import spies from 'chai-spies';
+import sinon from 'sinon'; import sinonChai from 'sinon-chai';
 import axios from 'axios';
 
 import * as actionTypes from './DialogActionTypes';
 import * as actions from './DialogActions';
 
-chai.use(spies);
+chai.use(sinonChai);
 
 chai.should();
 
@@ -181,7 +181,7 @@ describe('DialogActions ', () => {
     };
     const store = mockStore(storeObject);
 
-    axios.get = chai.spy((url, headers) => {
+    axios.get = sinon.spy((url, headers) => {
       url.should.equal('http://localhost/v1.0/pets');
       headers.headers['Content-Type'].should.equal('application/json');
       headers.headers['X-Auth-Token'].should.equal('tokenId');
@@ -414,7 +414,7 @@ describe('DialogActions ', () => {
     };
     const store = mockStore(storeObject);
 
-    axios.get = chai.spy((url, headers) => {
+    axios.get = sinon.spy((url, headers) => {
       url.should.equal('http://localhost/v1.0/pets');
       headers.headers['Content-Type'].should.equal('application/json');
       headers.headers['X-Auth-Token'].should.equal('tokenId');

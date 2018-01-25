@@ -4,7 +4,7 @@ import {combineEpics} from 'redux-observable';
 import {
   get,
   parseXHRError
-} from './../api/index';
+} from './../api';
 
 import {UPDATE} from './breadcrumbActionTypes.js';
 import {
@@ -37,7 +37,7 @@ export const updateBreadcrumb = (action$, store, call = (fn, ...args) => fn(...a
     return Observable.zip(
       ...elementsWithoutTitle.map(
         element => call(
-          (url, headers) => get(url, headers),
+          get,
           `${state.configReducer.gohan.url}${element.requestUrl}${query}`,
           headers,
         )
