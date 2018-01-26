@@ -80,6 +80,8 @@ export class GeneratedDialog extends Component {
       baseSchema,
       customTitle,
       customButtonLabel,
+      schema,
+      data
     } = this.props;
     const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
       ` ${baseSchema.title}`;
@@ -92,29 +94,38 @@ export class GeneratedDialog extends Component {
         <div className="pt-dialog-body">
           <ErrorToast />
           {(() => {
-            if (this.props.isLoading || this.props.schema === undefined) {
+            if (this.props.isLoading || schema === undefined) {
               return (
                 <ProgressBar intent= {Intent.PRIMARY} />
               );
             }
 
+            const {
+              propertiesOrder,
+              properties,
+              required
+            } = schema;
+
             return (
               <div>
-                <Form ref={c => {this.form = c;}} schema={this.props.schema}
+                <Form ref={c => {this.form = c;}}
+                  schema={schema}
                   fields={fields} widgets={widgets}
                   FieldTemplate={Template}
                   showErrorList={false}
                   noValidate={true} // workaround for fix ESI-16110
                   ErrorList={ErrorListTemplate}
                   formData={
-                    this.props.schema.propertiesOrder.reduce(
+                    propertiesOrder.reduce(
                       (result, item) => {
-                        result[item] = this.props.data[item];
+                        result[item] = data[item] !== undefined ?
+                          data[item] :
+                          required.includes(item) ? properties[item].default : undefined;
                         return result;
                       }, {}
                     )}
                   uiSchema={{
-                    'ui:order': this.props.schema.propertiesOrder,
+                    'ui:order': propertiesOrder,
                     'ui:logic': this.props.jsonUiSchemaLogic,
                     ...this.props.jsonUiSchema,
                     ...this.props.uiSchema
