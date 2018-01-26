@@ -36,7 +36,7 @@ export const toServerData = (schema, data) => {
   return safeLoad(data);
 };
 
-export const removeEmpty = obj => {
+export const removeEmpty = (obj, action) => {
   if (Array.isArray(obj)) {
     if (obj.length === 0) {
       return obj;
@@ -44,7 +44,7 @@ export const removeEmpty = obj => {
     return obj.filter(f => !(f === undefined || ((f !== null && typeof f === 'object') && isEmpty(f))))
       .reduce((r, i) => {
           if (i !== null && typeof i === 'object') {
-            const value = removeEmpty(i);
+            const value = removeEmpty(i, action);
 
             if (!((value !== null && typeof value === 'object') && isEmpty(value))) {
               return [...r, value];
@@ -55,14 +55,23 @@ export const removeEmpty = obj => {
         },
         []);
   }
+  const keys = Object.keys(obj)
+    .filter(f => !(obj[f] === undefined || ((obj[f] !== null && typeof obj[f] === 'object') && isEmpty(obj[f]))));
 
-  return Object.keys(obj)
-    .filter(f => !(obj[f] === undefined || ((obj[f] !== null && typeof obj[f] === 'object') && isEmpty(obj[f]))))
-    .reduce(
-      (r, i) =>
-        obj[i] !== null && typeof obj[i] === 'object' ?
-          {...r, [i]: removeEmpty(obj[i])} :
-          {...r, [i]: obj[i]},
-      {}
-    );
+  if (keys.length === 0) {
+    if (action === 'create') {
+      return undefined;
+    }
+    if (action === 'update') {
+      return null;
+    }
+  }
+
+  return keys.reduce(
+    (r, i) =>
+      obj[i] !== null && typeof obj[i] === 'object' ?
+        {...r, [i]: removeEmpty(obj[i], action)} :
+        {...r, [i]: obj[i]},
+    {}
+  );
 };
