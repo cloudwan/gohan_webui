@@ -304,4 +304,42 @@ describe('SchemaSelectors', () => {
       }
       , 'test1').should.equal(false);
   });
+
+  describe('isValidFieldName', () => {
+    it('should return appropriate value', () => {
+      selectors.isValidFieldName(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test1',
+                schema: {
+                  properties: {
+                    name: 'test'
+                  }
+                }
+              }
+            ]
+          }
+        }
+        , 'test1', 'name').should.equal(true);
+    });
+
+    selectors.isValidFieldName(
+      {
+        schemaReducer: {
+          data: [
+            {
+              id: 'test1',
+              schema: {
+                properties: {
+                  name: 'test'
+                }
+              }
+            }
+          ]
+        }
+      }
+      , 'test1', 'id').should.equal(false);
+  });
 });

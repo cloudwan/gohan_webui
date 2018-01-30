@@ -95,6 +95,26 @@ describe('ConfigSelectors', () => {
     });
   });
 
+  describe('getDefaultSortKey', () => {
+    it('should return setted default sort key.', () => {
+      selectors.getDefaultSortKey({
+        configReducer: {
+          tableDefaultSortKey: 'name'
+        }
+      }).should.equal('name');
+    });
+  });
+
+  describe('getDefaultSortOrder', () => {
+    it('should return setted page limit.', () => {
+      selectors.getDefaultSortOrder({
+        configReducer: {
+          tableDefaultSortOrder: 'asc'
+        }
+      }).should.equal('asc');
+    });
+  });
+
   describe('getFollowableRelationsState', () => {
     it('should return false.', () => {
       selectors.getFollowableRelationsState({

@@ -10,7 +10,14 @@ import {
   remove,
 } from './../api/index';
 
-import {getPageLimit} from './../config/ConfigSelectors';
+import {
+  isValidFieldName
+} from './../schema/SchemaSelectors';
+import {
+  getPageLimit,
+  getDefaultSortKey,
+  getDefaultSortOrder
+} from './../config/ConfigSelectors';
 import {
   getLimit,
   getOffset,
@@ -47,20 +54,19 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
   )
     .mergeMap(() => {
       const state = store.getState();
-      const query = {};
-      const pageLimit = getPageLimit(state);
+      const defaultPageLimit = getPageLimit(state);
+      const defaultSortKey = getDefaultSortKey(state);
+      const defaultSortOrder = getDefaultSortOrder(state);
       const sortOptions = getSortOptions(state, schemaId);
       const filters = getFilters(state, schemaId);
 
-      if (options.sortKey !== undefined) {
-        query.sort_key = options.sortKey; // eslint-disable-line camelcase
-      } else if (sortOptions.sortKey !== undefined) {
-        if (sortOptions.sortKey === '') {
-          query.sort_key = undefined; // eslint-disable-line camelcase
-        } else {
-          query.sort_key = sortOptions.sortKey; // eslint-disable-line camelcase
-        }
-      }
+
+      const query = {
+        sort_key: isValidFieldName(state, schemaId, defaultSortKey) ? defaultSortKey : undefined, // eslint-disable-line
+        sort_order: defaultSortOrder, // eslint-disable-line camelcase
+        limit: defaultPageLimit,
+        offset: undefined
+      };
 
       if (options.sortKey !== undefined) {
         if (options.sortKey === '') {
@@ -68,12 +74,8 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
         } else {
           query.sort_key = options.sortKey; // eslint-disable-line camelcase
         }
-      } else if (sortOptions.sortKey !== undefined) {
-        if (sortOptions.sortKey === '') {
-          query.sort_key = undefined; // eslint-disable-line camelcase
-        } else {
-          query.sort_key = sortOptions.sortKey; // eslint-disable-line camelcase
-        }
+      } else if (sortOptions.sortKey !== '') {
+        query.sort_key = sortOptions.sortKey; // eslint-disable-line camelcase
       }
 
       if (options.sortOrder !== undefined) {
@@ -85,12 +87,8 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
           }
           query.sort_order = options.sortOrder; // eslint-disable-line camelcase
         }
-      } else if (sortOptions.sortOrder !== undefined) {
-        if (sortOptions.sortOrder === '') {
-          query.sort_order = undefined; // eslint-disable-line camelcase
-        } else {
-          query.sort_order = sortOptions.sortOrder; // eslint-disable-line camelcase
-        }
+      } else if (sortOptions.sortOrder !== '') {
+        query.sort_order = sortOptions.sortOrder; // eslint-disable-line camelcase
       }
 
       if (options.limit !== undefined) {
@@ -105,11 +103,11 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
         } else {
           query.limit = getLimit(state, schemaId);
         }
-      } else if (pageLimit !== undefined) {
-        if (pageLimit === 0) {
+      } else if (defaultPageLimit !== undefined) {
+        if (defaultPageLimit === 0) {
           query.limit = undefined;
         } else {
-          query.limit = pageLimit;
+          query.limit = defaultPageLimit;
         }
       }
       if (options.offset !== undefined) {

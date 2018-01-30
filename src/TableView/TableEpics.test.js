@@ -28,7 +28,10 @@ describe('TableEpics', () => {
             id: 'test',
             parent: '',
             prefix: 'v1.0',
-            plural: 'tests'
+            plural: 'tests',
+            schema: {
+              properties: {}
+            }
           }
         ]
       },

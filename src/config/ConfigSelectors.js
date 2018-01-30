@@ -7,6 +7,8 @@ const polling = state => state.configReducer.polling;
 const pollingInterval = state => state.configReducer.pollingInterval;
 const pageLimit = state => state.configReducer.pageLimit;
 const followableRelations = state => state.configReducer.followableRelations;
+const tableDefaultSortKey = state => state.configReducer.tableDefaultSortKey;
+const tableDefaultSortOrder = state => state.configReducer.tableDefaultSortOrder;
 
 export const getSidebar = createSelector(
   [sidebar],
@@ -47,6 +49,15 @@ export const getPollingInterval = createSelector(
 export const getPageLimit = createSelector(
   [pageLimit],
   pageLimit => pageLimit || 0
+);
+
+export const getDefaultSortKey = createSelector(
+  [tableDefaultSortKey],
+  tableDefaultSortKey => tableDefaultSortKey
+);
+export const getDefaultSortOrder = createSelector(
+  [tableDefaultSortOrder],
+  tableDefaultSortOrder => tableDefaultSortOrder
 );
 
 export const getFollowableRelationsState = createSelector(
