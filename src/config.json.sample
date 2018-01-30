@@ -58,6 +58,8 @@
     "polling": true,
     "pollingInterval": 10000,
     "storagePrefix": "gohan-webui",
+    "tableDefaultSortKey": "name",
+    "tableDefaultSortOrder": "asc",
     "title": "Gohan Web UI",
     "followableRelations": false
 }

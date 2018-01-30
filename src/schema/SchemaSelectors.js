@@ -123,3 +123,8 @@ export const getBreadcrumb = createSelector(
   [breadcrumb],
   breadcrumb => breadcrumb
 );
+
+export const isValidFieldName = createSelector(
+  [schema, (state, id, name) => name],
+  (schema, name) => Boolean(schema !== undefined && schema.schema.properties[name])
+);
