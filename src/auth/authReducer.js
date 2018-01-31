@@ -7,11 +7,13 @@ import {
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
   RENEW_TOKEN_SUCCESS,
-  RENEW_TOKEN_FAILURE
+  RENEW_TOKEN_FAILURE,
+  CHANGE_TENANT_FILTER_STATUS
 } from './AuthActionTypes';
 
 export default function authReducer(state = {
   inProgress: true,
+  tenantFilterStatus: false,
   logged: false,
   showTokenRenewal: false
 }, action) {
@@ -20,13 +22,15 @@ export default function authReducer(state = {
       return {
         inProgress: false,
         logged: false,
-        showTokenRenewal: false
+        showTokenRenewal: false,
+        tenantFilterStatus: false
       };
     case LOGOUT:
       return {
         inProgress: false,
         logged: false,
-        showTokenRenewal: false
+        showTokenRenewal: false,
+        tenantFilterStatus: false
       };
     case LOGIN_INPROGRESS:
       return {
@@ -77,6 +81,11 @@ export default function authReducer(state = {
     case RENEW_TOKEN_FAILURE:
       return {
         ...state
+      };
+    case CHANGE_TENANT_FILTER_STATUS:
+      return {
+        ...state,
+        tenantFilterStatus: action.status
       };
     default:
       return state;

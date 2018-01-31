@@ -9,6 +9,10 @@ import {
   getCollectionUrl,
   getSingularUrl
 } from './../schema/SchemaSelectors';
+import {
+  isTenantFilterActive,
+  getTenant
+} from './../auth/AuthSelectors';
 import {getGohanUrl} from './../config/ConfigSelectors';
 import {getPageLimit, getPollingInterval, isPolling} from '../config/ConfigSelectors';
 
@@ -33,7 +37,11 @@ export class GetCollectionObservable extends AjaxObservable {
 
     super({
       method: 'GET',
-      url: `${gohanUrl}${url}?${queryStringify({limit: defaultPageLimit, ...query})}`,
+      url: `${gohanUrl}${url}?${queryStringify({
+        limit: defaultPageLimit,
+        tenant_id: isTenantFilterActive(state) ? getTenant(state).id : undefined, // eslint-disable-line camelcase
+        ...query
+      })}`,
       headers,
       crossDomain: true
     });

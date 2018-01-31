@@ -2,11 +2,15 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import chai from 'chai';
-import sinon from 'sinon'; import sinonChai from 'sinon-chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import axios from 'axios';
+
+import * as api from '../api';
 
 import * as actionTypes from './DialogActionTypes';
 import * as actions from './DialogActions';
+import {Observable} from 'rxjs/Rx';
 
 chai.use(sinonChai);
 
@@ -36,6 +40,15 @@ describe('DialogActions ', () => {
   });
 
   it('should create PREPARE_SUCCESS when fetching config has been done', async () => {
+    sinon.stub(api, 'getCollection').callsFake(() => Observable.of({
+      payload: [
+        {id: 'a1', name: 'Sample name 1', description: 'test description'},
+        {id: 'b2', name: 'Sample name 2', description: 'test description'},
+        {id: 'c3', name: 'Sample name 3', description: 'test description'}
+      ],
+      totalCount: 0
+    }));
+
     const schema = {
       properties: {
         petId: {
@@ -181,21 +194,6 @@ describe('DialogActions ', () => {
     };
     const store = mockStore(storeObject);
 
-    axios.get = sinon.spy((url, headers) => {
-      url.should.equal('http://localhost/v1.0/pets');
-      headers.headers['Content-Type'].should.equal('application/json');
-      headers.headers['X-Auth-Token'].should.equal('tokenId');
-
-      return Promise.resolve({
-        data: {
-          pets: [
-            {id: 'a1', name: 'Sample name 1', description: 'test description'},
-            {id: 'b2', name: 'Sample name 2', description: 'test description'},
-            {id: 'c3', name: 'Sample name 3', description: 'test description'}
-          ]
-        }
-      });
-    });
     await store.dispatch(actions.prepareSchema(schema, 'create'));
 
     store.getActions().should.deep.equal([
@@ -293,9 +291,13 @@ describe('DialogActions ', () => {
         }
       }
     ]);
+    api.getCollection.restore();
   });
 
   it('should create PREPARE_FAILURE when fetching config has been done', async () => {
+    sinon.stub(api, 'getCollection').callsFake(() => {
+      return Observable.create(observer => observer.error('Cannot fetch data.'));
+    });
     const schema = {
       properties: {
         petId: {
@@ -414,17 +416,6 @@ describe('DialogActions ', () => {
     };
     const store = mockStore(storeObject);
 
-    axios.get = sinon.spy((url, headers) => {
-      url.should.equal('http://localhost/v1.0/pets');
-      headers.headers['Content-Type'].should.equal('application/json');
-      headers.headers['X-Auth-Token'].should.equal('tokenId');
-
-      return Promise.reject({
-        response: {
-          data: 'Cannot fetch data.'
-        }
-      });
-    });
     await store.dispatch(actions.prepareSchema(schema, 'create'));
 
     store.getActions().should.deep.equal([
