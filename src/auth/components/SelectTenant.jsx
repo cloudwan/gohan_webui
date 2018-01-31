@@ -7,7 +7,8 @@ export default class SelectTenant extends Component {
 
     this.state = {
       value: '',
-      id: ''
+      id: '',
+      tenantFilter: false
     };
   }
 
@@ -24,7 +25,7 @@ export default class SelectTenant extends Component {
       event.stopPropagation();
     }
 
-    this.props.onTenantSubmit(this.state.value, this.state.id);
+    this.props.onTenantSubmit(this.state.value, this.state.id, this.state.tenantFilter);
   };
 
   handleTenantChange = event => {
@@ -37,6 +38,10 @@ export default class SelectTenant extends Component {
       value: event.target.value,
       id: this.props.tenants.find(item => item.name === event.target.value).id
     });
+  };
+
+  handleFilterTenantStatusChange = () => {
+    this.setState({tenantFilter: !this.state.tenantFilter});
   };
 
   buildSelectOptions = () => {
@@ -60,6 +65,17 @@ export default class SelectTenant extends Component {
                 defaultValue={''}>
                 {this.buildSelectOptions()}
               </select>
+              <div className="form-group">
+                <div className="checkbox enable-tenant-filter">
+                  <label>
+                    <input type="checkbox" onChange={this.handleFilterTenantStatusChange}
+                      checked={this.state.tenantFilter}
+                    />
+                    Filter resources by tenant
+                  </label>
+                  <p className="help-block">(Modifiable after login too)</p>
+                </div>
+              </div>
             </div>
             <button type="submit" className="btn btn-primary btn-block">
               Continue

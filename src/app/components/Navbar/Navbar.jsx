@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import isEqual from 'lodash/isEqual';
-import {logout, selectTenant} from './../../../auth/AuthActions';
+import {logout, selectTenant, changeTenantFilter} from './../../../auth/AuthActions';
+import {isTenantFilterActive} from './../../../auth/AuthSelectors';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import {faUserCircle, faBars} from '@fortawesome/fontawesome-free-solid';
 
@@ -20,6 +21,7 @@ import Breadcrumb from '../../../breadcrumb/Breadcrumb';
 import {
   Menu,
   MenuItem,
+  MenuDivider,
   Button
 } from '@blueprintjs/core';
 
@@ -40,6 +42,10 @@ export class Navbar extends Component {
 
   handleChangeTenantClick = (tenantName, tenantId) => {
     this.props.selectTenant(tenantName, tenantId);
+  };
+
+  handleFilterByTenantClick = () => {
+    this.props.changeTenantFilter(!this.props.isTenantFilter);
   };
 
   render() {
@@ -70,6 +76,11 @@ export class Navbar extends Component {
                   onClick={this.handleChangeTenantClick}
                 />
               ))}
+              <MenuDivider title={'View Options'}/>
+              <MenuItem text={'Filter by tenant'}
+                {...{iconName: this.props.isTenantFilter ? 'small-tick' : undefined}}
+                onClick={this.handleFilterByTenantClick}
+              />
             </Menu>
           } placement="bottom-end"
             minimal={true}
@@ -112,6 +123,7 @@ if (process.env.NODE_ENV !== 'production') {
   Navbar.propTypes = {
     userName: PropTypes.string.isRequired,
     tenant: PropTypes.string.isRequired,
+    isTenantFilter: PropTypes.bool.isRequired,
     tenants: PropTypes.array,
     onToggleSidebar: PropTypes.func,
     isSidebarOpen: PropTypes.bool,
@@ -124,9 +136,11 @@ export const mapStateToProps = state => ({
   userName: getUserName(state),
   tenant: getTenantName(state),
   tenants: getTenants(state),
+  isTenantFilter: isTenantFilterActive(state)
 });
 
 export default connect(mapStateToProps, {
   logout,
   selectTenant,
+  changeTenantFilter
 })(Navbar);
