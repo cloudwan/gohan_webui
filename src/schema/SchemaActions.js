@@ -1,5 +1,7 @@
 import axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
+import {getCollection} from './../api';
+import {getSchema} from './SchemaSelectors';
 
 import {FETCH_SUCCESS, FETCH_ERROR} from './SchemaActionTypes';
 
@@ -55,40 +57,35 @@ export function toLocalSchema(schema, state, parentProperty) {
     }
 
     if (result.relation !== undefined && result.relation !== parentProperty) {
-      const enumValues = [];
-      const options = {};
-      const headers = {
-        'Content-Type': 'application/json',
-        'X-Auth-Token': state.authReducer.tokenId
-      };
-
-      const relatedSchema = state.schemaReducer.data.find(item => item.id === result.relation);
+      const relatedSchema = getSchema(state, result.relation);
       if (relatedSchema === undefined) {
         reject({data: `Cannot find "${result.relation}" related schema!`});
       }
 
-      axios.get(state.configReducer.gohan.url + relatedSchema.url, {headers}).then(response => {
-        const data = response.data;
+      getCollection(state, result.relation, {}, {limit: 0, _fields: ['id', 'name']})
+        .subscribe(response => {
+          const data = response.payload;
+          const enumValues = [];
+          const options = {};
 
-        for (let key in data) {
-          data[key].forEach(value => {
+          data.forEach(value => {
             enumValues.push(value.id);
             options[value.id] = value.name || value.id;
           });
-        }
-        result.enum = enumValues;
-        result.options = options;
-        resolve(result);
-      }).catch(error => {
-        reject(error.response);
-      });
+
+          result.enum = enumValues;
+          result.options = options;
+          resolve(result);
+        }, error => {
+          reject(error);
+        });
     } else if (result.type === 'array') {
       const promise = toLocalSchema(result.items, state, parentProperty);
 
       promise.then(data => {
         result.items = data;
         resolve(result);
-      });
+      }, error => reject(error));
     } else if (result.type !== 'object') {
       resolve(result);
     } else if (result.properties !== undefined) {
@@ -100,7 +97,7 @@ export function toLocalSchema(schema, state, parentProperty) {
         promises.push(promise);
         promise.then(data => {
           result.properties[key] = data;
-        });
+        }, error => reject(error));
       }
       Promise.all(promises).then(() => {
         resolve(result);

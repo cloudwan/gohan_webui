@@ -7,7 +7,8 @@ import {
   selectTenant,
   fetchTokenData,
   sessionStorageTransfer,
-  transferStorage
+  transferStorage,
+  changeTenantFilter
 } from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import LoadingIndicator from '../components/LoadingIndicator';
@@ -44,9 +45,10 @@ export class Auth extends Component {
     this.props.login(...params);
   };
 
-  handleSelectTenantSubmit = (...params) => {
+  handleSelectTenantSubmit = (name, id, filterStatus) => {
     this.props.resetErrorMessage();
-    this.props.selectTenant(...params);
+    this.props.selectTenant(name, id);
+    this.props.changeTenantFilter(filterStatus);
   };
 
   componentWillReceiveProps(nextProps) {
@@ -140,5 +142,6 @@ export default connect(mapStateToProps, {
   fetchTokenData,
   resetErrorMessage,
   sessionStorageTransfer,
-  transferStorage
+  transferStorage,
+  changeTenantFilter
 })(Auth);

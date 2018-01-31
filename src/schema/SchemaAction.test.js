@@ -1,10 +1,10 @@
 /* global it, describe, afterEach */
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import chai from 'chai';
-import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import axios from 'axios';
+import chai from 'chai';
+import sinon from 'sinon';
 
 import * as actionTypes from './SchemaActionTypes';
 import * as actions from './SchemaActions';

@@ -199,6 +199,12 @@ body {
       margin-top: 0;
       margin-bottom: 1rem;
     }
+    .enable-tenant-filter {
+      text-align: center;
+      > .help-block {
+        font-size: .7em
+      }
+    }
   }
 }
 
