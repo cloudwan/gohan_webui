@@ -20,11 +20,13 @@ function fetchSuccess(data) {
   };
 }
 
-function fetchError(data) {
+function fetchError(error) {
   return dispatch => {
-    const error = data.data;
-
-    dispatch({type: PREPARE_FAILURE, error});
+    if (error.data) {
+      dispatch({type: PREPARE_FAILURE, error: error.data});
+    } else {
+      dispatch({type: PREPARE_FAILURE, error});
+    }
   };
 }
 

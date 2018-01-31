@@ -121,6 +121,7 @@ describe('< Auth />', () => {
         resetErrorMessage={resetErrorMessage}
         selectTenant={selectTenant}
         transferStorage={() => {}}
+        changeTenantFilter={() => {}}
       />
     );
 

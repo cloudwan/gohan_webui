@@ -173,3 +173,13 @@ describe('selectTenant() ', () => {
     });
   });
 });
+
+describe('changeTenantFilter() ', () => {
+  it(`should returns ${actionTypes.CHANGE_TENANT_FILTER_STATUS} action`, () => {
+    actions.changeTenantFilter(true)
+      .should.deep.equal({
+        type: actionTypes.CHANGE_TENANT_FILTER_STATUS,
+        status: true
+      });
+  });
+});

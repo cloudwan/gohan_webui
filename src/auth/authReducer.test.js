@@ -12,7 +12,8 @@ describe('authReducer ', () => {
       {
         inProgress: true,
         logged: false,
-        showTokenRenewal: false
+        showTokenRenewal: false,
+        tenantFilterStatus: false
       });
     reducer({}, {}).should.deep.equal({});
   });
@@ -35,6 +36,7 @@ describe('authReducer ', () => {
       }
     }).should.deep.equal(
       {
+        tenantFilterStatus: false,
         inProgress: false,
         logged: false,
         tokenId: 'testId',
@@ -57,6 +59,7 @@ describe('authReducer ', () => {
     reducer(undefined, {
       type: actionTypes.LOGIN_ERROR,
     }).should.deep.equal({
+      tenantFilterStatus: false,
       inProgress: false,
       logged: false,
       showTokenRenewal: false
@@ -67,6 +70,7 @@ describe('authReducer ', () => {
     reducer(undefined, {
       type: actionTypes.LOGOUT,
     }).should.deep.equal({
+      tenantFilterStatus: false,
       inProgress: false,
       logged: false,
       showTokenRenewal: false
@@ -79,7 +83,8 @@ describe('authReducer ', () => {
     }).should.deep.equal({
       inProgress: true,
       logged: false,
-      showTokenRenewal: false
+      showTokenRenewal: false,
+      tenantFilterStatus: false
     });
   });
 
@@ -99,7 +104,17 @@ describe('authReducer ', () => {
       ],
       inProgress: false,
       logged: true,
-      showTokenRenewal: false
+      showTokenRenewal: false,
+      tenantFilterStatus: false
+    });
+  });
+
+  it(`should handle ${actionTypes.SHOW_TOKEN_RENEWAL}`, () => {
+    reducer({showTokenRenewal: false}, {
+      type: actionTypes.SHOW_TOKEN_RENEWAL,
+      status: true
+    }).should.deep.equal({
+      showTokenRenewal: true,
     });
   });
 
@@ -109,7 +124,9 @@ describe('authReducer ', () => {
     }).should.deep.equal({
       inProgress: false,
       logged: false,
-      showTokenRenewal: false
+      showTokenRenewal: false,
+      tenantFilterStatus: false
+
     });
   });
 });

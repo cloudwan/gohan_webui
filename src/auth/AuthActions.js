@@ -15,7 +15,8 @@ import {
   RENEW_TOKEN_SUCCESS,
   RENEW_TOKEN_FAILURE,
   INIT_SESSION_STORAGE_TRANSFER,
-  TRANSFER_STORAGE
+  TRANSFER_STORAGE,
+  CHANGE_TENANT_FILTER_STATUS
 } from './AuthActionTypes';
 
 const {sessionStorage, localStorage, location} = window;
@@ -96,6 +97,10 @@ type RenewTokenFailureType = {
   +error: string,
 };
 
+type ChangeTenantFilterStatusActionType = {
+  +type: string,
+  +status: boolean,
+};
 export const loginSuccess = (
   tokenId: string,
   tokenExpires: string,
@@ -312,4 +317,7 @@ export const transferStorage = (): () => void => {
   };
 };
 
-
+export const changeTenantFilter = (status: boolean): ChangeTenantFilterStatusActionType => ({
+  type: CHANGE_TENANT_FILTER_STATUS,
+  status
+});

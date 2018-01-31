@@ -9,7 +9,7 @@ const user = state => state.authReducer.user;
 const inProgress = state => state.authReducer.inProgress;
 const showTokenRenewal = state => state.authReducer.showTokenRenewal;
 const storagePrefix = state => state.configReducer.storagePrefix;
-
+const tenantFilterStatus = state => state.authReducer.tenantFilterStatus;
 export const getLoggedState = createSelector(
   [isLogged],
   isLogged => {
@@ -77,4 +77,9 @@ export const getShowTokenRenewal = createSelector(
 export const getStoragePrefix = createSelector(
   [storagePrefix],
   storagePrefix => storagePrefix
+);
+
+export const isTenantFilterActive = createSelector(
+  [tenantFilterStatus],
+  tenantFilterStatus => Boolean(tenantFilterStatus)
 );
