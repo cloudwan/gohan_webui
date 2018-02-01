@@ -66,7 +66,7 @@ export class GeneratedDialog extends Component {
    * @param formData
    */
   handleSubmit = ({formData}) => {
-    this.props.onSubmit(removeEmpty(toServerData(this.props.schema, formData), this.props.action), this.props.data.id);
+    this.props.onSubmit(removeEmpty(toServerData(this.props.schema, formData)), this.props.data.id);
   };
 
   /**
