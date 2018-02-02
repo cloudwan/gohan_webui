@@ -47,14 +47,6 @@
   }
 }
 
-.actions {
-  .pt-minimal {
-   > .faicon {
-     color: $link-color;
-   }
-  }
-}
-
 .pt-breadcrumbs {
   .pt-button {
     vertical-align: baseline;
@@ -201,8 +193,8 @@ body {
     }
     .enable-tenant-filter {
       text-align: center;
-      > .help-block {
-        font-size: .7em
+      .pt-control {
+        margin-bottom: 0;
       }
     }
   }
@@ -211,19 +203,25 @@ body {
 /*
  * Navbar
  */
-
 .brand-link {
   &:hover {
     text-decoration: none;
   }
   &::after {
     content: "";
-    // background: rgba($white, .4);
     background: #bfccd6;
     width: 1px;
     height: 1.4em;
     display: inline-block;
     vertical-align: middle;
+  }
+}
+
+.faicon.tenant-filter {
+  color: $gray-400;
+  margin-right: 0.3em;
+  &.checked {
+    color: $primary;
   }
 }
 
