@@ -100,7 +100,7 @@ export class CustomActions extends Component {
         }
           placement="bottom-end"
           minimal={true}>
-          <Button className={'pt-minimal custom-actions'}
+          <Button className={'pt-minimal pt-intent-primary custom-actions'}
             rightIconName="caret-down">
             <FontAwesomeIcon className="faicon" icon={faTerminal} />Custom Actions
           </Button>

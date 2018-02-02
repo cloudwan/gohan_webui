@@ -5,7 +5,7 @@ import isEqual from 'lodash/isEqual';
 import {logout, selectTenant, changeTenantFilter} from './../../../auth/AuthActions';
 import {isTenantFilterActive} from './../../../auth/AuthSelectors';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import {faUserCircle, faBars} from '@fortawesome/fontawesome-free-solid';
+import {faUserCircle, faBars, faCheckSquare, faSquare} from '@fortawesome/fontawesome-free-solid';
 
 import {
   getUserName,
@@ -56,6 +56,15 @@ export class Navbar extends Component {
       brand,
     } = this.props;
 
+    const getTenantFilterStatus = () => (
+      <span>
+        <FontAwesomeIcon className={(this.props.isTenantFilter) ?
+          'faicon tenant-filter checked' : 'faicon tenant-filter'}
+          icon={(this.props.isTenantFilter) ? faCheckSquare : faSquare}
+        />Filter by Tenant
+      </span>
+    );
+
     return (
       <NavContainer>
         <NavbarGroup isRight={false}>
@@ -77,8 +86,7 @@ export class Navbar extends Component {
                 />
               ))}
               <MenuDivider title={'View Options'}/>
-              <MenuItem text={'Filter by tenant'}
-                {...{iconName: this.props.isTenantFilter ? 'small-tick' : undefined}}
+              <MenuItem text={getTenantFilterStatus()}
                 onClick={this.handleFilterByTenantClick}
               />
             </Menu>

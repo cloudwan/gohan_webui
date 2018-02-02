@@ -74,13 +74,13 @@ export default class Detail extends Component {
               <div className="col-auto">
                 <div className="actions pt-button-group pt-minimal">
                   {updatePermission && (
-                    <Button className={'pt-minimal'}
+                    <Button className={'pt-minimal pt-intent-primary'}
                       onClick={this.handleEditClick}>
                       <FontAwesomeIcon className="faicon" icon={faPencilAlt} />Edit
                     </Button>
                   )}
                   {deletePermission && (
-                    <Button className={'pt-minimal'}
+                    <Button className={'pt-minimal pt-intent-primary'}
                       onClick={this.handleRemoveClick}>
                       <FontAwesomeIcon className="faicon" icon={faTrashAlt} />Delete
                     </Button>
