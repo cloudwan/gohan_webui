@@ -65,16 +65,17 @@ export default class SelectTenant extends Component {
                 defaultValue={''}>
                 {this.buildSelectOptions()}
               </select>
-              <div className="form-group">
-                <div className="checkbox enable-tenant-filter">
-                  <label>
-                    <input type="checkbox" onChange={this.handleFilterTenantStatusChange}
-                      checked={this.state.tenantFilter}
-                    />
-                    Filter resources by tenant
-                  </label>
-                  <p className="help-block">(Modifiable after login too)</p>
-                </div>
+            </div>
+            <div className="form-group">
+              <div className="checkbox enable-tenant-filter">
+                <label className="pt-control pt-checkbox pt-inline">
+                  <input type="checkbox" onChange={this.handleFilterTenantStatusChange}
+                    checked={this.state.tenantFilter}
+                  />
+                  <span className="pt-control-indicator" />
+                  Filter resources by tenant
+                </label>
+                <p className="form-text text-muted">(Modifiable after login too)</p>
               </div>
             </div>
             <button type="submit" className="btn btn-primary btn-block">
