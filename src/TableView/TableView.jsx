@@ -15,8 +15,6 @@ import TableComponent from './TableComponent';
 
 import {update as updateBreadcrumb} from './../breadcrumb/breadcrumbActions';
 
-import {getSchema} from './../schema/SchemaSelectors';
-
 import {
   getHeaders,
   getPageCount,
@@ -31,6 +29,7 @@ import {
 } from './TableSelectors';
 
 import {
+  getSchema,
   getCollectionUrl,
   hasCreatePermission,
   hasUpdatePermission,
@@ -44,6 +43,9 @@ import {
   update,
   purge,
 } from './TableActions';
+import {
+  isAnyDialogOpen
+} from '../Dialog/DialogSelectors';
 
 import Dialog from '../Dialog/Dialog';
 
@@ -58,6 +60,18 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
   const schemaTitle = schema.title;
 
   class TableView extends Component {
+    constructor(props) {
+      super(props);
+
+      this.state = {
+        dialogData: {},
+        checkedRowsIds: [],
+        removalSingleItemAlertOpen: false,
+        removedItemId: null,
+        removalSelectedItemsAlertOpen: false
+      };
+    }
+
     componentDidMount() {
       if (!isChildView) {
         const query = queryParse(this.props.location.search, {arrayFormat: 'bracket'});
@@ -86,24 +100,28 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       }
     }
 
+    componentWillReceiveProps(nextProps) {
+      this.setState({
+        checkedRowsIds: this.state.checkedRowsIds.filter(id => Boolean(nextProps.data.find(item => item.id === id)))
+      });
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+      if (this.props.isAnyDialogOpen && !nextProps.isAnyDialogOpen) {
+        return true;
+      } else if (this.props.isAnyDialogOpen) {
+        return false;
+      }
+
+      return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
+    }
+
     componentWillUnmount() {
       this.props.cancelFetch();
       this.props.clear();
       if (!isChildView) {
         this.props.updateBreadcrumb();
       }
-    }
-
-    constructor(props) {
-      super(props);
-
-      this.state = {
-        dialogData: {},
-        checkedRowsIds: [],
-        removalSingleItemAlertOpen: false,
-        removedItemId: null,
-        removalSelectedItemsAlertOpen: false
-      };
     }
 
     clearCheckedRows = () => {
@@ -148,16 +166,6 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         checkedRowsIds: itemsIds
       });
     };
-
-    componentWillReceiveProps(nextProps) {
-      this.setState({
-        checkedRowsIds: this.state.checkedRowsIds.filter(id => Boolean(nextProps.data.find(item => item.id === id)))
-      });
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-      return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
-    }
 
     handlePageChange = page => {
       const {totalCount, limit} = this.props;
@@ -422,7 +430,11 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       isLoading: getIsLoading(state, schemaId),
       createPermission: hasCreatePermission(state, schemaId),
       updatePermission: hasUpdatePermission(state, schemaId),
-      deletePermission: hasDeletePermission(state, schemaId)
+      deletePermission: hasDeletePermission(state, schemaId),
+      isAnyDialogOpen: isAnyDialogOpen(state, [
+        `${schemaId}_create`,
+        `${schemaId}_update`
+      ])
     };
   }
 
