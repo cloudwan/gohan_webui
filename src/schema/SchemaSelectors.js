@@ -33,8 +33,9 @@ const collectionSchemaUrl = (state, id, params) => {
 
   return parents.reduce(
     (result, parent, index, array) => (
-      `${result}${(index === 0) ? parent.prefix : ''}/${parent.plural}` +
-      `${(index !== array.length - 1) ? `/${params[`${parent.id}_id`]}` : ''}`
+      `${result}${(index === 0) ? `${parent.prefix}` : ''}` +
+      `${(params[`${parent.id}_id`] && (index !== array.length - 1)) ?
+        `/${parent.plural}/${params[`${parent.id}_id`]}` : (index === array.length - 1) ? `/${parent.plural}` : ''}`
     ),
     ''
   );

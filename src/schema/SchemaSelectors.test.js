@@ -342,4 +342,34 @@ describe('SchemaSelectors', () => {
       }
       , 'test1', 'id').should.equal(false);
   });
+
+  describe('getCollectionUrl', () => {
+    it('should return appropriate url link', () => {
+      selectors.getCollectionUrl(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test',
+                prefix: '/1.0',
+                plural: 'test',
+              },
+              {
+                id: 'test1',
+                prefix: '/1.0',
+                plural: 'test1',
+                parent: 'test'
+              },
+              {
+                id: 'test2',
+                prefix: '/1.0',
+                plural: 'test2',
+                parent: 'test1'
+              }
+            ]
+          }
+        }
+        , 'test2', {test1_id: '654'}).should.equal('/1.0/test1/654/test2'); // eslint-disable-line camelcase
+    });
+  });
 });
