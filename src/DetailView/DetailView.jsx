@@ -39,6 +39,9 @@ import {
   checkLoading,
   getData,
 } from './DetailSelectors';
+import {
+  isAnyDialogOpen
+} from '../Dialog/DialogSelectors';
 
 import {Alert, Intent} from '@blueprintjs/core';
 
@@ -51,14 +54,18 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
       super(props);
 
       this.state = {
-        modalOpen: false,
         alertOpen: false,
-        actionModal: 'update',
         dialogData: {}
       };
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+      if (this.props.isAnyDialogOpen && !nextProps.isAnyDialogOpen) {
+        return true;
+      } else if (this.props.isAnyDialogOpen) {
+        return false;
+      }
+
       return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
     }
 
@@ -180,6 +187,9 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
       followableRelations: getFollowableRelationsState(state),
       updatePermission: hasUpdatePermission(state, schemaId),
       deletePermission: hasDeletePermission(state, schemaId),
+      isAnyDialogOpen: isAnyDialogOpen(state, [
+        `${schemaId}_update`
+      ])
     };
   }
 

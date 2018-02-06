@@ -43,7 +43,8 @@ describe('< TableView />', () => {
       }
     },
     dialogReducer: {
-      isLoading: false
+      isLoading: false,
+      dialogs: {}
     }
   });
 
