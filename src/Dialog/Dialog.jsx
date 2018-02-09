@@ -39,14 +39,20 @@ export class GeneratedDialog extends Component {
   componentDidMount() {
     const {baseSchema, action} = this.props;
 
-    this.props.prepareSchema(baseSchema.schema, action, baseSchema.parent);
+    this.props.prepareSchema(baseSchema.schema, action, baseSchema.parent, {
+      ...this.props.jsonUiSchema,
+      ...this.props.uiSchema
+    });
   }
 
   componentWillReceiveProps(nextProps) {
     const {action} = this.props;
 
     if (!isEqual(this.props.baseSchema.schema, nextProps.baseSchema.schema)) {
-      this.props.prepareSchema(nextProps.baseSchema.schema, action, nextProps.baseSchema.parent);
+      this.props.prepareSchema(nextProps.baseSchema.schema, action, nextProps.baseSchema.parent, {
+        ...this.props.jsonUiSchema,
+        ...this.props.uiSchema
+      });
     }
   }
 

@@ -43,7 +43,7 @@ export function fetchSchema() {
   };
 }
 
-export function toLocalSchema(schema, state, parentProperty) {
+export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
   return new Promise((resolve, reject) => {
     const result = cloneDeep(schema);
 
@@ -62,7 +62,7 @@ export function toLocalSchema(schema, state, parentProperty) {
         reject({data: `Cannot find "${result.relation}" related schema!`});
       }
 
-      getCollection(state, result.relation, {}, {limit: 0, _fields: ['id', 'name']})
+      getCollection(state, result.relation, {}, {limit: 0, _fields: ['id', 'name'], ...uiSchema['ui:query']})
         .subscribe(response => {
           const data = response.payload;
           const enumValues = [];
@@ -93,7 +93,7 @@ export function toLocalSchema(schema, state, parentProperty) {
       const promises = [];
 
       for (let key in result.properties) {
-        const promise = toLocalSchema(result.properties[key], state, parentProperty);
+        const promise = toLocalSchema(result.properties[key], state, parentProperty, uiSchema[key]);
         promises.push(promise);
         promise.then(data => {
           result.properties[key] = data;
