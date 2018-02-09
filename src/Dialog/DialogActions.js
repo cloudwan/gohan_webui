@@ -30,12 +30,12 @@ function fetchError(error) {
   };
 }
 
-export function prepareSchema(schema, action, parentProperty) {
+export function prepareSchema(schema, action, parentProperty, uiSchema = {}) {
   return async (dispatch, getState) => {
     const state = getState();
 
     try {
-      const resultSchema = await toLocalSchema(schema, state, parentProperty);
+      const resultSchema = await toLocalSchema(schema, state, parentProperty, uiSchema);
 
       dispatch(fetchSuccess(filterSchema(resultSchema, action, parentProperty)));
     } catch (error) {
