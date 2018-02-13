@@ -6,7 +6,8 @@ import {
   PREPARE_FAILURE,
   ERROR,
   CLEAR_ERROR,
-  CLEAR_DATA
+  CLEAR_DATA,
+  OVERWRITE_SCHEMA
 } from './DialogActionTypes';
 
 import {
@@ -75,4 +76,9 @@ export const clearError = () => dispatch => dispatch(
 export const showError = message => ({
   type: ERROR,
   message
+});
+
+export const overwriteSchema = schema => dispatch => dispatch({
+  type: OVERWRITE_SCHEMA,
+  schema
 });
