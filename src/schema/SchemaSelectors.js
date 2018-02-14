@@ -63,6 +63,15 @@ const breadcrumb = (state, id, params) => {
   }, []);
 };
 
+const selectedParents = (state, id, lastParent) => {
+  const parents = schemaParents(state, id);
+  const index = parents
+    .map(parent => parent.id)
+    .indexOf(lastParent);
+
+  return parents.slice(index, parents.length - 1);
+};
+
 export const getSingularUrl = createSelector(
   [singularSchemaUrl],
   url => url
@@ -128,4 +137,9 @@ export const getBreadcrumb = createSelector(
 export const isValidFieldName = createSelector(
   [schema, (state, id, name) => name],
   (schema, name) => Boolean(schema !== undefined && schema.schema.properties[name])
+);
+
+export const getSelectedParents = createSelector(
+  [selectedParents],
+  selectedParents => selectedParents
 );
