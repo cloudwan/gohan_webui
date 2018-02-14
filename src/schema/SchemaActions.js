@@ -1,7 +1,14 @@
 import axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import {getCollection} from './../api';
-import {getSchema} from './SchemaSelectors';
+import {Observable} from 'rxjs';
+import {
+  getSingular,
+  getCollection,
+} from './../api';
+import {
+  getSchema,
+  getSelectedParents,
+} from './SchemaSelectors';
 
 import {FETCH_SUCCESS, FETCH_ERROR} from './SchemaActionTypes';
 
@@ -61,26 +68,88 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
       if (relatedSchema === undefined) {
         reject({data: `Cannot find "${result.relation}" related schema!`});
       }
+      const query = {
+        limit: 0,
+        _fields: [
+          'id',
+          'name',
+          ...(uiSchema['ui:customLabel'] ? [`${relatedSchema.parent}_id`] : [])
+        ],
+        ...uiSchema['ui:query']
+      };
 
-      getCollection(state, result.relation, {}, {limit: 0, _fields: ['id', 'name'], ...uiSchema['ui:query']})
+      getCollection(state, result.relation, {}, query)
         .subscribe(response => {
           const data = response.payload;
           const enumValues = [];
           const options = {};
 
-          data.forEach(value => {
-            enumValues.push(value.id);
-            options[value.id] = value.name || value.id;
-          });
+          if (uiSchema['ui:customLabel']) {
+            const [
+              resource,
+              separator,
+              schemaId
+            ] = uiSchema['ui:customLabel'].match(/(?!%)(.*?)(?=%)/g);
+            const [
+              resourceSchemaId,
+              resourceProperty
+            ] = resource.split('.');
 
-          result.enum = enumValues;
-          result.options = options;
-          resolve(result);
+            const parents = getSelectedParents(state, schemaId, resourceSchemaId)
+              .reverse()
+              .map(parent => parent.id);
+
+            const makeRequest = (id, parent) => getSingular(
+              state,
+              parent,
+              {[`${parent}_id`]: id},
+              {limit: 0}
+            );
+
+            let request$;
+            parents.forEach(parent => {
+              if (request$ === undefined) {
+                request$ = Observable.zip(
+                  ...data.map(item => makeRequest(item[`${parent}_id`], parent))
+                );
+               } else {
+                  request$ = request$.mergeMap(response => {
+                    const ids = response.map(d => d.payload[`${parent}_id`]);
+                    return Observable.zip(
+                      ...ids.map(id => makeRequest(id, parent))
+                    );
+                  });
+                }
+              });
+
+              request$.subscribe(response => {
+                data.forEach((value, index) => {
+                  enumValues.push(value.id);
+                  const label = `${response[index].payload[resourceProperty]}${separator}${value.name}`;
+                  options[value.id] = label || value.id;
+                });
+
+                result.enum = enumValues;
+                result.options = options;
+                resolve(result);
+              }, error => {
+                reject(error);
+              });
+          } else {
+            data.forEach(value => {
+              enumValues.push(value.id);
+              options[value.id] = value.name || value.id;
+            });
+
+            result.enum = enumValues;
+            result.options = options;
+            resolve(result);
+          }
         }, error => {
           reject(error);
         });
     } else if (result.type === 'array') {
-      const promise = toLocalSchema(result.items, state, parentProperty);
+      const promise = toLocalSchema(result.items, state, parentProperty, uiSchema);
 
       promise.then(data => {
         result.items = data;
