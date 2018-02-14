@@ -29,7 +29,7 @@ describe('UiSchemaActions ', () => {
       const store = mockStore(storeObject);
 
       axios.get = sinon.spy(url => {
-        url.should.equal('/locales/en-us/uiSchema.json');
+        url.should.equal('./locales/en-us/uiSchema.json');
 
         return Promise.resolve({
           data: [
