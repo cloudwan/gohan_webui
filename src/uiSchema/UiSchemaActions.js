@@ -13,12 +13,12 @@ export const fetchUiSchema = () => async dispatch => {
   const language = navigator.language.toLocaleLowerCase();
 
   try {
-    let result = await axios.get(`/locales/${language}/uiSchema.json`);
+    let result = await axios.get(`./locales/${language}/uiSchema.json`);
 
     dispatch(fetchSuccess(result.data));
   } catch (error) {
     try {
-      let result = await axios.get('/locales/en-us/uiSchema.json');
+      let result = await axios.get('./locales/en-us/uiSchema.json');
 
       dispatch(fetchSuccess(result.data));
     } catch (error) {
