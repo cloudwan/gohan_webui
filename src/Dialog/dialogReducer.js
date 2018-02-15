@@ -6,7 +6,6 @@ import {
   CLEAR_DATA,
   ERROR,
   CLEAR_ERROR,
-  OVERWRITE_SCHEMA,
 } from './DialogActionTypes';
 
 export default function dialogReducer(
@@ -53,11 +52,6 @@ export default function dialogReducer(
       isLoading: false,
       schema: action.data
     };
-    case OVERWRITE_SCHEMA:
-      return {
-        ...state,
-        schema: action.schema
-      };
     case CLEAR_DATA:
       return {
         ...state,
