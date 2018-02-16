@@ -84,7 +84,7 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
           const enumValues = [];
           const options = {};
 
-          if (uiSchema['ui:customLabel']) {
+          if (uiSchema['ui:customLabel'] && data.length > 0) {
             const [
               resource,
               separator,
