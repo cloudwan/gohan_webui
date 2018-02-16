@@ -104,6 +104,26 @@ export default class Detail extends Component {
                 return null;
               }
 
+              if (property.type.includes('string') && (property.format === 'yaml' || property.format === 'text')) {
+                return (
+                  <div className="row gohan-detail-property mb-4" key={index}>
+                    <div className="property-name col-sm-3 text-right text-muted">tinko{property.title}</div>
+                    <div className="property-value col-sm-9">
+                      <div className="codemirror-container">
+                        <CodeMirror value={propertyValue}
+                          options={{
+                            mode: 'yaml',
+                            theme: 'base16-light',
+                            readOnly: true,
+                            cursorBlinkRate: -1
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
               if (property.type === 'array' || property.type === 'object') {
                 return (
                   <div className="row gohan-detail-property mb-4" key={index}>
