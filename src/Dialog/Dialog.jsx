@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import Form from 'react-jsonschema-form';
 import {Dialog, ProgressBar, Intent, Button} from '@blueprintjs/core';
 import isEqual from 'lodash/isEqual';
+import merge from 'lodash/merge';
 
 import {removeEmpty, toServerData} from './utils';
 import {getSchema, getLoadingState} from './DialogSelectors';
@@ -40,8 +41,7 @@ export class GeneratedDialog extends Component {
     const {baseSchema, action} = this.props;
 
     this.props.prepareSchema(baseSchema.schema, action, baseSchema.parent, {
-      ...this.props.jsonUiSchema,
-      ...this.props.uiSchema
+      ...merge(this.props.jsonUiSchema, this.props.uiSchema)
     });
   }
 
@@ -50,8 +50,7 @@ export class GeneratedDialog extends Component {
 
     if (!isEqual(this.props.baseSchema.schema, nextProps.baseSchema.schema)) {
       this.props.prepareSchema(nextProps.baseSchema.schema, action, nextProps.baseSchema.parent, {
-        ...this.props.jsonUiSchema,
-        ...this.props.uiSchema
+        ...merge(this.props.jsonUiSchema, this.props.uiSchema)
       });
     }
   }
@@ -133,8 +132,7 @@ export class GeneratedDialog extends Component {
                   uiSchema={{
                     'ui:order': propertiesOrder,
                     'ui:logic': this.props.jsonUiSchemaLogic,
-                    ...this.props.jsonUiSchema,
-                    ...this.props.uiSchema
+                    ...merge(this.props.jsonUiSchema, this.props.uiSchema),
                   }}
                   onChange={this.props.onChange}
                   onSubmit={this.handleSubmit}>
