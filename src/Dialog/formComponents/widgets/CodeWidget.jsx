@@ -23,7 +23,7 @@ class CodeWidget extends Component {
 
     return (
       <CodeMirror onChange={onChange}
-        value={format === 'yaml' ? jsyaml.safeDump(value) : value}
+        value={typeof value !== 'string' && format === 'yaml' ? jsyaml.safeDump(value) : value}
         ref={editor => {this.editor = editor;}}
         options={{
           mode: format,
