@@ -107,7 +107,7 @@ export default class Detail extends Component {
               if (property.type.includes('string') && (property.format === 'yaml' || property.format === 'text')) {
                 return (
                   <div className="row gohan-detail-property mb-4" key={index}>
-                    <div className="property-name col-sm-3 text-right text-muted">tinko{property.title}</div>
+                    <div className="property-name col-sm-3 text-right text-muted">{property.title}</div>
                     <div className="property-value col-sm-9">
                       <div className="codemirror-container">
                         <CodeMirror value={propertyValue}
