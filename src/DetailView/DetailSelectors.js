@@ -17,6 +17,10 @@ const schemaParents = (state, id) => {
 
   let parentSchema = schema(state, id);
 
+  if (parentSchema === undefined) {
+    return result;
+  }
+
   result.unshift(parentSchema);
 
   while (parentSchema.parent) {
