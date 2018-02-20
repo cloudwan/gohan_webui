@@ -22,8 +22,9 @@ const singularSchemaUrl = (state, id, params) => {
 
   return parents.reduce(
     (result, parent, index) => (
-      `${result}${(index === 0) ? parent.prefix : ''}/${parent.plural}/${params[`${parent.id}_id`]}`
-    ),
+        `${result}${(index === 0) ? parent.prefix : ''}` +
+        (params[`${parent.id}_id`] ? `/${parent.plural}/${params[`${parent.id}_id`]}` : '')
+      ),
     ''
   );
 };
