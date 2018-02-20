@@ -99,24 +99,39 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
               .reverse()
               .map(parent => parent.id);
 
-            const makeRequest = (id, parent) => getSingular(
+            const makeRequest = (id, schemaId, parentSchemaId) => getSingular(
               state,
-              parent,
-              {[`${parent}_id`]: id},
-              {limit: 0}
+              schemaId,
+              {[`${schemaId}_id`]: id},
+              {
+                _fields: [
+                  'id',
+                  'name',
+                  ...(parentSchemaId ? [`${parentSchemaId}_id`] : [])
+                ]
+              }
             );
 
             let request$;
-            parents.forEach(parent => {
+            parents.forEach((parent, index) => {
+              const nextParent = parents[index + 1];
               if (request$ === undefined) {
                 request$ = Observable.zip(
-                  ...data.map(item => makeRequest(item[`${parent}_id`], parent))
+                  ...data.map(item => makeRequest(
+                    item[`${parent}_id`],
+                    parent,
+                    nextParent,
+                  ))
                 );
                } else {
                   request$ = request$.mergeMap(response => {
                     const ids = response.map(d => d.payload[`${parent}_id`]);
                     return Observable.zip(
-                      ...ids.map(id => makeRequest(id, parent))
+                      ...ids.map(id => makeRequest(
+                        id,
+                        parent,
+                        nextParent,
+                      ))
                     );
                   });
                 }
