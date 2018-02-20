@@ -372,4 +372,66 @@ describe('SchemaSelectors', () => {
         , 'test2', {test1_id: '654'}).should.equal('/1.0/test1/654/test2'); // eslint-disable-line camelcase
     });
   });
+
+  describe('getSingularUrl', () => {
+    it('should return appropriate url link', () => {
+      selectors.getSingularUrl(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test',
+                prefix: '/1.0',
+                plural: 'test',
+              },
+              {
+                id: 'test1',
+                prefix: '/1.0',
+                plural: 'test1',
+                parent: 'test'
+              },
+              {
+                id: 'test2',
+                prefix: '/1.0',
+                plural: 'test2',
+                parent: 'test1'
+              }
+            ]
+          }
+        }
+        , 'test2', {
+          test_id: '542', // eslint-disable-line camelcase
+          test1_id: '312', // eslint-disable-line camelcase
+          test2_id: '654', // eslint-disable-line camelcase
+        }).should.equal('/1.0/test/542/test1/312/test2/654'); // eslint-disable-line camelcase
+    });
+
+    it('should return appropriate url link', () => {
+      selectors.getSingularUrl(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test',
+                prefix: '/1.0',
+                plural: 'test',
+              },
+              {
+                id: 'test1',
+                prefix: '/1.0',
+                plural: 'test1',
+                parent: 'test'
+              },
+              {
+                id: 'test2',
+                prefix: '/1.0',
+                plural: 'test2',
+                parent: 'test1'
+              }
+            ]
+          }
+        }
+        , 'test2', {test2_id: '654'}).should.equal('/1.0/test2/654'); // eslint-disable-line camelcase
+    });
+  });
 });
