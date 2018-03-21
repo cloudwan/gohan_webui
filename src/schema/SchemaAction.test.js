@@ -117,3 +117,34 @@ describe('SchemaActions ', () => {
     ]);
   });
 });
+
+describe('SchemaActions parseLabelTemplate helper function', () => {
+  it('should return parsed string', () => {
+    const template = '<%foo.name%>:<%bar.name%>:id-<%foo.id%>';
+    const data = {
+      foo: {
+        name: 'FOO',
+        id: '123'
+      },
+      bar: {
+        name: 'BAR'
+      }
+    };
+    const propsRegExp = /<%([^%>]+)?%>/g;
+    const symbolRegExp = /^(<%)|(%>)$/g;
+    const expected = 'FOO:BAR:id-123';
+
+    actions.parseLabelTemplate(template, data, propsRegExp, symbolRegExp).should.equal(expected);
+  });
+
+  it('should return unchanged template', () => {
+    const template = '<%foo.name%>:<%bar.name%>:id-<%foo.id%>';
+
+    actions.parseLabelTemplate(template).should.equal(template);
+  });
+
+  it('should return empty string', () => {
+    const expected = '';
+    actions.parseLabelTemplate().should.equal(expected);
+  });
+});

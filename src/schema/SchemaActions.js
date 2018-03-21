@@ -1,6 +1,7 @@
 import axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 import {Observable} from 'rxjs';
+import get from 'lodash/get';
 import {
   getSingular,
   getCollection,
@@ -73,7 +74,6 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
         _fields: [
           'id',
           'name',
-          ...(uiSchema['ui:customLabel'] ? [`${relatedSchema.parent}_id`] : [])
         ],
         ...uiSchema['ui:query']
       };
@@ -84,18 +84,8 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
           const enumValues = [];
           const options = {};
 
-          if (uiSchema['ui:customLabel'] && data.length > 0) {
-            const [
-              resource,
-              separator,
-              schemaId
-            ] = uiSchema['ui:customLabel'].match(/(?!%)(.*?)(?=%)/g);
-            const [
-              resourceSchemaId,
-              resourceProperty
-            ] = resource.split('.');
-
-            const parents = getSelectedParents(state, schemaId, resourceSchemaId)
+          if (uiSchema['ui:labelTemplate'] && uiSchema['ui:requiredResource'] && data.length > 0) {
+            const parents = getSelectedParents(state, result.relation, uiSchema['ui:requiredResource'])
               .reverse()
               .map(parent => parent.id);
 
@@ -140,7 +130,15 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
               request$.subscribe(response => {
                 data.forEach((value, index) => {
                   enumValues.push(value.id);
-                  const label = `${response[index].payload[resourceProperty]}${separator}${value.name}`;
+                  const label = parseLabelTemplate(
+                    uiSchema['ui:labelTemplate'],
+                    {
+                      [uiSchema['ui:requiredResource']]: response[index].payload,
+                      [result.relation]: value,
+                    },
+                    /<%([^%>]+)?%>/g,
+                    /^(<%)|(%>)$/g
+                  );
                   options[value.id] = label || value.id;
                 });
 
@@ -294,3 +292,21 @@ export function filterSchema(schema, action, parentProperty) {
 
   return result;
 }
+
+export const parseLabelTemplate = (
+  template = '',
+  data = {},
+  propRegEx,
+  symbolRegEx,
+) => template
+  .match(propRegEx)
+  .reduce((result, propTemplate) => {
+    if (propTemplate) {
+      return result.replace(
+        propTemplate,
+        get(data, propTemplate.replace(symbolRegEx, '').split('.')),
+      );
+    }
+
+    return result;
+  }, template);
