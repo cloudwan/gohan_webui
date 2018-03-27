@@ -55,7 +55,12 @@ function StringField(props) {
       return <Widget {...commonProps} />;
     }
 
-    return <SelectWidget options={{enumOptions}} {...commonProps} />;
+    return (
+      <SelectWidget options={{enumOptions}}
+        sort={true}
+        {...commonProps}
+      />
+    );
 
   } else if (Array.isArray(schema.enum)) {
     const enumOptions = optionsList(schema);
