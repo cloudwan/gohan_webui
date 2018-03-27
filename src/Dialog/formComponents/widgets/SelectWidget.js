@@ -22,6 +22,10 @@ function processValue({type, items}, value) {
 }
 
 class SelectWidget extends Component {
+  static defaultProps = {
+    sort: false
+  };
+
   constructor(props) {
     super(props);
 
@@ -54,7 +58,8 @@ class SelectWidget extends Component {
       label,      // eslint-disable-line
       required,   // eslint-disable-line
       multiple,   // eslint-disable-line
-      autofocus  // eslint-disable-line
+      autofocus,  // eslint-disable-line
+      sort,
     } = this.props;
 
     return (
@@ -62,7 +67,7 @@ class SelectWidget extends Component {
         <Select id={id}
           haystack={options.enumOptions}
           value={Array.isArray(value) ? value.filter(item => Boolean(item)) : value}
-          sort={true}
+          sort={sort}
           nullable={schema.nullable}
           readonly={readonly}
           disabled={disabled}
@@ -86,7 +91,8 @@ if (process.env.NODE_ENV !== 'production') {
     required: PropTypes.bool,
     multiple: PropTypes.bool,
     autofocus: PropTypes.bool,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    sort: PropTypes.bool,
   };
 }
 
