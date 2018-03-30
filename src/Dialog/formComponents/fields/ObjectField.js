@@ -254,6 +254,23 @@ class ObjectField extends Component {
           </div>
         )}
         <div className={'gohan-form-object-children'}>
+          {isTab && (!schema.nullable || !this.nullValue) && orderedProperties.filter(
+            key => schema.properties[key].type !== 'object' && schema.properties[key].type !== 'array'
+          ).map((name, index) => (
+            <SchemaField key={index} name={name}
+              required={this.isRequired(name)}
+              schema={schema.properties[name]}
+              uiSchema={uiSchema[name]}
+              errorSchema={errorSchema[name]}
+              idSchema={idSchema[name]}
+              formData={this.state[name]}
+              onChange={this.onPropertyChange(name)}
+              registry={this.props.registry}
+              disabled={disabled}
+              readonly={readonly}
+            />
+          ))
+          }
           {isTab && (
             <Tabs className={'object-tabs'}>
               {
@@ -293,23 +310,6 @@ class ObjectField extends Component {
               }
             </Tabs>
           )}
-          {isTab && (!schema.nullable || !this.nullValue) && orderedProperties.filter(
-            key => schema.properties[key].type !== 'object' && schema.properties[key].type !== 'array'
-          ).map((name, index) => (
-            <SchemaField key={index} name={name}
-              required={this.isRequired(name)}
-              schema={schema.properties[name]}
-              uiSchema={uiSchema[name]}
-              errorSchema={errorSchema[name]}
-              idSchema={idSchema[name]}
-              formData={this.state[name]}
-              onChange={this.onPropertyChange(name)}
-              registry={this.props.registry}
-              disabled={disabled}
-              readonly={readonly}
-            />
-          ))
-          }
           {!isTab && (
             (!schema.nullable || !this.nullValue) &&
               orderedProperties.map((name, index) => {
