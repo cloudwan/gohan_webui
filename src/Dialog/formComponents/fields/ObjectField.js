@@ -226,6 +226,21 @@ class ObjectField extends Component {
       },
       0
       ) > 1;
+
+    const groupedProperties = orderedProperties.reduce((result, name) => {
+      if (isTab && (schema.properties[name].type === 'object' || schema.properties[name].type === 'array')) {
+        if (result[result.length - 1] && Array.isArray(result[result.length - 1])) {
+          result[result.length - 1].push(name);
+        } else {
+          result.push([name]);
+        }
+      } else {
+        result.push(name);
+      }
+
+      return result;
+    }, []);
+
     return (
       <fieldset className="gohan-reset-fieldset">
         {title && (
@@ -254,13 +269,12 @@ class ObjectField extends Component {
           </div>
         )}
         <div className={'gohan-form-object-children'}>
-          {isTab && (
-            <Tabs className={'object-tabs'}>
-              {
-                (!schema.nullable || !this.nullValue) && (
-                  orderedProperties.filter(
-                    key => schema.properties[key].type === 'object' || schema.properties[key].type === 'array'
-                  ).map((name, index) => {
+          {groupedProperties.reduce((result, item, index) => {
+            if (Array.isArray(item)) {
+              result.push(
+                <Tabs key={index}
+                  className={'object-tabs'}>
+                  {(!schema.nullable || !this.nullValue) && item.map((name, i) => {
                     let title = name;
                     if (schema.properties[name] && schema.properties[name].title) {
                       title = schema.properties[name].title;
@@ -269,7 +283,7 @@ class ObjectField extends Component {
                     }
 
                     return (
-                      <Tab key={index}
+                      <Tab key={`${index}-${i}`}
                         title={title}
                         panel={
                           <div className="tab-pane-object">
@@ -288,49 +302,29 @@ class ObjectField extends Component {
                         }
                       />
                     );
-                  })
-                )
-              }
-            </Tabs>
-          )}
-          {isTab && (!schema.nullable || !this.nullValue) && orderedProperties.filter(
-            key => schema.properties[key].type !== 'object' && schema.properties[key].type !== 'array'
-          ).map((name, index) => (
-            <SchemaField key={index} name={name}
-              required={this.isRequired(name)}
-              schema={schema.properties[name]}
-              uiSchema={uiSchema[name]}
-              errorSchema={errorSchema[name]}
-              idSchema={idSchema[name]}
-              formData={this.state[name]}
-              onChange={this.onPropertyChange(name)}
-              registry={this.props.registry}
-              disabled={disabled}
-              readonly={readonly}
-            />
-          ))
-          }
-          {!isTab && (
-            (!schema.nullable || !this.nullValue) &&
-              orderedProperties.map((name, index) => {
-                return (
-                  <SchemaField key={index}
-                    name={name}
-                    required={this.isRequired(name)}
-                    schema={schema.properties[name]}
-                    uiSchema={uiSchema[name]}
-                    errorSchema={errorSchema[name]}
-                    idSchema={idSchema[name]}
-                    formData={this.state[name]}
-                    onChange={this.onPropertyChange(name)}
-                    registry={this.props.registry}
-                    disabled={disabled}
-                    readonly={readonly}
-                  />
-                );
-              }
-            )
-          )}
+                  })}
+                </Tabs>
+              );
+            } else if (!schema.nullable || !this.nullValue) {
+              result.push(
+                <SchemaField key={index}
+                  name={item}
+                  required={this.isRequired(item)}
+                  schema={schema.properties[item]}
+                  uiSchema={uiSchema[item]}
+                  errorSchema={errorSchema[item]}
+                  idSchema={idSchema[item]}
+                  formData={this.state[item]}
+                  onChange={this.onPropertyChange(item)}
+                  registry={this.props.registry}
+                  disabled={disabled}
+                  readonly={readonly}
+                />
+              );
+            }
+
+            return result;
+          }, [])}
         </div>
       </fieldset>
     );
