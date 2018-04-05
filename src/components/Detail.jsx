@@ -100,6 +100,11 @@ export default class Detail extends Component {
               const property = schema.properties[key];
               const propertyValue = data[key];
 
+              if (!property) {
+                console.error(`Property key '${key}' doesn't exist in schema properties.`);
+                return null;
+              }
+
               if (property.view && !property.view.includes('detail')) {
                 return null;
               }
