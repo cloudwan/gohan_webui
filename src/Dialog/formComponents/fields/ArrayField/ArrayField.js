@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import isEmpty from 'lodash/isEmpty';
 import {Button, Intent} from '@blueprintjs/core';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
@@ -75,7 +76,7 @@ export default class ArrayField extends Component {
         itemSchema = schema.additionalItems;
       }
 
-      if (this.props.formData === undefined) {
+      if (isEmpty(this.props.formData) && this.props.required) {
         this.props.onChange(items.concat([
           getDefaultFormState(itemSchema, undefined, definitions)
         ]), {validate: false});

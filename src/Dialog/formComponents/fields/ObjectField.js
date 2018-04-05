@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash/cloneDeep';
 import {Button, Intent} from '@blueprintjs/core';
+import isEmpty from 'lodash/isEmpty';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import {faPlusCircle, faMinusCircle} from '@fortawesome/fontawesome-free-solid';
@@ -50,7 +51,7 @@ class ObjectField extends Component {
     super(props);
 
     this.state = {...this.getStateFromProps(props)};
-    this.nullValue = props.formData === null;
+    this.nullValue = props.formData === null || (this.isFieldEmpty() && !props.required);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -92,6 +93,13 @@ class ObjectField extends Component {
       this.filterSchemaProperties(name, value, options);
     };
   };
+
+  isFieldEmpty = () => {
+    const data = this.props.formData;
+    const keys = this.props.schema.propertiesOrder;
+
+    return isEmpty(data) || keys.reduce((result, key) => result && data[key] === undefined, true);
+  }
 
   filterSchemaProperties = (name, value, options) => {
     const propertiesLogic = this.props.uiSchema['ui:logic'] || {};

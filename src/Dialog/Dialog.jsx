@@ -123,9 +123,16 @@ export class GeneratedDialog extends Component {
                   formData={
                     propertiesOrder.reduce(
                       (result, item) => {
-                        result[item] = data[item] !== undefined ?
-                          data[item] :
-                          required.includes(item) ? properties[item].default : undefined;
+                        if (data[item] !== undefined) {
+                          result[item] = data[item];
+                        } else if (required.includes(item)) {
+                          result[item] = properties[item].type === 'object' && !properties[item].default ?
+                            {} :
+                            properties[item].default;
+                        } else {
+                          result[item] = undefined;
+                        }
+
                         return result;
                       }, {}
                     )}
