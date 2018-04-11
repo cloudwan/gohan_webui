@@ -57,7 +57,10 @@ export const removeEmpty = obj => {
   }
 
   return Object.keys(obj)
-    .filter(f => !(obj[f] === undefined || ((obj[f] !== null && typeof obj[f] === 'object') && isEmpty(obj[f]))))
+    .filter(f => {
+      const isEmptyObject = (obj[f] !== null && typeof obj[f] === 'object') && isEmpty(obj[f]);
+      return !(obj[f] === undefined || (isEmptyObject && !Array.isArray(obj[f])));
+    })
     .reduce(
       (r, i) =>
         obj[i] !== null && typeof obj[i] === 'object' ?
