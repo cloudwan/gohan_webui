@@ -7,7 +7,7 @@ export const toServerData = (schema, data) => {
     return null;
   }
 
-  if (data === undefined || data === null || data === '') {
+  if (data === undefined || data === null) {
     return undefined;
   }
 
