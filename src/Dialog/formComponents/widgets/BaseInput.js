@@ -17,7 +17,7 @@ class BaseInput extends Component {
   }
 
   onInputChange = event => {
-    const value = (event.target.value === '' && this.props.required) ? undefined : event.target.value;
+    const value = event.target.value;
     const errors = [];
 
     if (this.props.required && !value) {
