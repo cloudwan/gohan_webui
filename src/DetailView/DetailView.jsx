@@ -106,6 +106,8 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
 
     showAlert = () => {
       if (this.state.alertOpen) {
+        const {name, id} = this.props.data;
+
         return (
           <Alert intent={Intent.DANGER}
             isOpen={this.state.alertOpen}
@@ -113,7 +115,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
             cancelButtonText='Cancel'
             onConfirm={this.handleDelete}
             onCancel={this.handleCloseAlert}>
-            <p>Are you sure to delete?</p>
+            <p>Are you sure to delete <strong>{name || id}</strong>?</p>
           </Alert>
         );
       }
