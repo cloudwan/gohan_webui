@@ -257,6 +257,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
 
     renderRemovalSingleItemAlert = () => {
       if (this.state.removalSingleItemAlertOpen) {
+        const removedItem = this.props.data.find(item => item.id === this.state.removedItemId);
+
         return (
           <Alert intent={Intent.DANGER}
             isOpen={this.state.removalSingleItemAlertOpen}
@@ -264,7 +266,7 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
             cancelButtonText='Cancel'
             onConfirm={this.handleDeleteItem}
             onCancel={this.handleCloseRemovalSingleItemAlert}>
-            <p>Are you sure to delete?</p>
+            <p>Are you sure to delete <strong>{removedItem.name || removedItem.id}</strong>?</p>
           </Alert>
         );
       }
