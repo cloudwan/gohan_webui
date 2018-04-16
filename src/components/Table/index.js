@@ -180,6 +180,12 @@ class TableComponent extends Component {
                       </TableDataLinkCell>
                     );
                   } else if (column.type.includes('array') || column.type.includes('object')) {
+                    if (Array.isArray(item[column.id]) && item[column.id].length === 0) {
+                      return (
+                        <TableDataCell key={index} />
+                      );
+                    }
+
                     return (
                       <TableDataCodeCell key={index}>
                         {item[column.id]}
