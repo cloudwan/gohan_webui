@@ -22,7 +22,12 @@ export const toServerData = (schema, data) => {
   if (schema.properties !== undefined) {
     const result = {};
     for (let key in schema.properties) {
-      result[key] = toServerData(schema.properties[key], data[key]);
+      if (data[key] !== undefined) {
+        result[key] = toServerData(schema.properties[key], data[key]);
+      }
+    }
+    if (schema.nullable && isEmpty(result)) {
+      return null;
     }
     return result;
   } else if (schema.items !== undefined) {
