@@ -54,7 +54,7 @@ const relationsUrls = (state, id) => {
         relation,
         relation_property: relationProperty
       } = properties[prop];
-      const parentsIds = (detailData[relation] && detailData[relation].parents) ? detailData[relation].parents : [];
+      const parentsIds = (detailData[relation] && detailData[relation]) ? detailData[relation] : [];
       const url = singularSchemaUrl(state, relation, {
         ...parentsIds,
         [`${relation}_id`]: detailData[prop],

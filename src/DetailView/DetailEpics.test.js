@@ -5,13 +5,15 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {Observable} from 'rxjs';
 import expectEpic from './../../test/helpers/expectEpic';
+import expectFuctionReturnObservable from './../../test/helpers/expectFuctionReturnObservable';
 import * as api from './../api';
 import * as actionTypes from './DetailActionTypes';
 import * as dialogActionTypes from '../Dialog/DialogActionTypes';
 import {
   fetchEpic,
   updateEpic,
-  removeEpic
+  removeEpic,
+  getRelationData,
 } from './DetailEpics';
 
 chai.should();
@@ -367,5 +369,173 @@ describe('DetailEpics', () => {
         store
       });
     });
+  });
+});
+
+describe('getRelationData', () => {
+  const state = {
+    authReducer: {
+      tokenId: '',
+    },
+    configReducer: {
+      gohan: {
+        url: 'https://test/gohan',
+      },
+    },
+    schemaReducer: {
+      data: [
+        {
+          id: 'test_prop',
+          parent: 'test_parent',
+        },
+        {
+          id: 'test_parent',
+          parent: 'test_grandparent',
+        },
+        {
+          id: 'test_grandparent',
+          parent: '',
+        }
+      ],
+    },
+  };
+
+  it('should return property name and nested parents ids', () => {
+    const args = [
+      {
+        id: 'test_prop',
+        parent: 'test_parent',
+      },
+      'foo',
+      state,
+      {}
+    ];
+
+    const expected = [
+      'a|',
+      {
+        a: {
+          name: 'Test Prop',
+          test_parent_id: 'bar', // eslint-disable-line camelcase
+          test_grandparent_id: 'baz', // eslint-disable-line camelcase
+        }
+      }
+    ];
+
+
+    const response = [
+      'a|',
+      {
+        a: {
+          payload: {
+              name: 'Test Prop',
+              test_parent_id: 'bar', // eslint-disable-line camelcase
+              test_grandparent_id: 'baz', // eslint-disable-line camelcase
+          },
+        },
+      }
+    ];
+
+    expectFuctionReturnObservable(getRelationData, args, response, expected);
+  });
+
+  it('should return property name and parent id', () => {
+    const args = [
+      {
+        id: 'test_parent',
+        parent: 'test_grandparent',
+      },
+      'bar',
+      state,
+      {}
+    ];
+
+    const expected = [
+      'a|',
+      {
+        a: {
+          name: 'Test Parent Prop',
+          test_grandparent_id: 'baz', // eslint-disable-line camelcase
+        }
+      }
+    ];
+
+
+    const response = [
+      'a|',
+      {
+        a: {
+          payload: {
+              name: 'Test Parent Prop',
+              test_grandparent_id: 'baz', // eslint-disable-line camelcase
+          },
+        },
+      }
+    ];
+
+    expectFuctionReturnObservable(getRelationData, args, response, expected);
+  });
+
+  it('should return property name', () => {
+    const args = [
+      {
+        id: 'test_grandparent',
+        parent: '',
+      },
+      'baz',
+      state,
+      {}
+    ];
+
+    const expected = [
+      'a|',
+      {
+        a: {
+          name: 'Test Grandparent Prop',
+        }
+      }
+    ];
+
+
+    const response = [
+      'a|',
+      {
+        a: {
+          payload: {
+              name: 'Test Grandparent Prop',
+          },
+        },
+      }
+    ];
+
+    expectFuctionReturnObservable(getRelationData, args, response, expected);
+  });
+
+  it('should return empty object', () => {
+    const args = [
+      {},
+      undefined,
+      state,
+      {}
+    ];
+
+    const expected = [
+      'a|',
+      {
+        a: {}
+      }
+    ];
+
+
+    const response = [
+      'a|',
+      {
+        a: {
+          payload: {},
+        },
+      }
+    ];
+
+    expectFuctionReturnObservable(getRelationData, args, response, expected);
   });
 });

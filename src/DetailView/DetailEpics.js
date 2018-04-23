@@ -32,6 +32,32 @@ import {
 } from './../api/index';
 import {getFollowableRelationsState} from './../config/ConfigSelectors';
 
+export const getRelationData = (prop, id, state, data = {}, call = (fn, ...args) => fn(...args)) => {
+  return call(getSingular, state, prop.id, {[`${prop.id}_id`]: id})
+    .mergeMap(({payload}) => {
+      if (Object.keys(data).length === 0 && payload.name) {
+        data.name = payload.name;
+      }
+
+      if (prop.parent) {
+        const parentSchema = getSchema(state, prop.parent);
+        data[`${prop.parent}_id`] = payload[`${prop.parent}_id`];
+
+        if (parentSchema.parent) {
+          return getRelationData(
+            parentSchema,
+            payload[`${prop.parent}_id`],
+            state,
+            data,
+            call,
+          );
+        }
+      }
+
+      return Observable.of(data);
+    });
+};
+
 export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =>
   action$.ofType(FETCH).mergeMap(({schemaId, params}) => getPollingTimer(
     store.getState(),
@@ -54,10 +80,13 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
           if (relationProperties.length !== 0) {
             return Observable.zip(
               ...relationProperties
-                .map(({key, id}) => call(getSingular, state, key, {[`${key}_id`]: id}))
+                .map(({key, id}) => {
+                  const relationProperty = getSchema(state, key);
+                  return getRelationData(relationProperty, id, state);
+                })
             ).map(value => {
               relationProperties.forEach(({key}, index) => {
-                payload[key] = value[index].payload;
+                payload[key] = value[index];
               });
 
               return fetchSuccess(payload);
