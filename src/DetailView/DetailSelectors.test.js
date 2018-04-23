@@ -27,10 +27,8 @@ describe('DetailSelectors', () => {
               id: '123Schema1',
               prop1: '123Prop1',
               schemaId2: {
-                parents: {
-                  schemaId3_id: '123Schema3', // eslint-disable-line camelcase
-                  schemaId4_id: '123Schema4', // eslint-disable-line camelcase
-                }
+                schemaId3_id: '123Schema3', // eslint-disable-line camelcase
+                schemaId4_id: '123Schema4', // eslint-disable-line camelcase
               },
               prop2: '123prop2',
               relationProp4: {
@@ -82,10 +80,8 @@ describe('DetailSelectors', () => {
         prop1: '123Prop1',
         schemaId2: {
           url: 'v0.1/schemaId4s/123Schema4/schemaId3s/123Schema3/schemaId2s/123Prop1',
-          parents: {
-            schemaId3_id: '123Schema3', // eslint-disable-line camelcase
-            schemaId4_id: '123Schema4', // eslint-disable-line camelcase
-          }
+          schemaId3_id: '123Schema3', // eslint-disable-line camelcase
+          schemaId4_id: '123Schema4', // eslint-disable-line camelcase
         },
         prop2: '123prop2',
         relationProp4: {
