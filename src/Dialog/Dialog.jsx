@@ -113,38 +113,43 @@ export class GeneratedDialog extends Component {
 
             return (
               <div>
-                <Form ref={c => {this.form = c;}}
-                  schema={schema}
-                  fields={fields} widgets={widgets}
-                  FieldTemplate={Template}
-                  showErrorList={false}
-                  noValidate={true} // workaround for fix ESI-16110
-                  ErrorList={ErrorListTemplate}
-                  formData={
-                    propertiesOrder.reduce(
-                      (result, item) => {
-                        if (data[item] !== undefined) {
-                          result[item] = data[item];
-                        } else if (required.includes(item)) {
-                          result[item] = properties[item].type === 'object' && !properties[item].default ?
-                            {} :
-                            properties[item].default;
-                        } else {
-                          result[item] = undefined;
-                        }
+                {(propertiesOrder.length === 0) && (
+                  <span className="pt-empty-dialog-text">There are no properties that can be updated.</span>
+                )}
+                {(propertiesOrder.length > 0) && (
+                  <Form ref={c => {this.form = c;}}
+                    schema={schema}
+                    fields={fields} widgets={widgets}
+                    FieldTemplate={Template}
+                    showErrorList={false}
+                    noValidate={true} // workaround for fix ESI-16110
+                    ErrorList={ErrorListTemplate}
+                    formData={
+                      propertiesOrder.reduce(
+                        (result, item) => {
+                          if (data[item] !== undefined) {
+                            result[item] = data[item];
+                          } else if (required.includes(item)) {
+                            result[item] = properties[item].type === 'object' && !properties[item].default ?
+                              {} :
+                              properties[item].default;
+                          } else {
+                            result[item] = undefined;
+                          }
 
-                        return result;
-                      }, {}
-                    )}
-                  uiSchema={{
-                    'ui:order': propertiesOrder,
-                    'ui:logic': this.props.jsonUiSchemaLogic,
-                    ...merge(this.props.jsonUiSchema, this.props.uiSchema),
-                  }}
-                  onChange={this.props.onChange}
-                  onSubmit={this.handleSubmit}>
-                  <div/>
-                </Form>
+                          return result;
+                        }, {}
+                      )}
+                    uiSchema={{
+                      'ui:order': propertiesOrder,
+                      'ui:logic': this.props.jsonUiSchemaLogic,
+                      ...merge(this.props.jsonUiSchema, this.props.uiSchema),
+                    }}
+                    onChange={this.props.onChange}
+                    onSubmit={this.handleSubmit}>
+                    <div/>
+                  </Form>
+                )}
               </div>
             );
           })()}
@@ -157,6 +162,7 @@ export class GeneratedDialog extends Component {
             <Button text={submitButtonLabel}
               intent={Intent.PRIMARY}
               onClick={event => {this.form.onSubmit(event);}}
+              disabled={this.props.schema && this.props.schema.propertiesOrder.length === 0}
             />
           </div>
         </div>
