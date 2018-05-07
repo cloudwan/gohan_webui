@@ -17,7 +17,7 @@ class BaseInput extends Component {
   }
 
   onInputChange = event => {
-    const value = event.target.value;
+    let value = event.target.value;
     const errors = [];
 
     if (this.props.required && !value) {
@@ -27,6 +27,7 @@ class BaseInput extends Component {
     }
 
     if (this.props.schema.type === 'number' || this.props.schema.type === 'integer') {
+      value = (value === '') ? value : Number(value);
       validator.validate(this.props.schema, asNumber(value));
     } else {
       validator.validate(this.props.schema, value);
