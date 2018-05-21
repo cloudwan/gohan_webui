@@ -64,7 +64,7 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
       result.type = result.type[0];
     }
 
-    if (result.relation !== undefined && result.relation !== parentProperty) {
+    if (result.relation !== undefined && result.relation !== null && result.relation !== parentProperty) {
       const relatedSchema = getSchema(state, result.relation);
       if (relatedSchema === undefined) {
         reject({data: `Cannot find "${result.relation}" related schema!`});
