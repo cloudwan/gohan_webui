@@ -73,6 +73,16 @@ const selectedParents = (state, id, lastParent) => {
   return parents.slice(index, parents.length - 1);
 };
 
+const hasProperty = (state, id, property) => {
+  const selectedSchema = schema(state, id);
+
+  if (!selectedSchema) {
+    return false;
+  }
+
+  return Object.keys(selectedSchema.schema.properties).includes(property);
+};
+
 export const getSingularUrl = createSelector(
   [singularSchemaUrl],
   url => url
@@ -143,4 +153,9 @@ export const isValidFieldName = createSelector(
 export const getSelectedParents = createSelector(
   [selectedParents],
   selectedParents => selectedParents
+);
+
+export const hasSchemaProperty = createSelector(
+  [hasProperty],
+  hasProperty => hasProperty
 );
