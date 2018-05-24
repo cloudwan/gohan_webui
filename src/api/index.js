@@ -7,7 +7,8 @@ import {getTokenId} from './../auth/AuthSelectors';
 import {
   getSchema,
   getCollectionUrl,
-  getSingularUrl
+  getSingularUrl,
+  hasSchemaProperty
 } from './../schema/SchemaSelectors';
 import {
   isTenantFilterActive,
@@ -39,7 +40,9 @@ export class GetCollectionObservable extends AjaxObservable {
       method: 'GET',
       url: `${gohanUrl}${url}?${queryStringify({
         limit: defaultPageLimit,
-        tenant_id: isTenantFilterActive(state) ? getTenant(state).id : undefined, // eslint-disable-line camelcase
+        tenant_id: isTenantFilterActive(state) && // eslint-disable-line camelcase
+          hasSchemaProperty(state, schemaId, 'tenant_id') ?
+            getTenant(state).id : undefined,
         ...query
       })}`,
       headers,

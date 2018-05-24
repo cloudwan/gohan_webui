@@ -434,4 +434,46 @@ describe('SchemaSelectors', () => {
         , 'test2', {test2_id: '654'}).should.equal('/1.0/test2/654'); // eslint-disable-line camelcase
     });
   });
+
+  describe('hasSchemaProperty', () => {
+    it('should return true if schema has property', () => {
+      selectors.hasSchemaProperty(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test',
+                schema: {
+                  properties: {
+                    name: {},
+                    description: {}
+                  }
+                }
+              }
+            ]
+          }
+        }
+        , 'test', 'name').should.equal(true);
+    });
+
+    it('should return false if schema has\'t property', () => {
+      selectors.hasSchemaProperty(
+        {
+          schemaReducer: {
+            data: [
+              {
+                id: 'test',
+                schema: {
+                  properties: {
+                    id: {},
+                    description: {}
+                  }
+                }
+              }
+            ]
+          }
+        }
+        , 'test', 'name').should.equal(false);
+    });
+  });
 });
