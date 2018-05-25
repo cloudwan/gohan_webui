@@ -6,7 +6,7 @@ class Filter extends Component {
     super(props);
 
     this.state = {
-      by: props.by || (props.properties.length > 0 && props.properties[0].id) || '',
+      by: props.by || (props.properties.length > 0 && (props.properties[0].propKey || props.properties[0].id)) || '',
       value: props.value || ''
     };
   }
@@ -53,7 +53,7 @@ class Filter extends Component {
           {properties && properties.length > 0 && (
             properties.map((item, index) => {
               return (
-                <option key={index} value={item.id}>{item.title}</option>
+                <option key={index} value={item.propKey || item.id}>{item.title}</option>
               );
             })
           )}
