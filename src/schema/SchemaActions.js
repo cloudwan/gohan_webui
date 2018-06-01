@@ -70,7 +70,7 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
         reject({data: `Cannot find "${result.relation}" related schema!`});
       }
       const query = {
-        limit: 0,
+        limit: undefined,
         _fields: [
           'id',
           'name',
