@@ -142,7 +142,7 @@ class Select extends Component {
     } else {
       selectedItem = haystack.find(item => {
         if (typeof item === 'object') {
-          return item.value === value;
+          return (item.value === value) && (item.value !== null);
         } else if (typeof item === 'string') {
           return item === value;
         }
