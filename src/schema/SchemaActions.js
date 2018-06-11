@@ -66,8 +66,10 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
 
     if (result.relation !== undefined && result.relation !== null && result.relation !== parentProperty) {
       const relatedSchema = getSchema(state, result.relation);
-      if (relatedSchema === undefined) {
-        reject({data: `Cannot find "${result.relation}" related schema!`});
+      if (relatedSchema === undefined || !relatedSchema.schema.permission.includes('read')) {
+        result.enum = [];
+        result.options = {};
+        resolve(result);
       }
       const query = {
         limit: undefined,
