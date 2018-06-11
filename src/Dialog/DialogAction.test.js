@@ -135,6 +135,7 @@ describe('DialogActions ', () => {
             plural: 'pet',
             prefix: '/v1.0',
             schema: {
+              permission: ['read'],
               properties: {
                 description: {
                   description: 'Description',
@@ -280,7 +281,6 @@ describe('DialogActions ', () => {
               type: 'array',
               nullable: false
             }
-
           },
           propertiesOrder: [
             'name',
@@ -294,10 +294,7 @@ describe('DialogActions ', () => {
     api.getCollection.restore();
   });
 
-  it('should create PREPARE_FAILURE when fetching config has been done', async () => {
-    sinon.stub(api, 'getCollection').callsFake(() => {
-      return Observable.create(observer => observer.error('Cannot fetch data.'));
-    });
+  it('should create PREPARE_SUCCESS when relation schema exists but user desn\'t have permission to read', async () => {
     const schema = {
       properties: {
         petId: {
@@ -341,6 +338,170 @@ describe('DialogActions ', () => {
       required: [],
       type: 'object'
     };
+    const storeObject = {
+      authReducer: {
+        tokenId: 'tokenId'
+      },
+      schemaReducer: {
+        data: [
+          {
+            actions: {},
+            description: 'Pet',
+            id: 'pet',
+            metadata: {},
+            namespace: '',
+            parent: '',
+            plural: 'pet',
+            prefix: '/v1.0',
+            schema: {
+              permission: [],
+              properties: {
+                description: {
+                  description: 'Description',
+                  permission: [
+                    'create',
+                    'update'
+                  ],
+                  title: 'Description',
+                  type: 'string',
+                  view: [
+                    'detail'
+                  ]
+                },
+                id: {
+                  description: 'ID',
+                  permission: [
+                    'create'
+                  ],
+                  title: 'ID',
+                  type: 'string',
+                  view: [
+                    'detail'
+                  ]
+                },
+                name: {
+                  description: 'Name of Pet.',
+                  permission: [
+                    'create',
+                    'update'
+                  ],
+                  title: 'Name',
+                  type: 'string'
+                },
+              },
+              propertiesOrder: [
+                'id',
+                'name',
+                'description'
+              ],
+              required: [
+                'name'
+              ],
+              type: 'object'
+            },
+            singular: 'pet',
+            title: 'Pet',
+            url: '/v1.0/pets'
+          }
+        ]
+      },
+      configReducer: {
+        gohan: {
+          url: 'http://localhost',
+          schema: '/schema'
+        }
+      }
+    };
+    const store = mockStore(storeObject);
+
+    await store.dispatch(actions.prepareSchema(schema, 'create'));
+
+    store.getActions().should.deep.equal([
+      {
+        type: actionTypes.PREPARE_SUCCESS,
+        data: {
+          nullable: false,
+          properties: {
+            name: {
+              description: 'Name',
+              nullable: false,
+              permission: [
+                'create',
+                'update'
+              ],
+              title: 'Name',
+              type: 'string'
+            },
+            petId: {
+              description: 'Relation to Pet',
+              enum: [],
+              nullable: true,
+              options: {},
+              permission: [
+                'create'
+              ],
+              relation: 'pet',
+              relation_property: 'pet', // eslint-disable-line camelcase
+              title: 'pet',
+              type: 'string'
+            },
+          },
+          propertiesOrder: [
+            'name',
+            'petId'
+          ],
+          required: [],
+          type: 'object'
+        }
+      }
+    ]);
+  });
+
+  it('should create PREPARE_SUCCESS when relation schema is undefined', async () => {
+    const schema = {
+      properties: {
+        animalId: {
+          description: 'Relation to animal',
+          permission: [
+            'create'
+          ],
+          relation: 'animal',
+          relation_property: 'animal', // eslint-disable-line camelcase
+          title: 'animal',
+          type: [
+            'string',
+            'null'
+          ]
+        },
+        id: {
+          description: 'ID',
+          permission: [
+            'create'
+          ],
+          title: 'ID',
+          type: 'string',
+          view: [
+            'detail'
+          ]
+        },
+        name: {
+          description: 'Name',
+          permission: [
+            'create',
+            'update'
+          ],
+          title: 'Name',
+          type: 'string'
+        },
+      }, propertiesOrder: [
+        'id',
+        'name',
+        'animalId'
+      ],
+      required: [],
+      type: 'object'
+    };
+
     const storeObject = {
       authReducer: {
         tokenId: 'tokenId'
@@ -420,24 +581,58 @@ describe('DialogActions ', () => {
 
     store.getActions().should.deep.equal([
       {
-        type: actionTypes.PREPARE_FAILURE,
-        error: 'Cannot fetch data.'
+        type: actionTypes.PREPARE_SUCCESS,
+        data: {
+          nullable: false,
+          properties: {
+            animalId: {
+              description: 'Relation to animal',
+              permission: [
+                'create'
+              ],
+              nullable: true,
+              enum: [],
+              options: {},
+              relation: 'animal',
+              relation_property: 'animal', // eslint-disable-line camelcase
+              title: 'animal',
+              type: 'string',
+            },
+            name: {
+              description: 'Name',
+              nullable: false,
+              permission: [
+                'create',
+                'update'
+              ],
+              title: 'Name',
+              type: 'string'
+            },
+          }, propertiesOrder: [
+            'name',
+            'animalId'
+          ],
+          required: [],
+          type: 'object'
+        }
       }
     ]);
+  });
 
-    // Else statement.
-    store.clearActions();
-
-    const schema2 = {
+  it('should create PREPARE_FAILURE when fetching config has been done', async () => {
+    sinon.stub(api, 'getCollection').callsFake(() => {
+      return Observable.create(observer => observer.error('Cannot fetch data.'));
+    });
+    const schema = {
       properties: {
-        animalId: {
-          description: 'Relation to animal',
+        petId: {
+          description: 'Relation to Pet',
           permission: [
             'create'
           ],
-          relation: 'animal',
-          relation_property: 'animal', // eslint-disable-line camelcase
-          title: 'animal',
+          relation: 'pet',
+          relation_property: 'pet', // eslint-disable-line camelcase
+          title: 'pet',
           type: [
             'string',
             'null'
@@ -454,30 +649,95 @@ describe('DialogActions ', () => {
             'detail'
           ]
         },
-        name: {
-          description: 'Name',
-          permission: [
-            'create',
-            'update'
-          ],
-          title: 'Name',
-          type: 'string'
-        },
       }, propertiesOrder: [
         'id',
-        'name',
-        'animalId'
+        'petId'
       ],
       required: [],
       type: 'object'
     };
+    const storeObject = {
+      authReducer: {
+        tokenId: 'tokenId'
+      },
+      schemaReducer: {
+        data: [
+          {
+            actions: {},
+            description: 'Pet',
+            id: 'pet',
+            metadata: {},
+            namespace: '',
+            parent: '',
+            plural: 'pet',
+            prefix: '/v1.0',
+            schema: {
+              permission: ['read'],
+              properties: {
+                description: {
+                  description: 'Description',
+                  permission: [
+                    'create',
+                    'update'
+                  ],
+                  title: 'Description',
+                  type: 'string',
+                  view: [
+                    'detail'
+                  ]
+                },
+                id: {
+                  description: 'ID',
+                  permission: [
+                    'create'
+                  ],
+                  title: 'ID',
+                  type: 'string',
+                  view: [
+                    'detail'
+                  ]
+                },
+                name: {
+                  description: 'Name of Pet.',
+                  permission: [
+                    'create',
+                    'update'
+                  ],
+                  title: 'Name',
+                  type: 'string'
+                },
+              },
+              propertiesOrder: [
+                'id',
+                'name',
+                'description'
+              ],
+              required: [
+                'name'
+              ],
+              type: 'object'
+            },
+            singular: 'pet',
+            title: 'Pet',
+            url: '/v1.0/pets'
+          }
+        ]
+      },
+      configReducer: {
+        gohan: {
+          url: 'http://localhost',
+          schema: '/schema'
+        }
+      }
+    };
+    const store = mockStore(storeObject);
 
-    await store.dispatch(actions.prepareSchema(schema2, 'create'));
+    await store.dispatch(actions.prepareSchema(schema, 'create'));
 
     store.getActions().should.deep.equal([
       {
         type: actionTypes.PREPARE_FAILURE,
-        error: 'Cannot find "animal" related schema!'
+        error: 'Cannot fetch data.'
       }
     ]);
   });
