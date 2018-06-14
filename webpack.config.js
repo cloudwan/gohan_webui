@@ -3,12 +3,10 @@ const gitSync = require('git-rev-sync');
 const process = require('process');
 const webpack = require('webpack');
 const HappyPack = require('happypack');
-const NyanProgressPlugin = require('nyan-progress-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const pkg = require('./package.json');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const happyThreadPool = HappyPack.ThreadPool({size: 4});
 const devServerPort = 8080;
 const devServerHostname = 'localhost';
@@ -23,7 +21,7 @@ function version() {
   return {
     hash: gitSync.long(),
     tag: gitSync.tag(),
-    version: pkg.version
+    version: process.env.npm_package_version
   };
 }
 
@@ -31,13 +29,15 @@ const config = {
   context: __dirname,
   entry: {
     polyfill: 'babel-polyfill',
-    main: './src/index'
+    main: './src/index',
+//    css: './css/main.scss'
   },
   output: {
     path: outputPath,
     filename: '[name].[hash].js',
     sourceMapFilename: '[file].map'
   },
+  mode: ENV === 'production' ? 'production' : 'development',
   module: {
     rules: [
       {
@@ -50,15 +50,17 @@ const config = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          use: 'happypack/loader?id=css'
-        })
+        use: [
+          MiniCssExtractPlugin.loader,
+          'happypack/loader?id=css'
+        ]
       },
       {
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          use: 'happypack/loader?id=scss'
-        })
+        use: [
+          MiniCssExtractPlugin.loader,
+          'happypack/loader?id=scss'
+        ]
       },
       {
         test: /\.(woff|woff2|svg|ttf|eot)([\?]?.*)$/,
@@ -80,12 +82,11 @@ const config = {
   resolve: {
     extensions: ['.js', '.jsx'],
     modules: [
-      path.resolve(__dirname, 'node_modules'),
+      'node_modules',
       sourcePath
     ]
   },
   plugins: [
-    new NyanProgressPlugin(),
     new HappyPack({
       id: 'jsx',
       threadPool: happyThreadPool,
@@ -94,7 +95,7 @@ const config = {
         {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true
+            cacheDirectory: true,
           }
         }
       ]
@@ -128,7 +129,7 @@ const config = {
           }
         },
         {
-          loader: 'fast-sass-loader',
+          loader: 'sass-loader',
           options: {
             sourceMap: isDevelopment,
             minimize: !isDevelopment
@@ -136,9 +137,9 @@ const config = {
         }
       ]
     }),
-    new ExtractTextPlugin({
-      filename: '[name].[contenthash].css',
-      allChunks: false,
+    new MiniCssExtractPlugin({
+      filename: isDevelopment ? '[name].css' : '[name].[hash].css',
+      chunkFilename: isDevelopment ? '[id].css' : '[id].[hash].css',
     }),
     new HtmlWebpackPlugin({
       template: './src/index.html',
@@ -157,11 +158,9 @@ const config = {
           NODE_ENV: JSON.stringify(ENV)
         }
       },
-      gohanVersion: JSON.stringify(version())
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      minChunks: module => module.context && module.context.indexOf('node_modules') !== -1
+      VERSION: {
+        gohanVersion: JSON.stringify(version())
+      }
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin()
@@ -169,7 +168,30 @@ const config = {
   performance: {
     hints: false
   },
-  devtool: 'inline-source-map',
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      minSize: 30000,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+          chunks: 'all'
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
+    },
+  },
+  devtool: ENV === 'production' ? undefined : 'inline-source-map',
   devServer: {
     host: devServerHostname,
     port: devServerPort,
@@ -188,45 +210,7 @@ const config = {
   }
 };
 
-if (!isDevelopment) {
-  config.plugins.push(
-    new UglifyJSPlugin({
-      sourceMap: isDevelopment,
-      parallel: true,
-      uglifyOptions: {
-        mangle: {
-          toplevel: !isDevelopment
-        },
-        output: {
-          beautify: isDevelopment,
-          ecma: 6
-        },
-        minimize: !isDevelopment,
-        compress: {
-          sequences: true,
-          properties: true,
-          dead_code: true, // eslint-disable-line camelcase
-          drop_debugger: true, // eslint-disable-line camelcase
-          unsafe: true,
-          conditionals: true,
-          comparisons: true,
-          evaluate: true,
-          booleans: true,
-          loops: true,
-          unused: true,
-          hoist_funs: true, // eslint-disable-line camelcase
-          hoist_vars: false, // eslint-disable-line camelcase
-          if_return: true, // eslint-disable-line camelcase
-          join_vars: true, // eslint-disable-line camelcase
-          cascade: true,
-          side_effects: true, // eslint-disable-line camelcase
-          warnings: true,
-          global_defs: {} // eslint-disable-line camelcase
-        }
-      }
-    })
-  );
-} else {
+if (isDevelopment) {
   config.plugins.push(
     new CopyWebpackPlugin([
       {
