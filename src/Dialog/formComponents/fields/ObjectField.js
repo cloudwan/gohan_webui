@@ -60,7 +60,7 @@ class ObjectField extends Component {
     if (formData && objectKeysHaveChanged(formData, this.state)) {
       // We *need* to replace state entirely here has we have received formData
       // holding different keys (so with some removed).
-      this.state = state;
+      this.state = state; // eslint-disable-line react/no-direct-mutation-state
       this.forceUpdate();
     } else {
       this.setState(state);

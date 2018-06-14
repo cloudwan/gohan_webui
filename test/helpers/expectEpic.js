@@ -1,7 +1,9 @@
 import Rx from 'rxjs';
 import {ActionsObservable} from 'redux-observable';
 import chai from 'chai';
+import spies from 'chai-spies';
 
+chai.use(spies);
 chai.should();
 
 const expectEpic = (epic, {expected, action, response, store}) => {

@@ -5,14 +5,17 @@
     "flowtype",
     "babel"
   ],
-  "env": {
-    "es6": true,
-    "node": true
-  },
   "settings": {
+    "react": {
+      "version": "15.6.0"
+    },
     "flowtype": {
       "onlyFilesWithFlowAnnotation": true
     }
+  },
+  "env": {
+    "es6": true,
+    "node": true
   },
   "rules": {
     "flowtype/boolean-style": [2, "boolean"],
