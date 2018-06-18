@@ -8,7 +8,8 @@ export const Input = (
     onChange = () => {},
     type = 'text',
     placeholder = '',
-    isInvalid = false
+    isInvalid = false,
+    step = undefined,
   }
 ) => (
   <input className={`form-control ${isInvalid ? 'is-invalid' : ''}`}
@@ -17,6 +18,7 @@ export const Input = (
     value={value}
     placeholder={placeholder}
     onChange={onChange}
+    step={step}
   />
 );
 
@@ -32,6 +34,7 @@ if (process.env.NODE_ENV !== 'production') {
     onChange: PropTypes.func,
     type: PropTypes.string,
     placeholder: PropTypes.string,
-    isInvalid: PropTypes.bool
+    isInvalid: PropTypes.bool,
+    step: PropTypes.number,
   };
 }
