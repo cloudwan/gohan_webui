@@ -38,6 +38,7 @@ function StringField(props) {
     id: idSchema && idSchema.$id,
     label: (title === undefined) ? name : title,
     value: formData,
+    step: uiSchema['ui:step'],
     onChange,
     required,
     disabled,

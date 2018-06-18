@@ -53,6 +53,7 @@ class BaseInput extends Component {
       options,      // eslint-disable-line
       schema,       // eslint-disable-line
       formContext,  // eslint-disable-line
+      step,
       ...inputProps // eslint-disable-line
     } = this.props;
     let type = schema.type;
@@ -68,6 +69,7 @@ class BaseInput extends Component {
           placeholder={placeholder}
           onChange={this.onInputChange}
           isInvalid={this.state.errors.length > 0}
+          step={step}
         />
         <Error errors={this.state.errors}/>
       </div>
@@ -80,7 +82,8 @@ BaseInput.defaultProps = {
   required: false,
   disabled: false,
   readonly: false,
-  autofocus: false
+  autofocus: false,
+  step: undefined,
 };
 
 if (process.env.NODE_ENV !== 'production') {
@@ -92,7 +95,8 @@ if (process.env.NODE_ENV !== 'production') {
     disabled: PropTypes.bool,
     readonly: PropTypes.bool,
     autofocus: PropTypes.bool,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    step: PropTypes.number,
   };
 }
 
