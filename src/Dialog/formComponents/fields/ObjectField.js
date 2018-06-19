@@ -191,13 +191,17 @@ class ObjectField extends Component {
 
       Object.keys(property).forEach(value => {
         const actions = property[value];
-        const {hide} = actions;
 
-        hide.forEach(propertyKey => {
-          if (this.state[key] === value) {
-            delete schema.properties[propertyKey];
-          }
-        });
+        if (actions.hide) {
+          actions.hide.forEach(propertyKey => {
+            if (
+              this.state[key] === value ||
+              (value === '' && (this.state[key] === null || this.state[key] === undefined))
+            ) {
+              delete schema.properties[propertyKey];
+            }
+          });
+        }
       });
     });
 
