@@ -158,9 +158,7 @@ const config = {
           NODE_ENV: JSON.stringify(ENV)
         }
       },
-      VERSION: {
-        gohanVersion: JSON.stringify(version())
-      }
+      gohanVersion: JSON.stringify(version())
     }),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin()
