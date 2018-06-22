@@ -2,6 +2,10 @@ import {createSelector} from 'reselect';
 
 const schemas = state => state.schemaReducer.data;
 const schema = (state, id) => state.schemaReducer.data.find(item => item.id === id);
+const actions = (state, id) => {
+  const resourceSchema = schema(state, id);
+  return (resourceSchema && resourceSchema.actions) ? resourceSchema.actions : {};
+};
 
 const schemaParents = (state, id) => {
   const result = [];
@@ -158,4 +162,31 @@ export const getSelectedParents = createSelector(
 export const hasSchemaProperty = createSelector(
   [hasProperty],
   hasProperty => hasProperty
+);
+
+export const getActions = createSelector(
+  [actions],
+  actions => actions
+);
+
+export const getSingularActions = createSelector(
+  [actions],
+  actions => Object.keys(actions).reduce((result, action) => {
+    if ((/\/\:id\//).test(actions[action].path)) {
+      result[action] = actions[action];
+    }
+
+    return result;
+  }, {})
+);
+
+export const getCollectionActions = createSelector(
+  [actions],
+  actions => Object.keys(actions).reduce((result, action) => {
+    if (!(/\/\:id\//).test(actions[action].path)) {
+      result[action] = actions[action];
+    }
+
+    return result;
+  }, {})
 );

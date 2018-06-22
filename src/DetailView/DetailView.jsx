@@ -30,6 +30,7 @@ import {
   getBreadcrumb,
   hasUpdatePermission,
   hasDeletePermission,
+  getSingularActions,
 } from './../schema/SchemaSelectors';
 import {
   getGohanUrl,
@@ -136,6 +137,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
         gohanUrl,
         className,
         followableRelations,
+        actions,
       } = this.props;
       const UpdateDialog = dialog({name: `${schemaId}_update`})(
         props => (
@@ -155,6 +157,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
             <UpdateDialog/>
             {this.showAlert()}
             <DetailComponent {...this.props}
+              actions={actions}
               schema={activeSchema}
               data={data}
               onEdit={this.handleOpenUpdateDialog}
@@ -175,6 +178,7 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
     clearData: PropTypes.func.isRequired,
     updatePermission: PropTypes.bool.isRequired,
     deletePermission: PropTypes.bool.isRequired,
+    actions: PropTypes.object.isRequired,
   };
 
   function mapStateToProps(state, {match}) {
@@ -191,7 +195,8 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
       deletePermission: hasDeletePermission(state, schemaId),
       isAnyDialogOpen: isAnyDialogOpen(state, [
         `${schemaId}_update`
-      ])
+      ]),
+      actions: getSingularActions(state, schemaId),
     };
   }
 

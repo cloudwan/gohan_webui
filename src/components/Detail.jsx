@@ -52,7 +52,6 @@ export default class Detail extends Component {
       title,
     } = this.props.schema;
     const {isApiRequestFormOpen} = this.state;
-    const {actions} = this.props.schema;
     const {
       data,
       url,
@@ -61,6 +60,7 @@ export default class Detail extends Component {
       followableRelations,
       updatePermission,
       deletePermission,
+      actions,
     } = this.props;
 
     return (
@@ -204,4 +204,5 @@ Detail.propTypes = {
   data: PropTypes.object.isRequired,
   updatePermission: PropTypes.bool.isRequired,
   deletePermission: PropTypes.bool.isRequired,
+  actions: PropTypes.object.isRequired,
 };
