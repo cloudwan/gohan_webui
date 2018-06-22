@@ -476,4 +476,113 @@ describe('SchemaSelectors', () => {
         , 'test', 'name').should.equal(false);
     });
   });
+
+
+  describe('actions selector', () => {
+    const schema = {
+      schemaReducer: {
+        data: [
+          {
+            id: 'foo',
+            actions: {
+              bar: {
+                path: '/bar'
+              },
+              baz: {
+                path: '/:id/baz'
+              },
+              faz: {
+                path: '/faz'
+              }
+            }
+          }
+        ]
+      }
+    };
+
+    describe('getActions', () => {
+      it('should return all actions', () => {
+        selectors.getActions(schema, 'foo').should.deep.equal({
+          bar: {
+            path: '/bar',
+          },
+          baz: {
+            path: '/:id/baz',
+          },
+          faz: {
+            path: '/faz',
+          },
+        });
+      });
+
+      it('should return empty object for no actions', () => {
+        selectors.getActions({schemaReducer: {data: []}}, 'foo').should.deep.equal({});
+      });
+    });
+
+    describe('getSingularActions', () => {
+      it('should return filtered actions for detailView', () => {
+        selectors.getSingularActions(schema, 'foo').should.deep.equal({
+          baz: {
+            path: '/:id/baz',
+          },
+        });
+      });
+
+      it('should return empty object when there are only tableView specific actions', () => {
+        selectors.getSingularActions({
+          schemaReducer: {
+            data: [
+              {
+                id: 'foo',
+                actions: {
+                  bar: {
+                    path: '/bar',
+                  },
+                },
+              },
+            ],
+          },
+        }, 'foo').should.deep.equal({});
+      });
+
+      it('should return empty object for no actions', () => {
+        selectors.getSingularActions({schemaReducer: {data: []}}, 'foo').should.deep.equal({});
+      });
+    });
+
+    describe('getCollectionActions', () => {
+      it('should return filtered actions for tableView', () => {
+        selectors.getCollectionActions(schema, 'foo').should.deep.equal({
+          bar: {
+            path: '/bar',
+          },
+          faz: {
+            path: '/faz',
+          },
+        });
+      });
+
+      it('should return empty object when there are only detailView specific actions', () => {
+        selectors.getCollectionActions({
+          schemaReducer: {
+            data: [
+              {
+                id: 'foo',
+                actions: {
+                  baz: {
+                    path: '/:id/baz',
+                  },
+                },
+              },
+            ],
+          },
+        }, 'foo').should.deep.equal({});
+      });
+
+      it('should return empty object for no actions', () => {
+        selectors.getCollectionActions({schemaReducer: {data: []}}, 'foo').should.deep.equal({});
+      });
+    });
+  });
 });

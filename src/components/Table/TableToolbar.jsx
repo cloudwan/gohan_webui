@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import isEmpty from 'lodash/isEmpty';
+
+import CustomActions from '../../CustomActions';
 
 import Filter from './ToolbarComponents/Filter';
 
@@ -42,10 +45,16 @@ class TableToolbar extends Component {
                   Delete Selected
                 </button>
                 {this.props.newResource.visible && (
-                  <button className="btn btn-primary"
+                  <button className={`btn btn-primary${!isEmpty(this.props.actions) ? ' mr-sm-1' : ''}`}
                     onClick={this.handleNewResourceClick}>
                     <strong>+</strong> New
                   </button>
+                )}
+                {!isEmpty(this.props.actions) && (
+                  <CustomActions actions={this.props.actions}
+                    baseUrl={this.props.url}
+                    id={this.props.id}
+                  />
                 )}
               </div>
             </div>
@@ -91,7 +100,10 @@ TableToolbar.propTypes = {
     value: PropTypes.string,
     properties: PropTypes.array,
     onChange: PropTypes.func
-  })
+  }),
+  actions: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
 };
 
 export default TableToolbar;

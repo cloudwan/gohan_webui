@@ -24,7 +24,9 @@ class TableComponent extends Component {
       table,
       pagination,
       children,
-      permissions
+      permissions,
+      actions,
+      id,
     } = this.props;
 
     return (
@@ -46,6 +48,9 @@ class TableComponent extends Component {
               by: toolbar.filter.by,
               value: toolbar.filter.value
             }}
+            actions={actions}
+            url={url}
+            id={id}
           />
           <Table data={table.data}
             url={url}
@@ -134,7 +139,9 @@ if (process.env.NODE_ENV !== 'production') {
       remove: PropTypes.bool
     }),
     children: PropTypes.node,
-    isLoading: PropTypes.bool.isRequired
+    isLoading: PropTypes.bool.isRequired,
+    actions: PropTypes.object.isRequired,
+    id: PropTypes.string.isRequired,
   };
 }
 
