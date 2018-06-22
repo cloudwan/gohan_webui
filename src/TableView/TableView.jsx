@@ -33,7 +33,8 @@ import {
   getCollectionUrl,
   hasCreatePermission,
   hasUpdatePermission,
-  hasDeletePermission
+  hasDeletePermission,
+  getCollectionActions,
 } from './../schema/SchemaSelectors';
 import {
   fetch,
@@ -295,7 +296,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         filters,
         createPermission,
         updatePermission,
-        deletePermission
+        deletePermission,
+        actions,
       } = this.props;
       const filterValue = filters && filters[0] ? filters[0].value : '';
       const filterBy = filters && filters[0] ? filters[0].key : '';
@@ -366,7 +368,9 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
           create: createPermission,
           update: updatePermission,
           remove: deletePermission
-        }
+        },
+        actions,
+        id: schemaId,
       };
 
       return (
@@ -412,7 +416,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     clear: PropTypes.func.isRequired,
     purge: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
-    limit: PropTypes.number
+    limit: PropTypes.number,
+    actions: PropTypes.object.isRequired,
   };
 
   function mapStateToProps(state, {match}) {
@@ -436,7 +441,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       isAnyDialogOpen: isAnyDialogOpen(state, [
         `${schemaId}_create`,
         `${schemaId}_update`
-      ])
+      ]),
+      actions: getCollectionActions(state, schemaId),
     };
   }
 
