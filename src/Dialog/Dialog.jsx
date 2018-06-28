@@ -8,10 +8,10 @@ import merge from 'lodash/merge';
 
 import {removeEmpty, toServerData} from './utils';
 import {getSchema, getLoadingState} from './DialogSelectors';
-import widgets from './formComponents/widgets';
-import fields from './formComponents/fields';
-import Template from './formComponents/Template';
-import ErrorListTemplate from './formComponents/ErrorListTemplate';
+// import widgets from './formComponents/widgets';
+// import fields from './formComponents/fields';
+// import Template from './formComponents/Template';
+// import ErrorListTemplate from './formComponents/ErrorListTemplate';
 
 import ErrorToast from './components/ErrorToast';
 
@@ -119,11 +119,8 @@ export class GeneratedDialog extends Component {
                 {(propertiesOrder.length > 0) && (
                   <Form ref={c => {this.form = c;}}
                     schema={schema}
-                    fields={fields} widgets={widgets}
-                    FieldTemplate={Template}
                     showErrorList={false}
                     noValidate={true} // workaround for fix ESI-16110
-                    ErrorList={ErrorListTemplate}
                     formData={
                       propertiesOrder.reduce(
                         (result, item) => {
