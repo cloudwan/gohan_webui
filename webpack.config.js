@@ -63,6 +63,13 @@ const config = {
         ]
       },
       {
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'happypack/loader?id=less'
+        ]
+      },
+      {
         test: /\.(woff|woff2|svg|ttf|eot)([\?]?.*)$/,
         use: {
           loader: 'file-loader',
@@ -136,6 +143,28 @@ const config = {
           }
         }
       ]
+    }),
+    new HappyPack({
+      id: 'less',
+      threadPool: happyThreadPool,
+      verbose: false,
+      loaders: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: false,
+            sourceMap: true,
+          },
+        },
+        {
+          loader: 'less-loader',
+          options: {
+            sourceMap: true,
+            minimize: false,
+            javascriptEnabled: true,
+          },
+        },
+      ],
     }),
     new MiniCssExtractPlugin({
       filename: isDevelopment ? '[name].css' : '[name].[hash].css',

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import Form from 'react-jsonschema-form';
+import {Form} from 'gohan-jsonschema-form';
 import {Dialog, ProgressBar, Intent, Button} from '@blueprintjs/core';
 import isEqual from 'lodash/isEqual';
 import merge from 'lodash/merge';
