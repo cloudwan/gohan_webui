@@ -1,0 +1,10 @@
+[
+  {
+    "id": "bgp_config",
+    "properties": {
+      "global" : {
+        "ui:field": "YamlField"
+      }
+    }
+  }
+]
