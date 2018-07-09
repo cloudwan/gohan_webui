@@ -8,7 +8,8 @@ function Error(props) {
     return null;
   }
   return (
-    <div className="invalid-feedback">
+    <div className="invalid-feedback"
+      {...{style: errors ? {display: 'block'} : undefined}}>
       {errors.map((error, index) => {
         return (
           <div key={index}>{error.message}</div>
