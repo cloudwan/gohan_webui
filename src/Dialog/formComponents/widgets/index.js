@@ -11,6 +11,7 @@ import CodeWidget from './CodeWidget.jsx';
 export default Object.freeze({
   select: SelectWidget,
   text: TextWidget,
+  version: TextWidget,
   email: EmailWidget,
   cidr: CidrWidget,
   'cidr-or-ipv4': CidrWidget,
