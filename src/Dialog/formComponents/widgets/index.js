@@ -17,6 +17,8 @@ export default Object.freeze({
   mac: MacWidget,
   uuid: UuidWidget,
   ipv4: Ipv4Widget,
+  'ipv4-network': Ipv4Widget,
+  'ipv4-address-with-cidr': Ipv4Widget,
   ipv6: Ipv6Widget,
   js: CodeWidget,
   yaml: CodeWidget
