@@ -1,37 +1,29 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import isEqual from 'lodash/isEqual';
+import {connect} from 'react-redux';
+import {isEqual, isEmpty} from 'lodash';
 import {Inspector} from 'react-inspector';
 
 import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/javascript/javascript';
 import {Toaster, Position} from '@blueprintjs/core';
 
-export class SuccessToaster extends Component {
-  constructor(props) {
-    super(props);
+import {getData, getTitle} from './SuccessToasterSelectors';
+import {dismiss} from './SuccessToasterActions';
 
-    this.state = {
-      isDetailOpen: false
-    };
+export class SuccessToaster extends Component {
+  static defaultProps = {
+    dismiss: () => {},
+    data: {},
+    title: '',
   }
 
-  static defaultProps = {
-    title: '',
-    result: '',
-    onDismiss: () => {},
-  };
-
-  handleDetailOpenToggle = () => this.setState(prevState => ({
-    isDetailOpen: !prevState.isDetailOpen,
-  }));
-
   handleDismissClick = () => {
-    this.props.onDismiss();
+    this.props.dismiss();
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.result && !isEqual(nextProps.result,this.props.result)) {
+    if (nextProps.data && !isEmpty(nextProps.data) && !isEqual(nextProps.data,this.props.data)) {
       this.toaster.show({
         message: (<div style={{
           overflow: 'auto',
@@ -41,11 +33,11 @@ export class SuccessToaster extends Component {
           position: 'relative'
         }}>
           <h5 className="custom-action-success">{nextProps.title}</h5>
-          {typeof nextProps.result === 'object' && (
-            <Inspector data={nextProps.result}/>
+          {typeof nextProps.data === 'object' && (
+            <Inspector data={nextProps.data}/>
           )}
-          {typeof nextProps.result !== 'object' && (
-            <CodeMirror value={nextProps.result}
+          {typeof nextProps.data !== 'object' && (
+            <CodeMirror value={nextProps.data}
               className="toaster-codemirror"
               options={{
                 mode: 'javascript',
@@ -75,13 +67,20 @@ export class SuccessToaster extends Component {
 
 if (process.env.NODE_ENV !== 'production') {
   SuccessToaster.propTypes = {
-    title: PropTypes.string,
-    result: PropTypes.oneOfType([
+    data: PropTypes.oneOfType([
       PropTypes.object,
       PropTypes.string
     ]),
-    onDismiss: PropTypes.func,
+    title: PropTypes.string,
+    dismiss: PropTypes.func
   };
 }
 
-export default SuccessToaster;
+const mapStateToProps = state => ({
+  data: getData(state),
+  title: getTitle(state),
+});
+
+export default connect(mapStateToProps, {
+  dismiss,
+})(SuccessToaster);
