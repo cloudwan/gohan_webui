@@ -5,6 +5,7 @@ import {FocusStyleManager} from '@blueprintjs/core';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import ErrorToaster from './../error/ErrorToaster';
+import SuccessToaster from '../SuccessToaster';
 import TokenRenewal from './../auth/components/TokenRenewal';
 
 FocusStyleManager.onlyShowFocusOnTabs();
@@ -47,6 +48,7 @@ export default class App extends Component {
         />
         <Sidebar open={this.state.openSidebar}/>
         <ErrorToaster/>
+        <SuccessToaster />
         <div className={`view-content ${this.state.contentClassNames}`}>
           {children}
         </div>

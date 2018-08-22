@@ -3,10 +3,12 @@ import {
 } from './../Dialog/DialogActionTypes';
 
 import {
+  SUCCESS
+} from '../SuccessToaster/SuccessToasterActionTypes';
+
+import {
   EXECUTE,
-  EXECUTE_SUCCESS,
   EXECUTE_FAILURE,
-  CLEAR_RESPONSE
 } from './CustomActionsActionTypes';
 
 export const execute = (action, baseUrl, id, data) => {
@@ -21,8 +23,9 @@ export const execute = (action, baseUrl, id, data) => {
 };
 
 export const executeSuccess = data => ({
-  type: EXECUTE_SUCCESS,
+  type: SUCCESS,
   data,
+  title: 'The Custom Action was Successful',
 });
 
 export const executeFailure = (error, isFromDialog) => {
@@ -38,5 +41,3 @@ export const executeFailure = (error, isFromDialog) => {
     error,
   };
 };
-
-export const clearResponse = () => dispatch => dispatch({type: CLEAR_RESPONSE});

@@ -13,11 +13,9 @@ import dialog from '../Dialog';
 import Dialog from '../Dialog/Dialog';
 import Confirm from '../Dialog/Confirm';
 
-import CustomActionsSuccessToaster from './CustomActionsSuccessToaster';
 import {execute} from './CustomActionsActions';
 
 import {openDialog, closeDialog} from '../Dialog/DialogActions';
-import {getActionResult} from './CustomActionsSelectors';
 
 export class CustomActions extends Component {
   handleActionClick = name => {
@@ -48,7 +46,6 @@ export class CustomActions extends Component {
   render() {
     const {
       actions,
-      actionResult
     } = this.props;
     const actionsKeys = Object.keys(actions);
     const actionsDialogs = actionsKeys.map(key => {
@@ -105,7 +102,6 @@ export class CustomActions extends Component {
             <FontAwesomeIcon className="faicon" icon={faTerminal} />Custom Actions
           </Button>
         </Popover2>
-        <CustomActionsSuccessToaster resultYAML={actionResult}/>
         {actionsDialogs}
       </div>
     );
@@ -115,10 +111,6 @@ export class CustomActions extends Component {
 CustomActions.propTypes = {
   actions: PropTypes.object.isRequired
 };
-
-const mapStateToProps = state => ({
-  actionResult: getActionResult(state)
-});
 
 const mapDispatchToProps = (dispatch, props) => {
   const actions = bindActionCreators({
@@ -140,4 +132,4 @@ const mapDispatchToProps = (dispatch, props) => {
   return actions;
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CustomActions);
+export default connect(null, mapDispatchToProps)(CustomActions);

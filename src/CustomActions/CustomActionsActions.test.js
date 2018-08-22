@@ -5,6 +5,7 @@ import chai from 'chai';
 
 import * as actionTypes from './CustomActionsActionTypes';
 import * as dialogActionsTypes from './../Dialog/DialogActionTypes';
+import * as successToasterActionsTypes from './../SuccessToaster/SuccessToasterActionTypes';
 import * as actions from './CustomActionsActions';
 
 chai.should();
@@ -40,7 +41,7 @@ describe('CustomActionsActions ', () => {
   });
 
   describe('executeSuccess()', () => {
-    it(`should dispatch ${actionTypes.EXECUTE_SUCCESS}`, () => {
+    it(`should dispatch ${successToasterActionsTypes.SUCCESS}`, () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
@@ -48,8 +49,9 @@ describe('CustomActionsActions ', () => {
 
       store.getActions().should.deep.equal([
         {
-          type: actionTypes.EXECUTE_SUCCESS,
+          type: successToasterActionsTypes.SUCCESS,
           data: {},
+          title: 'The Custom Action was Successful',
         }
       ]);
     });
@@ -80,21 +82,6 @@ describe('CustomActionsActions ', () => {
         {
           type: dialogActionsTypes.ERROR,
           message: 'error',
-        }
-      ]);
-    });
-  });
-
-  describe('clearResponse()', () => {
-    it(`should dispatch ${actionTypes.CLEAR_RESPONSE}`, () => {
-      const storeObject = {};
-      const store = mockStore(storeObject);
-
-      store.dispatch(actions.clearResponse());
-
-      store.getActions().should.deep.equal([
-        {
-          type: actionTypes.CLEAR_RESPONSE,
         }
       ]);
     });

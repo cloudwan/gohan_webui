@@ -7,7 +7,7 @@ import authReducer from './../auth/authReducer';
 import uiSchemaReducer from './../uiSchema/uiSchemaReducer';
 import schemaReducer from './../schema/schemaReducer';
 import dialogReducer from '../Dialog/dialogReducer';
-import customActionReducer from '../CustomActions/CustomActionReducer';
+import successToasterReducer from '../SuccessToaster/SuccessToasterReducer';
 import apiRequestReducer from '../apiRequest/ApiRequestReducer';
 import breadcrumbReducer from '../breadcrumb/breadcrumbReducer';
 import tableReducer from '../TableView/tableReducer';
@@ -24,7 +24,7 @@ export const makeRootReducer = asyncReducers => {
     schemaReducer,
     uiSchemaReducer,
     dialogReducer,
-    customActionReducer,
+    successToasterReducer,
     apiRequestReducer,
     breadcrumbReducer,
     ...asyncReducers

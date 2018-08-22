@@ -6,6 +6,7 @@ import expectEpic from './../../test/helpers/expectEpic';
 
 import * as actionTypes from './CustomActionsActionTypes';
 import * as dialogActionTypes from './../Dialog/DialogActionTypes';
+import * as successToasterActionTypes from './../SuccessToaster/SuccessToasterActionTypes';
 import {
   execute
 } from './CustomActionsEpics';
@@ -29,7 +30,7 @@ describe('CustomActionsEpics', () => {
   );
 
   describe('execute()', () => {
-    it(`should dispatch ${actionTypes.EXECUTE_SUCCESS} action`, () => {
+    it(`should dispatch ${successToasterActionTypes.SUCCESS} action`, () => {
       const response = {
         response: {
           test: {
@@ -45,7 +46,8 @@ describe('CustomActionsEpics', () => {
               data: {
                 test: {}
               },
-              type: actionTypes.EXECUTE_SUCCESS
+              title: 'The Custom Action was Successful',
+              type: successToasterActionTypes.SUCCESS
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -65,7 +67,7 @@ describe('CustomActionsEpics', () => {
         store
       });
     });
-    it(`should dispatch ${actionTypes.EXECUTE_SUCCESS} action for GET method`, () => {
+    it(`should dispatch ${successToasterActionTypes.SUCCESS} action for GET method`, () => {
       const response = {
         response: {
           test: {
@@ -81,7 +83,8 @@ describe('CustomActionsEpics', () => {
               data: {
                 test: {}
               },
-              type: actionTypes.EXECUTE_SUCCESS
+              title: 'The Custom Action was Successful',
+              type: successToasterActionTypes.SUCCESS
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -101,7 +104,7 @@ describe('CustomActionsEpics', () => {
         store
       });
     });
-    it(`should dispatch ${actionTypes.EXECUTE_SUCCESS} action for POST method`, () => {
+    it(`should dispatch ${successToasterActionTypes.SUCCESS} action for POST method`, () => {
       const response = {
         response: {
           test: {
@@ -117,7 +120,8 @@ describe('CustomActionsEpics', () => {
               data: {
                 test: {}
               },
-              type: actionTypes.EXECUTE_SUCCESS
+              title: 'The Custom Action was Successful',
+              type: successToasterActionTypes.SUCCESS
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -137,7 +141,7 @@ describe('CustomActionsEpics', () => {
         store
       });
     });
-    it(`should dispatch ${actionTypes.EXECUTE_SUCCESS} action for PUT method`, () => {
+    it(`should dispatch ${successToasterActionTypes.SUCCESS} action for PUT method`, () => {
       const response = {
         response: {
           test: {
@@ -153,7 +157,8 @@ describe('CustomActionsEpics', () => {
               data: {
                 test: {}
               },
-              type: actionTypes.EXECUTE_SUCCESS
+              title: 'The Custom Action was Successful',
+              type: successToasterActionTypes.SUCCESS
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -173,7 +178,7 @@ describe('CustomActionsEpics', () => {
         store
       });
     });
-    it(`should dispatch ${actionTypes.EXECUTE_SUCCESS} action for DELETE method`, () => {
+    it(`should dispatch ${successToasterActionTypes.SUCCESS} action for DELETE method`, () => {
       const response = {
         response: {
           test: {
@@ -189,7 +194,8 @@ describe('CustomActionsEpics', () => {
               data: {
                 test: {}
               },
-              type: actionTypes.EXECUTE_SUCCESS
+              title: 'The Custom Action was Successful',
+              type: successToasterActionTypes.SUCCESS
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
