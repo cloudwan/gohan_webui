@@ -51,6 +51,7 @@ describe('AuthActions ', () => {
         type: actionTypes.LOGIN,
         username: 'userName',
         password: 'password',
+        domain: undefined,
       });
     });
   });

@@ -2,6 +2,12 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 export default class Login extends Component {
+  defaultProps() {
+    return {
+      isDomainEnabled: false
+    };
+  }
+
   handleLoginSubmit = event => {
     if (event) {
       event.preventDefault();
@@ -10,11 +16,14 @@ export default class Login extends Component {
 
     const userId = this.userId.value;
     const pass = this.userPass.value;
+    const domain = this.domain ? this.domain.value : undefined;
 
-    this.props.onLoginSubmit(userId, pass);
+    this.props.onLoginSubmit(userId, pass, domain);
   };
 
   render() {
+    const {isDomainEnabled} = this.props;
+
     return (
       <div className="auth-container d-flex justify-content-center align-items-center">
         <div className="auth-box">
@@ -27,6 +36,13 @@ export default class Login extends Component {
                 ref={c => { this.userId = c; }} placeholder="User ID"
               />
             </div>
+            {isDomainEnabled && (
+              <div className="form-group">
+                <input className="form-control" type="text"
+                  ref={c => { this.domain = c; }} placeholder="Domain"
+                />
+              </div>
+            )}
             <div className="form-group">
               <input className="form-control" type="password"
                 ref={c => { this.userPass = c; }} placeholder="Password"
@@ -44,13 +60,10 @@ export default class Login extends Component {
   }
 }
 
-Login.propTypes = {
-  onLoginSubmit: PropTypes.func.isRequired
-};
-
 if (process.env.NODE_ENV !== 'production') {
   Login.propTypes = {
     onLoginSubmit: PropTypes.func.isRequired,
+    isDomainEnabled: PropTypes.bool,
     Error: PropTypes.element
   };
 }
