@@ -40,6 +40,7 @@ type LoginActionType = {
   +type: string,
   +username: string,
   +password: string,
+  +domain?: string,
 };
 
 type LoginSuccessActionType = {
@@ -126,10 +127,11 @@ export const loginFailure = (error: string): ErrorActionType => ({
   error,
 });
 
-export const login = (username: string, password: string): LoginActionType => ({
+export const login = (username: string, password: string, domain: string): LoginActionType => ({
   type: LOGIN,
   username,
-  password
+  password,
+  domain
 });
 
 export const fetchTenantSuccess = (data: [TenantType]): FetchTenantSuccessActionType => ({

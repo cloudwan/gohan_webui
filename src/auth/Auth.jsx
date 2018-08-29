@@ -27,6 +27,11 @@ import {
   getStoragePrefix
 } from './AuthSelectors';
 
+import {
+  getUseKeystoneDomainState,
+  getDomainName
+} from './../config/ConfigSelectors';
+
 export class Auth extends Component {
   constructor(props) {
     super(props);
@@ -72,12 +77,12 @@ export class Auth extends Component {
   };
 
   render() {
-    const {Login, SelectTenant, Loading} = this.props;
+    const {Login, SelectTenant, Loading, domainName, useDomain} = this.props;
 
     if (!this.props.inProgress && this.props.tokenId === undefined) {
       return (
         <Login key={0} onLoginSubmit={this.handleLoginSubmit}
-          Error={this.renderErrors()}
+          Error={this.renderErrors()} isDomainEnabled={useDomain && !domainName}
         />
       );
     } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
@@ -119,7 +124,9 @@ if (process.env.NODE_ENV !== 'production') {
     tokenExpires: PropTypes.string,
     tenant: PropTypes.object,
     tenants: PropTypes.array,
-    errorMessage: PropTypes.string
+    errorMessage: PropTypes.string,
+    useDomain: PropTypes.bool,
+    domainName: PropTypes.string
   };
 }
 
@@ -132,7 +139,9 @@ function mapStateToProps(state) {
     user: getUser(state),
     inProgress: getProgressState(state),
     errorMessage: getError(state),
-    storagePrefix: getStoragePrefix(state)
+    storagePrefix: getStoragePrefix(state),
+    useDomain: getUseKeystoneDomainState(state),
+    domainName: getDomainName(state)
   };
 }
 

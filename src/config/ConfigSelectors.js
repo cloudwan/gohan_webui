@@ -9,6 +9,8 @@ const pageLimit = state => state.configReducer.pageLimit;
 const followableRelations = state => state.configReducer.followableRelations;
 const tableDefaultSortKey = state => state.configReducer.tableDefaultSortKey;
 const tableDefaultSortOrder = state => state.configReducer.tableDefaultSortOrder;
+const useKeystoneDomain = state => state.configReducer.useKeystoneDomain;
+const domainName = state => state.configReducer.domainName;
 
 export const getSidebar = createSelector(
   [sidebar],
@@ -63,4 +65,14 @@ export const getDefaultSortOrder = createSelector(
 export const getFollowableRelationsState = createSelector(
   [followableRelations],
   followableRelations => Boolean(followableRelations)
+);
+
+export const getUseKeystoneDomainState = createSelector(
+  [useKeystoneDomain],
+  useKeystoneDomain => Boolean(useKeystoneDomain)
+);
+
+export const getDomainName = createSelector(
+  [domainName],
+  domainName => domainName
 );

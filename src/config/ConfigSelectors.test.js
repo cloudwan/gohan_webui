@@ -130,4 +130,24 @@ describe('ConfigSelectors', () => {
       }).should.deep.equal(true);
     });
   });
+
+  describe('getUseKeystoneDomainState', () => {
+    it('should return true.', () => {
+      selectors.getUseKeystoneDomainState({
+        configReducer: {
+          useKeystoneDomain: true
+        },
+      }).should.deep.equal(true);
+    });
+  });
+
+  describe('getDomainName', () => {
+    it('should return true.', () => {
+      selectors.getDomainName({
+        configReducer: {
+          domainName: 'foo'
+        },
+      }).should.deep.equal('foo');
+    });
+  });
 });

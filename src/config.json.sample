@@ -61,5 +61,7 @@
     "tableDefaultSortKey": "name",
     "tableDefaultSortOrder": "asc",
     "title": "Gohan Web UI",
-    "followableRelations": false
+    "followableRelations": false,
+    "useKeystoneDomain": true,
+    "domainName": "default"
 }

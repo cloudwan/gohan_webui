@@ -35,9 +35,13 @@ const computeOffsetForTokenRenewal = date => {
 
 export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(LOGIN)
-    .mergeMap(({username, password, token, tenant, tenantId}) => {
+    .mergeMap(({username, password, domain, token, tenant, tenantId}) => {
       const state = store.getState();
-      const {authUrl} = state.configReducer;
+      const {
+        authUrl,
+        useKeystoneDomain,
+        domainName
+      } = state.configReducer;
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -45,7 +49,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
         auth: {}
       };
 
-      if (/v3$/.test(authUrl)) {
+      if (useKeystoneDomain) {
         if (username !== undefined && password !== undefined) {
           data.auth.identity = {
             methods: [
@@ -54,7 +58,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
             password: {
               user: {
                 domain: {
-                  name: 'default'
+                  name: domainName || domain
                 },
                 name: username,
                 password
@@ -91,9 +95,9 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           data
         )
           .flatMap(response => {
-            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+              const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
 
-            return Observable.concat(
+              return Observable.concat(
                 Observable.of(loginSuccess(
                   response.xhr.getResponseHeader('X-Subject-Token'),
                   response.response.token.expires_at, // eslint-disable-line camelcase
@@ -104,49 +108,46 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
                 Observable.of(renewTokenInBackground()).delay(offset)
               );
             }
-
-          )
-          .catch(error => Observable.of(loginFailure(parseXHRError(error))));
-      } else if (/v2.0$/.test(authUrl)) {
-        if (username !== undefined && password !== undefined) {
-          data.auth.passwordCredentials = {
-            username,
-            password
-          };
-        } else if (token) {
-          data.auth.token = {
-            id: token
-          };
-        }
-
-        if (tenant) {
-          data.auth.tenantName = tenant;
-        }
-
-        return call(
-          post,
-          `${authUrl}/tokens`,
-          headers,
-          data
-        )
-          .flatMap(response => {
-            const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
-
-            return Observable.concat(
-                Observable.of(loginSuccess(
-                  response.response.access.token.id,
-                  response.response.access.token.expires,
-                  response.response.access.token.tenant,
-                  response.response.access.user
-                )),
-                Observable.of({type: FETCH_TENANTS}),
-                Observable.of(showTokenRenewal()).delay(offset));
-            }
           )
           .catch(error => Observable.of(loginFailure(parseXHRError(error))));
       }
-      console.log('Wrong auth url! Please check config.json.');
-      return Observable.of(loginFailure('Wrong auth url! Please check config.json.'));
+      if (username !== undefined && password !== undefined) {
+        data.auth.passwordCredentials = {
+          username,
+          password
+        };
+      } else if (token) {
+        data.auth.token = {
+          id: token
+        };
+      }
+
+      if (tenant) {
+        data.auth.tenantName = tenant;
+      }
+
+      return call(
+        post,
+        `${authUrl}/tokens`,
+        headers,
+        data
+      )
+        .flatMap(response => {
+            const offset = computeOffsetForTokenRenewal(response.response.access.token.expires);
+
+            return Observable.concat(
+              Observable.of(loginSuccess(
+                response.response.access.token.id,
+                response.response.access.token.expires,
+                response.response.access.token.tenant,
+                response.response.access.user
+              )),
+              Observable.of({type: FETCH_TENANTS}),
+              Observable.of(showTokenRenewal()).delay(offset));
+          }
+        )
+        .catch(error => Observable.of(loginFailure(parseXHRError(error))));
+
     });
 };
 
