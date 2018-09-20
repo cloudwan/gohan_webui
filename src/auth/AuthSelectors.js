@@ -2,6 +2,7 @@ import {createSelector} from 'reselect';
 
 const isLogged = state => state.authReducer.logged;
 const tokenId = state => state.authReducer.tokenId;
+const unscopedTenant = state => state.authReducer.unscopedTenant;
 const tokenExpires = state => state.authReducer.tokenExpires;
 const tenant = state => state.authReducer.tenant;
 const tenants = state => state.authReducer.tenants;
@@ -10,6 +11,7 @@ const inProgress = state => state.authReducer.inProgress;
 const showTokenRenewal = state => state.authReducer.showTokenRenewal;
 const storagePrefix = state => state.configReducer.storagePrefix;
 const tenantFilterStatus = state => state.authReducer.tenantFilterStatus;
+
 export const getLoggedState = createSelector(
   [isLogged],
   isLogged => {
@@ -22,6 +24,11 @@ export const getTokenId = createSelector(
   tokenId => {
     return tokenId;
   }
+);
+
+export const getUnscopedToken = createSelector(
+  [unscopedTenant],
+  unscopedTenant => unscopedTenant
 );
 
 export const getTokenExpires = createSelector(

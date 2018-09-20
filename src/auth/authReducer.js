@@ -3,12 +3,14 @@ import {
   LOGIN_INPROGRESS,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
+  SELECT_TENANT_SUCCESS,
   FETCH_TENANTS_SUCCESS,
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
   RENEW_TOKEN_SUCCESS,
   RENEW_TOKEN_FAILURE,
-  CHANGE_TENANT_FILTER_STATUS
+  CHANGE_TENANT_FILTER_STATUS,
+  CHECK_SUCCESS
 } from './AuthActionTypes';
 
 export default function authReducer(state = {
@@ -44,8 +46,28 @@ export default function authReducer(state = {
         ...state,
         tokenId: action.data.tokenId,
         tokenExpires: action.data.tokenExpires,
+        unscopedTenant: action.data.tokenId,
         tenant: action.data.tenant,
         user: action.data.user,
+        inProgress: false,
+        showTokenRenewal: false
+      };
+    case CHECK_SUCCESS:
+      return {
+        ...state,
+        tokenId: action.data.token,
+        unscopedTenant: action.data.unscopedToken,
+        tokenExpires: action.data.tokenExpires,
+        tenant: action.data.tenant,
+        user: action.data.user,
+        inProgress: false,
+        showTokenRenewal: false
+      };
+    case SELECT_TENANT_SUCCESS:
+      return {
+        ...state,
+        tokenId: action.data.tokenId,
+        tenant: action.data.tenant,
         inProgress: false,
         showTokenRenewal: false
       };

@@ -1,12 +1,14 @@
-// @flow
 /* global window */
 import {
   LOGIN,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   LOGOUT,
+  CHECK_TOKEN,
+  CHECK_SUCCESS,
   SELECT_TENANT,
   SELECT_TENANT_FAILURE,
+  SELECT_TENANT_SUCCESS,
   FETCH_TENANTS_SUCCESS,
   FETCH_TENANTS_FAILURE,
   CLEAR_STORAGE,
@@ -21,95 +23,14 @@ import {
 
 const {sessionStorage, localStorage, location} = window;
 
-type UserType = {
-  +id: string,
-  +name: string,
-  +roles: any, // eslint-disable-line flowtype/no-weak-types
-  +roles_links: any, // eslint-disable-line flowtype/no-weak-types
-  +username: string,
-};
-
-type TenantType = {
-  +id: string,
-  +name: string,
-  +enabled: boolean,
-  +description: string,
-};
-
-type LoginActionType = {
-  +type: string,
-  +username: string,
-  +password: string,
-  +domain?: string,
-};
-
-type LoginSuccessActionType = {
-  +type: string,
-  +data: {
-    +tokenId: string,
-    +tokenExpires: string,
-    +tenant: string,
-    +user: string,
-  },
-  +password: string,
-};
-
-type FetchTenantSuccessActionType = {
-  +type: string,
-  +data: [TenantType],
-};
-
-type FetchTokenActionType = {
-  +type: string,
-  +token: string,
-  +tenant: string,
-};
-
-type SelectTenantActionType = {
-  +type: string,
-  +username: string,
-  +password: string,
-};
-
-type ErrorActionType = {
-  +type: string,
-  +error: string,
-};
-
-type RenewTokenInBackgroundType = {
-  +type: string,
-  +tenantId: string,
-  +token: string,
-};
-
-type RenewTokenType = {
-  +type: string,
-  +username: string,
-  +tenantId: string,
-  +tenant: string,
-};
-
-type ShowTokenRenewalType = {
-  +type: string,
-};
-
-type RenewTokenFailureType = {
-  +type: string,
-  +error: string,
-};
-
-type ChangeTenantFilterStatusActionType = {
-  +type: string,
-  +status: boolean,
-};
 export const loginSuccess = (
-  tokenId: string,
-  tokenExpires: string,
-  tenant: TenantType,
-  user: UserType
-): LoginSuccessActionType => {
-  sessionStorage.setItem('token', tokenId);
-  sessionStorage.setItem('tokenExpires', tokenExpires);
+  tokenId,
+  tokenExpires,
+  tenant,
+  user
+) => {
+  sessionStorage.setItem('scopedToken', tokenId);
+  sessionStorage.setItem('unscopedToken', tokenId);
 
   return {
     type: LOGIN_SUCCESS,
@@ -122,58 +43,70 @@ export const loginSuccess = (
   };
 };
 
-export const loginFailure = (error: string): ErrorActionType => ({
+export const loginFailure = error => ({
   type: LOGIN_ERROR,
   error,
 });
 
-export const login = (username: string, password: string, domain: string): LoginActionType => ({
+export const login = (username, password, domain) => ({
   type: LOGIN,
   username,
   password,
   domain
 });
 
-export const fetchTenantSuccess = (data: [TenantType]): FetchTenantSuccessActionType => ({
+export const fetchTenantSuccess = data => ({
   type: FETCH_TENANTS_SUCCESS,
   data,
 });
 
-export const fetchTenantFailure = (error: string): ErrorActionType => ({
+export const fetchTenantFailure = error => ({
   type: FETCH_TENANTS_FAILURE,
   error,
 });
 
-export const fetchTokenData = (): FetchTokenActionType => {
-  const token = sessionStorage.getItem('token');
-  const tenant = sessionStorage.getItem('tenantName');
-  const tenantId = sessionStorage.getItem('tenantId');
+export const fetchTokenData = () => {
+  const unscopedToken = sessionStorage.getItem('unscopedToken');
+  const scopedToken = sessionStorage.getItem('scopedToken');
 
-  if (token) {
+  if (scopedToken) {
     return {
-      type: LOGIN,
-      token,
-      tenant,
-      tenantId
+      type: CHECK_TOKEN,
+      token: scopedToken,
+      unscopedToken,
     };
   }
+
   return clearStorage();
 };
 
-export const clearStorage = (): () => void => {
-  sessionStorage.removeItem('token');
+export const checkTokenSuccess = (unscopedToken, token, tokenExpires, tenant, user) => {
+  sessionStorage.setItem('scopedToken', token);
+  sessionStorage.setItem('unscopedToken', unscopedToken);
+
+  return {
+    type: CHECK_SUCCESS,
+    data: {
+      token,
+      unscopedToken,
+      tokenExpires,
+      tenant,
+      user,
+    },
+  };
+};
+
+export const clearStorage = () => {
   sessionStorage.removeItem('scopedToken');
-  sessionStorage.removeItem('tenantName');
-  sessionStorage.removeItem('tenantId');
-  sessionStorage.removeItem('tokenExpires');
+  sessionStorage.removeItem('unscopedToken');
 
   return {
     type: CLEAR_STORAGE
   };
 };
 
-export const logout = (): () => void => {
-  return (dispatch: () => void, getState: () => void) => {
+export const logout = () => {
+  return (dispatch, getState) => {
     const {storagePrefix} = getState().configReducer;
 
     localStorage.setItem(`${storagePrefix}clearSessionStorage`, 'true');
@@ -187,19 +120,11 @@ export const logout = (): () => void => {
   };
 };
 
-export const selectTenantSuccess = (
-  tokenId: string,
-  tokenExpires: string,
-  tenant: TenantType,
-  user: UserType
-): LoginSuccessActionType => {
+export const selectTenantSuccess = (tokenId, tokenExpires, tenant, user) => {
     sessionStorage.setItem('scopedToken', tokenId);
-    sessionStorage.setItem('tenantName', tenant.name);
-    sessionStorage.setItem('tenantId', tenant.id);
-    sessionStorage.setItem('tokenExpires', tokenExpires);
 
     return {
-      type: LOGIN_SUCCESS,
+      type: SELECT_TENANT_SUCCESS,
       data: {
         tokenId,
         tokenExpires,
@@ -209,24 +134,24 @@ export const selectTenantSuccess = (
     };
 };
 
-export const selectTenantFailure = (error: string): ErrorActionType => ({
+export const selectTenantFailure = error => ({
   type: SELECT_TENANT_FAILURE,
   error,
 });
 
-export const selectTenant = (tenantName: string, tenantId: string): SelectTenantActionType => ({
+export const selectTenant = (tenantName, tenantId) => ({
   type: SELECT_TENANT,
   tenantName,
   tenantId
 });
 
-export const showTokenRenewal = (): ShowTokenRenewalType => {
+export const showTokenRenewal = () => {
   return {
     type: SHOW_TOKEN_RENEWAL
   };
 };
 
-export const renewTokenInBackground = (): RenewTokenInBackgroundType => {
+export const renewTokenInBackground = () => {
   const token = sessionStorage.getItem('token');
 
   return {
@@ -235,7 +160,7 @@ export const renewTokenInBackground = (): RenewTokenInBackgroundType => {
   };
 };
 
-export const renewToken = (username: string, password: string): RenewTokenType => {
+export const renewToken = (username, password) => {
   return {
     type: RENEW_TOKEN,
     username,
@@ -243,14 +168,8 @@ export const renewToken = (username: string, password: string): RenewTokenType =
   };
 };
 
-export const renewTokenSuccess = (
-  tokenId: string,
-  tokenExpires: string,
-  tenant: TenantType,
-  user: UserType
-): LoginSuccessActionType => {
+export const renewTokenSuccess = (tokenId, tokenExpires, tenant, user) => {
   sessionStorage.setItem('token', tokenId);
-  sessionStorage.setItem('tokenExpires', tokenExpires);
 
   return {
     type: RENEW_TOKEN_SUCCESS,
@@ -263,15 +182,15 @@ export const renewTokenSuccess = (
   };
 };
 
-export const renewTokenFailure = (error: string): RenewTokenFailureType => {
+export const renewTokenFailure = error => {
   return {
     type: RENEW_TOKEN_FAILURE,
     error
   };
 };
 
-export const sessionStorageTransfer = (event: object): () => void => {
-  return (dispatch: () => void, getState: () => void) => {
+export const sessionStorageTransfer = event => {
+  return (dispatch, getState) => {
     const {storagePrefix} = getState().configReducer;
 
     dispatch({
@@ -302,8 +221,8 @@ export const sessionStorageTransfer = (event: object): () => void => {
   };
 };
 
-export const transferStorage = (): () => void => {
-  return (dispatch: () => {}, getState: () => void) => {
+export const transferStorage = () => {
+  return (dispatch, getState) => {
     const {storagePrefix} = getState().configReducer;
 
     if (!sessionStorage.length) {
@@ -319,7 +238,7 @@ export const transferStorage = (): () => void => {
   };
 };
 
-export const changeTenantFilter = (status: boolean): ChangeTenantFilterStatusActionType => ({
+export const changeTenantFilter = status => ({
   type: CHANGE_TENANT_FILTER_STATUS,
   status
 });

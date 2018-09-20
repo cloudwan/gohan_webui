@@ -30,7 +30,7 @@ describe('AuthActions ', () => {
           user: {name: 'user'},
         }
       });
-      sessionStorage.token.should.equal('tokenId');
+      sessionStorage.scopedToken.should.equal('tokenId');
     });
   });
 
@@ -85,33 +85,29 @@ describe('AuthActions ', () => {
     });
 
     it(`should returns ${actionTypes.LOGIN} action if session storage contains credentials`, () => {
-      sessionStorage.setItem('token', 'test token');
-      sessionStorage.setItem('tenantName', 'test tenant');
-      sessionStorage.setItem('tenantId', 'tenantId');
+      sessionStorage.setItem('scopedToken', 'scopedToken');
+      sessionStorage.setItem('unscopedToken', 'unscopedToken');
 
       actions.fetchTokenData()
         .should.deep.equal({
-        type: actionTypes.LOGIN,
-        token: 'test token',
-        tenant: 'test tenant',
-        tenantId: 'tenantId'
+        type: actionTypes.CHECK_TOKEN,
+        token: 'scopedToken',
+        unscopedToken: 'unscopedToken'
       });
     });
   });
   describe('clearStorage() ', () => {
     it(`should returns ${actionTypes.CLEAR_STORAGE} action and clear session storage`, () => {
-      sessionStorage.setItem('token', 'test token');
-      sessionStorage.setItem('scopedToken', 'test scoped token');
-      sessionStorage.setItem('tenantName', 'test tenant');
+      sessionStorage.setItem('scopedToken', 'test token');
+      sessionStorage.setItem('unscopedToken', 'test scoped token');
 
       actions.clearStorage()
         .should.deep.equal({
         type: actionTypes.CLEAR_STORAGE,
       });
 
-      should.equal(sessionStorage.getItem('token'), null);
       should.equal(sessionStorage.getItem('scopedToken'), null);
-      should.equal(sessionStorage.getItem('tenantName'), null);
+      should.equal(sessionStorage.getItem('unscopedToken'), null);
     });
   });
 
@@ -141,7 +137,7 @@ describe('selectTenantSuccess()', () => {
   it(`should set token and tenant in session storage and returns ${actionTypes.LOGIN_SUCCESS} action`, () => {
     actions.selectTenantSuccess('tokenId', '1/2/2017', {name: 'tenant'}, {name: 'user'})
       .should.deep.equal({
-      type: actionTypes.LOGIN_SUCCESS,
+      type: actionTypes.SELECT_TENANT_SUCCESS,
       data: {
         tokenId: 'tokenId',
         tokenExpires: '1/2/2017',
@@ -150,7 +146,6 @@ describe('selectTenantSuccess()', () => {
       }
     });
     sessionStorage.getItem('scopedToken').should.equal('tokenId');
-    sessionStorage.getItem('tenantName').should.equal('tenant');
   });
 });
 
