@@ -40,6 +40,7 @@ describe('authReducer ', () => {
         inProgress: false,
         logged: false,
         tokenId: 'testId',
+        unscopedTenant: 'testId',
         tokenExpires: 'expires date',
         tenant: {
           id: 'sample Id',
