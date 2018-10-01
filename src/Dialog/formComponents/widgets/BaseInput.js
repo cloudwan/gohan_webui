@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {cloneDeepWith} from 'lodash';
 
 import {asNumber} from 'react-jsonschema-form/lib/utils';
 
@@ -17,8 +18,9 @@ class BaseInput extends Component {
   }
 
   onInputChange = event => {
-    let value = event.target.value;
     const errors = [];
+    const {type} = this.props.schema;
+    let value = event.target.value;
 
     if (this.props.required && !value) {
       errors.push({
@@ -26,9 +28,15 @@ class BaseInput extends Component {
       });
     }
 
-    if (this.props.schema.type === 'number' || this.props.schema.type === 'integer') {
-      value = (value === '') ? value : Number(value);
-      validator.validate(this.props.schema, asNumber(value));
+    if (type.includes('number') || type.includes('integer')) {
+      const dialogSchema = cloneDeepWith(this.props.schema);
+      value = (value === '' && dialogSchema.nullable) ? null : asNumber(value);
+
+      if (dialogSchema.nullable) {
+        dialogSchema.type = [dialogSchema.type, 'null'];
+      }
+
+      validator.validate(dialogSchema, value);
     } else {
       validator.validate(this.props.schema, value);
     }
