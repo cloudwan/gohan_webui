@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {asNumber} from 'react-jsonschema-form/lib/utils';
 import StringField from './StringField';
 
 function NumberField(props) {
   return (
     <StringField {...props}
-      onChange={value => props.onChange(asNumber(value))}
+      onChange={value => props.onChange(value)}
     />
   );
 }
