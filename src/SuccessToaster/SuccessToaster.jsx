@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {isEqual, isEmpty} from 'lodash';
 import {Inspector} from 'react-inspector';
 
 import CodeMirror from 'react-codemirror';
@@ -14,7 +13,6 @@ import {dismiss} from './SuccessToasterActions';
 export class SuccessToaster extends Component {
   static defaultProps = {
     dismiss: () => {},
-    data: {},
     title: '',
   }
 
@@ -23,7 +21,7 @@ export class SuccessToaster extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.data && !isEmpty(nextProps.data) && !isEqual(nextProps.data,this.props.data)) {
+    if (nextProps.data) {
       this.toaster.show({
         message: (<div style={{
           overflow: 'auto',
@@ -44,7 +42,7 @@ export class SuccessToaster extends Component {
                 theme: 'base16-light',
                 readOnly: true,
                 cursorBlinkRate: -1
-               }}
+              }}
             />
           )}
         </div>),
