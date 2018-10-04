@@ -4,8 +4,9 @@ import chai from 'chai';
 import * as selectors from './SuccessToasterSelectors';
 
 chai.should();
+const should = chai.should();
 
-describe('DetailSelectors', () => {
+describe('SuccessToasterSelectors', () => {
   describe('getData', () => {
     it('should return appropriate data', () => {
       selectors.getData(
@@ -18,11 +19,7 @@ describe('DetailSelectors', () => {
     });
 
     it('should return undefined for no data', () => {
-      selectors.getData(
-        {
-          successToasterReducer: {}
-        }
-      ).should.deep.equal({});
+      should.equal(selectors.getData({successToasterReducer: {}}), undefined);
     });
   });
 
@@ -37,7 +34,7 @@ describe('DetailSelectors', () => {
       ).should.equal('foo');
     });
 
-    it('should return undefined for no title', () => {
+    it('should return empty string for no title', () => {
       selectors.getTitle(
         {
           successToasterReducer: {}
