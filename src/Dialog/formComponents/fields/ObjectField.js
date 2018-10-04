@@ -171,15 +171,14 @@ class ObjectField extends Component {
           {!schema.description && (
             <div className="clearfix" />
           )}
-          {title && (
-            <div className="add-object-button">
-              <Button className="pt-minimal pt-small"
-                intent={Intent.PRIMARY}
-                onClick={this.onAddRemoveClick}>
-                <FontAwesomeIcon className="faicon" icon={faPlusCircle} />Add {title}
-              </Button>
-            </div>
-          )}
+          <div className="add-object-button">
+            <Button className="pt-minimal pt-small"
+              intent={Intent.PRIMARY}
+              onClick={this.onAddRemoveClick}>
+              <FontAwesomeIcon className="faicon" icon={faPlusCircle} />
+              {`Add ${title ? title : ''}`}
+            </Button>
+          </div>
         </fieldset>
       );
     }
