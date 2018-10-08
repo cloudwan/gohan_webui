@@ -180,6 +180,15 @@ class ObjectField extends Component {
               </Button>
             </div>
           )}
+          {!title && (
+            <div className="add-object-button">
+              <Button className="pt-minimal pt-small"
+                intent={Intent.PRIMARY}
+                onClick={this.onAddRemoveClick}>
+                <FontAwesomeIcon className="faicon" icon={faPlusCircle} />Add
+              </Button>
+            </div>
+          )}
         </fieldset>
       );
     }
