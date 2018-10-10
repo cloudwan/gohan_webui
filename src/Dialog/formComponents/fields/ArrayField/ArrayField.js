@@ -76,7 +76,7 @@ export default class ArrayField extends Component {
         itemSchema = schema.additionalItems;
       }
 
-      if (isEmpty(this.props.formData) && this.props.required) {
+      if (isEmpty(items) && this.props.required) {
         this.props.onChange(items.concat([
           getDefaultFormState(itemSchema, undefined, definitions)
         ]), {validate: false});
