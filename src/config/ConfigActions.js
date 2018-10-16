@@ -3,7 +3,9 @@ import axios from 'axios';
 import {
   FETCH_SUCCESS,
   FETCH_ERROR,
-  SET_TITLE
+  SET_TITLE,
+  FETCH_APP_VERSION_SUCCESS,
+  FETCH_APP_VERSION_FAILURE
 } from './ConfigActionTypes';
 
 function fetchSuccess(data) {
@@ -46,6 +48,38 @@ export function setTitle(firstPart) {
 
     dispatch({
       type: SET_TITLE
+    });
+  };
+}
+
+export function fetchAppVersionSuccess(data) {
+  return dispatch => {
+    dispatch({data, type: FETCH_APP_VERSION_SUCCESS});
+  };
+}
+
+export function fetchAppVersionFailure(data) {
+  return dispatch => {
+    const error = data.data;
+
+    dispatch({type: FETCH_APP_VERSION_FAILURE, error});
+  };
+}
+
+export function fetchAppVersion() {
+  return (dispatch, getState) => {
+    const state = getState();
+    const gohanConfig = state.configReducer.gohan;
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Auth-Token': state.authReducer.tokenId
+    };
+    const url = `${gohanConfig.url}${gohanConfig.schema.replace('schemas', 'version')}`;
+
+    return axios.get(url, {headers}).then(response => {
+      dispatch(fetchAppVersionSuccess(response.data));
+    }).catch(error => {
+      dispatch(fetchAppVersionFailure(error.response));
     });
   };
 }

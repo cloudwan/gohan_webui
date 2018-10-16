@@ -11,6 +11,8 @@ const tableDefaultSortKey = state => state.configReducer.tableDefaultSortKey;
 const tableDefaultSortOrder = state => state.configReducer.tableDefaultSortOrder;
 const useKeystoneDomain = state => state.configReducer.useKeystoneDomain;
 const domainName = state => state.configReducer.domainName;
+const appVersion = state => state.configReducer.app;
+const coreVersion = state => state.configReducer.version;
 
 export const getSidebar = createSelector(
   [sidebar],
@@ -75,4 +77,16 @@ export const getUseKeystoneDomainState = createSelector(
 export const getDomainName = createSelector(
   [domainName],
   domainName => domainName
+);
+
+export const getAppVersion = createSelector(
+  [appVersion],
+  appVersion => appVersion || 'N/A'
+);
+
+const CORE_VERSION_LENGTH = 7;
+
+export const getCoreVersion = createSelector(
+  [coreVersion],
+  coreVersion => coreVersion ? coreVersion.slice(0, CORE_VERSION_LENGTH) : 'N/A'
 );

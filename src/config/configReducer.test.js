@@ -31,4 +31,18 @@ describe('configReducer ', () => {
       }
     });
   });
+
+  it(`should handle ${actionTypes.FETCH_APP_VERSION_SUCCESS}`, () => {
+    configReducer(undefined,
+      {
+        type: actionTypes.FETCH_APP_VERSION_SUCCESS,
+        data: {
+          app: 'app',
+          version: '1234567890'
+        }
+      }).should.deep.equal({
+      app: 'app',
+      version: '1234567890'
+    });
+  });
 });
