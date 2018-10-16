@@ -92,4 +92,69 @@ describe('ConfigActions ', () => {
 
     store.getActions().should.deep.equal(expectedActions);
   });
+
+  it(`should dispatch ${actionTypes.FETCH_APP_VERSION_SUCCESS} when fetching versions has been done`, async () => {
+    const store = mockStore({
+      authReducer: {
+        tokenId: 'foo'
+      },
+      configReducer: {
+        gohan: {
+          url: 'http://url',
+          schema: '/path/schemas'
+        }
+      }
+    });
+
+    axios.get = sinon.spy(() => Promise.resolve({
+      data: {
+        app: 'app',
+        version: '1972382972394823'
+      }
+    }));
+
+    await store.dispatch(actions.fetchAppVersion());
+
+    store.getActions().should.deep.equal([
+      {
+        type: actionTypes.FETCH_APP_VERSION_SUCCESS,
+        data: {
+          app: 'app',
+          version: '1972382972394823'
+        }
+      }
+    ]);
+  });
+
+  it(`should dispatch ${actionTypes.FETCH_APP_VERSION_FAILURE}` +
+    ' when fetching versions finished with error', async () => {
+    axios.get = sinon.spy(() => Promise.reject({
+      response: {
+        data: 'Cannot fetch data'
+      }
+    }));
+
+    const expectedActions = [
+      {
+        type: actionTypes.FETCH_APP_VERSION_FAILURE,
+        error: 'Cannot fetch data'
+      }
+    ];
+
+    const store = mockStore({
+      authReducer: {
+        tokenId: 'foo'
+      },
+      configReducer: {
+        gohan: {
+          url: 'http://url',
+          schema: '/path/schemas'
+        }
+      }
+    });
+
+    await store.dispatch(actions.fetchAppVersion());
+
+    store.getActions().should.deep.equal(expectedActions);
+  });
 });

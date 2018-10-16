@@ -14,7 +14,12 @@ const mockStore = configureStore();
 
 describe('< Sample />', () => {
   it('should exist', () => {
-    const store = mockStore({});
+    const store = mockStore({
+      configReducer: {
+        app: 'foo',
+        version: 'bar'
+      }
+    });
     const wrapper = shallow(
       <ConnectedSample store={store}/>
     );
