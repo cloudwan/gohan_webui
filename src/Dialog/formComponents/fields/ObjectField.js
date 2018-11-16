@@ -146,11 +146,16 @@ class ObjectField extends Component {
       disabled,
       readonly
     } = this.props;
+    const widget = uiSchema['ui:widget'];
     const {definitions, fields, formContext} = this.props.registry;
     const {SchemaField, TitleField, DescriptionField} = fields;
     const baseSchema = retrieveSchema(this.props.schema, definitions);
     const title = (baseSchema.title === undefined) ? name : baseSchema.title;
     const schema = cloneDeep(baseSchema);
+
+    if (widget === 'hidden') {
+      return null;
+    }
 
     if (schema.nullable && this.nullValue) {
       return (
