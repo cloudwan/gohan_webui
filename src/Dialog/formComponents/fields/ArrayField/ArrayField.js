@@ -199,6 +199,11 @@ export default class ArrayField extends Component {
 
   render() {
     const {schema, uiSchema} = this.props;
+    const widget = uiSchema['ui:widget'];
+
+    if (widget === 'hidden') {
+      return null;
+    }
 
     if (isFilesArray(schema, uiSchema)) {
       return this.renderFiles();

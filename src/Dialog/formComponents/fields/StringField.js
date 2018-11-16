@@ -51,8 +51,7 @@ function StringField(props) {
     const enumOptions = optionsListObject(schema);
 
     if (widget) {
-      const Widget = getWidget(schema, widget, widgets, {enumOptions});
-
+      const Widget = getWidget(schema, widget, {...registry.widgets, ...widgets}, {enumOptions});
       return <Widget {...commonProps} />;
     }
 
@@ -67,7 +66,7 @@ function StringField(props) {
     const enumOptions = optionsList(schema);
 
     if (widget) {
-      const Widget = getWidget(schema, widget, widgets, {enumOptions});
+      const Widget = getWidget(schema, widget, {...registry.widgets, ...widgets}, {enumOptions});
       return <Widget {...commonProps} />;
     }
 
@@ -77,7 +76,8 @@ function StringField(props) {
   }
 
   if (widget) {
-    const Widget = getWidget(schema, widget, widgets);
+    const Widget = getWidget(schema, widget, {...registry.widgets, ...widgets});
+
     return <Widget {...commonProps} placeholder={placeholder} />;
   }
   return <TextWidget {...commonProps} placeholder={placeholder} />;
