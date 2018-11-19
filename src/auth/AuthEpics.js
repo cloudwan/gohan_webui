@@ -19,7 +19,7 @@ import {
   selectTenantFailure,
   renewTokenSuccess,
   renewTokenFailure,
-  renewTokenInBackground
+  showTokenRenewal
 } from './AuthActions';
 
 const computeOffsetForTokenRenewal = date => {
@@ -139,8 +139,6 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           data
         )
           .flatMap(response => {
-              const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
-
               return Observable.concat(
                 Observable.of(loginSuccess(
                   response.xhr.getResponseHeader('X-Subject-Token'),
@@ -148,8 +146,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
                   tenantId ? response.response.token.project : undefined,
                   response.response.token.user
                 )),
-                Observable.of({type: FETCH_TENANTS}),
-                Observable.of(renewTokenInBackground()).delay(offset)
+                Observable.of({type: FETCH_TENANTS})
               );
             }
           )
@@ -220,11 +217,16 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
     .mergeMap(() => {
       const state = store.getState();
       const {authUrl} = state.configReducer;
-      const {tokenId} = state.authReducer;
+      const {
+        tokenId,
+        tokenExpires
+      } = state.authReducer;
       const headers = {
         'Content-Type': 'application/json',
         'X-Auth-Token': tokenId
       };
+
+      const warningOffset = computeOffsetForTokenRenewal(tokenExpires);
 
       if (authUrl) {
         return call(
@@ -232,7 +234,10 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
           `${authUrl}/auth/projects`,
           headers
         )
-          .map(response => fetchTenantSuccess(response.response.projects))
+          .flatMap(response => Observable.concat(
+            Observable.of(fetchTenantSuccess(response.response.projects)),
+            Observable.of(showTokenRenewal()).delay(warningOffset)
+          ))
           .catch(error => Observable.of(fetchTenantFailure(parseXHRError(error))));
       }
 
@@ -243,9 +248,13 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
 
 export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(RENEW_TOKEN)
-    .mergeMap(({token}) => {
+    .mergeMap(({username, password, domain}) => {
       const state = store.getState();
-      const {authUrl} = state.configReducer;
+      const {
+        authUrl,
+        useKeystoneDomain,
+        domainName
+      } = state.configReducer;
       const {
         tokenId,
         tenant
@@ -257,17 +266,25 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
 
       if (authUrl) {
         const data = {
-          auth: {
-            identity: {
-              methods: [
-                'token'
-              ],
-              token: {
-                id: token
+          auth: {}
+        };
+
+        if (username !== undefined && password !== undefined) {
+          data.auth.identity = {
+            methods: [
+              'password'
+            ],
+            password: {
+              user: {
+                domain: {
+                  name: useKeystoneDomain ? domainName || domain : 'default'
+                },
+                name: username,
+                password
               }
             }
-          }
-        };
+          };
+        }
 
         if (tenant && tenant.id) {
           data.auth.scope = {
@@ -295,7 +312,7 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
                 tenant && tenant.id ? response.response.token.project : undefined,
                 response.response.token.user
               )),
-              Observable.of(renewTokenInBackground()).delay(offset));
+              Observable.of(showTokenRenewal()).delay(offset));
           })
           .catch(error => Observable.of(renewTokenFailure(parseXHRError(error))));
       }
