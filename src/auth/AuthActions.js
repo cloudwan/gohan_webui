@@ -152,7 +152,7 @@ export const showTokenRenewal = () => {
 };
 
 export const renewTokenInBackground = () => {
-  const token = sessionStorage.getItem('token');
+  const token = sessionStorage.getItem('scopedToken');
 
   return {
     type: RENEW_TOKEN,
@@ -169,7 +169,7 @@ export const renewToken = (username, password) => {
 };
 
 export const renewTokenSuccess = (tokenId, tokenExpires, tenant, user) => {
-  sessionStorage.setItem('token', tokenId);
+  sessionStorage.setItem('scopedToken', tokenId);
 
   return {
     type: RENEW_TOKEN_SUCCESS,
