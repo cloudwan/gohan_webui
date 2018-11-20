@@ -20,7 +20,11 @@ import {
   clearData,
   clearError,
 } from './DialogActions';
-import {getUiSchemaProperties, getUiSchemaLogic} from './../uiSchema/UiSchemaSelectors';
+import {
+  getUiSchemaProperties,
+  getUiSchemaTitle,
+  getUiSchemaLogic
+} from './../uiSchema/UiSchemaSelectors';
 /**
  * Dialog component for creating and editing resources.
  *
@@ -89,7 +93,7 @@ export class GeneratedDialog extends Component {
       data
     } = this.props;
     const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
-      ` ${baseSchema.title}`;
+      ` ${this.props.uiSchemaTitle || baseSchema.title}`;
     const submitButtonLabel = customButtonLabel ? customButtonLabel : `${action[0].toUpperCase()}${action.slice(1)}`;
 
     return (
@@ -207,6 +211,7 @@ if (process.env.NODE_ENV !== 'production') {
 const mapStateToProps = (state, {baseSchema}) => ({
   schema: getSchema(state),
   jsonUiSchema: getUiSchemaProperties(state, baseSchema.id),
+  uiSchemaTitle: getUiSchemaTitle(state, baseSchema.id),
   jsonUiSchemaLogic: getUiSchemaLogic(state, baseSchema.id),
   isLoading: getLoadingState(state),
 });
