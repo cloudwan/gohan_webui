@@ -73,4 +73,35 @@ describe('UiSchemaSelectors', () => {
       );
     });
   });
+
+  describe('getUiSchemaTitle', () => {
+    it('should return appropriate type', () => {
+      selectors.getUiSchemaTitle(
+        {
+          uiSchemaReducer: {
+            data: [
+              {
+                id: 'test1',
+                'ui:title': 'Test one',
+              },
+              {
+                id: 'test2',
+              }
+            ]
+          }
+        },
+        'test1').should.equal(
+          'Test one'
+      );
+
+      should.not.exist(selectors.getUiSchemaTitle(
+        {
+          uiSchemaReducer: {
+            data: []
+          }
+        },
+        'test1')
+      );
+    });
+  });
 });
