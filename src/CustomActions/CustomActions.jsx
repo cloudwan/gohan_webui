@@ -39,8 +39,14 @@ export class CustomActions extends Component {
       actions,
     } = this.props;
 
+    let responseType;
+
+    if (actions[name].output && actions[name].output.format === 'html') {
+      responseType = 'text';
+    }
+
     this.props.customActions[name].closeDialog();
-    this.props.execute(actions[name], baseUrl, id);
+    this.props.execute(actions[name], baseUrl, id, undefined, responseType);
   };
 
   render() {

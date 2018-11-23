@@ -36,6 +36,9 @@ describe('CustomActionsEpics', () => {
           test: {
           },
         },
+        xhr: {
+          getResponseHeader: () => 'text/html',
+        }
       };
 
       expectEpic(execute, {
@@ -47,7 +50,8 @@ describe('CustomActionsEpics', () => {
                 test: {}
               },
               title: 'The Custom Action was Successful',
-              type: successToasterActionTypes.SUCCESS
+              type: successToasterActionTypes.SUCCESS,
+              format: 'html',
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -73,6 +77,9 @@ describe('CustomActionsEpics', () => {
           test: {
           },
         },
+        xhr: {
+          getResponseHeader: () => 'application/json'
+        }
       };
 
       expectEpic(execute, {
@@ -84,7 +91,8 @@ describe('CustomActionsEpics', () => {
                 test: {}
               },
               title: 'The Custom Action was Successful',
-              type: successToasterActionTypes.SUCCESS
+              type: successToasterActionTypes.SUCCESS,
+              format: undefined,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -121,7 +129,8 @@ describe('CustomActionsEpics', () => {
                 test: {}
               },
               title: 'The Custom Action was Successful',
-              type: successToasterActionTypes.SUCCESS
+              type: successToasterActionTypes.SUCCESS,
+              format: undefined,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -158,7 +167,8 @@ describe('CustomActionsEpics', () => {
                 test: {}
               },
               title: 'The Custom Action was Successful',
-              type: successToasterActionTypes.SUCCESS
+              type: successToasterActionTypes.SUCCESS,
+              format: undefined,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -195,7 +205,8 @@ describe('CustomActionsEpics', () => {
                 test: {}
               },
               title: 'The Custom Action was Successful',
-              type: successToasterActionTypes.SUCCESS
+              type: successToasterActionTypes.SUCCESS,
+              format: undefined,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL

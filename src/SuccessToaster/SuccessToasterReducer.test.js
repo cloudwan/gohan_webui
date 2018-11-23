@@ -24,6 +24,7 @@ describe('successToasterReducer ', () => {
         foo: 'bar',
       },
       title: 'baz',
+      format: undefined,
     });
   });
 
@@ -36,6 +37,7 @@ describe('successToasterReducer ', () => {
     ).should.deep.equal({
       data: undefined,
       title: undefined,
+      format: undefined,
     });
   });
 });

@@ -249,9 +249,27 @@ body {
 /*
  * Custom Action
  */
-.custom-action-success {
-  font-weight: 400;
-  margin-bottom: 1rem;
+.success-toaster {
+
+  &-title {
+    font-weight: 400;
+    margin-bottom: 0;
+  }
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  &-dismiss.pt-button-group {
+    padding: 0;
+  }
+
+  & > .pt-button-group {
+    display: none;
+  }
 }
 
 .token-renewal-message-container {
@@ -478,6 +496,14 @@ table.gohan-table {
  */
 .toaster-codemirror .CodeMirror {
   height: 300px;
+}
+
+/*
+ * IFrame component
+ */
+
+.gohan-iframe {
+  width: 100%;
 }
 
 

@@ -189,7 +189,20 @@ export const parseXHRError = error => {
   return 'Unknown error!';
 };
 
-export const get = (url, headers) => ajax({method: 'GET', url, headers, crossDomain: true});
+export const get = (url, headers, responseType) => {
+  const requestOptions = {
+    method: 'GET',
+    url,
+    headers,
+    crossDomain: true,
+  };
+
+  if (responseType) {
+    requestOptions.responseType = responseType;
+  }
+
+  return ajax(requestOptions);
+};
 
 export const post = (url, headers, body) => ajax({method: 'POST', url, body, headers, crossDomain: true});
 
