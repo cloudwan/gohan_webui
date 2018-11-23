@@ -26,7 +26,7 @@ describe('CustomActionsActions ', () => {
         },
         '/url/',
         'foo',
-        {}
+        {},
       ));
 
       store.getActions().should.deep.equal([
@@ -34,7 +34,8 @@ describe('CustomActionsActions ', () => {
           type: actionTypes.EXECUTE,
           data: {},
           url: '/url/id:/test',
-          method: 'POST'
+          method: 'POST',
+          responseType: undefined,
         }
       ]);
     });
@@ -52,6 +53,23 @@ describe('CustomActionsActions ', () => {
           type: successToasterActionsTypes.SUCCESS,
           data: {},
           title: 'The Custom Action was Successful',
+          format: undefined,
+        }
+      ]);
+    });
+
+    it(`should dispatch ${successToasterActionsTypes.SUCCESS} with format`, () => {
+      const storeObject = {};
+      const store = mockStore(storeObject);
+
+      store.dispatch(actions.executeSuccess({}, 'html'));
+
+      store.getActions().should.deep.equal([
+        {
+          type: successToasterActionsTypes.SUCCESS,
+          data: {},
+          title: 'The Custom Action was Successful',
+          format: 'html',
         }
       ]);
     });

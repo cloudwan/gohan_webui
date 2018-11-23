@@ -5,9 +5,11 @@ import {Inspector} from 'react-inspector';
 
 import CodeMirror from 'react-codemirror';
 import 'codemirror/mode/javascript/javascript';
-import {Toaster, Position} from '@blueprintjs/core';
+import {Toaster, Position, Button} from '@blueprintjs/core';
 
-import {getData, getTitle} from './SuccessToasterSelectors';
+import IFrame from '../components/IFrame';
+
+import {getData, getTitle, getFormat} from './SuccessToasterSelectors';
 import {dismiss} from './SuccessToasterActions';
 
 export class SuccessToaster extends Component {
@@ -17,12 +19,13 @@ export class SuccessToaster extends Component {
   }
 
   handleDismissClick = () => {
+    this.toaster.dismiss(this.toasterKey);
     this.props.dismiss();
   };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.data) {
-      this.toaster.show({
+      this.toasterKey = this.toaster.show({
         message: (<div style={{
           overflow: 'auto',
           maxWidth: 480,
@@ -30,27 +33,50 @@ export class SuccessToaster extends Component {
           maxHeight: '50vh',
           position: 'relative'
         }}>
-          <h5 className="custom-action-success">{nextProps.title}</h5>
-          {typeof nextProps.data === 'object' && (
-            <Inspector data={nextProps.data}/>
-          )}
-          {typeof nextProps.data !== 'object' && (
-            <CodeMirror value={nextProps.data}
-              className="toaster-codemirror"
-              options={{
-                mode: 'javascript',
-                theme: 'base16-light',
-                readOnly: true,
-                cursorBlinkRate: -1
-              }}
-            />
-          )}
+          <div className="success-toaster-header">
+            <h5 className="success-toaster-title">{nextProps.title}</h5>
+            <div className="pt-button-group pt-minimal success-toaster-dismiss">
+              <Button iconName="cross"
+                onClick={this.handleDismissClick}
+              />
+            </div>
+          </div>
+          {this.renderToasterContent(nextProps.data, nextProps.format)}
         </div>),
         className: 'success-toaster',
         timeout: 0,
-        onDismiss: this.handleDismissClick,
       });
     }
+  }
+
+  renderToasterContent = (data, format) => {
+    if (format === 'html') {
+      return (
+        <IFrame content={data}/>
+      );
+    }
+
+    if (!format) {
+      if (typeof data === 'object') {
+        return (
+          <Inspector data={data}/>
+        );
+      } else if (typeof data !== 'object') {
+        return (
+          <CodeMirror value={data}
+            className="toaster-codemirror"
+            options={{
+              mode: 'javascript',
+              theme: 'base16-light',
+              readOnly: true,
+              cursorBlinkRate: -1
+            }}
+          />
+        );
+      }
+    }
+
+    return null;
   }
 
   render() {
@@ -70,13 +96,15 @@ if (process.env.NODE_ENV !== 'production') {
       PropTypes.string
     ]),
     title: PropTypes.string,
-    dismiss: PropTypes.func
+    dismiss: PropTypes.func,
+    format: PropTypes.string,
   };
 }
 
 const mapStateToProps = state => ({
   data: getData(state),
   title: getTitle(state),
+  format: getFormat(state),
 });
 
 export default connect(mapStateToProps, {

@@ -24,7 +24,7 @@ import {
 
 
 export const execute = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(EXECUTE)
-  .switchMap(({url, data, method}) => {
+  .switchMap(({url, data, method, responseType}) => {
     const state = store.getState();
     const {url: gohanUrl} = state.configReducer.gohan;
     const headers = {
@@ -33,11 +33,18 @@ export const execute = (action$, store, call = (fn, ...args) => fn(...args)) => 
     };
 
     if (method === 'GET') {
-      return call(get, `${gohanUrl}${url}`, headers)
-        .flatMap(response => Observable.concat(
-          Observable.of(executeSuccess(response.response, Boolean(data))),
-          Observable.of(closeActiveDialog())
-        ))
+      return call(get, `${gohanUrl}${url}`, headers, responseType)
+        .flatMap(response => {
+          const responseContextType = response.xhr.getResponseHeader('Content-type') || '';
+          const format = responseContextType.includes('text/html') ?
+            'html' :
+            undefined;
+
+          return Observable.concat(
+            Observable.of(executeSuccess(response.response, format)),
+            Observable.of(closeActiveDialog())
+          );
+        })
         .catch(error => {
           console.error(error);
           return Observable.of(executeFailure(parseXHRError(error), Boolean(data)));
@@ -45,7 +52,7 @@ export const execute = (action$, store, call = (fn, ...args) => fn(...args)) => 
     } else if (method === 'POST') {
       return call(post, `${gohanUrl}${url}`, headers, data)
         .flatMap(response => Observable.concat(
-          Observable.of(executeSuccess(response.response, Boolean(data))),
+          Observable.of(executeSuccess(response.response)),
           Observable.of(closeActiveDialog())
         ))
         .catch(error => {
@@ -55,7 +62,7 @@ export const execute = (action$, store, call = (fn, ...args) => fn(...args)) => 
     } else if (method === 'PUT') {
       return call(put, `${gohanUrl}${url}`, headers, data)
         .flatMap(response => Observable.concat(
-          Observable.of(executeSuccess(response.response, Boolean(data))),
+          Observable.of(executeSuccess(response.response)),
           Observable.of(closeActiveDialog())
         ))
         .catch(error => {
@@ -65,7 +72,7 @@ export const execute = (action$, store, call = (fn, ...args) => fn(...args)) => 
     } else if (method === 'DELETE') {
       return call(purge, `${gohanUrl}${url}`, headers)
         .flatMap(response => Observable.concat(
-          Observable.of(executeSuccess(response.response, Boolean(data))),
+          Observable.of(executeSuccess(response.response)),
           Observable.of(closeActiveDialog())
         ))
         .catch(error => {
