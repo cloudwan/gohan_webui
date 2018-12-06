@@ -22,5 +22,6 @@ export default Object.freeze({
   'ipv4-address-with-cidr': Ipv4Widget,
   ipv6: Ipv6Widget,
   js: CodeWidget,
-  yaml: CodeWidget
+  yaml: CodeWidget,
+  'version-constraint': TextWidget
 });
