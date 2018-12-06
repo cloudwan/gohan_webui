@@ -9,6 +9,7 @@ import ipV6Format from './ipV6Format';
 import ipV4Format from './ipV4Format';
 import uuidFormat from './uuidFormat';
 import emailFormat from './emailFormat';
+import versionConstraintFormat from './versionConstraintFormat';
 
 // Override jsonschema built in regex.
 FORMAT_REGEXPS.email = emailFormat;
@@ -19,6 +20,7 @@ FORMAT_REGEXPS.ipv6 = ipV6Format;
 Validator.prototype.customFormats.mac = macFormat;
 Validator.prototype.customFormats.cidr = cidrFormat;
 Validator.prototype.customFormats.uuid = uuidFormat;
+Validator.prototype.customFormats['version-constraint'] = versionConstraintFormat;
 
 const ajv = new Ajv({
   meta: false,
@@ -27,7 +29,8 @@ const ajv = new Ajv({
   allErrors: true,
   formats: {
     cidr: cidrFormat,
-    mac: macFormat
+    mac: macFormat,
+    'version-constraint': versionConstraintFormat
   }
 });
 
