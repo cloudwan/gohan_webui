@@ -10,6 +10,8 @@ import Tab from './../../../../components/Tabs/Tab';
 import Tabs from './../../../../components/Tabs/Tabs';
 import {ArraySortableItem} from './ArraySortableItem';
 
+import {optionsListObject} from '../../utils';
+
 import {
   getUiOptions,
   getWidget,
@@ -430,7 +432,10 @@ export default class ArrayField extends Component {
     const {items} = this.state;
     const {widgets, definitions} = this.props.registry;
     const itemsSchema = retrieveSchema(schema.items, definitions);
-    const enumOptions = optionsList(itemsSchema);
+    const enumOptions = (itemsSchema && itemsSchema.options) ?
+      optionsListObject(itemsSchema) :
+      optionsList(itemsSchema);
+
     const {
       widget = 'select',
       ...options
