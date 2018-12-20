@@ -24,7 +24,9 @@ import {
   getTenants,
   getUser,
   getProgressState,
-  getStoragePrefix
+  getStoragePrefix,
+  getUnscopedToken,
+  isUserAdmin,
 } from './AuthSelectors';
 
 import {
@@ -52,12 +54,14 @@ export class Auth extends Component {
 
   handleSelectTenantSubmit = (name, id, filterStatus) => {
     this.props.resetErrorMessage();
-    this.props.selectTenant(name, id);
+    this.props.selectTenant({id, name});
     this.props.changeTenantFilter(filterStatus);
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.tokenId !== undefined && nextProps.tenant !== undefined && nextProps.tenants !== undefined) {
+    if (
+      nextProps.tokenId !== undefined && nextProps.tenants !== undefined
+    ) {
       if (this.props.onLoginSuccess) {
         this.props.onLoginSuccess();
       }
@@ -79,13 +83,13 @@ export class Auth extends Component {
   render() {
     const {Login, SelectTenant, Loading, domainName, useDomain} = this.props;
 
-    if (!this.props.inProgress && this.props.tokenId === undefined) {
+    if (!this.props.inProgress && this.props.unscopedToken === undefined) {
       return (
         <Login key={0} onLoginSubmit={this.handleLoginSubmit}
           Error={this.renderErrors()} isDomainEnabled={useDomain && !domainName}
         />
       );
-    } else if (this.props.tenant === undefined && this.props.tenants !== undefined) {
+    } else if (this.props.tokenId === undefined && this.props.tenants !== undefined && !this.props.isAdmin) {
       return (
         <SelectTenant key={1} username={this.props.user.name}
           onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}
@@ -141,7 +145,9 @@ function mapStateToProps(state) {
     errorMessage: getError(state),
     storagePrefix: getStoragePrefix(state),
     useDomain: getUseKeystoneDomainState(state),
-    domainName: getDomainName(state)
+    domainName: getDomainName(state),
+    unscopedToken: getUnscopedToken(state),
+    isAdmin: isUserAdmin(state),
   };
 }
 
