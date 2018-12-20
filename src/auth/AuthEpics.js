@@ -6,8 +6,8 @@ import {
   LOGIN,
   CHECK_TOKEN,
   FETCH_TENANTS,
-  SELECT_TENANT,
-  RENEW_TOKEN
+  SCOPED_LOGIN,
+  FETCH_DOMAINS,
 } from './AuthActionTypes';
 import {
   loginSuccess,
@@ -15,12 +15,13 @@ import {
   checkTokenSuccess,
   fetchTenantSuccess,
   fetchTenantFailure,
-  selectTenantSuccess,
-  selectTenantFailure,
-  renewTokenSuccess,
-  renewTokenFailure,
-  showTokenRenewal
+  showTokenRenewal,
+  scopedLoginSuccess,
+  scopedLoginFailure,
+  fetchDomainsSuccess,
+  fetchDomainsFailure,
 } from './AuthActions';
+import {isUserAdmin} from './AuthSelectors';
 
 const computeOffsetForTokenRenewal = date => {
   const earlyWarningTime = 5 * 60 * 1000; // warn/renew 5 minutes earlier
@@ -32,6 +33,10 @@ const computeOffsetForTokenRenewal = date => {
   }
 
   return offset;
+};
+
+const isCloudAdmin = (user, cloudAdmin) => {
+  return user && cloudAdmin && user.name === cloudAdmin.username && user.domain.id === cloudAdmin.domainId;
 };
 
 export const getTokenInfo = (authUrl, token, call = (fn, ...args) => fn(...args)) =>
@@ -48,52 +53,85 @@ export const getTokenInfo = (authUrl, token, call = (fn, ...args) => fn(...args)
       token: response.xhr.getResponseHeader('X-Subject-Token'),
       ...response.response.token,
     }))
-    .catch(error => Observable.of(parseXHRError(error)));
+    .catch(error => {
+      console.error(error);
+      return Observable.of(parseXHRError(error));
+    });
 
 
 export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) =>
   action$.ofType(CHECK_TOKEN)
-    .mergeMap(({unscopedToken, token}) => {
+    .mergeMap(({unscopedToken, tokenId, tenant}) => {
       const state = store.getState();
       const {
         authUrl,
+        cloudAdmin,
       } = state.configReducer;
 
       return Observable.zip(
         call(getTokenInfo, authUrl, unscopedToken),
-        call(getTokenInfo, authUrl, token)
-      ).flatMap(item => [
-        checkTokenSuccess(
-          item[0].token,
-          item[1].token,
-          item[1].expires_at,
-          item[1].project,
-          item[1].user
-        ),
-        {type: FETCH_TENANTS}
-      ]);
+        call(getTokenInfo, authUrl, tokenId)
+      ).flatMap(item => {
+        const selectedTenant = item[1].roles && !item[1].roles.some(role => role.name.toLowerCase() === 'admin') ?
+          item[1].project :
+          tenant;
+        const scope = {};
+
+        if (item[1].domain && item[1].domain.id) {
+          scope.domain = {
+            id: item[1].domain.id,
+          };
+        } else if (item[1].project && item[1].project.id) {
+          scope.project = {
+            id: item[1].project.id,
+          };
+        }
+
+        const actions = [
+          checkTokenSuccess(
+            item[0].token,
+            item[1].token,
+            item[1].expires_at,
+            selectedTenant,
+            item[1].user,
+            item[1].roles,
+            scope,
+
+          ),
+          {
+            type: FETCH_TENANTS,
+            scope,
+          },
+        ];
+
+        if (isCloudAdmin(item[1].user, cloudAdmin)) {
+          actions.push({type: FETCH_DOMAINS});
+        }
+
+        return actions;
+      });
     });
 
 export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(LOGIN)
-    .mergeMap(({username, password, domain, token, tenantId}) => {
+    .mergeMap(({username, password, domain}) => {
       const state = store.getState();
       const {
         authUrl,
         useKeystoneDomain,
-        domainName
+        domainName,
+        cloudAdmin,
       } = state.configReducer;
       const headers = {
         'Content-Type': 'application/json'
       };
 
-
       if (authUrl) {
+        const selectedDomainName = (useKeystoneDomain ? domain : domainName) || 'default';
         const data = {
           auth: {
             scope: 'unscoped'
           },
-
         };
 
         if (username !== undefined && password !== undefined) {
@@ -104,32 +142,13 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
             password: {
               user: {
                 domain: {
-                  name: useKeystoneDomain ? domainName || domain : 'default'
+                  name: selectedDomainName,
                 },
                 name: username,
                 password
               }
             }
           };
-        } else if (token) {
-          data.auth = {
-            identity: {
-              methods: [
-                'token'
-              ],
-              token: {
-                id: token
-              }
-            }
-          };
-
-          if (tenantId) {
-            data.auth.scope = {
-              project: {
-                id: tenantId
-              }
-            };
-          }
         }
 
         return call(
@@ -138,19 +157,40 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           headers,
           data
         )
-          .flatMap(response => {
-              return Observable.concat(
-                Observable.of(loginSuccess(
-                  response.xhr.getResponseHeader('X-Subject-Token'),
-                  response.response.token.expires_at, // eslint-disable-line camelcase
-                  tenantId ? response.response.token.project : undefined,
-                  response.response.token.user
-                )),
-                Observable.of({type: FETCH_TENANTS})
-              );
-            }
-          )
-          .catch(error => Observable.of(loginFailure(parseXHRError(error))));
+        .flatMap(response => {
+          const {user} = response.response.token;
+          let scope = {};
+
+          if (isCloudAdmin(user, cloudAdmin)) {
+            scope = {
+              project: {
+                name: cloudAdmin.projectName,
+                domain: {
+                  id: cloudAdmin.domainId,
+                }
+              }
+            };
+          } else {
+            scope = {
+              domain: {
+                id: user.domain.id,
+              }
+            };
+          }
+
+          return Observable.concat(
+            Observable.of(loginSuccess(
+              response.xhr.getResponseHeader('X-Subject-Token'),
+              response.response.token.expires_at,
+              response.response.token.user,
+            )),
+            Observable.of({type: SCOPED_LOGIN, scope})
+          );
+        })
+        .catch(error => {
+          console.error(error);
+          return Observable.of(loginFailure(parseXHRError(error)));
+        });
       }
 
       console.log('Wrong auth url! Please check config.json.');
@@ -158,12 +198,19 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
     });
 };
 
-export const selectTenant = (action$, store, call = (fn, ...args) => fn(...args)) => {
-  return action$.ofType(SELECT_TENANT)
-    .mergeMap(({tenantId}) => {
+export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args)) => {
+  return action$.ofType(SCOPED_LOGIN)
+    .mergeMap(({
+      scope,
+      identity = {
+        methods: ['token'],
+        token: {
+          id: store.getState().authReducer.unscopedToken,
+        }
+      }
+    }) => {
       const state = store.getState();
       const {authUrl} = state.configReducer;
-      const {tokenId} = state.authReducer;
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -171,20 +218,9 @@ export const selectTenant = (action$, store, call = (fn, ...args) => fn(...args)
       if (authUrl) {
         const data = {
           auth: {
-            identity: {
-              methods: [
-                'token'
-              ],
-              token: {
-                id: tokenId
-              }
-            },
-            scope: {
-              project: {
-                id: tenantId
-              }
-            }
-          }
+            identity,
+            scope,
+          },
         };
 
         return call(
@@ -193,51 +229,73 @@ export const selectTenant = (action$, store, call = (fn, ...args) => fn(...args)
           headers,
           data
         )
-          .flatMap(response => Observable.concat(
-            Observable.of(selectTenantSuccess(
+        .flatMap(response => {
+          const warningOffset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+          return Observable.concat(
+            Observable.of(scopedLoginSuccess(
               response.xhr.getResponseHeader('X-Subject-Token'),
               response.response.token.expires_at, // eslint-disable-line camelcase
-              response.response.token.project,
-              response.response.token.user
-            )))
-          )
-          .catch(error => {
-            console.log(error);
-            return Observable.of(selectTenantFailure(parseXHRError(error)));
-          });
-      }
+              response.response.token.roles,
+              scope,
+            )),
+            Observable.of({
+              type: FETCH_TENANTS,
+              scope: {
+                project: response.response.token.project,
+                domain: response.response.token.domain
+              },
+            }),
+            Observable.of(showTokenRenewal()).delay(warningOffset),
+          );
+        })
+        .catch(error => {
+          console.error(error);
+          if (error.status === 401 && !isUserAdmin(state)) {
+            return Observable.of({type: FETCH_TENANTS, scope});
+          }
 
-      console.log('Wrong auth url! Please check config.json.');
-      return Observable.of(selectTenantFailure('Wrong auth url! Please check config.json.'));
+          return Observable.of(scopedLoginFailure(parseXHRError(error)));
+        });
+      }
     });
 };
 
 export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(FETCH_TENANTS)
-    .mergeMap(() => {
+    .mergeMap(({scope}) => {
       const state = store.getState();
-      const {authUrl} = state.configReducer;
+      const {
+        authUrl,
+        cloudAdmin,
+      } = state.configReducer;
       const {
         tokenId,
-        tokenExpires
+        unscopedToken,
+        user,
       } = state.authReducer;
       const headers = {
         'Content-Type': 'application/json',
-        'X-Auth-Token': tokenId
+        'X-Auth-Token': tokenId || unscopedToken,
       };
 
-      const warningOffset = computeOffsetForTokenRenewal(tokenExpires);
-
       if (authUrl) {
+        const query = (scope && scope.domain) ? `?domain_id=${scope.domain.id}` : '';
+        const url = isUserAdmin(state) ? `${authUrl}/projects${query}` : `${authUrl}/auth/projects`;
         return call(
           get,
-          `${authUrl}/auth/projects`,
+          url,
           headers
         )
-          .flatMap(response => Observable.concat(
-            Observable.of(fetchTenantSuccess(response.response.projects)),
-            Observable.of(showTokenRenewal()).delay(warningOffset)
-          ))
+          .flatMap(response => {
+            const actions = [
+              Observable.of(fetchTenantSuccess(response.response.projects)),
+            ];
+            if (isCloudAdmin(user, cloudAdmin)) {
+              actions.unshift(Observable.of({type: FETCH_DOMAINS}));
+            }
+
+            return Observable.concat(...actions);
+          })
           .catch(error => Observable.of(fetchTenantFailure(parseXHRError(error))));
       }
 
@@ -246,18 +304,13 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
     });
 };
 
-export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) => {
-  return action$.ofType(RENEW_TOKEN)
-    .mergeMap(({username, password, domain}) => {
+export const fetchDomains = (action$, store, call = (fn, ...args) => fn(...args)) => {
+  return action$.ofType(FETCH_DOMAINS)
+    .mergeMap(() => {
       const state = store.getState();
-      const {
-        authUrl,
-        useKeystoneDomain,
-        domainName
-      } = state.configReducer;
+      const {authUrl} = state.configReducer;
       const {
         tokenId,
-        tenant
       } = state.authReducer;
       const headers = {
         'Content-Type': 'application/json',
@@ -265,61 +318,24 @@ export const renewToken = (action$, store, call = (fn, ...args) => fn(...args)) 
       };
 
       if (authUrl) {
-        const data = {
-          auth: {}
-        };
-
-        if (username !== undefined && password !== undefined) {
-          data.auth.identity = {
-            methods: [
-              'password'
-            ],
-            password: {
-              user: {
-                domain: {
-                  name: useKeystoneDomain ? domainName || domain : 'default'
-                },
-                name: username,
-                password
-              }
-            }
-          };
-        }
-
-        if (tenant && tenant.id) {
-          data.auth.scope = {
-            project: {
-              id: tenant.id
-            }
-          };
-        } else {
-          data.auth.scope = 'unscoped';
-        }
-
         return call(
-          post,
-          `${authUrl}/auth/tokens`,
-          headers,
-          data
+          get,
+          `${authUrl}/domains`,
+          headers
         )
-          .flatMap(response => {
-            const offset = computeOffsetForTokenRenewal(response.response.token.expires_at);
-
-            return Observable.concat(
-              Observable.of(renewTokenSuccess(
-                response.xhr.getResponseHeader('X-Subject-Token'),
-                response.response.token.expires_at, // eslint-disable-line camelcase
-                tenant && tenant.id ? response.response.token.project : undefined,
-                response.response.token.user
-              )),
-              Observable.of(showTokenRenewal()).delay(offset));
-          })
-          .catch(error => Observable.of(renewTokenFailure(parseXHRError(error))));
+        .flatMap(response => Observable.of(fetchDomainsSuccess(response.response.domains)))
+        .catch(error => Observable.of(fetchDomainsFailure(parseXHRError(error))));
       }
 
       console.log('Wrong auth url! Please check config.json.');
-      return Observable.of(fetchTenantFailure('Wrong auth url! Please check config.json.'));
+      return Observable.of(fetchDomainsFailure('Wrong auth url! Please check config.json.'));
     });
 };
 
-export default combineEpics(login, selectTenant, fetchTenants, renewToken, checkToken);
+export default combineEpics(
+  login,
+  scopedLogin,
+  fetchTenants,
+  fetchDomains,
+  checkToken
+);

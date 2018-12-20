@@ -13,7 +13,10 @@ describe('authReducer ', () => {
         inProgress: true,
         logged: false,
         showTokenRenewal: false,
-        tenantFilterStatus: false
+        tenantFilterStatus: false,
+        domains: [],
+        roles: [],
+        scope: {},
       });
     reducer({}, {}).should.deep.equal({});
   });
@@ -24,34 +27,24 @@ describe('authReducer ', () => {
       data: {
         tokenId: 'testId',
         tokenExpires: 'expires date',
-        tenant: {
-          id: 'sample Id',
-          name: 'demo',
-          description: 'Demo tenant',
-          enabled: true
-        },
         user: {
           username: 'Admin'
-        }
+        },
       }
     }).should.deep.equal(
       {
         tenantFilterStatus: false,
         inProgress: false,
         logged: false,
-        tokenId: 'testId',
-        unscopedTenant: 'testId',
+        unscopedToken: 'testId',
         tokenExpires: 'expires date',
-        tenant: {
-          id: 'sample Id',
-          name: 'demo',
-          description: 'Demo tenant',
-          enabled: true
-        },
         user: {
           username: 'Admin'
         },
-        showTokenRenewal: false
+        showTokenRenewal: false,
+        domains: [],
+        roles: [],
+        scope: {},
       }
     );
   });
@@ -63,7 +56,10 @@ describe('authReducer ', () => {
       tenantFilterStatus: false,
       inProgress: false,
       logged: false,
-      showTokenRenewal: false
+      showTokenRenewal: false,
+      domains: [],
+      roles: [],
+      scope: {},
     });
   });
 
@@ -85,7 +81,10 @@ describe('authReducer ', () => {
       inProgress: true,
       logged: false,
       showTokenRenewal: false,
-      tenantFilterStatus: false
+      tenantFilterStatus: false,
+      domains: [],
+      roles: [],
+      scope: {},
     });
   });
 
@@ -106,7 +105,10 @@ describe('authReducer ', () => {
       inProgress: false,
       logged: true,
       showTokenRenewal: false,
-      tenantFilterStatus: false
+      tenantFilterStatus: false,
+      domains: [],
+      roles: [],
+      scope: {},
     });
   });
 

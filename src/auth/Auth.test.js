@@ -105,9 +105,10 @@ describe('< Auth />', () => {
     );
 
     wrapper.setProps({
-      tokenId: 1,
+      tokenId: 'tokenId',
       tenant: 'tenant',
-      tenants: []
+      tenants: [{name: 'sampleTenant', id: 'sampleTenantId'}],
+      user: {name: 'sampleUser'},
     });
 
     onLoginSuccess.should.have.been.callCount(1);

@@ -1,8 +1,9 @@
 import {createSelector} from 'reselect';
+import groupBy from 'lodash/groupBy';
 
 const isLogged = state => state.authReducer.logged;
 const tokenId = state => state.authReducer.tokenId;
-const unscopedTenant = state => state.authReducer.unscopedTenant;
+const unscopedToken = state => state.authReducer.unscopedToken;
 const tokenExpires = state => state.authReducer.tokenExpires;
 const tenant = state => state.authReducer.tenant;
 const tenants = state => state.authReducer.tenants;
@@ -11,6 +12,8 @@ const inProgress = state => state.authReducer.inProgress;
 const showTokenRenewal = state => state.authReducer.showTokenRenewal;
 const storagePrefix = state => state.configReducer.storagePrefix;
 const tenantFilterStatus = state => state.authReducer.tenantFilterStatus;
+const roles = state => state.authReducer.roles || [];
+const domains = state => state.authReducer.domains || [];
 
 export const getLoggedState = createSelector(
   [isLogged],
@@ -27,8 +30,8 @@ export const getTokenId = createSelector(
 );
 
 export const getUnscopedToken = createSelector(
-  [unscopedTenant],
-  unscopedTenant => unscopedTenant
+  [unscopedToken],
+  unscopedToken => unscopedToken
 );
 
 export const getTokenExpires = createSelector(
@@ -47,7 +50,12 @@ export const getTenant = createSelector(
 
 export const getTenantName = createSelector(
   [tenant],
-  tenant => tenant ? tenant.name : ''
+  tenant => (tenant && tenant.name) ? tenant.name : ''
+);
+
+export const getTenantId = createSelector(
+  [tenant],
+  tenant => (tenant && tenant.id) ? tenant.id : ''
 );
 
 export const getTenants = createSelector(
@@ -89,4 +97,43 @@ export const getStoragePrefix = createSelector(
 export const isTenantFilterActive = createSelector(
   [tenantFilterStatus],
   tenantFilterStatus => Boolean(tenantFilterStatus)
+);
+
+export const isUserAdmin = createSelector(
+  [roles],
+  roles => roles.some(role => role.name.toLowerCase() === 'admin'),
+);
+
+export const getDomains = createSelector(
+  [domains],
+  domains => domains,
+);
+
+export const getTenantsByDomain = createSelector(
+  [domains, tenants],
+  (domains, tenants) => {
+    const tenantsByDomain = groupBy(tenants, 'domain_id');
+
+    if (!domains || domains.length === 0) {
+      const domainId = Object.keys(tenantsByDomain)[0];
+
+      return {
+        [domainId]: {
+          tenants: tenantsByDomain[domainId],
+        }
+      };
+    }
+
+    return domains.reduce((result, domain) => {
+      const domainTenants = tenantsByDomain[domain.id];
+      if (domainTenants && domainTenants.length > 0) {
+        result[domain.id] = {
+          name: domain.name,
+          tenants: domainTenants
+        };
+      }
+
+      return result;
+    }, {});
+  }
 );

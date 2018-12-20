@@ -10,7 +10,7 @@ export class TenantMenuItem extends PureComponent {
     const {
       text,
       onClick,
-      id
+      id,
     } = this.props;
 
     onClick(text, id);
@@ -19,11 +19,13 @@ export class TenantMenuItem extends PureComponent {
   render() {
     const {
       text,
+      iconName,
     } = this.props;
 
     return (
       <MenuItem text={text}
         onClick={this.handlesMenuItemClick}
+        iconName={iconName}
       />
     );
   }
@@ -35,5 +37,6 @@ if (process.env.NODE_ENV !== 'production') {
   TenantMenuItem.propTypes = {
     text: ProtoTypes.string.isRequired,
     onClick: ProtoTypes.func.isRequired,
+    iconName: ProtoTypes.string,
   };
 }

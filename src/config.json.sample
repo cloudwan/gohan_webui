@@ -63,5 +63,10 @@
     "title": "Gohan Web UI",
     "followableRelations": false,
     "useKeystoneDomain": true,
-    "domainName": "default"
+    "domainName": "default",
+    "cloudAdmin": {
+        "username": "admin",
+        "domainId": "default",
+        "projectName": "admin"
+    }
 }

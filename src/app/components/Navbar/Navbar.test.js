@@ -13,8 +13,20 @@ chai.should();
 describe('< Navbar />', function () {
   it('should exist', () => {
     const wrapper = shallow(
-      <Navbar tenant="demo"
+      <Navbar tenantName="Tenant 1"
+        tenantId="1"
         userName="admin"
+        isAdmin={false}
+        isTenantFilter={false}
+        tenantsByDomain={{
+          domainId1: {
+            name: 'Domain 1',
+            tenants: [
+              {id: 'tenantId1', name: 'Tenant 1'},
+              {id: 'tenantId2', name: 'Tenant 2'}
+            ]
+          }
+        }}
       />
     );
 
@@ -23,32 +35,38 @@ describe('< Navbar />', function () {
 
   it('should render correctly user name, tenant', () => {
     const userName = 'testUserName';
-    const tenant = 'testTenantName';
-    const tenants = [
-      {
-        id: '10',
-        name: 'sampleTenant10'
+    const tenantId = 'tenantId2';
+    const tenantName = 'Tenant 2';
+    const tenantsByDomain = {
+      domainId1: {
+        name: 'Domain 1',
+        tenants: [
+          {id: 'tenantId1', name: 'Tenant 1'},
+          {id: 'tenantId2', name: 'Tenant 2'}
+        ]
       },
-      {
-        id: '11',
-        name: 'sampleTenant11'
-      },
-      {
-        id: '12',
-        name: 'sampleTenant12'
+      domainId2: {
+        name: 'Domain 2',
+        tenants: [
+          {id: 'tenantId3', name: 'Tenant 3'}
+        ]
       }
-    ];
+    };
+
 
     const wrapper = shallow(
-      <Navbar tenant={tenant}
+      <Navbar tenantId={tenantId}
+        tenantName={tenantName}
         userName={userName}
-        tenants={tenants}
+        isAdmin={true}
+        isTenantFilter={false}
+        tenantsByDomain={tenantsByDomain}
       />
     );
 
     wrapper.find(Button).findWhere(item => item.props().className === 'pt-minimal user')
       .props().children[1].should.equal(userName);
     wrapper.find(Button).findWhere(item => item.props().className === 'pt-minimal tenant')
-      .props().children[1].should.equal(tenant);
+      .props().children[1].should.equal(tenantName);
   });
 });

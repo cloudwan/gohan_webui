@@ -3,21 +3,25 @@ import {
   LOGIN_INPROGRESS,
   LOGIN_SUCCESS,
   LOGIN_ERROR,
-  SELECT_TENANT_SUCCESS,
+  SELECT_TENANT,
   FETCH_TENANTS_SUCCESS,
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
-  RENEW_TOKEN_SUCCESS,
-  RENEW_TOKEN_FAILURE,
   CHANGE_TENANT_FILTER_STATUS,
-  CHECK_SUCCESS
+  CHECK_SUCCESS,
+  SCOPED_LOGIN_SUCCESS,
+  SCOPED_LOGIN_ERROR,
+  FETCH_DOMAINS_SUCCESS,
 } from './AuthActionTypes';
 
 export default function authReducer(state = {
   inProgress: true,
   tenantFilterStatus: false,
   logged: false,
-  showTokenRenewal: false
+  showTokenRenewal: false,
+  domains: [],
+  roles: [],
+  scope: {},
 }, action) {
   switch (action.type) {
     case CLEAR_STORAGE:
@@ -44,32 +48,40 @@ export default function authReducer(state = {
     case LOGIN_SUCCESS:
       return {
         ...state,
-        tokenId: action.data.tokenId,
         tokenExpires: action.data.tokenExpires,
-        unscopedTenant: action.data.tokenId,
-        tenant: action.data.tenant,
+        unscopedToken: action.data.tokenId,
         user: action.data.user,
         inProgress: false,
         showTokenRenewal: false
+      };
+    case SCOPED_LOGIN_SUCCESS:
+      return {
+        ...state,
+        tokenId: action.data.tokenId,
+        tokenExpires: action.data.tokenExpires,
+        roles: action.data.roles,
+        scope: action.data.scope,
+        inProgress: false,
+        showTokenRenewal: false,
       };
     case CHECK_SUCCESS:
       return {
         ...state,
-        tokenId: action.data.token,
-        unscopedTenant: action.data.unscopedToken,
+        tokenId: action.data.tokenId,
+        unscopedToken: action.data.unscopedToken,
+        roles: action.data.roles,
         tokenExpires: action.data.tokenExpires,
         tenant: action.data.tenant,
         user: action.data.user,
+        scope: action.data.scope,
         inProgress: false,
-        showTokenRenewal: false
+        showTokenRenewal: false,
+        tenantFilterStatus: action.data.tenant !== undefined,
       };
-    case SELECT_TENANT_SUCCESS:
+    case SELECT_TENANT:
       return {
         ...state,
-        tokenId: action.data.tokenId,
-        tenant: action.data.tenant,
-        inProgress: false,
-        showTokenRenewal: false
+        tenant: action.tenant,
       };
     case LOGIN_ERROR:
       return {
@@ -77,6 +89,18 @@ export default function authReducer(state = {
         inProgress: false,
         logged: false,
         showTokenRenewal: false
+      };
+    case SCOPED_LOGIN_ERROR:
+      return {
+        ...state,
+        inProgress: false,
+        logged: false,
+        showTokenRenewal: false
+      };
+    case FETCH_DOMAINS_SUCCESS:
+      return {
+        ...state,
+        domains: action.domains,
       };
     case FETCH_TENANTS_SUCCESS:
       return {
@@ -90,19 +114,6 @@ export default function authReducer(state = {
       return {
         ...state,
         showTokenRenewal: true
-      };
-    case RENEW_TOKEN_SUCCESS:
-      return {
-        ...state,
-        showTokenRenewal: false,
-        tokenId: action.data.tokenId,
-        tokenExpires: action.data.tokenExpires,
-        tenant: action.data.tenant,
-        user: action.data.user
-      };
-    case RENEW_TOKEN_FAILURE:
-      return {
-        ...state
       };
     case CHANGE_TENANT_FILTER_STATUS:
       return {

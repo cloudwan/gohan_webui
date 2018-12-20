@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import isEqual from 'lodash/isEqual';
 import {logout, selectTenant, changeTenantFilter} from './../../../auth/AuthActions';
-import {isTenantFilterActive} from './../../../auth/AuthSelectors';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import {faUserCircle, faBars, faCheckSquare, faSquare} from '@fortawesome/fontawesome-free-solid';
+import {faUserCircle, faBars} from '@fortawesome/fontawesome-free-solid';
 
 import {
   getUserName,
   getTenantName,
-  getTenants,
+  getTenantId,
+  isUserAdmin,
+  getTenantsByDomain,
+  isTenantFilterActive,
 } from './../../../auth/AuthSelectors';
 
 import NavContainer from './components/NavContainer';
@@ -41,29 +43,57 @@ export class Navbar extends Component {
   };
 
   handleChangeTenantClick = (tenantName, tenantId) => {
-    this.props.selectTenant(tenantName, tenantId);
+    this.props.changeTenantFilter(tenantId !== 'all');
+
+    if (tenantId === 'all') {
+      this.props.selectTenant();
+    } else {
+      this.props.selectTenant({
+        id: tenantId,
+        name: tenantName,
+      });
+    }
   };
 
-  handleFilterByTenantClick = () => {
-    this.props.changeTenantFilter(!this.props.isTenantFilter);
-  };
+  renderMenuItems = () => {
+    const {tenantId, tenantsByDomain, isAdmin} = this.props;
+
+    const initialValue = isAdmin ? [
+      <TenantMenuItem key="all"
+        id="all"
+        text="All"
+        onClick={this.handleChangeTenantClick}
+        iconName={(!this.props.isTenantFilter && this.props.isAdmin) ? 'pt-icon-small-tick' : undefined}
+      />
+    ] : [];
+
+    return Object.keys(tenantsByDomain).reduce((result, domainId, index) => {
+      if (isAdmin || index > 0) {
+        result.push(<MenuDivider key={domainId} title={tenantsByDomain[domainId].name}/>);
+      }
+
+      tenantsByDomain[domainId].tenants.forEach(item => {
+        const isSelected = tenantId.toLowerCase() === item.id.toLowerCase();
+        result.push(
+          <TenantMenuItem key={item.id}
+            id={item.id}
+            text={item.name}
+            onClick={this.handleChangeTenantClick}
+            iconName={isSelected ? 'pt-icon-small-tick' : undefined}
+          />
+        );
+      });
+
+      return result;
+    }, initialValue);
+  }
 
   render() {
     const {
-      tenants,
-      tenant,
+      tenantName,
       userName,
       brand,
     } = this.props;
-
-    const getTenantFilterStatus = () => (
-      <span>
-        <FontAwesomeIcon className={(this.props.isTenantFilter) ?
-          'faicon tenant-filter checked' : 'faicon tenant-filter'}
-          icon={(this.props.isTenantFilter) ? faCheckSquare : faSquare}
-        />Filter by Tenant
-      </span>
-    );
 
     return (
       <NavContainer>
@@ -78,24 +108,14 @@ export class Navbar extends Component {
         <NavbarGroup isRight={true}>
           <Popover2 content={
             <Menu>
-              {tenants.map(item => (
-                <TenantMenuItem key={item.id}
-                  id={item.id}
-                  text={item.name}
-                  onClick={this.handleChangeTenantClick}
-                />
-              ))}
-              <MenuDivider title={'View Options'}/>
-              <MenuItem text={getTenantFilterStatus()}
-                onClick={this.handleFilterByTenantClick}
-              />
+              {this.renderMenuItems()}
             </Menu>
           } placement="bottom-end"
             minimal={true}
             inheritDarkTheme={false}>
             <Button type="button" rightIconName="caret-down"
               className="pt-minimal tenant">
-              Tenant: {tenant}
+              Tenant: {tenantName || 'All'}
             </Button>
           </Popover2>
 
@@ -121,7 +141,7 @@ export class Navbar extends Component {
 }
 
 Navbar.defaultProps = {
-  tenants: [],
+  tenantsByDomain: {},
   onToggleSidebar: () => {},
   isSidebarOpen: false,
   brand: <span className="brand-title pt-button pt-minimal">Gohan Web UI</span>
@@ -130,9 +150,10 @@ Navbar.defaultProps = {
 if (process.env.NODE_ENV !== 'production') {
   Navbar.propTypes = {
     userName: PropTypes.string.isRequired,
-    tenant: PropTypes.string.isRequired,
-    isTenantFilter: PropTypes.bool.isRequired,
-    tenants: PropTypes.array,
+    tenantName: PropTypes.string.isRequired,
+    tenantId: PropTypes.string.isRequired,
+    isAdmin: PropTypes.bool.isRequired,
+    tenantsByDomain: PropTypes.object,
     onToggleSidebar: PropTypes.func,
     isSidebarOpen: PropTypes.bool,
     brand: PropTypes.node.isRequired
@@ -142,9 +163,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const mapStateToProps = state => ({
   userName: getUserName(state),
-  tenant: getTenantName(state),
-  tenants: getTenants(state),
-  isTenantFilter: isTenantFilterActive(state)
+  tenantName: getTenantName(state),
+  tenantId: getTenantId(state),
+  tenantsByDomain: getTenantsByDomain(state),
+  isAdmin: isUserAdmin(state),
+  isTenantFilter: isTenantFilterActive(state),
 });
 
 export default connect(mapStateToProps, {

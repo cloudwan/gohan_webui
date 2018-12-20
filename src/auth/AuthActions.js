@@ -7,18 +7,18 @@ import {
   CHECK_TOKEN,
   CHECK_SUCCESS,
   SELECT_TENANT,
-  SELECT_TENANT_FAILURE,
-  SELECT_TENANT_SUCCESS,
   FETCH_TENANTS_SUCCESS,
   FETCH_TENANTS_FAILURE,
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
-  RENEW_TOKEN,
-  RENEW_TOKEN_SUCCESS,
-  RENEW_TOKEN_FAILURE,
   INIT_SESSION_STORAGE_TRANSFER,
   TRANSFER_STORAGE,
-  CHANGE_TENANT_FILTER_STATUS
+  CHANGE_TENANT_FILTER_STATUS,
+  SCOPED_LOGIN_SUCCESS,
+  SCOPED_LOGIN_ERROR,
+  FETCH_DOMAINS_SUCCESS,
+  FETCH_DOMAINS_FAILURE,
+  SCOPED_LOGIN,
 } from './AuthActionTypes';
 
 const {sessionStorage, localStorage, location} = window;
@@ -26,10 +26,8 @@ const {sessionStorage, localStorage, location} = window;
 export const loginSuccess = (
   tokenId,
   tokenExpires,
-  tenant,
   user
 ) => {
-  sessionStorage.setItem('scopedToken', tokenId);
   sessionStorage.setItem('unscopedToken', tokenId);
 
   return {
@@ -37,7 +35,6 @@ export const loginSuccess = (
     data: {
       tokenId,
       tokenExpires,
-      tenant,
       user,
     },
   };
@@ -52,7 +49,31 @@ export const login = (username, password, domain) => ({
   type: LOGIN,
   username,
   password,
-  domain
+  domain,
+});
+
+export const scopedLoginSuccess = (
+  tokenId,
+  tokenExpires,
+  roles,
+  scope,
+) => {
+  sessionStorage.setItem('scopedToken', tokenId);
+
+  return {
+    type: SCOPED_LOGIN_SUCCESS,
+    data: {
+      tokenId,
+      tokenExpires,
+      roles,
+      scope
+    },
+  };
+};
+
+export const scopedLoginFailure = error => ({
+  type: SCOPED_LOGIN_ERROR,
+  error,
 });
 
 export const fetchTenantSuccess = data => ({
@@ -65,33 +86,52 @@ export const fetchTenantFailure = error => ({
   error,
 });
 
+export const fetchDomainsSuccess = domains => ({
+  type: FETCH_DOMAINS_SUCCESS,
+  domains,
+});
+
+export const fetchDomainsFailure = error => ({
+  type: FETCH_DOMAINS_FAILURE,
+  error,
+});
+
 export const fetchTokenData = () => {
   const unscopedToken = sessionStorage.getItem('unscopedToken');
   const scopedToken = sessionStorage.getItem('scopedToken');
+  const tenantId = sessionStorage.getItem('tenantId');
+  const tenantName = sessionStorage.getItem('tenantName');
+
+  const tenant = (tenantId && tenantName) ?
+    {id: tenantId, name: tenantName} :
+    undefined;
 
   if (scopedToken) {
     return {
       type: CHECK_TOKEN,
-      token: scopedToken,
+      tokenId: scopedToken,
       unscopedToken,
+      tenant,
     };
   }
 
   return clearStorage();
 };
 
-export const checkTokenSuccess = (unscopedToken, token, tokenExpires, tenant, user) => {
-  sessionStorage.setItem('scopedToken', token);
+export const checkTokenSuccess = (unscopedToken, tokenId, tokenExpires, tenant, user, roles, scope) => {
+  sessionStorage.setItem('scopedToken', tokenId);
   sessionStorage.setItem('unscopedToken', unscopedToken);
 
   return {
     type: CHECK_SUCCESS,
     data: {
-      token,
+      tokenId,
       unscopedToken,
       tokenExpires,
       tenant,
       user,
+      roles,
+      scope
     },
   };
 };
@@ -99,6 +139,8 @@ export const checkTokenSuccess = (unscopedToken, token, tokenExpires, tenant, us
 export const clearStorage = () => {
   sessionStorage.removeItem('scopedToken');
   sessionStorage.removeItem('unscopedToken');
+  sessionStorage.removeItem('tenantId');
+  sessionStorage.removeItem('tenantName');
 
   return {
     type: CLEAR_STORAGE
@@ -120,30 +162,34 @@ export const logout = () => {
   };
 };
 
-export const selectTenantSuccess = (tokenId, tokenExpires, tenant, user) => {
-    sessionStorage.setItem('scopedToken', tokenId);
+export const selectTenant = (tenant = {}) => (dispatch, getState) => {
+  const state = getState();
+  const roles = state.authReducer.roles || [];
+  const isAdmin = roles.some(role => role.name === 'admin');
+  dispatch({
+    type: SELECT_TENANT,
+    tenant,
+  });
 
-    return {
-      type: SELECT_TENANT_SUCCESS,
-      data: {
-        tokenId,
-        tokenExpires,
-        tenant,
-        user,
-      },
-    };
+  if (tenant && tenant.id && tenant.name) {
+    sessionStorage.setItem('tenantId', tenant.id);
+    sessionStorage.setItem('tenantName', tenant.name);
+  } else {
+    sessionStorage.removeItem('tenantId');
+    sessionStorage.removeItem('tenantName');
+  }
+
+  if (!isAdmin) {
+    dispatch({
+      type: SCOPED_LOGIN,
+      scope: {
+        project: {
+          id: tenant.id,
+        }
+      }
+    });
+  }
 };
-
-export const selectTenantFailure = error => ({
-  type: SELECT_TENANT_FAILURE,
-  error,
-});
-
-export const selectTenant = (tenantName, tenantId) => ({
-  type: SELECT_TENANT,
-  tenantName,
-  tenantId
-});
 
 export const showTokenRenewal = () => {
   return {
@@ -151,42 +197,42 @@ export const showTokenRenewal = () => {
   };
 };
 
-export const renewTokenInBackground = () => {
-  const token = sessionStorage.getItem('scopedToken');
+export const renewTokenInBackground = () => (dispatch, getState) => {
+  const state = getState();
 
-  return {
-    type: RENEW_TOKEN,
-    token
-  };
+  return dispatch({
+    type: SCOPED_LOGIN,
+    scope: state.authReducer.scope,
+  });
 };
 
-export const renewToken = (username, password) => {
-  return {
-    type: RENEW_TOKEN,
-    username,
-    password
-  };
-};
+export const renewToken = (username, password) => (dispatch, getState) => {
+  const state = getState();
+  const {scope, user} = state.authReducer;
+  let identity;
 
-export const renewTokenSuccess = (tokenId, tokenExpires, tenant, user) => {
-  sessionStorage.setItem('scopedToken', tokenId);
+  if (username !== undefined && password !== undefined) {
+    identity = {
+      methods: [
+        'password'
+      ],
+      password: {
+        user: {
+          domain: {
+            id: user.domain.id,
+          },
+          name: username,
+          password
+        }
+      }
+    };
+  }
 
-  return {
-    type: RENEW_TOKEN_SUCCESS,
-    data: {
-      tokenId,
-      tokenExpires,
-      tenant,
-      user,
-    }
-  };
-};
-
-export const renewTokenFailure = error => {
-  return {
-    type: RENEW_TOKEN_FAILURE,
-    error
-  };
+  return dispatch({
+    type: SCOPED_LOGIN,
+    scope,
+    identity,
+  });
 };
 
 export const sessionStorageTransfer = event => {
