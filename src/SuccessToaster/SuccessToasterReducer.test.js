@@ -18,13 +18,16 @@ describe('successToasterReducer ', () => {
           foo: 'bar',
         },
         title: 'baz',
+        url: 'https://foo.bar',
+        isDataHtml: false,
       }
     ).should.deep.equal({
       data: {
         foo: 'bar',
       },
       title: 'baz',
-      format: undefined,
+      url: 'https://foo.bar',
+      isDataHtml: false,
     });
   });
 
@@ -37,7 +40,8 @@ describe('successToasterReducer ', () => {
     ).should.deep.equal({
       data: undefined,
       title: undefined,
-      format: undefined,
+      url: undefined,
+      isDataHtml: undefined,
     });
   });
 });

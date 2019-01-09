@@ -46,30 +46,32 @@ describe('CustomActionsActions ', () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
-      store.dispatch(actions.executeSuccess({}));
+      store.dispatch(actions.executeSuccess({}, 'https://foo.bar', false));
 
       store.getActions().should.deep.equal([
         {
           type: successToasterActionsTypes.SUCCESS,
           data: {},
           title: 'The Custom Action was Successful',
-          format: undefined,
+          url: 'https://foo.bar',
+          isDataHtml: false,
         }
       ]);
     });
 
-    it(`should dispatch ${successToasterActionsTypes.SUCCESS} with format`, () => {
+    it(`should dispatch ${successToasterActionsTypes.SUCCESS} for html data`, () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
-      store.dispatch(actions.executeSuccess({}, 'html'));
+      store.dispatch(actions.executeSuccess('<html><body></body></html>', 'https://foo.bar', true));
 
       store.getActions().should.deep.equal([
         {
           type: successToasterActionsTypes.SUCCESS,
-          data: {},
+          data: '<html><body></body></html>',
           title: 'The Custom Action was Successful',
-          format: 'html',
+          url: 'https://foo.bar',
+          isDataHtml: true,
         }
       ]);
     });
