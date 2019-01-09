@@ -9,7 +9,7 @@ import {Toaster, Position, Button} from '@blueprintjs/core';
 
 import IFrame from '../components/IFrame';
 
-import {getData, getTitle, getFormat} from './SuccessToasterSelectors';
+import {getData, getTitle, getUrl, isHtml} from './SuccessToasterSelectors';
 import {dismiss} from './SuccessToasterActions';
 
 export class SuccessToaster extends Component {
@@ -23,40 +23,38 @@ export class SuccessToaster extends Component {
     this.props.dismiss();
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.data) {
+  componentWillReceiveProps({data, title, url, isHtml}) {
+    if (data) {
       this.toasterKey = this.toaster.show({
-        message: (<div style={{
-          overflow: 'auto',
-          maxWidth: 480,
-          minWidth: 480,
-          maxHeight: '50vh',
-          position: 'relative'
-        }}>
-          <div className="success-toaster-header">
-            <h5 className="success-toaster-title">{nextProps.title}</h5>
-            <div className="pt-button-group pt-minimal success-toaster-dismiss">
-              <Button iconName="cross"
-                onClick={this.handleDismissClick}
-              />
+        message: (
+          <div className="success-toaster-content">
+            <div className="success-toaster-header">
+              <h5 className="success-toaster-title">{title}</h5>
+              <div className="pt-button-group pt-minimal success-toaster-dismiss">
+                <Button iconName="cross"
+                  onClick={this.handleDismissClick}
+                />
+              </div>
+            </div>
+            <div className="success-toaster-body">
+              {this.renderToasterContent(data, url, isHtml)}
             </div>
           </div>
-          {this.renderToasterContent(nextProps.data, nextProps.format)}
-        </div>),
-        className: 'success-toaster',
+        ),
+        className: isHtml ? 'success-toaster success-toaster-big' : 'success-toaster',
         timeout: 0,
       });
     }
   }
 
-  renderToasterContent = (data, format) => {
-    if (format === 'html') {
+  renderToasterContent = (data, url, isHtml) => {
+    if (isHtml) {
       return (
-        <IFrame content={data}/>
+        <IFrame src={url}/>
       );
     }
 
-    if (!format) {
+    if (!isHtml) {
       if (typeof data === 'object') {
         return (
           <Inspector data={data}/>
@@ -97,14 +95,16 @@ if (process.env.NODE_ENV !== 'production') {
     ]),
     title: PropTypes.string,
     dismiss: PropTypes.func,
-    format: PropTypes.string,
+    url: PropTypes.string,
+    isHtml: PropTypes.bool,
   };
 }
 
 const mapStateToProps = state => ({
   data: getData(state),
   title: getTitle(state),
-  format: getFormat(state),
+  url: getUrl(state),
+  isHtml: isHtml(state),
 });
 
 export default connect(mapStateToProps, {

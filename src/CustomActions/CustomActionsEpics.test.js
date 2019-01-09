@@ -38,6 +38,7 @@ describe('CustomActionsEpics', () => {
         },
         xhr: {
           getResponseHeader: () => 'text/html',
+          responseURL: 'https://foo.bar',
         }
       };
 
@@ -51,7 +52,8 @@ describe('CustomActionsEpics', () => {
               },
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
-              format: 'html',
+              url: 'https://foo.bar',
+              isDataHtml: true,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -78,7 +80,8 @@ describe('CustomActionsEpics', () => {
           },
         },
         xhr: {
-          getResponseHeader: () => 'application/json'
+          getResponseHeader: () => 'application/json',
+          responseURL: 'https://foo.bar',
         }
       };
 
@@ -92,7 +95,8 @@ describe('CustomActionsEpics', () => {
               },
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
-              format: undefined,
+              url: 'https://foo.bar',
+              isDataHtml: false,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -118,6 +122,10 @@ describe('CustomActionsEpics', () => {
           test: {
           },
         },
+        xhr: {
+          getResponseHeader: () => 'application/json',
+          responseURL: 'https://foo.bar',
+        }
       };
 
       expectEpic(execute, {
@@ -130,7 +138,8 @@ describe('CustomActionsEpics', () => {
               },
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
-              format: undefined,
+              url: 'https://foo.bar',
+              isDataHtml: false,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -156,6 +165,10 @@ describe('CustomActionsEpics', () => {
           test: {
           },
         },
+        xhr: {
+          getResponseHeader: () => 'application/json',
+          responseURL: 'https://foo.bar',
+        }
       };
 
       expectEpic(execute, {
@@ -168,7 +181,8 @@ describe('CustomActionsEpics', () => {
               },
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
-              format: undefined,
+              url: 'https://foo.bar',
+              isDataHtml: false,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -194,6 +208,10 @@ describe('CustomActionsEpics', () => {
           test: {
           },
         },
+        xhr: {
+          getResponseHeader: () => 'application/json',
+          responseURL: 'https://foo.bar',
+        }
       };
 
       expectEpic(execute, {
@@ -204,9 +222,10 @@ describe('CustomActionsEpics', () => {
               data: {
                 test: {}
               },
-              title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
-              format: undefined,
+              title: 'The Custom Action was Successful',
+              url: 'https://foo.bar',
+              isDataHtml: false,
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL

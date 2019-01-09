@@ -4,7 +4,8 @@ import {
 
 const data = state => state.successToasterReducer.data;
 const title = state => state.successToasterReducer.title || '';
-const format = state => state.successToasterReducer.format;
+const isDataHtml = state => state.successToasterReducer.isDataHtml;
+const url = state => state.successToasterReducer.url;
 
 export const getData = createSelector(
   [data],
@@ -16,7 +17,12 @@ export const getTitle = createSelector(
   title => title
 );
 
-export const getFormat = createSelector(
-  [format],
-  format => format
+export const getUrl = createSelector(
+  [url],
+  url => url,
+);
+
+export const isHtml = createSelector(
+  [isDataHtml],
+  isDataHtml => isDataHtml
 );

@@ -42,4 +42,32 @@ describe('SuccessToasterSelectors', () => {
       ).should.equal('');
     });
   });
+
+  describe('getUrl', () => {
+    it('should return url', () => {
+      selectors.getUrl({
+        successToasterReducer: {
+          url: 'https://foo.bar',
+        }
+      }).should.equal('https://foo.bar');
+    });
+  });
+
+  describe('isHtml', () => {
+    it('should return true when response is html', () => {
+      selectors.isHtml({
+        successToasterReducer: {
+          isDataHtml: true,
+        }
+      }).should.equal(true);
+    });
+
+    it('should return false when response isn\'t html', () => {
+      selectors.isHtml({
+        successToasterReducer: {
+          isDataHtml: false,
+        }
+      }).should.equal(false);
+    });
+  });
 });

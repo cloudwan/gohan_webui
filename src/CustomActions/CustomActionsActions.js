@@ -23,11 +23,12 @@ export const execute = (action, baseUrl, id, data, responseType) => {
   });
 };
 
-export const executeSuccess = (data, format) => ({
+export const executeSuccess = (data, url, isDataHtml) => ({
   type: SUCCESS,
   data,
   title: 'The Custom Action was Successful',
-  format,
+  url,
+  isDataHtml,
 });
 
 export const executeFailure = (error, isFromDialog) => {

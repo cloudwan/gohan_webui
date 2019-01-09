@@ -244,6 +244,8 @@ body {
  * Custom Action
  */
 .success-toaster {
+  max-width: 480px;
+  min-width: 480px;
 
   &-title {
     font-weight: 400;
@@ -254,7 +256,32 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &-body {
+    overflow: auto;
+    max-height: 50vh;
+    position: relative;
+  }
+
+  &.success-toaster-big {
+    min-width: 80vw;
+    min-height: 80vh;
+    max-height: 80vh;
+    align-items: stretch;
+
+    .success-toaster-content {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .success-toaster-body {
+      max-height: none;
+      display: flex;
+      height: 100%;
+    }
   }
 
   &-dismiss.pt-button-group {
@@ -498,6 +525,7 @@ table.gohan-table {
 
 .gohan-iframe {
   width: 100%;
+  height: 100%;
 }
 
 
