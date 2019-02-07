@@ -1,30 +1,27 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {Inspector} from 'react-inspector';
 
-import CodeMirror from 'react-codemirror';
-import 'codemirror/mode/javascript/javascript';
 import {Toaster, Position, Button} from '@blueprintjs/core';
 
-import IFrame from '../components/IFrame';
 
-import {getData, getTitle, getUrl, isHtml} from './SuccessToasterSelectors';
+import {/* ToasterMessage, */ToasterContent} from './components/';
+import {getData, getTitle, getUrl, isHtml, getResponseFormat} from './SuccessToasterSelectors';
 import {dismiss} from './SuccessToasterActions';
 
 export class SuccessToaster extends Component {
   static defaultProps = {
     dismiss: () => {},
     title: '',
-  }
+  };
 
   handleDismissClick = () => {
     this.toaster.dismiss(this.toasterKey);
     this.props.dismiss();
   };
 
-  componentWillReceiveProps({data, title, url, isHtml}) {
-    if (data) {
+  componentWillReceiveProps({data, title, url, responseFormat}) {
+    if (data || responseFormat && responseFormat.includes('websocket')) {
       this.toasterKey = this.toaster.show({
         message: (
           <div className="success-toaster-content">
@@ -37,44 +34,17 @@ export class SuccessToaster extends Component {
               </div>
             </div>
             <div className="success-toaster-body">
-              {this.renderToasterContent(data, url, isHtml)}
+              <ToasterContent data={data}
+                url={url}
+                responseFormat={responseFormat}
+              />
             </div>
           </div>
         ),
-        className: isHtml ? 'success-toaster success-toaster-big' : 'success-toaster',
+        className: responseFormat === 'html' ? 'success-toaster success-toaster-big' : 'success-toaster',
         timeout: 0,
       });
     }
-  }
-
-  renderToasterContent = (data, url, isHtml) => {
-    if (isHtml) {
-      return (
-        <IFrame src={url}/>
-      );
-    }
-
-    if (!isHtml) {
-      if (typeof data === 'object') {
-        return (
-          <Inspector data={data}/>
-        );
-      } else if (typeof data !== 'object') {
-        return (
-          <CodeMirror value={data}
-            className="toaster-codemirror"
-            options={{
-              mode: 'javascript',
-              theme: 'base16-light',
-              readOnly: true,
-              cursorBlinkRate: -1
-            }}
-          />
-        );
-      }
-    }
-
-    return null;
   }
 
   render() {
@@ -97,6 +67,7 @@ if (process.env.NODE_ENV !== 'production') {
     dismiss: PropTypes.func,
     url: PropTypes.string,
     isHtml: PropTypes.bool,
+    responseFormat: PropTypes.string
   };
 }
 
@@ -105,6 +76,7 @@ const mapStateToProps = state => ({
   title: getTitle(state),
   url: getUrl(state),
   isHtml: isHtml(state),
+  responseFormat: getResponseFormat(state)
 });
 
 export default connect(mapStateToProps, {

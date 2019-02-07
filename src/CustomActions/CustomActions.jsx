@@ -29,7 +29,16 @@ export class CustomActions extends Component {
       actions,
     } = this.props;
 
-    this.props.execute(actions[name], baseUrl, id, data);
+    let responseFormat;
+
+    const action = actions[name];
+
+    if (action && action.protocol === 'websocket') {
+      responseFormat = 'websocket-terminal';
+      action.method = 'WEBSOCKET';
+    }
+
+    this.props.execute(action, baseUrl, id, data, responseFormat);
   };
 
   handleCustomActionConfirm = name => {
@@ -39,14 +48,19 @@ export class CustomActions extends Component {
       actions,
     } = this.props;
 
-    let responseType;
+    let responseFormat;
+    const action = actions[name];
 
-    if (actions[name].output && actions[name].output.format === 'html') {
-      responseType = 'text';
+    if (action.output && action.output.format === 'html') {
+      responseFormat = 'text';
+    }
+    if (action && action.protocol === 'websocket') {
+      responseFormat = 'websocket-terminal';
+      action.method = 'WEBSOCKET';
     }
 
     this.props.customActions[name].closeDialog();
-    this.props.execute(actions[name], baseUrl, id, undefined, responseType);
+    this.props.execute(action, baseUrl, id, undefined, responseFormat);
   };
 
   render() {

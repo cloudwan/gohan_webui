@@ -6,6 +6,7 @@ const data = state => state.successToasterReducer.data;
 const title = state => state.successToasterReducer.title || '';
 const isDataHtml = state => state.successToasterReducer.isDataHtml;
 const url = state => state.successToasterReducer.url;
+const responseFormat = state => state.successToasterReducer.responseFormat;
 
 export const getData = createSelector(
   [data],
@@ -25,4 +26,9 @@ export const getUrl = createSelector(
 export const isHtml = createSelector(
   [isDataHtml],
   isDataHtml => isDataHtml
+);
+
+export const getResponseFormat = createSelector(
+  [responseFormat],
+  responseFormat => responseFormat
 );

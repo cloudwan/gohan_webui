@@ -19,7 +19,7 @@ describe('successToasterReducer ', () => {
         },
         title: 'baz',
         url: 'https://foo.bar',
-        isDataHtml: false,
+        responseFormat: 'format',
       }
     ).should.deep.equal({
       data: {
@@ -27,7 +27,7 @@ describe('successToasterReducer ', () => {
       },
       title: 'baz',
       url: 'https://foo.bar',
-      isDataHtml: false,
+      responseFormat: 'format',
     });
   });
 
@@ -41,7 +41,7 @@ describe('successToasterReducer ', () => {
       data: undefined,
       title: undefined,
       url: undefined,
-      isDataHtml: undefined,
+      responseFormat: undefined,
     });
   });
 });
