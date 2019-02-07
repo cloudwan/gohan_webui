@@ -9,7 +9,7 @@ export const SuccessToasterReducer = (state = {}, action) => {
     data,
     title,
     url,
-    isDataHtml,
+    responseFormat,
   } = action;
 
   switch (type) {
@@ -19,14 +19,14 @@ export const SuccessToasterReducer = (state = {}, action) => {
         data,
         title,
         url,
-        isDataHtml,
+        responseFormat,
       };
     case DISMISS:
       return {
         data: undefined,
         title: undefined,
         url: undefined,
-        isDataHtml: undefined,
+        responseFormat: undefined,
       };
     default:
       return state;

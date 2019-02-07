@@ -8,6 +8,7 @@ import Ajax from 'rxjs/observable/dom/ajax';
 import {Observable, TestScheduler} from 'rxjs';
 import * as api from './index';
 
+const {expect} = chai;
 chai.should();
 chai.use(sinonChai);
 
@@ -272,6 +273,36 @@ describe('API', () => {
       api.parseXHRError({xhr: {response: 'Error!'}}).should.equal('Error!');
       api.parseXHRError({xhr: {response: {error: 'Error!'}}}).should.equal('Error!');
       api.parseXHRError({xhr: {response: {error: {message: 'Error!'}}}}).should.equal('Error!');
+    });
+  });
+
+  describe('createWebSocket()', () => {
+    const createErrorMessage = url => {
+      return `Proper URL must be defined. Current URL: ${url}`;
+    };
+
+    it('should throw an error when improper URL passed', () => {
+      expect(api.createWebSocket.bind(null, null))
+        .to.throw(createErrorMessage(null));
+      expect(api.createWebSocket.bind(null, undefined))
+        .to.throw(createErrorMessage());
+      expect(api.createWebSocket.bind(null, ''))
+        .to.throw(createErrorMessage(''));
+      expect(api.createWebSocket.bind(null, 'foo'))
+        .to.throw(createErrorMessage('foo'));
+      expect(api.createWebSocket.bind(null, 123))
+        .to.throw(createErrorMessage(123));
+      expect(api.createWebSocket.bind(null, true))
+        .to.throw(createErrorMessage(true));
+    });
+
+    it('should not throw an error when proper URL passed', () => {
+      expect(api.createWebSocket.bind(null, 'ws://localhost:1337'))
+        .to.not.throw(createErrorMessage('ws://localhost:1337'));
+      expect(api.createWebSocket.bind(null, 'wss://localhost:1337'))
+        .to.not.throw(createErrorMessage('wss://localhost:1337'));
+      expect(api.createWebSocket.bind(null, 'https://localhost:1337'))
+        .to.not.throw(createErrorMessage('https://localhost:1337'));
     });
   });
 });

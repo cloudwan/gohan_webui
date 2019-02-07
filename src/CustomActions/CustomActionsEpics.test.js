@@ -53,7 +53,7 @@ describe('CustomActionsEpics', () => {
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
               url: 'https://foo.bar',
-              isDataHtml: true,
+              responseFormat: 'html',
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -96,7 +96,7 @@ describe('CustomActionsEpics', () => {
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
               url: 'https://foo.bar',
-              isDataHtml: false,
+              responseFormat: 'auto',
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -139,7 +139,7 @@ describe('CustomActionsEpics', () => {
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
               url: 'https://foo.bar',
-              isDataHtml: false,
+              responseFormat: 'auto',
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -182,7 +182,7 @@ describe('CustomActionsEpics', () => {
               title: 'The Custom Action was Successful',
               type: successToasterActionTypes.SUCCESS,
               url: 'https://foo.bar',
-              isDataHtml: false,
+              responseFormat: 'auto',
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL
@@ -225,7 +225,7 @@ describe('CustomActionsEpics', () => {
               type: successToasterActionTypes.SUCCESS,
               title: 'The Custom Action was Successful',
               url: 'https://foo.bar',
-              isDataHtml: false,
+              responseFormat: 'auto'
             },
             b: {
               type: dialogActionTypes.CLOSE_ALL

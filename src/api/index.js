@@ -210,3 +210,41 @@ export const post = (url, headers, body) => ajax({method: 'POST', url, body, hea
 export const put = (url, headers, body) => ajax({method: 'PUT', url, body, headers, crossDomain: true});
 
 export const purge = (url, headers) => ajax({method: 'DELETE', url, headers, crossDomain: true});
+
+export const createWebSocket = (url, events = {
+    onOpen: () => {},
+    onMessage: () => {},
+    onClose: () => {},
+    onError: () => {}
+  }) => {
+
+  if (
+    typeof url === 'undefined' ||
+    url === null ||
+    url.length === 0 ||
+    typeof url !== 'string' ||
+    !(url.startsWith('http') || url.startsWith('ws'))
+  ) {
+    throw new Error(`Proper URL must be defined. Current URL: ${url}`);
+  }
+
+  if (url.startsWith('http')) {
+    url = url.replace('http', 'ws'); // todo: add ^
+  }
+
+  const ws = new WebSocket(url); // eslint-disable-line
+
+  ws.addEventListener('open', events.onOpen);
+  ws.addEventListener('message', events.onMessage);
+  ws.addEventListener('error', events.onError);
+  ws.addEventListener('close', evt => {
+    events.onClose(evt);
+
+    ws.removeEventListener('open', events.onOpen);
+    ws.removeEventListener('message', events.onMessage);
+    ws.removeEventListener('close', events.onClose);
+    ws.removeEventListener('error', events.onError);
+  });
+
+  return ws;
+};

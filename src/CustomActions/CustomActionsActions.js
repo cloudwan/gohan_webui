@@ -11,7 +11,7 @@ import {
   EXECUTE_FAILURE,
 } from './CustomActionsActionTypes';
 
-export const execute = (action, baseUrl, id, data, responseType) => {
+export const execute = (action, baseUrl, id, data, responseFormat) => {
   const url = baseUrl + action.path.replace(':id', id);
 
   return dispatch => dispatch({
@@ -19,16 +19,16 @@ export const execute = (action, baseUrl, id, data, responseType) => {
     method: action.method,
     url,
     data,
-    responseType,
+    responseFormat
   });
 };
 
-export const executeSuccess = (data, url, isDataHtml) => ({
+export const executeSuccess = (data, url, responseFormat) => ({
   type: SUCCESS,
   data,
   title: 'The Custom Action was Successful',
   url,
-  isDataHtml,
+  responseFormat
 });
 
 export const executeFailure = (error, isFromDialog) => {

@@ -1,6 +1,8 @@
 import {Observable} from 'rxjs';
 import {combineEpics} from 'redux-observable';
 
+import {stringify as queryStringify} from 'query-string';
+
 import {
   EXECUTE
 } from './CustomActionsActionTypes';
@@ -22,9 +24,40 @@ import {
   parseXHRError
 } from './../api/index';
 
+const executeAjaxResponseSuccess = ({response, xhr}) => {
+  const responseFormat = xhr.getResponseHeader('Content-Type').includes('text/html') ? 'html' : 'auto';
+
+  return Observable.concat(
+    Observable.of(executeSuccess(
+      response,
+      xhr.responseURL,
+      responseFormat
+    )),
+    Observable.of(closeActiveDialog())
+  );
+};
+
+const executeAjaxResponseFailure = (error, data) => {
+  console.error(error);
+
+  return Observable.of(executeFailure(parseXHRError(error), Boolean(data)));
+};
+
+const executeWebSocketSuccess = ({responseFormat, url}) => {
+  return Observable.concat(
+    Observable.of(
+      executeSuccess(
+        null,
+        url,
+        responseFormat
+      )
+    ),
+    Observable.of(closeActiveDialog())
+  );
+};
 
 export const execute = (action$, store, call = (fn, ...args) => fn(...args)) => action$.ofType(EXECUTE)
-  .switchMap(({url, data, method, responseType}) => {
+  .switchMap(({url, data, method, responseFormat}) => {
     const state = store.getState();
     const {url: gohanUrl} = state.configReducer.gohan;
     const headers = {
@@ -32,63 +65,29 @@ export const execute = (action$, store, call = (fn, ...args) => fn(...args)) => 
       'X-Auth-Token': state.authReducer.tokenId
     };
 
+    const requestUrl = `${gohanUrl}${url}`;
+
     if (method === 'GET') {
-      return call(get, `${gohanUrl}${url}`, headers, responseType)
-        .flatMap(({response, xhr}) => Observable.concat(
-          Observable.of(executeSuccess(
-            response,
-            xhr.responseURL,
-            xhr.getResponseHeader('Content-Type').includes('text/html')
-          )),
-          Observable.of(closeActiveDialog())
-        ))
-        .catch(error => {
-          console.error(error);
-          return Observable.of(executeFailure(parseXHRError(error), Boolean(data)));
-        });
+      return call(get, requestUrl, headers, responseFormat)
+        .flatMap(executeAjaxResponseSuccess)
+        .catch(error => executeAjaxResponseFailure(error, data));
     } else if (method === 'POST') {
-      return call(post, `${gohanUrl}${url}`, headers, data)
-        .flatMap(({response, xhr}) => Observable.concat(
-          Observable.of(executeSuccess(
-            response,
-            xhr.responseURL,
-            xhr.getResponseHeader('Content-Type').includes('text/html')
-          )),
-          Observable.of(closeActiveDialog())
-        ))
-        .catch(error => {
-          console.error(error);
-          return Observable.of(executeFailure(parseXHRError(error), Boolean(data)));
-        });
+      return call(post, requestUrl, headers, data)
+        .flatMap(executeAjaxResponseSuccess)
+        .catch(error => executeAjaxResponseFailure(error, data));
     } else if (method === 'PUT') {
-      return call(put, `${gohanUrl}${url}`, headers, data)
-        .flatMap(({response, xhr}) => Observable.concat(
-          Observable.of(executeSuccess(
-            response,
-            xhr.responseURL,
-            xhr.getResponseHeader('Content-Type').includes('text/html')
-          )),
-          Observable.of(closeActiveDialog())
-        ))
-        .catch(error => {
-          console.error(error);
-          return Observable.of(executeFailure(parseXHRError(error), Boolean(data)));
-        });
+      return call(put, requestUrl, headers, data)
+        .flatMap(executeAjaxResponseSuccess)
+        .catch(error => executeAjaxResponseFailure(error, data));
     } else if (method === 'DELETE') {
-      return call(purge, `${gohanUrl}${url}`, headers)
-        .flatMap(({response, xhr}) => Observable.concat(
-          Observable.of(executeSuccess(
-            response,
-            xhr.responseURL,
-            xhr.getResponseHeader('Content-Type').includes('text/html')
-          )),
-          Observable.of(closeActiveDialog())
-        ))
-        .catch(error => {
-          console.error(error);
-          return Observable.of(executeFailure(parseXHRError(error), Boolean(data)));
-        });
-    }
+      return call(purge, requestUrl, headers)
+        .flatMap(executeAjaxResponseSuccess)
+        .catch(error => executeAjaxResponseFailure(error, data));
+    } else if (method === 'WEBSOCKET') {
+      const query = queryStringify(data);
+
+      return executeWebSocketSuccess({url: `${requestUrl}?${query}`, responseFormat});
+}
     return Observable.of(executeFailure('Unknown error!', Boolean(data)));
   });
 

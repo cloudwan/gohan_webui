@@ -35,7 +35,7 @@ describe('CustomActionsActions ', () => {
           data: {},
           url: '/url/id:/test',
           method: 'POST',
-          responseType: undefined,
+          responseFormat: undefined,
         }
       ]);
     });
@@ -46,7 +46,7 @@ describe('CustomActionsActions ', () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
-      store.dispatch(actions.executeSuccess({}, 'https://foo.bar', false));
+      store.dispatch(actions.executeSuccess({}, 'https://foo.bar',));
 
       store.getActions().should.deep.equal([
         {
@@ -54,7 +54,7 @@ describe('CustomActionsActions ', () => {
           data: {},
           title: 'The Custom Action was Successful',
           url: 'https://foo.bar',
-          isDataHtml: false,
+          responseFormat: undefined,
         }
       ]);
     });
@@ -63,7 +63,7 @@ describe('CustomActionsActions ', () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
-      store.dispatch(actions.executeSuccess('<html><body></body></html>', 'https://foo.bar', true));
+      store.dispatch(actions.executeSuccess('<html><body></body></html>', 'https://foo.bar', 'html'));
 
       store.getActions().should.deep.equal([
         {
@@ -71,7 +71,7 @@ describe('CustomActionsActions ', () => {
           data: '<html><body></body></html>',
           title: 'The Custom Action was Successful',
           url: 'https://foo.bar',
-          isDataHtml: true,
+          responseFormat: 'html',
         }
       ]);
     });

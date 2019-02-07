@@ -70,4 +70,14 @@ describe('SuccessToasterSelectors', () => {
       }).should.equal(false);
     });
   });
+
+  describe('getResponseFormat()', () => {
+    it('should return "default" response format', () => {
+      selectors.getResponseFormat({
+        successToasterReducer: {
+          responseFormat: 'default'
+        }
+      }).should.equal('default');
+    });
+  });
 });
