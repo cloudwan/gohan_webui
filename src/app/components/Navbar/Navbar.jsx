@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import isEqual from 'lodash/isEqual';
 import {logout, selectTenant, changeTenantFilter} from './../../../auth/AuthActions';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import {faUserCircle, faBars} from '@fortawesome/fontawesome-free-solid';
+import {faUserCircle, faBars, faCheckSquare, faSquare} from '@fortawesome/fontawesome-free-solid';
 
 import {
   getUserName,
@@ -14,6 +14,8 @@ import {
   getTenantsByDomain,
   isTenantFilterActive,
 } from './../../../auth/AuthSelectors';
+
+import {getUseKeystoneDomainState} from '../../../config/ConfigSelectors';
 
 import NavContainer from './components/NavContainer';
 import NavbarGroup from './components/NavbarGroup';
@@ -43,32 +45,34 @@ export class Navbar extends Component {
   };
 
   handleChangeTenantClick = (tenantName, tenantId) => {
-    this.props.changeTenantFilter(tenantId !== 'all');
-
-    if (tenantId === 'all') {
-      this.props.selectTenant();
-    } else {
-      this.props.selectTenant({
-        id: tenantId,
-        name: tenantName,
-      });
+    if (this.props.useDomain && this.props.isAdmin) {
+      this.props.changeTenantFilter(tenantId !== 'all');
     }
+
+    this.props.selectTenant({
+      id: tenantId,
+      name: tenantName,
+    });
   };
 
-  renderMenuItems = () => {
-    const {tenantId, tenantsByDomain, isAdmin} = this.props;
+  handleFilterByTenantClick = () => {
+    this.props.changeTenantFilter(!this.props.isTenantFilter);
+  }
 
-    const initialValue = isAdmin ? [
+  renderMenuItems = () => {
+    const {tenantId, tenantsByDomain, isAdmin, isTenantFilter, useDomain} = this.props;
+
+    const initialValue = isAdmin && useDomain ? [
       <TenantMenuItem key="all"
         id="all"
         text="All"
         onClick={this.handleChangeTenantClick}
-        iconName={(!this.props.isTenantFilter && this.props.isAdmin) ? 'pt-icon-small-tick' : undefined}
+        iconName={tenantId.toLowerCase() === 'all' ? 'pt-icon-small-tick' : undefined}
       />
     ] : [];
 
     return Object.keys(tenantsByDomain).reduce((result, domainId, index) => {
-      if (isAdmin || index > 0) {
+      if (useDomain && (isAdmin || index > 0)) {
         result.push(<MenuDivider key={domainId} title={tenantsByDomain[domainId].name}/>);
       }
 
@@ -83,6 +87,25 @@ export class Navbar extends Component {
           />
         );
       });
+
+
+      if (!useDomain) {
+        result.push(
+          <MenuDivider key="view-options" title={'View Options'}/>
+        );
+        result.push(
+          <MenuItem key="tenant-filter"
+            onClick={this.handleFilterByTenantClick}
+            text={(
+              <span>
+                <FontAwesomeIcon className={`faicon tenant-filter${isTenantFilter ? ' checked' : ''}`}
+                  icon={isTenantFilter ? faCheckSquare : faSquare}
+                />Filter by Tenant
+              </span>
+            )}
+          />
+        );
+      }
 
       return result;
     }, initialValue);
@@ -115,7 +138,7 @@ export class Navbar extends Component {
             inheritDarkTheme={false}>
             <Button type="button" rightIconName="caret-down"
               className="pt-minimal tenant">
-              Tenant: {tenantName || 'All'}
+              Tenant: {tenantName}
             </Button>
           </Popover2>
 
@@ -168,6 +191,7 @@ export const mapStateToProps = state => ({
   tenantsByDomain: getTenantsByDomain(state),
   isAdmin: isUserAdmin(state),
   isTenantFilter: isTenantFilterActive(state),
+  useDomain: getUseKeystoneDomainState(state),
 });
 
 export default connect(mapStateToProps, {

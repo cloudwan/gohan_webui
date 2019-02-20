@@ -65,7 +65,8 @@ describe('AuthActions ', () => {
           project: {
             id: 'tenantId',
           }
-        }
+        },
+        true,
       ).should.deep.equal({
         type: actionTypes.SCOPED_LOGIN_SUCCESS,
         data: {
@@ -100,10 +101,11 @@ describe('AuthActions ', () => {
 
   describe('fetchTenantSuccess()', () => {
     it(`should returns ${actionTypes.FETCH_TENANTS_SUCCESS} action`, () => {
-      actions.fetchTenantSuccess(['tenant'])
+      actions.fetchTenantSuccess(['tenant'], true)
         .should.deep.equal({
         type: actionTypes.FETCH_TENANTS_SUCCESS,
         data: ['tenant'],
+        isLogged: true,
       });
     });
   });
@@ -155,6 +157,7 @@ describe('AuthActions ', () => {
       sessionStorage.setItem('unscopedToken', 'unscopedToken');
       sessionStorage.setItem('tenantId', 'tenantId');
       sessionStorage.setItem('tenantName', 'tenantName');
+      sessionStorage.setItem('tenantFilterStatus', 'false');
 
       actions.fetchTokenData()
         .should.deep.equal({
@@ -164,7 +167,8 @@ describe('AuthActions ', () => {
         tenant: {
           id: 'tenantId',
           name: 'tenantName',
-        }
+        },
+        tenantFilterStatus: false,
       });
     });
   });
@@ -203,144 +207,338 @@ describe('AuthActions ', () => {
       ]);
     });
   });
-});
 
-describe('selectTenant() ', () => {
-  it(`should returns ${actionTypes.SELECT_TENANT} action and set items to storage`, () => {
-    const store = mockStore({
-      authReducer: {
-        roles: [{name: 'admin'}]
-      }
-    });
-
-    sessionStorage.setItem('tenantId', 'tenantId');
-    sessionStorage.setItem('tenantName', 'tenantName');
-
-    store.dispatch(actions.selectTenant({name: 'tenantName',id: 'tenantId'}));
-
-    should.equal(sessionStorage.getItem('tenantId'), 'tenantId');
-    should.equal(sessionStorage.getItem('tenantName'), 'tenantName');
-
-    store.getActions().should.deep.equal([
-      {
-        type: actionTypes.SELECT_TENANT,
-        tenant: {
-          name: 'tenantName',
-          id: 'tenantId',
+  describe('selectTenant() ', () => {
+    it(`should returns ${actionTypes.SELECT_TENANT} action and set items to storage`, () => {
+      const store = mockStore({
+        authReducer: {
+          roles: [{name: 'admin'}],
+          logged: false,
         },
-      },
-    ]);
-  });
-
-  it(`should returns ${actionTypes.SELECT_TENANT} and ${actionTypes.SCOPED_LOGIN} actions`, () => {
-    const store = mockStore({
-      authReducer: {
-        roles: [{name: 'Member'}],
-      }
-    });
-
-    store.dispatch(actions.selectTenant({name: 'tenantName',id: 'tenantId'}));
-
-    store.getActions().should.deep.equal([
-      {
-        type: actionTypes.SELECT_TENANT,
-        tenant: {
-          name: 'tenantName',
-          id: 'tenantId',
-        },
-      },
-      {
-        type: actionTypes.SCOPED_LOGIN,
-        scope: {
-          project: {
-            id: 'tenantId',
-          }
+        configReducer: {
+          useKeystoneDomain: true,
         }
-      }
-    ]);
-  });
-
-  it('should set tenantId and tenantName in the sessionStorage', () => {
-    const store = mockStore({
-      authReducer: {
-        roles: [{name: 'admin'}]
-      }
-    });
-
-    sessionStorage.setItem('tenantId', 'tenantId');
-    sessionStorage.setItem('tenantName', 'tenantName');
-
-    store.dispatch(actions.selectTenant({name: 'tenantName',id: 'tenantId'}));
-
-    should.equal(sessionStorage.getItem('tenantId'), 'tenantId');
-    should.equal(sessionStorage.getItem('tenantName'), 'tenantName');
-  });
-
-  it('should remove tenantId and tenantName in the sessionStorage', () => {
-    const store = mockStore({
-      authReducer: {
-        roles: [{name: 'admin'}]
-      }
-    });
-
-    store.dispatch(actions.selectTenant());
-
-    should.equal(sessionStorage.getItem('tenantId'), null);
-    should.equal(sessionStorage.getItem('tenantName'), null);
-  });
-});
-
-describe('changeTenantFilter() ', () => {
-  it(`should returns ${actionTypes.CHANGE_TENANT_FILTER_STATUS} action`, () => {
-    actions.changeTenantFilter(true)
-      .should.deep.equal({
-        type: actionTypes.CHANGE_TENANT_FILTER_STATUS,
-        status: true
       });
-  });
-});
 
-describe('renewToken() ', () => {
-  it(`should return ${actionTypes.SCOPED_LOGIN} action`, () => {
-    const store = mockStore({
-      authReducer: {
-        scope: {
-          project: {
-            id: 'projectScopeId',
-          }
+      sessionStorage.setItem('tenantId', 'tenantId');
+      sessionStorage.setItem('tenantName', 'tenantName');
+
+      store.dispatch(actions.selectTenant({name: 'tenantName',id: 'tenantId'}));
+
+      should.equal(sessionStorage.getItem('tenantId'), 'tenantId');
+      should.equal(sessionStorage.getItem('tenantName'), 'tenantName');
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.SELECT_TENANT,
+          tenant: {
+            name: 'tenantName',
+            id: 'tenantId',
+          },
+          isLogged: true,
         },
-        user: {
-          domain: {
-            id: 'domainId',
-          }
-        }
-      }
+      ]);
     });
 
-    store.dispatch(actions.renewToken('testUsername', 'testPassword'));
+    it(`should returns ${actionTypes.SELECT_TENANT} and ${actionTypes.SCOPED_LOGIN} actions`, () => {
+      const store = mockStore({
+        authReducer: {
+          roles: [{name: 'Member',}],
+          logged: true,
+        },
+        configReducer: {
+          useKeystoneDomain: false,
+        },
+      });
 
-    store.getActions().should.deep.equal([
-      {
-        type: actionTypes.SCOPED_LOGIN,
-        scope: {
-          project: {
-            id: 'projectScopeId',
+      store.dispatch(actions.selectTenant({name: 'tenantName',id: 'tenantId'}));
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.SCOPED_LOGIN,
+          scope: {
+            project: {
+              id: 'tenantId',
+            }
           }
         },
-        identity: {
-          methods: [
-            'password'
-          ],
-          password: {
-            user: {
-              domain: {
-                id: 'domainId',
-              },
-              name: 'testUsername',
-              password: 'testPassword',
+        {
+          type: actionTypes.SELECT_TENANT,
+          tenant: {
+            name: 'tenantName',
+            id: 'tenantId',
+          },
+          isLogged: true,
+        },
+      ]);
+    });
+
+    it('should set tenantId and tenantName in the sessionStorage', () => {
+      const store = mockStore({
+        authReducer: {
+          roles: [{name: 'admin'}]
+        },
+        configReducer: {
+          useKeystoneDomain: false,
+        }
+      });
+
+      sessionStorage.setItem('tenantId', 'tenantId');
+      sessionStorage.setItem('tenantName', 'tenantName');
+
+      store.dispatch(actions.selectTenant({name: 'tenantName',id: 'tenantId'}));
+
+      should.equal(sessionStorage.getItem('tenantId'), 'tenantId');
+      should.equal(sessionStorage.getItem('tenantName'), 'tenantName');
+    });
+
+    it('should remove tenantId and tenantName in the sessionStorage', () => {
+      const store = mockStore({
+        authReducer: {
+          roles: [{name: 'admin'}]
+        },
+        configReducer: {
+          useKeystoneDomain: false,
+        }
+      });
+
+      store.dispatch(actions.selectTenant());
+
+      should.equal(sessionStorage.getItem('tenantId'), null);
+      should.equal(sessionStorage.getItem('tenantName'), null);
+    });
+  });
+
+  describe('changeTenantFilter() ', () => {
+    it(`should returns ${actionTypes.CHANGE_TENANT_FILTER_STATUS} action`, () => {
+      actions.changeTenantFilter(true)
+        .should.deep.equal({
+          type: actionTypes.CHANGE_TENANT_FILTER_STATUS,
+          status: true
+        });
+    });
+  });
+
+  describe('renewToken() ', () => {
+    it(`should return ${actionTypes.SCOPED_LOGIN} action`, () => {
+      const store = mockStore({
+        authReducer: {
+          scope: {
+            project: {
+              id: 'projectScopeId',
+            }
+          },
+          user: {
+            domain: {
+              id: 'domainId',
             }
           }
         }
+      });
+
+      store.dispatch(actions.renewToken('testUsername', 'testPassword'));
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.SCOPED_LOGIN,
+          scope: {
+            project: {
+              id: 'projectScopeId',
+            }
+          },
+          identity: {
+            methods: [
+              'password'
+            ],
+            password: {
+              user: {
+                domain: {
+                  id: 'domainId',
+                },
+                name: 'testUsername',
+                password: 'testPassword',
+              }
+            }
+          }
+        }
+      ]);
+    });
+  });
+
+  describe('checkTokenSuccess', () => {
+    it(`should dispatch ${actionTypes.CHECK_SUCCESS} action and set data in session storage`, () => {
+      const store = mockStore();
+      store.dispatch(actions.checkTokenSuccess(
+        'unscopedToken',
+        'scopedToken',
+        '2019-02-27T11:50:58.000000Z',
+        {name: 'Foo', id: 'foo'},
+        {name: 'Bar'},
+        ['Member'],
+        {project: {id: 'baz'}},
+        false,
+      ));
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.CHECK_SUCCESS,
+          data: {
+            tokenId: 'scopedToken',
+            unscopedToken: 'unscopedToken',
+            tokenExpires: '2019-02-27T11:50:58.000000Z',
+            tenant: {name: 'Foo', id: 'foo'},
+            user: {name: 'Bar'},
+            roles: ['Member'],
+            scope: {
+              project: {
+                id: 'baz',
+              }
+            },
+            tenantFilterStatus: false,
+          }
+        }
+      ]);
+
+      should.equal(sessionStorage.getItem('scopedToken'), 'scopedToken');
+      should.equal(sessionStorage.getItem('unscopedToken'), 'unscopedToken');
+      should.equal(sessionStorage.getItem('tenantFilterStatus'), 'false');
+    });
+  });
+
+  describe('sessionStorageTransfer', () => {
+    it(`should dispatch ${actionTypes.INIT_SESSION_STORAGE_TRANSFER} action`, () => {
+      const store = mockStore({configReducer: {}});
+      store.dispatch(actions.sessionStorageTransfer({}));
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.INIT_SESSION_STORAGE_TRANSFER,
+        }
+      ]);
+    });
+
+    it(`should dispatch ${actionTypes.INIT_SESSION_STORAGE_TRANSFER} action and set sessionStorage data to localStorage`, () => { // eslint-disable-line
+      const store = mockStore({
+        configReducer: {
+          storagePrefix: 'FOO',
+        }
+      });
+
+      sessionStorage.setItem('bar', 'faz');
+
+      store.dispatch(actions.sessionStorageTransfer({
+        key: 'FOOgetSessionStorage',
+        newValue: '{"foo": "bar"}',
+      }));
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.INIT_SESSION_STORAGE_TRANSFER,
+        }
+      ]);
+
+      should.equal(localStorage.getItem('FOOsessionStorage'), JSON.stringify({bar: 'faz'}));
+      setTimeout(() => {
+        should.equal(localStorage.getItem('FOOsessionStorage'), null);
+        should.equal(localStorage.getItem('FOOgetSessionStorage'), null);
+      }, 0);
+    });
+
+    it(`should dispatch ${actionTypes.INIT_SESSION_STORAGE_TRANSFER} action and set new data to sessionStorage`, () => { // eslint-disable-line
+      const store = mockStore({
+        configReducer: {
+          storagePrefix: 'FOO',
+        }
+      });
+
+      store.dispatch(actions.sessionStorageTransfer({
+        key: 'FOOsessionStorage',
+        newValue: '{"foo": "bar"}',
+      }));
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.INIT_SESSION_STORAGE_TRANSFER,
+        }
+      ]);
+
+      should.equal(sessionStorage.getItem('foo'), 'bar');
+    });
+
+    it(`should dispatch ${actionTypes.INIT_SESSION_STORAGE_TRANSFER} and ${actionTypes.LOGOUT} actions`, () => { // eslint-disable-line
+      const store = mockStore({
+        configReducer: {
+          storagePrefix: 'FOO',
+        }
+      });
+
+      store.dispatch(actions.sessionStorageTransfer({
+        key: 'FOOclearSessionStorage',
+        newValue: '{"foo": "bar"}',
+      }));
+
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.INIT_SESSION_STORAGE_TRANSFER,
+        },
+        {
+          type: actionTypes.CLEAR_STORAGE,
+        },
+        {
+          type: actionTypes.LOGOUT,
+        },
+      ]);
+    });
+  });
+
+  describe('transferStorage', () => {
+    it(`should dispatch ${actionTypes.TRANSFER_STORAGE} action`, () => {
+      const store = mockStore({
+        configReducer: {
+          storagePrefix: 'FOO',
+        }
+      });
+
+      store.dispatch(actions.transferStorage());
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.TRANSFER_STORAGE
+        }
+      ]);
+    });
+  });
+
+  describe('renewTokenInBackground', () => {
+    it(`should dispatch ${actionTypes.SCOPED_LOGIN} action`, () => {
+      const store = mockStore({
+        authReducer: {
+          scope: {
+            project: {
+              id: 'foo',
+            }
+          },
+        }
+      });
+
+      store.dispatch(actions.renewTokenInBackground());
+      store.getActions().should.deep.equal([
+        {
+          type: actionTypes.SCOPED_LOGIN,
+          scope: {
+            project: {
+              id: 'foo',
+            }
+          }
+        }
+      ]);
+    });
+  });
+
+  describe('renewTokenFailure', () => {
+    const store = mockStore();
+
+    store.dispatch(actions.renewTokenFailure({message: 'foo'}));
+    store.getActions().should.deep.equal([
+      {
+        type: actionTypes.RENEW_TOKEN_FAILURE,
+        error: {message: 'foo'}
       }
     ]);
   });

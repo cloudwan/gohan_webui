@@ -4,14 +4,20 @@ import {
   LOGIN_SUCCESS,
   LOGIN_ERROR,
   SELECT_TENANT,
+  FETCH_TENANTS,
   FETCH_TENANTS_SUCCESS,
+  FETCH_TENANTS_FAILURE,
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
+  RENEW_TOKEN_FAILURE,
   CHANGE_TENANT_FILTER_STATUS,
   CHECK_SUCCESS,
+  SCOPED_LOGIN,
   SCOPED_LOGIN_SUCCESS,
   SCOPED_LOGIN_ERROR,
+  FETCH_DOMAINS,
   FETCH_DOMAINS_SUCCESS,
+  FETCH_DOMAINS_FAILURE,
 } from './AuthActionTypes';
 
 export default function authReducer(state = {
@@ -54,6 +60,11 @@ export default function authReducer(state = {
         inProgress: false,
         showTokenRenewal: false
       };
+    case SCOPED_LOGIN:
+      return {
+        ...state,
+        inProgress: true,
+      };
     case SCOPED_LOGIN_SUCCESS:
       return {
         ...state,
@@ -63,6 +74,13 @@ export default function authReducer(state = {
         scope: action.data.scope,
         inProgress: false,
         showTokenRenewal: false,
+      };
+    case SCOPED_LOGIN_ERROR:
+      return {
+        ...state,
+        inProgress: false,
+        logged: false,
+        showTokenRenewal: false
       };
     case CHECK_SUCCESS:
       return {
@@ -76,12 +94,14 @@ export default function authReducer(state = {
         scope: action.data.scope,
         inProgress: false,
         showTokenRenewal: false,
-        tenantFilterStatus: action.data.tenant !== undefined,
+        tenantFilterStatus: action.data.tenantFilterStatus,
+        logged: true,
       };
     case SELECT_TENANT:
       return {
         ...state,
         tenant: action.tenant,
+        logged: action.isLogged,
       };
     case LOGIN_ERROR:
       return {
@@ -90,30 +110,48 @@ export default function authReducer(state = {
         logged: false,
         showTokenRenewal: false
       };
-    case SCOPED_LOGIN_ERROR:
+    case FETCH_DOMAINS:
       return {
         ...state,
-        inProgress: false,
-        logged: false,
-        showTokenRenewal: false
+        inProgress: true,
       };
     case FETCH_DOMAINS_SUCCESS:
       return {
         ...state,
         domains: action.domains,
+        inProgress: false,
+      };
+    case FETCH_DOMAINS_FAILURE:
+      return {
+        ...state,
+        inProgress: false,
+      };
+    case FETCH_TENANTS:
+      return {
+        ...state,
+        inProgress: true,
       };
     case FETCH_TENANTS_SUCCESS:
       return {
         ...state,
         tenants: [...action.data],
         inProgress: false,
-        logged: true,
+        logged: action.isLogged,
         showTokenRenewal: false
+      };
+    case FETCH_TENANTS_FAILURE:
+      return {
+        ...state,
+        inProgress: false,
       };
     case SHOW_TOKEN_RENEWAL:
       return {
         ...state,
         showTokenRenewal: true
+      };
+    case RENEW_TOKEN_FAILURE:
+      return {
+        ...state
       };
     case CHANGE_TENANT_FILTER_STATUS:
       return {

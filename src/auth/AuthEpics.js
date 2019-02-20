@@ -16,10 +16,12 @@ import {
   fetchTenantSuccess,
   fetchTenantFailure,
   showTokenRenewal,
+  renewTokenFailure,
   scopedLoginSuccess,
   scopedLoginFailure,
   fetchDomainsSuccess,
   fetchDomainsFailure,
+  selectTenant,
 } from './AuthActions';
 import {isUserAdmin} from './AuthSelectors';
 
@@ -61,11 +63,10 @@ export const getTokenInfo = (authUrl, token, call = (fn, ...args) => fn(...args)
 
 export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) =>
   action$.ofType(CHECK_TOKEN)
-    .mergeMap(({unscopedToken, tokenId, tenant}) => {
+    .mergeMap(({unscopedToken, tokenId, tenant, tenantFilterStatus}) => {
       const state = store.getState();
       const {
         authUrl,
-        cloudAdmin,
       } = state.configReducer;
 
       return Observable.zip(
@@ -96,17 +97,13 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
             item[1].user,
             item[1].roles,
             scope,
-
+            tenantFilterStatus
           ),
           {
             type: FETCH_TENANTS,
             scope,
           },
         ];
-
-        if (isCloudAdmin(item[1].user, cloudAdmin)) {
-          actions.push({type: FETCH_DOMAINS});
-        }
 
         return actions;
       });
@@ -127,7 +124,9 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
       };
 
       if (authUrl) {
-        const selectedDomainName = (useKeystoneDomain ? domain : domainName) || 'default';
+        const selectedDomainName = (useKeystoneDomain && (domainName || domain)) ?
+          domainName || domain :
+          'default';
         const data = {
           auth: {
             scope: 'unscoped'
@@ -161,31 +160,39 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           const {user} = response.response.token;
           let scope = {};
 
-          if (isCloudAdmin(user, cloudAdmin)) {
-            scope = {
-              project: {
-                name: cloudAdmin.projectName,
-                domain: {
-                  id: cloudAdmin.domainId,
+          if (useKeystoneDomain) {
+            if (isCloudAdmin(user, cloudAdmin)) {
+              scope = {
+                project: {
+                  name: cloudAdmin.projectName,
+                  domain: {
+                    id: cloudAdmin.domainId,
+                  }
                 }
-              }
-            };
-          } else {
-            scope = {
-              domain: {
-                id: user.domain.id,
-              }
-            };
+              };
+            } else {
+              scope = {
+                domain: {
+                  id: user.domain.id,
+                }
+              };
+            }
           }
 
-          return Observable.concat(
+          const actions = [
             Observable.of(loginSuccess(
               response.xhr.getResponseHeader('X-Subject-Token'),
               response.response.token.expires_at,
               response.response.token.user,
             )),
-            Observable.of({type: SCOPED_LOGIN, scope})
-          );
+          ];
+
+          if (useKeystoneDomain) {
+            actions.push(Observable.of({type: SCOPED_LOGIN, scope}));
+          } else {
+            actions.push(Observable.of({type: FETCH_TENANTS}));
+          }
+          return Observable.concat(...actions);
         })
         .catch(error => {
           console.error(error);
@@ -210,7 +217,8 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
       }
     }) => {
       const state = store.getState();
-      const {authUrl} = state.configReducer;
+      const {authUrl, useKeystoneDomain} = state.configReducer;
+      const {showTokenRenewal: showTokenRenewalState} = state.authReducer;
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -250,7 +258,9 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
         })
         .catch(error => {
           console.error(error);
-          if (error.status === 401 && !isUserAdmin(state)) {
+           if (showTokenRenewalState) {
+            return Observable.of(renewTokenFailure(parseXHRError(error)));
+          } else if (error.status === 401 && !isUserAdmin(state) && useKeystoneDomain) {
             return Observable.of({type: FETCH_TENANTS, scope});
           }
 
@@ -267,11 +277,14 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
       const {
         authUrl,
         cloudAdmin,
+        useKeystoneDomain,
       } = state.configReducer;
       const {
         tokenId,
         unscopedToken,
         user,
+        logged,
+        tenant,
       } = state.authReducer;
       const headers = {
         'Content-Type': 'application/json',
@@ -280,18 +293,33 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
 
       if (authUrl) {
         const query = (scope && scope.domain) ? `?domain_id=${scope.domain.id}` : '';
-        const url = isUserAdmin(state) ? `${authUrl}/projects${query}` : `${authUrl}/auth/projects`;
+        const url = useKeystoneDomain && isUserAdmin(state) ?
+          `${authUrl}/projects${query}` :
+          `${authUrl}/auth/projects`;
         return call(
           get,
           url,
           headers
         )
           .flatMap(response => {
+            const isLogged = logged || (tokenId && (!useKeystoneDomain || !isUserAdmin(state)));
+            const {projects = []} = response.response;
             const actions = [
-              Observable.of(fetchTenantSuccess(response.response.projects)),
+              Observable.of(fetchTenantSuccess(
+                projects,
+                isLogged,
+              )),
             ];
-            if (isCloudAdmin(user, cloudAdmin)) {
+
+            if (useKeystoneDomain && isCloudAdmin(user, cloudAdmin)) {
               actions.unshift(Observable.of({type: FETCH_DOMAINS}));
+            }
+
+            if (!logged && !tenant && projects && projects.length === 1) {
+              actions.push(Observable.of(selectTenant({
+                id: projects[0].id,
+                name: projects[0].name,
+              })));
             }
 
             return Observable.concat(...actions);

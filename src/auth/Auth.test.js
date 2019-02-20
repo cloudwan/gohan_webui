@@ -70,10 +70,16 @@ describe('< Auth />', () => {
     const wrapper = mount(
       <Provider store={localStore}>
         <Auth fetchTokenData={() => {}}
-          inProgress={true}
-          tenants={['tenant1']}
+          inProgress={false}
+          tenantsByDomain={{
+            fooDomain: {
+              tenants: ['tenant1']
+            }
+          }}
           user={{username: 'test'}}
           transferStorage={() => {}}
+          unscopedToken={'foo'}
+          loggedState={false}
         />
       </Provider>
     );
@@ -109,12 +115,52 @@ describe('< Auth />', () => {
       tenant: 'tenant',
       tenants: [{name: 'sampleTenant', id: 'sampleTenantId'}],
       user: {name: 'sampleUser'},
+      loggedState: true,
     });
 
     onLoginSuccess.should.have.been.callCount(1);
   });
 
-  it('should call resetErrorMessage and selectTenant from handleSelectTenantSubmit', () => {
+  it('should not call onLoginSuccess from componentWillReceiveProps', () => {
+    const onLoginSuccess = sinon.spy();
+    const wrapper = mount(
+      <Auth fetchTokenData={() => {}}
+        onLoginSuccess={onLoginSuccess}
+        transferStorage={() => {}}
+      />
+    );
+
+    wrapper.setProps({
+      tokenId: 'tokenId',
+      tenant: 'tenant',
+      tenants: [{name: 'sampleTenant', id: 'sampleTenantId'}],
+      user: {name: 'sampleUser'},
+      loggedState: false,
+    });
+
+    onLoginSuccess.should.have.been.callCount(0);
+  });
+
+  it('should call resetErrorMessage, changeTenantFilter and selectTenant from handleSelectTenantSubmit', () => {
+    const resetErrorMessage = sinon.spy();
+    const selectTenant = sinon.spy();
+    const wrapper = mount(
+      <Auth fetchTokenData={() => {}}
+        resetErrorMessage={resetErrorMessage}
+        selectTenant={selectTenant}
+        transferStorage={() => {}}
+        changeTenantFilter={() => {}}
+        useDomain={true}
+        isAdmin={true}
+      />
+    );
+
+    wrapper.node.handleSelectTenantSubmit({});
+    resetErrorMessage.should.have.been.callCount(1);
+    selectTenant.should.have.been.callCount(1);
+  });
+
+  it('should call resetErrorMessage, selectTenant and changeTenantFilter with passed filterStatus value', () => {
     const resetErrorMessage = sinon.spy();
     const selectTenant = sinon.spy();
     const wrapper = mount(
@@ -126,7 +172,7 @@ describe('< Auth />', () => {
       />
     );
 
-    wrapper.node.handleSelectTenantSubmit({});
+    wrapper.node.handleSelectTenantSubmit('foo', 'bar', true);
     resetErrorMessage.should.have.been.callCount(1);
     selectTenant.should.have.been.callCount(1);
   });

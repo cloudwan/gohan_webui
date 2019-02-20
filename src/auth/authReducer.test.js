@@ -95,6 +95,7 @@ describe('authReducer ', () => {
           name: 'test tenant'
         }
       ],
+      isLogged: true,
       type: actionTypes.FETCH_TENANTS_SUCCESS,
     }).should.deep.equal({
       tenants: [

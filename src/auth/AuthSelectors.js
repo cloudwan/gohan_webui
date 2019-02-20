@@ -113,8 +113,11 @@ export const getTenantsByDomain = createSelector(
   [domains, tenants],
   (domains, tenants) => {
     const tenantsByDomain = groupBy(tenants, 'domain_id');
+    if (!tenants || tenants.length === 0) {
+      return {};
+    }
 
-    if (!domains || domains.length === 0) {
+    if (Object.keys(tenantsByDomain).length === 1) {
       const domainId = Object.keys(tenantsByDomain)[0];
 
       return {
@@ -124,11 +127,12 @@ export const getTenantsByDomain = createSelector(
       };
     }
 
-    return domains.reduce((result, domain) => {
-      const domainTenants = tenantsByDomain[domain.id];
+    return Object.keys(tenantsByDomain).reduce((result, domainId) => {
+      const domainTenants = tenantsByDomain[domainId];
       if (domainTenants && domainTenants.length > 0) {
-        result[domain.id] = {
-          name: domain.name,
+        const domain = domains.find(domain => domain.id === domainId);
+        result[domainId] = {
+          name: domain && domain.name ? domain.name : domainId,
           tenants: domainTenants
         };
       }

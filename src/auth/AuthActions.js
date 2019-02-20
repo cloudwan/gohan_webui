@@ -11,6 +11,7 @@ import {
   FETCH_TENANTS_FAILURE,
   CLEAR_STORAGE,
   SHOW_TOKEN_RENEWAL,
+  RENEW_TOKEN_FAILURE,
   INIT_SESSION_STORAGE_TRANSFER,
   TRANSFER_STORAGE,
   CHANGE_TENANT_FILTER_STATUS,
@@ -76,9 +77,10 @@ export const scopedLoginFailure = error => ({
   error,
 });
 
-export const fetchTenantSuccess = data => ({
+export const fetchTenantSuccess = (data, isLogged) => ({
   type: FETCH_TENANTS_SUCCESS,
   data,
+  isLogged,
 });
 
 export const fetchTenantFailure = error => ({
@@ -101,26 +103,38 @@ export const fetchTokenData = () => {
   const scopedToken = sessionStorage.getItem('scopedToken');
   const tenantId = sessionStorage.getItem('tenantId');
   const tenantName = sessionStorage.getItem('tenantName');
+  const tenantFilterStatus = sessionStorage.getItem('tenantFilterStatus');
 
   const tenant = (tenantId && tenantName) ?
     {id: tenantId, name: tenantName} :
     undefined;
 
-  if (scopedToken) {
+  if (scopedToken && tenant) {
     return {
       type: CHECK_TOKEN,
       tokenId: scopedToken,
       unscopedToken,
       tenant,
+      tenantFilterStatus: tenantFilterStatus === 'true',
     };
   }
 
   return clearStorage();
 };
 
-export const checkTokenSuccess = (unscopedToken, tokenId, tokenExpires, tenant, user, roles, scope) => {
+export const checkTokenSuccess = (
+  unscopedToken,
+  tokenId,
+  tokenExpires,
+  tenant,
+  user,
+  roles,
+  scope,
+  tenantFilterStatus
+) => {
   sessionStorage.setItem('scopedToken', tokenId);
   sessionStorage.setItem('unscopedToken', unscopedToken);
+  sessionStorage.setItem('tenantFilterStatus', tenantFilterStatus);
 
   return {
     type: CHECK_SUCCESS,
@@ -131,7 +145,8 @@ export const checkTokenSuccess = (unscopedToken, tokenId, tokenExpires, tenant, 
       tenant,
       user,
       roles,
-      scope
+      scope,
+      tenantFilterStatus
     },
   };
 };
@@ -141,6 +156,7 @@ export const clearStorage = () => {
   sessionStorage.removeItem('unscopedToken');
   sessionStorage.removeItem('tenantId');
   sessionStorage.removeItem('tenantName');
+  sessionStorage.removeItem('tenantFilterStatus');
 
   return {
     type: CLEAR_STORAGE
@@ -164,12 +180,10 @@ export const logout = () => {
 
 export const selectTenant = (tenant = {}) => (dispatch, getState) => {
   const state = getState();
-  const roles = state.authReducer.roles || [];
+  const {roles = [], logged} = state.authReducer;
+  const {useKeystoneDomain} = state.configReducer;
   const isAdmin = roles.some(role => role.name === 'admin');
-  dispatch({
-    type: SELECT_TENANT,
-    tenant,
-  });
+  const isLogged = logged || (useKeystoneDomain && isAdmin);
 
   if (tenant && tenant.id && tenant.name) {
     sessionStorage.setItem('tenantId', tenant.id);
@@ -179,7 +193,7 @@ export const selectTenant = (tenant = {}) => (dispatch, getState) => {
     sessionStorage.removeItem('tenantName');
   }
 
-  if (!isAdmin) {
+  if (!isAdmin || !useKeystoneDomain) {
     dispatch({
       type: SCOPED_LOGIN,
       scope: {
@@ -189,6 +203,12 @@ export const selectTenant = (tenant = {}) => (dispatch, getState) => {
       }
     });
   }
+
+  dispatch({
+    type: SELECT_TENANT,
+    tenant,
+    isLogged,
+  });
 };
 
 export const showTokenRenewal = () => {
@@ -233,6 +253,13 @@ export const renewToken = (username, password) => (dispatch, getState) => {
     scope,
     identity,
   });
+};
+
+export const renewTokenFailure = error => {
+  return {
+    type: RENEW_TOKEN_FAILURE,
+    error
+  };
 };
 
 export const sessionStorageTransfer = event => {
@@ -284,7 +311,11 @@ export const transferStorage = () => {
   };
 };
 
-export const changeTenantFilter = status => ({
-  type: CHANGE_TENANT_FILTER_STATUS,
-  status
-});
+export const changeTenantFilter = status => {
+  sessionStorage.setItem('tenantFilterStatus', status);
+
+  return {
+    type: CHANGE_TENANT_FILTER_STATUS,
+    status
+  };
+};
