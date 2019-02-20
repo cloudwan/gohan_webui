@@ -33,6 +33,7 @@ describe('AuthEpics', () => {
         authReducer: {
           tokenId: 'sampleTokenId',
           unscopedToken: 'unscopedTokenId',
+          logged: false,
         }
       }
     );
@@ -282,7 +283,7 @@ describe('AuthEpics', () => {
           configReducer: {
             polling: false,
             authUrl: 'http://gohan.io/v3',
-            useKeystoneDomain: false,
+            useKeystoneDomain: true,
             domainName: 'configDomainName',
             cloudAdmin: {
               username: 'admin',
@@ -499,7 +500,7 @@ describe('AuthEpics', () => {
                     project: {
                       id: 'projectId',
                     }
-                  }
+                  },
                 }
               },
               b: {
@@ -571,7 +572,7 @@ describe('AuthEpics', () => {
                     domain: {
                       id: 'default',
                     }
-                  }
+                  },
                 }
               },
               b: {
@@ -706,6 +707,7 @@ describe('AuthEpics', () => {
             {
               a: {
                 type: actionTypes.FETCH_TENANTS_SUCCESS,
+                isLogged: true,
                 data: [
                   {
                     is_domain: false, // eslint-disable-line camelcase
@@ -795,6 +797,7 @@ describe('AuthEpics', () => {
               },
               b: {
                 type: actionTypes.FETCH_TENANTS_SUCCESS,
+                isLogged: true,
                 data: [
                   {
                     id: '0c4e939acacf4376bdcd1129f1a054ad',

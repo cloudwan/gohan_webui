@@ -6,25 +6,45 @@ export default class SelectTenant extends Component {
     super(props);
 
     this.state = {
-      value: '',
       id: '',
+      tenantFilter: false,
     };
   }
 
   componentWillMount() {
-    this.setState({
-      value: this.props.tenants[0].name,
-      id: this.props.tenants[0].id
-    });
+    const {isAdmin, useDomain, tenantsByDomain} = this.props;
+    const domains = Object.keys(this.props.tenantsByDomain);
+    if (domains && domains.length > 0) {
+      if (isAdmin && useDomain) {
+        this.setState({id: 'all'});
+      } else {
+        const tenants = tenantsByDomain[domains[0]].tenants;
+        this.setState({
+          id: tenants[0].id
+        });
+      }
+    }
   }
 
   handleSelectTenantSubmit = event => {
+    let tenantName = '';
+
     if (event) {
       event.preventDefault();
       event.stopPropagation();
     }
 
-    this.props.onTenantSubmit(this.state.value, this.state.id, this.state.tenantFilter);
+    if (this.state.id !== 'all') {
+      const tenant = Object.keys(this.props.tenantsByDomain)
+        .reduce((result, domainId) => result.concat(this.props.tenantsByDomain[domainId].tenants), [])
+        .find(tenant => tenant.id.toLowerCase() === this.state.id.toLowerCase());
+
+      tenantName = tenant && tenant.name ? tenant.name : '';
+    } else if (this.state.id === 'all') {
+      tenantName = 'All';
+    }
+
+    this.props.onTenantSubmit(tenantName, this.state.id, this.state.tenantFilter);
   };
 
   handleTenantChange = event => {
@@ -33,18 +53,43 @@ export default class SelectTenant extends Component {
       event.stopPropagation();
     }
 
-    this.setState({
-      value: event.target.value,
-      id: this.props.tenants.find(item => item.name === event.target.value).id
-    });
+    this.setState({id: event.target.value});
+  };
+
+  handleFilterTenantStatusChange = () => {
+    this.setState({tenantFilter: !this.state.tenantFilter});
   };
 
   buildSelectOptions = () => {
-    return this.props.tenants.map(
-      tenant => {
-        return <option value={tenant.name} key={tenant.id}>{tenant.name}</option>;
+    const {tenantsByDomain, useDomain, isAdmin} = this.props;
+    const domains = Object.keys(tenantsByDomain);
+
+    const initialValue = isAdmin && useDomain ?
+      [<option value={'all'} key='all'>{'All'}</option>] :
+      [];
+
+    const selectOptions = domains.reduce((result, domainId) => {
+      const domain = tenantsByDomain[domainId];
+      if (domain.tenants.length > 0) {
+        if (domains.length > 1) {
+          result.push(
+            <optgroup label={domain.name} key={domainId}>
+              {domain.tenants.map(tenant => (
+                <option value={tenant.id} key={tenant.id}>{tenant.name}</option>
+              ))}
+            </optgroup>
+          );
+        } else {
+          domain.tenants.forEach(tenant => {
+            result.push(<option value={tenant.id} key={tenant.id}>{tenant.name}</option>);
+          });
+        }
+
+        return result;
       }
-    );
+    }, initialValue);
+
+    return selectOptions;
   };
 
   render() {
@@ -61,6 +106,20 @@ export default class SelectTenant extends Component {
                 {this.buildSelectOptions()}
               </select>
             </div>
+            {!this.props.useDomain && (
+              <div className="form-group">
+                <div className="checkbox enable-tenant-filter">
+                  <label className="pt-control pt-checkbox pt-inline">
+                    <input type="checkbox" onChange={this.handleFilterTenantStatusChange}
+                      checked={this.state.tenantFilter}
+                    />
+                    <span className="pt-control-indicator" />
+                    Filter resources by tenant
+                  </label>
+                  <p className="form-text text-muted">(Modifiable after login too)</p>
+                </div>
+              </div>
+            )}
             <button type="submit" className="btn btn-primary btn-block">
               Continue
             </button>
@@ -73,5 +132,7 @@ export default class SelectTenant extends Component {
 
 SelectTenant.propTypes = {
   onTenantSubmit: PropTypes.func.isRequired,
-  tenants: PropTypes.array.isRequired
+  tenantsByDomain: PropTypes.object.isRequired,
+  useDomain: PropTypes.bool.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
 };

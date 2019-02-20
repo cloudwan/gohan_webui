@@ -12,7 +12,6 @@ import {
 } from './../schema/SchemaSelectors';
 import {
   isTenantFilterActive,
-  isUserAdmin,
   getTenantId
 } from './../auth/AuthSelectors';
 import {getGohanUrl} from './../config/ConfigSelectors';
@@ -41,7 +40,7 @@ export class GetCollectionObservable extends AjaxObservable {
       method: 'GET',
       url: `${gohanUrl}${url}?${queryStringify({
         limit: defaultPageLimit,
-        tenant_id: isTenantFilterActive(state) && isUserAdmin(state) && // eslint-disable-line camelcase
+        tenant_id: isTenantFilterActive(state) && // eslint-disable-line camelcase
           hasSchemaProperty(state, schemaId, 'tenant_id') ?
           getTenantId(state) : undefined,
         ...query

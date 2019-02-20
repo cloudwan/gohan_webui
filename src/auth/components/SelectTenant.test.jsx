@@ -14,7 +14,13 @@ chai.should();
 describe('< SelectTenant />', function () {
   it('should exist', () => {
     const wrapper = shallow(
-      <SelectTenant tenants={['sample1', 'sample2']} onTenantSubmit={() => {}}/>
+      <SelectTenant onTenantSubmit={() => {}}
+        tenantsByDomain={{
+          fooDomain: {
+            tenants: ['sample1', 'sample2'],
+          }
+        }}
+      />
     );
 
     wrapper.should.not.equal(undefined);
@@ -22,7 +28,13 @@ describe('< SelectTenant />', function () {
 
   it('should render 1 select', () => {
     const wrapper = shallow(
-      <SelectTenant tenants={['sample1', 'sample2']} onTenantSubmit={() => {}}/>
+      <SelectTenant onTenantSubmit={() => {}}
+        tenantsByDomain={{
+          fooDomain: {
+            tenants: ['sample1', 'sample2'],
+          }
+        }}
+      />
     );
 
     wrapper.find('select').should.have.length(1);
@@ -30,20 +42,30 @@ describe('< SelectTenant />', function () {
 
   it('should call handleTenantChange', () => {
     const wrapper = mount(
-      <SelectTenant tenants={[{name: 'sample1', id: 's1'}, {name: 'sample2', id: 's2'}]} onTenantSubmit={() => {}}/>
+      <SelectTenant onTenantSubmit={() => {}}
+        tenantsByDomain={{
+          fooDomain: {
+            tenants: [{name: 'sample1', id: 's1'}, {name: 'sample2', id: 's2'}],
+          }
+        }}
+      />
     );
 
     wrapper.find('select').at(0).props().onChange({
       target: {value: 'sample2'}, preventDefault: () => {}, stopPropagation: () => {}
     });
-    wrapper.state('value').should.be.equal('sample2');
+    wrapper.state('id').should.be.equal('sample2');
   });
 
   it('should call handleSelectTenantSubmit', () => {
     const handleSelectTenantSubmit = sinon.spy();
     const wrapper = mount(
-      <SelectTenant tenants={[{name: 'sample1', id: 's1'}, {name: 'sample2', id: 's2'}]}
-        onTenantSubmit={handleSelectTenantSubmit}
+      <SelectTenant onTenantSubmit={handleSelectTenantSubmit}
+        tenantsByDomain={{
+          fooDomain: {
+            tenants: [{name: 'sample1', id: 's1'}, {name: 'sample2', id: 's2'}],
+          }
+        }}
       />
     );
 

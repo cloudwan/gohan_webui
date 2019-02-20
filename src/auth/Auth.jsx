@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import isEmpty from 'lodash/isEmpty';
 
 import {
   login,
@@ -8,7 +9,7 @@ import {
   fetchTokenData,
   sessionStorageTransfer,
   transferStorage,
-  changeTenantFilter
+  changeTenantFilter,
 } from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import LoadingIndicator from '../components/LoadingIndicator';
@@ -21,12 +22,13 @@ import {
   getTokenId,
   getTokenExpires,
   getTenant,
-  getTenants,
+  getTenantsByDomain,
   getUser,
   getProgressState,
   getStoragePrefix,
   getUnscopedToken,
   isUserAdmin,
+  getLoggedState,
 } from './AuthSelectors';
 
 import {
@@ -44,7 +46,7 @@ export class Auth extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchTokenData();
+      this.props.fetchTokenData();
   }
 
   handleLoginSubmit = (...params) => {
@@ -55,16 +57,16 @@ export class Auth extends Component {
   handleSelectTenantSubmit = (name, id, filterStatus) => {
     this.props.resetErrorMessage();
     this.props.selectTenant({id, name});
-    this.props.changeTenantFilter(filterStatus);
+    if (this.props.useDomain) {
+      this.props.changeTenantFilter(this.props.isAdmin && id !== 'all');
+    } else {
+      this.props.changeTenantFilter(filterStatus);
+    }
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (
-      nextProps.tokenId !== undefined && nextProps.tenants !== undefined
-    ) {
-      if (this.props.onLoginSuccess) {
-        this.props.onLoginSuccess();
-      }
+  componentWillReceiveProps({loggedState}) {
+    if (loggedState && !this.props.loggedState && this.props.onLoginSuccess) {
+      this.props.onLoginSuccess();
     }
   }
 
@@ -81,19 +83,36 @@ export class Auth extends Component {
   };
 
   render() {
-    const {Login, SelectTenant, Loading, domainName, useDomain} = this.props;
+    const {
+      Login,
+      SelectTenant,
+      Loading,
+      domainName,
+      useDomain,
+      loggedState,
+      tenant,
+      tenantsByDomain,
+      unscopedToken,
+      inProgress,
+      user,
+      isAdmin,
+    } = this.props;
 
-    if (!this.props.inProgress && this.props.unscopedToken === undefined) {
+    if (!inProgress && unscopedToken === undefined) {
       return (
         <Login key={0} onLoginSubmit={this.handleLoginSubmit}
           Error={this.renderErrors()} isDomainEnabled={useDomain && !domainName}
         />
       );
-    } else if (this.props.tokenId === undefined && this.props.tenants !== undefined && !this.props.isAdmin) {
+    } else if (!inProgress && !loggedState && !isEmpty(tenantsByDomain) && (!tenant || !isEmpty(tenant))) {
       return (
-        <SelectTenant key={1} username={this.props.user.name}
-          onTenantSubmit={this.handleSelectTenantSubmit} tenants={this.props.tenants}
+        <SelectTenant key={1}
+          username={user.name}
+          onTenantSubmit={this.handleSelectTenantSubmit}
+          tenantsByDomain={tenantsByDomain}
           Error={this.renderErrors()}
+          useDomain={useDomain}
+          isAdmin={isAdmin}
         />
       );
     }
@@ -127,10 +146,11 @@ if (process.env.NODE_ENV !== 'production') {
     tokenId: PropTypes.string,
     tokenExpires: PropTypes.string,
     tenant: PropTypes.object,
-    tenants: PropTypes.array,
+    tenantsByDomain: PropTypes.object,
     errorMessage: PropTypes.string,
     useDomain: PropTypes.bool,
-    domainName: PropTypes.string
+    domainName: PropTypes.string,
+    loggedState: PropTypes.bool,
   };
 }
 
@@ -139,7 +159,7 @@ function mapStateToProps(state) {
     tokenId: getTokenId(state),
     tokenExpires: getTokenExpires(state),
     tenant: getTenant(state),
-    tenants: getTenants(state),
+    tenantsByDomain: getTenantsByDomain(state),
     user: getUser(state),
     inProgress: getProgressState(state),
     errorMessage: getError(state),
@@ -148,6 +168,7 @@ function mapStateToProps(state) {
     domainName: getDomainName(state),
     unscopedToken: getUnscopedToken(state),
     isAdmin: isUserAdmin(state),
+    loggedState: getLoggedState(state),
   };
 }
 
