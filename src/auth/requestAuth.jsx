@@ -5,7 +5,7 @@ import Auth from './Auth';
 
 import {getLoggedState} from './AuthSelectors';
 
-export default function requestAuth(WrappedComponent) {
+export default function requestAuth(WrappedComponent, AuthComponent = Auth) {
   class RequestAuthComponent extends PureComponent {
     render() {
       const {logged} = this.props;
@@ -16,7 +16,7 @@ export default function requestAuth(WrappedComponent) {
         );
       }
       return (
-        <Auth onLoginSuccess={this.loginSuccess}/>
+        <AuthComponent onLoginSuccess={this.loginSuccess}/>
       );
     }
   }
