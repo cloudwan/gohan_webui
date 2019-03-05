@@ -10,7 +10,6 @@ const tenants = state => state.authReducer.tenants;
 const user = state => state.authReducer.user;
 const inProgress = state => state.authReducer.inProgress;
 const showTokenRenewal = state => state.authReducer.showTokenRenewal;
-const storagePrefix = state => state.configReducer.storagePrefix;
 const tenantFilterStatus = state => state.authReducer.tenantFilterStatus;
 const roles = state => state.authReducer.roles || [];
 const domains = state => state.authReducer.domains || [];
@@ -87,11 +86,6 @@ export const getProgressState = createSelector(
 export const getShowTokenRenewal = createSelector(
   [showTokenRenewal],
   showTokenRenewal => showTokenRenewal
-);
-
-export const getStoragePrefix = createSelector(
-  [storagePrefix],
-  storagePrefix => storagePrefix
 );
 
 export const isTenantFilterActive = createSelector(

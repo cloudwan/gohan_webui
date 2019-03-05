@@ -43,9 +43,10 @@ export class WebSocketTerminal extends Component {
   }
 
   componentDidMount() {
-    const {url} = this.props;
+    const {url, storagePrefix} = this.props;
+    const itemName = `${storagePrefix}ScopedToken`;
 
-    document.cookie = `Auth-Token=${sessionStorage.getItem('scopedToken')}; path=/`; // eslint-disable-line no-undef
+    document.cookie = `Auth-Token=${sessionStorage.getItem(itemName)}; path=/`; // eslint-disable-line no-undef
 
     this.setConnection(url);
   }

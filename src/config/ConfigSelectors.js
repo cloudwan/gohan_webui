@@ -13,6 +13,7 @@ const useKeystoneDomain = state => state.configReducer.useKeystoneDomain;
 const domainName = state => state.configReducer.domainName;
 const appVersion = state => state.configReducer.app;
 const coreVersion = state => state.configReducer.version;
+const storagePrefix = state => state.configReducer.storagePrefix;
 
 export const getSidebar = createSelector(
   [sidebar],
@@ -89,4 +90,9 @@ const CORE_VERSION_LENGTH = 7;
 export const getCoreVersion = createSelector(
   [coreVersion],
   coreVersion => coreVersion ? coreVersion.slice(0, CORE_VERSION_LENGTH) : 'N/A'
+);
+
+export const getStoragePrefix = createSelector(
+  [storagePrefix],
+  storagePrefix => storagePrefix
 );

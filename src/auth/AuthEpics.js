@@ -67,6 +67,7 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
       const state = store.getState();
       const {
         authUrl,
+        storagePrefix,
       } = state.configReducer;
 
       return Observable.zip(
@@ -97,7 +98,8 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
             item[1].user,
             item[1].roles,
             scope,
-            tenantFilterStatus
+            tenantFilterStatus,
+            storagePrefix,
           ),
           {
             type: FETCH_TENANTS,
@@ -118,6 +120,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
         useKeystoneDomain,
         domainName,
         cloudAdmin,
+        storagePrefix,
       } = state.configReducer;
       const headers = {
         'Content-Type': 'application/json'
@@ -184,6 +187,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
               response.xhr.getResponseHeader('X-Subject-Token'),
               response.response.token.expires_at,
               response.response.token.user,
+              storagePrefix,
             )),
           ];
 
@@ -217,7 +221,7 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
       }
     }) => {
       const state = store.getState();
-      const {authUrl, useKeystoneDomain} = state.configReducer;
+      const {authUrl, useKeystoneDomain, storagePrefix} = state.configReducer;
       const {showTokenRenewal: showTokenRenewalState} = state.authReducer;
       const headers = {
         'Content-Type': 'application/json'
@@ -245,6 +249,7 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
               response.response.token.expires_at, // eslint-disable-line camelcase
               response.response.token.roles,
               scope,
+              storagePrefix,
             )),
             Observable.of({
               type: FETCH_TENANTS,

@@ -20,8 +20,12 @@ describe('AuthActions ', () => {
 
   describe('loginSuccess()', () => {
     it(`should set unscoped token in session storage and returns ${actionTypes.LOGIN_SUCCESS} action`, () => {
-      actions.loginSuccess('tokenId', '1/2/2017', {name: 'user'})
-        .should.deep.equal({
+      actions.loginSuccess(
+        'tokenId',
+        '1/2/2017',
+        {name: 'user'},
+        'prefix'
+      ).should.deep.equal({
         type: actionTypes.LOGIN_SUCCESS,
         data: {
           tokenId: 'tokenId',
@@ -29,7 +33,7 @@ describe('AuthActions ', () => {
           user: {name: 'user'},
         }
       });
-      sessionStorage.unscopedToken.should.equal('tokenId');
+      sessionStorage['prefixUnscopedToken'].should.equal('tokenId');
     });
   });
 
@@ -66,7 +70,7 @@ describe('AuthActions ', () => {
             id: 'tenantId',
           }
         },
-        true,
+        'prefix',
       ).should.deep.equal({
         type: actionTypes.SCOPED_LOGIN_SUCCESS,
         data: {
@@ -84,7 +88,7 @@ describe('AuthActions ', () => {
         }
       });
 
-      sessionStorage.scopedToken.should.equal('fooToken');
+      sessionStorage['prefixScopedToken'].should.equal('fooToken');
     });
   });
 
@@ -153,14 +157,13 @@ describe('AuthActions ', () => {
     });
 
     it(`should returns ${actionTypes.LOGIN} action if session storage contains credentials`, () => {
-      sessionStorage.setItem('scopedToken', 'scopedToken');
-      sessionStorage.setItem('unscopedToken', 'unscopedToken');
-      sessionStorage.setItem('tenantId', 'tenantId');
-      sessionStorage.setItem('tenantName', 'tenantName');
-      sessionStorage.setItem('tenantFilterStatus', 'false');
+      sessionStorage.setItem('prefixScopedToken', 'scopedToken');
+      sessionStorage.setItem('prefixUnscopedToken', 'unscopedToken');
+      sessionStorage.setItem('prefixTenantId', 'tenantId');
+      sessionStorage.setItem('prefixTenantName', 'tenantName');
+      sessionStorage.setItem('prefixTenantFilterStatus', 'false');
 
-      actions.fetchTokenData()
-        .should.deep.equal({
+      actions.fetchTokenData('prefix').should.deep.equal({
         type: actionTypes.CHECK_TOKEN,
         tokenId: 'scopedToken',
         unscopedToken: 'unscopedToken',
@@ -174,16 +177,16 @@ describe('AuthActions ', () => {
   });
   describe('clearStorage() ', () => {
     it(`should returns ${actionTypes.CLEAR_STORAGE} action and clear session storage`, () => {
-      sessionStorage.setItem('scopedToken', 'test token');
-      sessionStorage.setItem('unscopedToken', 'test scoped token');
+      sessionStorage.setItem('prefixScopedToken', 'test token');
+      sessionStorage.setItem('prefixUnscopedToken', 'test scoped token');
 
-      actions.clearStorage()
+      actions.clearStorage('prefix')
         .should.deep.equal({
         type: actionTypes.CLEAR_STORAGE,
       });
 
-      should.equal(sessionStorage.getItem('scopedToken'), null);
-      should.equal(sessionStorage.getItem('unscopedToken'), null);
+      should.equal(sessionStorage.getItem('prefixScopedToken'), null);
+      should.equal(sessionStorage.getItem('prefixUnscopedToken'), null);
     });
   });
 
@@ -311,11 +314,19 @@ describe('AuthActions ', () => {
 
   describe('changeTenantFilter() ', () => {
     it(`should returns ${actionTypes.CHANGE_TENANT_FILTER_STATUS} action`, () => {
-      actions.changeTenantFilter(true)
-        .should.deep.equal({
+      const store = mockStore({
+        configReducer: {
+          storagePrefix: 'prefix',
+        }
+      });
+      store.dispatch(actions.changeTenantFilter(true));
+      store.getActions().should.deep.equal([
+        {
           type: actionTypes.CHANGE_TENANT_FILTER_STATUS,
           status: true
-        });
+        }
+      ]);
+      sessionStorage.getItem('prefixTenantFilterStatus').should.equal('true');
     });
   });
 
@@ -377,6 +388,7 @@ describe('AuthActions ', () => {
         ['Member'],
         {project: {id: 'baz'}},
         false,
+        'prefix',
       ));
       store.getActions().should.deep.equal([
         {
@@ -398,9 +410,9 @@ describe('AuthActions ', () => {
         }
       ]);
 
-      should.equal(sessionStorage.getItem('scopedToken'), 'scopedToken');
-      should.equal(sessionStorage.getItem('unscopedToken'), 'unscopedToken');
-      should.equal(sessionStorage.getItem('tenantFilterStatus'), 'false');
+      should.equal(sessionStorage.getItem('prefixScopedToken'), 'scopedToken');
+      should.equal(sessionStorage.getItem('prefixUnscopedToken'), 'unscopedToken');
+      should.equal(sessionStorage.getItem('prefixTenantFilterStatus'), 'false');
     });
   });
 

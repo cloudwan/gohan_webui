@@ -25,7 +25,6 @@ import {
   getTenantsByDomain,
   getUser,
   getProgressState,
-  getStoragePrefix,
   getUnscopedToken,
   isUserAdmin,
   getLoggedState,
@@ -33,7 +32,8 @@ import {
 
 import {
   getUseKeystoneDomainState,
-  getDomainName
+  getDomainName,
+  getStoragePrefix,
 } from './../config/ConfigSelectors';
 
 export class Auth extends Component {
@@ -46,7 +46,7 @@ export class Auth extends Component {
   }
 
   componentDidMount() {
-      this.props.fetchTokenData();
+      this.props.fetchTokenData(this.props.storagePrefix);
   }
 
   handleLoginSubmit = (...params) => {
@@ -151,6 +151,7 @@ if (process.env.NODE_ENV !== 'production') {
     useDomain: PropTypes.bool,
     domainName: PropTypes.string,
     loggedState: PropTypes.bool,
+    storagePrefix: PropTypes.string,
   };
 }
 

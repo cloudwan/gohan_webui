@@ -27,9 +27,10 @@ const {sessionStorage, localStorage, location} = window;
 export const loginSuccess = (
   tokenId,
   tokenExpires,
-  user
+  user,
+  prefix,
 ) => {
-  sessionStorage.setItem('unscopedToken', tokenId);
+  sessionStorage.setItem(`${prefix}UnscopedToken`, tokenId);
 
   return {
     type: LOGIN_SUCCESS,
@@ -58,8 +59,9 @@ export const scopedLoginSuccess = (
   tokenExpires,
   roles,
   scope,
+  prefix,
 ) => {
-  sessionStorage.setItem('scopedToken', tokenId);
+  sessionStorage.setItem(`${prefix}ScopedToken`, tokenId);
 
   return {
     type: SCOPED_LOGIN_SUCCESS,
@@ -98,12 +100,12 @@ export const fetchDomainsFailure = error => ({
   error,
 });
 
-export const fetchTokenData = () => {
-  const unscopedToken = sessionStorage.getItem('unscopedToken');
-  const scopedToken = sessionStorage.getItem('scopedToken');
-  const tenantId = sessionStorage.getItem('tenantId');
-  const tenantName = sessionStorage.getItem('tenantName');
-  const tenantFilterStatus = sessionStorage.getItem('tenantFilterStatus');
+export const fetchTokenData = prefix => {
+  const unscopedToken = sessionStorage.getItem(`${prefix}UnscopedToken`);
+  const scopedToken = sessionStorage.getItem(`${prefix}ScopedToken`);
+  const tenantId = sessionStorage.getItem(`${prefix}TenantId`);
+  const tenantName = sessionStorage.getItem(`${prefix}TenantName`);
+  const tenantFilterStatus = sessionStorage.getItem(`${prefix}TenantFilterStatus`);
 
   const tenant = (tenantId && tenantName) ?
     {id: tenantId, name: tenantName} :
@@ -119,7 +121,7 @@ export const fetchTokenData = () => {
     };
   }
 
-  return clearStorage();
+  return clearStorage(prefix);
 };
 
 export const checkTokenSuccess = (
@@ -130,11 +132,12 @@ export const checkTokenSuccess = (
   user,
   roles,
   scope,
-  tenantFilterStatus
+  tenantFilterStatus,
+  prefix,
 ) => {
-  sessionStorage.setItem('scopedToken', tokenId);
-  sessionStorage.setItem('unscopedToken', unscopedToken);
-  sessionStorage.setItem('tenantFilterStatus', tenantFilterStatus);
+  sessionStorage.setItem(`${prefix}ScopedToken`, tokenId);
+  sessionStorage.setItem(`${prefix}UnscopedToken`, unscopedToken);
+  sessionStorage.setItem(`${prefix}TenantFilterStatus`, tenantFilterStatus);
 
   return {
     type: CHECK_SUCCESS,
@@ -151,12 +154,12 @@ export const checkTokenSuccess = (
   };
 };
 
-export const clearStorage = () => {
-  sessionStorage.removeItem('scopedToken');
-  sessionStorage.removeItem('unscopedToken');
-  sessionStorage.removeItem('tenantId');
-  sessionStorage.removeItem('tenantName');
-  sessionStorage.removeItem('tenantFilterStatus');
+export const clearStorage = prefix => {
+  sessionStorage.removeItem(`${prefix}ScopedToken`);
+  sessionStorage.removeItem(`${prefix}UnscopedToken`);
+  sessionStorage.removeItem(`${prefix}TenantId`);
+  sessionStorage.removeItem(`${prefix}TenantName`);
+  sessionStorage.removeItem(`${prefix}TenantFilterStatus`);
 
   return {
     type: CLEAR_STORAGE
@@ -171,7 +174,7 @@ export const logout = () => {
     setTimeout(() => {
       localStorage.removeItem(`${storagePrefix}clearSessionStorage`);
     }, 0);
-    dispatch(clearStorage());
+    dispatch(clearStorage(storagePrefix));
     dispatch({type: LOGOUT});
 
     location.reload();
@@ -181,16 +184,16 @@ export const logout = () => {
 export const selectTenant = (tenant = {}) => (dispatch, getState) => {
   const state = getState();
   const {roles = [], logged} = state.authReducer;
-  const {useKeystoneDomain} = state.configReducer;
+  const {useKeystoneDomain, storagePrefix} = state.configReducer;
   const isAdmin = roles.some(role => role.name === 'admin');
   const isLogged = logged || (useKeystoneDomain && isAdmin);
 
   if (tenant && tenant.id && tenant.name) {
-    sessionStorage.setItem('tenantId', tenant.id);
-    sessionStorage.setItem('tenantName', tenant.name);
+    sessionStorage.setItem(`${storagePrefix}TenantId`, tenant.id);
+    sessionStorage.setItem(`${storagePrefix}TenantName`, tenant.name);
   } else {
-    sessionStorage.removeItem('tenantId');
-    sessionStorage.removeItem('tenantName');
+    sessionStorage.removeItem(`${storagePrefix}TenantId`);
+    sessionStorage.removeItem(`${storagePrefix}TenantName`);
   }
 
   if (!isAdmin || !useKeystoneDomain) {
@@ -311,11 +314,12 @@ export const transferStorage = () => {
   };
 };
 
-export const changeTenantFilter = status => {
-  sessionStorage.setItem('tenantFilterStatus', status);
+export const changeTenantFilter = status => (dispatch, getState) => {
+  const {storagePrefix} = getState().configReducer;
+  sessionStorage.setItem(`${storagePrefix}TenantFilterStatus`, status);
 
-  return {
+  dispatch({
     type: CHANGE_TENANT_FILTER_STATUS,
     status
-  };
+  });
 };
