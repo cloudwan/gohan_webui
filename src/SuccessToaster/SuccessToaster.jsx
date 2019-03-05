@@ -8,6 +8,7 @@ import {Toaster, Position, Button} from '@blueprintjs/core';
 import {/* ToasterMessage, */ToasterContent} from './components/';
 import {getData, getTitle, getUrl, isHtml, getResponseFormat} from './SuccessToasterSelectors';
 import {dismiss} from './SuccessToasterActions';
+import {getStoragePrefix} from '../config/ConfigSelectors';
 
 export class SuccessToaster extends Component {
   static defaultProps = {
@@ -20,7 +21,7 @@ export class SuccessToaster extends Component {
     this.props.dismiss();
   };
 
-  componentWillReceiveProps({data, title, url, responseFormat}) {
+  componentWillReceiveProps({data, title, url, responseFormat, storagePrefix}) {
     if (data || responseFormat && responseFormat.includes('websocket')) {
       this.toasterKey = this.toaster.show({
         message: (
@@ -37,6 +38,7 @@ export class SuccessToaster extends Component {
               <ToasterContent data={data}
                 url={url}
                 responseFormat={responseFormat}
+                storagePrefix={storagePrefix}
               />
             </div>
           </div>
@@ -76,7 +78,8 @@ const mapStateToProps = state => ({
   title: getTitle(state),
   url: getUrl(state),
   isHtml: isHtml(state),
-  responseFormat: getResponseFormat(state)
+  responseFormat: getResponseFormat(state),
+  storagePrefix: getStoragePrefix(state),
 });
 
 export default connect(mapStateToProps, {
