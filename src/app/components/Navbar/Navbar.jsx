@@ -61,7 +61,7 @@ export class Navbar extends Component {
 
   renderMenuItems = () => {
     const {tenantId, tenantsByDomain, isAdmin, isTenantFilter, useDomain} = this.props;
-
+    const domainsIds = Object.keys(tenantsByDomain);
     const initialValue = isAdmin && useDomain ? [
       <TenantMenuItem key="all"
         id="all"
@@ -71,7 +71,7 @@ export class Navbar extends Component {
       />
     ] : [];
 
-    return Object.keys(tenantsByDomain).reduce((result, domainId, index) => {
+    return domainsIds.reduce((result, domainId, index) => {
       if (useDomain && (isAdmin || index > 0)) {
         result.push(<MenuDivider key={domainId} title={tenantsByDomain[domainId].name}/>);
       }
@@ -88,8 +88,9 @@ export class Navbar extends Component {
         );
       });
 
+      const tenantsCount = domainsIds.reduce((result, id) => result + tenantsByDomain[id].tenants.length, 0);
 
-      if (!useDomain) {
+      if (!useDomain && tenantsCount > 1) {
         result.push(
           <MenuDivider key="view-options" title={'View Options'}/>
         );
