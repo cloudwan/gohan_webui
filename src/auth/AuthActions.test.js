@@ -71,6 +71,7 @@ describe('AuthActions ', () => {
           }
         },
         'prefix',
+        123,
       ).should.deep.equal({
         type: actionTypes.SCOPED_LOGIN_SUCCESS,
         data: {
@@ -84,7 +85,8 @@ describe('AuthActions ', () => {
             project: {
               id: 'tenantId',
             }
-          }
+          },
+          logoutTimeoutId: 123,
         }
       });
 
@@ -389,11 +391,13 @@ describe('AuthActions ', () => {
         {project: {id: 'baz'}},
         false,
         'prefix',
+        123,
       ));
       store.getActions().should.deep.equal([
         {
           type: actionTypes.CHECK_SUCCESS,
           data: {
+            logoutTimeoutId: 123,
             tokenId: 'scopedToken',
             unscopedToken: 'unscopedToken',
             tokenExpires: '2019-02-27T11:50:58.000000Z',

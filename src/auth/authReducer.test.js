@@ -12,6 +12,7 @@ describe('authReducer ', () => {
       {
         inProgress: true,
         logged: false,
+        logoutTimeoutId: -1,
         showTokenRenewal: false,
         tenantFilterStatus: false,
         domains: [],
@@ -36,6 +37,7 @@ describe('authReducer ', () => {
         tenantFilterStatus: false,
         inProgress: false,
         logged: false,
+        logoutTimeoutId: -1,
         unscopedToken: 'testId',
         tokenExpires: 'expires date',
         user: {
@@ -56,6 +58,7 @@ describe('authReducer ', () => {
       tenantFilterStatus: false,
       inProgress: false,
       logged: false,
+      logoutTimeoutId: -1,
       showTokenRenewal: false,
       domains: [],
       roles: [],
@@ -70,6 +73,7 @@ describe('authReducer ', () => {
       tenantFilterStatus: false,
       inProgress: false,
       logged: false,
+      logoutTimeoutId: -1,
       showTokenRenewal: false
     });
   });
@@ -80,6 +84,7 @@ describe('authReducer ', () => {
     }).should.deep.equal({
       inProgress: true,
       logged: false,
+      logoutTimeoutId: -1,
       showTokenRenewal: false,
       tenantFilterStatus: false,
       domains: [],
@@ -105,6 +110,7 @@ describe('authReducer ', () => {
       ],
       inProgress: false,
       logged: true,
+      logoutTimeoutId: -1,
       showTokenRenewal: false,
       tenantFilterStatus: false,
       domains: [],

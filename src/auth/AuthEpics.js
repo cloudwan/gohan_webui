@@ -1,5 +1,6 @@
 import {combineEpics} from 'redux-observable';
 import {Observable} from 'rxjs';
+import moment from 'moment';
 
 import {get, post, parseXHRError} from './../api';
 import {
@@ -22,19 +23,19 @@ import {
   fetchDomainsSuccess,
   fetchDomainsFailure,
   selectTenant,
+  logout,
 } from './AuthActions';
 import {isUserAdmin} from './AuthSelectors';
 
 const computeOffsetForTokenRenewal = date => {
   const earlyWarningTime = 5 * 60 * 1000; // warn/renew 5 minutes earlier
-  const now = new Date();
-  let offset = new Date(date) - now;
+  const expiresAt = moment(date);
+  const offset = moment.duration(expiresAt.diff(moment()));
 
   if (offset > earlyWarningTime) {
-    offset -= earlyWarningTime;
+    return offset - earlyWarningTime;
   }
-
-  return offset;
+  return 2000; // Workaround to show token renewal popup
 };
 
 const isCloudAdmin = (user, cloudAdmin) => {
@@ -89,8 +90,15 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
           };
         }
 
-        const actions = [
-          checkTokenSuccess(
+        clearTimeout(state.authReducer.logoutTimeoutId);
+
+        const expiresAt = moment(item[1].expires_at);
+        const timeout = moment.duration(expiresAt.diff(moment()));
+        const logoutTimeoutId = setTimeout(() => store.dispatch(logout()), timeout);
+        const warningOffset = computeOffsetForTokenRenewal(item[1].expires_at);
+
+        return Observable.concat(
+          Observable.of(checkTokenSuccess(
             item[0].token,
             item[1].token,
             item[1].expires_at,
@@ -100,14 +108,15 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
             scope,
             tenantFilterStatus,
             storagePrefix,
-          ),
+            logoutTimeoutId,
+          )),
+          Observable.of(
           {
             type: FETCH_TENANTS,
             scope,
-          },
-        ];
-
-        return actions;
+          }),
+          Observable.of(showTokenRenewal()).delay(warningOffset)
+        );
       });
     });
 
@@ -243,6 +252,13 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
         )
         .flatMap(response => {
           const warningOffset = computeOffsetForTokenRenewal(response.response.token.expires_at);
+
+          clearTimeout(state.authReducer.logoutTimeoutId);
+
+          const expiresAt = moment(response.response.token.expires_at);
+          const timeout = moment.duration(expiresAt.diff(moment()));
+          const logoutTimeoutId = setTimeout(() => store.dispatch(logout()), timeout);
+
           return Observable.concat(
             Observable.of(scopedLoginSuccess(
               response.xhr.getResponseHeader('X-Subject-Token'),
@@ -250,6 +266,7 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
               response.response.token.roles,
               scope,
               storagePrefix,
+              logoutTimeoutId,
             )),
             Observable.of({
               type: FETCH_TENANTS,

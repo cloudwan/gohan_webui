@@ -60,6 +60,7 @@ export const scopedLoginSuccess = (
   roles,
   scope,
   prefix,
+  logoutTimeoutId,
 ) => {
   sessionStorage.setItem(`${prefix}ScopedToken`, tokenId);
 
@@ -69,7 +70,8 @@ export const scopedLoginSuccess = (
       tokenId,
       tokenExpires,
       roles,
-      scope
+      scope,
+      logoutTimeoutId
     },
   };
 };
@@ -134,6 +136,7 @@ export const checkTokenSuccess = (
   scope,
   tenantFilterStatus,
   prefix,
+  logoutTimeoutId,
 ) => {
   sessionStorage.setItem(`${prefix}ScopedToken`, tokenId);
   sessionStorage.setItem(`${prefix}UnscopedToken`, unscopedToken);
@@ -149,7 +152,8 @@ export const checkTokenSuccess = (
       user,
       roles,
       scope,
-      tenantFilterStatus
+      tenantFilterStatus,
+      logoutTimeoutId
     },
   };
 };
