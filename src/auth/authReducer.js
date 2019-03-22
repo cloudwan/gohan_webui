@@ -28,6 +28,7 @@ export default function authReducer(state = {
   domains: [],
   roles: [],
   scope: {},
+  logoutTimeoutId: -1
 }, action) {
   switch (action.type) {
     case CLEAR_STORAGE:
@@ -42,7 +43,8 @@ export default function authReducer(state = {
         inProgress: false,
         logged: false,
         showTokenRenewal: false,
-        tenantFilterStatus: false
+        tenantFilterStatus: false,
+        logoutTimeoutId: -1,
       };
     case LOGIN_INPROGRESS:
       return {
@@ -74,6 +76,7 @@ export default function authReducer(state = {
         scope: action.data.scope,
         inProgress: false,
         showTokenRenewal: false,
+        logoutTimeoutId: action.data.logoutTimeoutId
       };
     case SCOPED_LOGIN_ERROR:
       return {
@@ -92,6 +95,7 @@ export default function authReducer(state = {
         tenant: action.data.tenant,
         user: action.data.user,
         scope: action.data.scope,
+        logoutTimeoutId: action.data.logoutTimeoutId,
         inProgress: false,
         showTokenRenewal: false,
         tenantFilterStatus: action.data.tenantFilterStatus,

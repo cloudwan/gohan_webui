@@ -443,15 +443,19 @@ describe('AuthEpics', () => {
     describe('scopedLogin', () => {
       let clock;
       let sandbox;
+      let setTimeout;
 
       beforeEach(() => {
         sandbox = sinon.createSandbox();
         clock = sinon.useFakeTimers({now: new Date('5/6/2017').getTime()});
+        setTimeout = global.setTimeout;
+        global.setTimeout = () => 123;
       });
 
       afterEach(() => {
         sandbox.restore();
         clock.restore();
+        global.setTimeout = setTimeout;
       });
 
       it(`should dispatch ${actionTypes.SCOPED_LOGIN_SUCCESS} and ${actionTypes.FETCH_TENANTS} actions for project scope`, () => { // eslint-disable-line
@@ -492,6 +496,7 @@ describe('AuthEpics', () => {
                 data: {
                   tokenId: 'subjectTokenId',
                   tokenExpires: '2018-12-23T20:20:31.000000Z',
+                  logoutTimeoutId: 123,
                   roles: [
                     {name: 'admin'},
                     {name: 'Member'},
@@ -563,6 +568,7 @@ describe('AuthEpics', () => {
               a: {
                 type: actionTypes.SCOPED_LOGIN_SUCCESS,
                 data: {
+                  logoutTimeoutId: 123,
                   tokenId: 'subjectTokenId',
                   tokenExpires: '2018-12-23T20:20:31.000000Z',
                   roles: [
