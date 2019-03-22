@@ -7,7 +7,7 @@ import 'codemirror/mode/javascript/javascript';
 import IFrame from '../../components/IFrame';
 import WebSocketTerminal from './WebSocketTerminal';
 
-export const ToasterContent = ({data, responseFormat, url, storagePrefix}) => {
+export const ToasterContent = ({data, responseFormat, url, authToken}) => {
   if (responseFormat === 'html') {
     return (
       <IFrame src={url}/>
@@ -16,7 +16,7 @@ export const ToasterContent = ({data, responseFormat, url, storagePrefix}) => {
 
   if (responseFormat === 'websocket-terminal') {
     return (
-      <WebSocketTerminal url={url} storagePrefix={storagePrefix}/>
+      <WebSocketTerminal url={url} authToken={authToken}/>
     );
   }
 
