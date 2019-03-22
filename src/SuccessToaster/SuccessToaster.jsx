@@ -8,7 +8,7 @@ import {Toaster, Position, Button} from '@blueprintjs/core';
 import {/* ToasterMessage, */ToasterContent} from './components/';
 import {getData, getTitle, getUrl, isHtml, getResponseFormat} from './SuccessToasterSelectors';
 import {dismiss} from './SuccessToasterActions';
-import {getTenantId} from '../auth/AuthSelectors';
+import {getTokenId} from '../auth/AuthSelectors';
 
 export class SuccessToaster extends Component {
   static defaultProps = {
@@ -79,7 +79,7 @@ const mapStateToProps = state => ({
   url: getUrl(state),
   isHtml: isHtml(state),
   responseFormat: getResponseFormat(state),
-  authToken: getTenantId(state),
+  authToken: getTokenId(state),
 });
 
 export default connect(mapStateToProps, {
