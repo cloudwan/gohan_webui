@@ -1,13 +1,22 @@
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-export const IFrame = ({src}) => (
-  <iframe className="gohan-iframe"
-    src={src}
-  />
-);
+export default class IFrame extends Component {
+  componentDidMount() {
+    const {authToken} = this.props;
 
-export default IFrame;
+    document.cookie = `Auth-Token=${authToken}; path=/`; // eslint-disable-line no-undef
+  }
+
+  render() {
+    const {src} = this.props;
+    return (
+      <iframe className="gohan-iframe"
+        src={src}
+      />
+    );
+  }
+}
 
 if (process.env.NODE_ENV !== 'production') {
   IFrame.propTypes = {
