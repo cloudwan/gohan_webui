@@ -10,7 +10,7 @@ import WebSocketTerminal from './WebSocketTerminal';
 export const ToasterContent = ({data, responseFormat, url, authToken}) => {
   if (responseFormat === 'html') {
     return (
-      <IFrame src={url}/>
+      <IFrame src={url} authToken={authToken}/>
     );
   }
 
