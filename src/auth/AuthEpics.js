@@ -315,7 +315,8 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
 
       if (authUrl) {
         const query = (scope && scope.domain) ? `?domain_id=${scope.domain.id}` : '';
-        const url = useKeystoneDomain && isUserAdmin(state) ?
+        const isProjectAdmin = isUserAdmin(state) && !scope.domain && !isCloudAdmin(user, cloudAdmin);
+        const url = useKeystoneDomain && isUserAdmin(state) && !isProjectAdmin ?
           `${authUrl}/projects${query}` :
           `${authUrl}/auth/projects`;
         return call(
@@ -324,7 +325,7 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
           headers
         )
           .flatMap(response => {
-            const isLogged = logged || (tokenId && (!useKeystoneDomain || !isUserAdmin(state)));
+            const isLogged = logged || (tokenId && (!useKeystoneDomain || !isUserAdmin(state) || isProjectAdmin));
             const {projects = []} = response.response;
             const actions = [
               Observable.of(fetchTenantSuccess(
