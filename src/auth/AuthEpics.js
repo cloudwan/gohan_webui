@@ -122,7 +122,7 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
 
 export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(LOGIN)
-    .mergeMap(({username, password, domain}) => {
+    .mergeMap(({username, password, domain, unscopedToken}) => {
       const state = store.getState();
       const {
         authUrl,
@@ -158,6 +158,15 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
                 name: username,
                 password
               }
+            }
+          };
+        } else if (unscopedToken !== undefined) {
+          data.auth.identity = {
+            methods: [
+              'token'
+            ],
+            token: {
+              id: unscopedToken
             }
           };
         }

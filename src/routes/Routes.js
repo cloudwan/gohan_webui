@@ -45,7 +45,7 @@ class Routes extends Component {
       );
     }
     return (
-      <Auth onLoginSuccess={this.loginSuccess}/>
+      <Auth history={this.props.history} onLoginSuccess={this.loginSuccess}/>
     );
   }
 }
