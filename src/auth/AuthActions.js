@@ -54,6 +54,11 @@ export const login = (username, password, domain) => ({
   domain,
 });
 
+export const loginByToken = unscopedToken => ({
+  type: LOGIN,
+  unscopedToken,
+});
+
 export const scopedLoginSuccess = (
   tokenId,
   tokenExpires,

@@ -2,9 +2,11 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import isEmpty from 'lodash/isEmpty';
+import {parse as parseQuery} from 'query-string';
 
 import {
   login,
+  loginByToken,
   selectTenant,
   fetchTokenData,
   sessionStorageTransfer,
@@ -46,7 +48,16 @@ export class Auth extends Component {
   }
 
   componentDidMount() {
-      this.props.fetchTokenData(this.props.storagePrefix);
+    if (this.props.history && this.props.history.location.search) {
+      const query = parseQuery(this.props.history.location.search);
+
+      if (query.token) {
+        this.props.loginByToken(query.token);
+        this.props.history.replace(this.props.history.location.pathname);
+        return;
+      }
+    }
+    this.props.fetchTokenData(this.props.storagePrefix);
   }
 
   handleLoginSubmit = (...params) => {
@@ -143,6 +154,7 @@ if (process.env.NODE_ENV !== 'production') {
     Loading: PropTypes.oneOfType([
       PropTypes.func
     ]),
+    history: PropTypes.object,
     tokenId: PropTypes.string,
     tokenExpires: PropTypes.string,
     tenant: PropTypes.object,
@@ -175,6 +187,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   login,
+  loginByToken,
   selectTenant,
   fetchTokenData,
   resetErrorMessage,
