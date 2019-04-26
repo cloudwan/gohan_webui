@@ -63,6 +63,7 @@
     "title": "Gohan Web UI",
     "followableRelations": false,
     "useKeystoneDomain": true,
+    "selectDomainFromHost": "^(.*)\\.gohan\\.webui$",
     "domainName": "default",
     "cloudAdmin": {
         "username": "admin",
