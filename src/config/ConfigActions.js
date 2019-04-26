@@ -20,6 +20,10 @@ function fetchSuccess(data) {
         '__HOST__', location.hostname);
     }
 
+    if (data.selectDomainFromHost && RegExp(data.selectDomainFromHost).test(location.hostname)) {
+        data.domainName = location.hostname.replace(RegExp(data.selectDomainFromHost), '$1').trim();
+    }
+
     dispatch({data, type: FETCH_SUCCESS});
   };
 }
