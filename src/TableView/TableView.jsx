@@ -138,8 +138,27 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     };
 
     handleDeleteItem = () => {
-      this.props.purge(this.state.removedItemId);
+      const {removedItemId} = this.state;
+      const {data, activePage, limit, purge, location, history} = this.props;
+
+      if (data.length === 1 && activePage > 0) {
+        const newOffset = (activePage - 1) * limit;
+        purge(removedItemId, {offset: newOffset});
+
+        if (!isChildView) {
+          history.replace({
+            ...location,
+            search: queryStringify({
+              ...queryParse(location.search),
+              offset: newOffset === 0 ? undefined : newOffset
+            })
+          });
+        }
+      } else {
+        purge(removedItemId);
+      }
       this.handleCloseRemovalSingleItemAlert();
+
     };
 
     handleDeleteSelectedClick = () => {
@@ -152,9 +171,25 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
 
     handleDeleteSelected = () => {
       const {checkedRowsIds} = this.state;
+      const {data, activePage, limit, purge, location, history} = this.props;
 
       if (checkedRowsIds.length > 0) {
-        this.props.purge(checkedRowsIds);
+        if (data.length === checkedRowsIds.length && activePage > 0) {
+          const newOffset = (activePage - 1) * limit;
+          purge(checkedRowsIds, {offset: newOffset});
+
+          if (!isChildView) {
+            history.replace({
+              ...location,
+              search: queryStringify({
+                ...queryParse(location.search),
+                offset: newOffset === 0 ? undefined : newOffset
+              })
+            });
+          }
+        } else {
+          purge(checkedRowsIds);
+        }
       }
 
       if (this.state.removalSelectedItemsAlertOpen) {
