@@ -120,11 +120,12 @@ describe('TableActions ', () => {
 
   describe('purge()', () => {
     it(`should return ${actionTypes.PURGE} action.`, () => {
-      actions.purge('test', {})('bad').should.deep.equal({
+      actions.purge('test', {})('bad', {}).should.deep.equal({
         type: actionTypes.PURGE,
         schemaId: 'test',
         params: {},
-        id: 'bad'
+        id: 'bad',
+        options: {},
       });
     });
   });

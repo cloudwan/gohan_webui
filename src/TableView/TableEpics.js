@@ -177,7 +177,7 @@ export const updateEpic = (action$, store, call = (fn, ...args) => fn(...args)) 
   );
 
 export const removeEpic = (action$, store, call = (fn, ...args) => fn(...args)) =>
-  action$.ofType(PURGE).mergeMap(({schemaId, params, id}) => {
+  action$.ofType(PURGE).mergeMap(({schemaId, params, id, options}) => {
 
     if (Array.isArray(id)) {
       const id$ = Observable.of(id);
@@ -187,22 +187,22 @@ export const removeEpic = (action$, store, call = (fn, ...args) => fn(...args)) 
       ))
         .flatMap(() => Observable.concat(
           Observable.of(purgeSuccess()),
-          Observable.of(fetch(schemaId, params)())
+          Observable.of(fetch(schemaId, params)(options))
         ))
         .catch(error => Observable.concat(
           Observable.of(purgeFailure(error)),
-          Observable.of(fetch(schemaId, params)())
+          Observable.of(fetch(schemaId, params)(options))
         ));
     }
 
     return call(remove, store.getState(), schemaId, {...params, [`${schemaId}_id`]: id})
       .mergeMap(() => Observable.concat(
         Observable.of(purgeSuccess()),
-        Observable.of(fetch(schemaId, params)())
+        Observable.of(fetch(schemaId, params)(options))
       ))
       .catch(error => Observable.concat(
         Observable.of(purgeFailure(error)),
-        Observable.of(fetch(schemaId, params)())
+        Observable.of(fetch(schemaId, params)(options))
       ));
     }
   );

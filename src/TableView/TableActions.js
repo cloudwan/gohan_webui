@@ -66,11 +66,12 @@ export const updateSuccess = () => ({
 
 export const updateFailure = error => showError(error);
 
-export const purge = (schemaId, params) => id => ({
+export const purge = (schemaId, params) => (id, options) => ({
   type: PURGE,
   schemaId,
   params,
-  id
+  id,
+  options,
 });
 
 export const purgeSuccess = () => ({

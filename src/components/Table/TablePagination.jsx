@@ -23,6 +23,7 @@ class TablePaginationComponent extends Component {
           breakClassName={'page-item disabled'}
           breakLinkClassName={'page-link'}
           initialPage={activePage}
+          forcePage={activePage}
           pageCount={pageCount} marginPagesDisplayed={2}
           pageRangeDisplayed={5} onPageChange={this.handlePageChange}
           containerClassName={'pagination pagination-sm'}
