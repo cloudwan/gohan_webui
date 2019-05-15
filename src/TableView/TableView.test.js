@@ -45,6 +45,11 @@ describe('< TableView />', () => {
     dialogReducer: {
       isLoading: false,
       dialogs: {}
+    },
+    authReducer: {
+      tenant: {
+        id: 'foo',
+      }
     }
   });
 

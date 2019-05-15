@@ -54,6 +54,9 @@ import {
   openDialog,
   closeDialog
 } from '../Dialog/DialogActions';
+
+import {getTenantId, isTenantFilterActive} from '../auth/AuthSelectors';
+
 import {Alert, Intent} from '@blueprintjs/core';
 
 export const getTableView = (schema, Table = TableComponent, isChildView = false, options = {}) => {
@@ -98,6 +101,25 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         this.props.fetch({...options, ...query});
       } else {
         this.props.fetch({...options});
+      }
+    }
+
+    componentDidUpdate(prevProps) {
+      if (
+        prevProps.tenantId !== this.props.tenantId ||
+        prevProps.tenantFilter !== this.props.tenantFilter
+      ) {
+        this.props.clear();
+        this.props.fetch({
+          offset: 0,
+        });
+
+        this.props.history.replace({
+          ...this.props.location,
+          search: queryStringify({
+            offset: 0
+          })
+        });
       }
     }
 
@@ -478,6 +500,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         `${schemaId}_update`
       ]),
       actions: getCollectionActions(state, schemaId),
+      tenantId: getTenantId(state),
+      tenantFilter: isTenantFilterActive(state),
     };
   }
 

@@ -44,6 +44,8 @@ import {
   isAnyDialogOpen
 } from '../Dialog/DialogSelectors';
 
+import {getTenantId, isTenantFilterActive} from '../auth/AuthSelectors';
+
 import {Alert, Intent} from '@blueprintjs/core';
 
 export const getDetailView = (schema, DetailComponent = Detail, children = null) => {
@@ -73,6 +75,16 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
     componentDidMount() {
       this.props.updateBreadcrumb(this.props.breadcrumb);
       this.props.fetch();
+    }
+
+    componentDidUpdate(prevProps) {
+      if (
+        prevProps.tenantId !== this.props.tenantId ||
+        prevProps.tenantFilter !== this.props.tenantFilter
+      ) {
+        this.props.clearData();
+        this.props.fetch();
+      }
     }
 
     componentWillUnmount() {
@@ -197,6 +209,8 @@ export const getDetailView = (schema, DetailComponent = Detail, children = null)
         `${schemaId}_update`
       ]),
       actions: getSingularActions(state, schemaId),
+      tenantId: getTenantId(state),
+      tenantFilter: isTenantFilterActive(state),
     };
   }
 
