@@ -25,6 +25,25 @@ class TableToolbar extends Component {
   };
 
   render() {
+    const {filters} = this.props;
+    let currentFilters = [];
+
+    if (filters.onlyStringTypes) {
+      currentFilters = filters.properties.filter(item => {
+        const {type} = item;
+
+        if (Array.isArray(type) && type.includes('string')) {
+          return true;
+        } else if (typeof type === 'string' && type === 'string') {
+          return true;
+        }
+
+        return false;
+      });
+    } else {
+      currentFilters = filters.properties;
+    }
+
     return (
       <div className="container-fluid gohan-table-header">
         <div className="row justify-content-between align-items-center">
@@ -35,7 +54,7 @@ class TableToolbar extends Component {
             <div className="form-inline">
               <div className="form-group">
                 <span className="filterby mr-sm-1">Filter by</span>
-                <Filter properties={this.props.filters.properties}
+                <Filter properties={currentFilters}
                   onChange={this.props.filters.onChange}
                   by={this.props.filters.by}
                   value={this.props.filters.value}
@@ -81,7 +100,8 @@ TableToolbar.defaultProps = {
     value: '',
     properties: [],
     onChange: () => {
-    }
+    },
+    onlyStringTypes: true
   }
 };
 
@@ -99,7 +119,8 @@ TableToolbar.propTypes = {
     key: PropTypes.string,
     value: PropTypes.string,
     properties: PropTypes.array,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    onlyStringTypes: PropTypes.bool
   }),
   actions: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
