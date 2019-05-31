@@ -124,13 +124,17 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
         }
       }
 
+      query['search_field'] = [];
+
       if (options.filters && Array.isArray(options.filters)) {
         options.filters.forEach(filter => {
           query[filter.key] = filter.value;
+          query['search_field'].push(filter.key);
         });
       } else if (filters && Array.isArray(filters)) {
         filters.forEach(filter => {
           query[filter.key] = filter.value;
+          query['search_field'].push(filter.key);
         });
       }
 

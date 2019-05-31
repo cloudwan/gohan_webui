@@ -78,7 +78,7 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
 
     componentDidMount() {
       if (!isChildView) {
-        const query = queryParse(this.props.location.search, {arrayFormat: 'bracket'});
+        const query = queryParse(this.props.location.search);
         this.props.updateBreadcrumb([
           {
             title: schemaTitle,
@@ -86,17 +86,20 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
           }
         ]);
 
-        if (query.filters) {
+        if (query.search_field && Array.isArray(query.search_field) && query.search_field.length !== 0) {
           try {
-            query.filters = query.filters
-              .map(item => queryParse(item))
-              .map(item => ({
-                key: Object.keys(item)[0],
-                value: item[Object.keys(item)[0]]
-              }));
+            query.filters = query.search_field.map(searchField => ({
+              key: searchField,
+              value: query[searchField]
+            }));
           } catch (error) {
-            console.error(error);
+            console.error('TableView componentDidMount:', error);
           }
+        } else if (query.search_field && typeof query.search_field === 'string') {
+          query.filters = [{
+            key: query.search_field,
+            value: query[query.search_field]
+          }];
         }
         this.props.fetch({...options, ...query});
       } else {
@@ -254,13 +257,16 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     };
 
     handleFilterData = property => {
+      const searchFields = property === undefined ? undefined : Object.keys(property);
+
       if (!isChildView) {
         this.props.history.replace({
           ...this.props.location,
           search: queryStringify({
-            ...queryParse(this.props.location.search, {arrayFormat: 'bracket'}),
-            filters: property === undefined ? undefined : [queryStringify(property)]
-          }, {arrayFormat: 'bracket'})
+            ...queryParse(this.props.location.search),
+            ...property,
+            search_field: searchFields // eslint-disable-line camelcase
+          })
         });
       }
       this.props.fetch({
@@ -391,7 +397,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
           filter: {
             onChange: this.handleFilterData,
             by: filterBy,
-            value: filterValue
+            value: filterValue,
+            onlyStringTypes: true
           },
           onDeleteSelectedClick: this.handleDeleteSelectedClick,
           onAddResourceClick: this.handleOpenCreateDialog,

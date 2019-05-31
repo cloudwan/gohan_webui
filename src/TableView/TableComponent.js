@@ -46,7 +46,8 @@ class TableComponent extends Component {
               properties: headers,
               onChange: toolbar.filter.onChange,
               by: toolbar.filter.by,
-              value: toolbar.filter.value
+              value: toolbar.filter.value,
+              onlyStringTypes: toolbar.filter.onlyStringTypes
             }}
             actions={actions}
             url={url}
