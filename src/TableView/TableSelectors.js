@@ -74,6 +74,7 @@ export const getHeaders = createSelector(
             title: property.title,
             type: property.type,
             propKey: item,
+            hasRelation: true
           };
 
           result.push(transformedItem);
@@ -84,7 +85,8 @@ export const getHeaders = createSelector(
         const transformedItem = {
           id: item,
           title: property.title,
-          type: property.type
+          type: property.type,
+          hasRelation: property.relation_property !== undefined || property.relation !== undefined
         };
 
         result.push(transformedItem);

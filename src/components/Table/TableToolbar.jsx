@@ -26,10 +26,10 @@ class TableToolbar extends Component {
 
   render() {
     const {filters} = this.props;
-    let currentFilters = [];
+    let currentFilters = filters.properties.filter(item => !item.hasRelation);
 
     if (filters.onlyStringTypes) {
-      currentFilters = filters.properties.filter(item => {
+      currentFilters = currentFilters.filter(item => {
         const {type} = item;
 
         if (Array.isArray(type) && type.includes('string')) {
@@ -40,8 +40,6 @@ class TableToolbar extends Component {
 
         return false;
       });
-    } else {
-      currentFilters = filters.properties;
     }
 
     return (
