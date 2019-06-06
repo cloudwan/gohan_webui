@@ -104,7 +104,8 @@ describe('TableSelectors ', () => {
         {
           id: 'name',
           title: 'title',
-          type: 'string'
+          type: 'string',
+          hasRelation: false
         }
       ]);
 
@@ -128,11 +129,17 @@ describe('TableSelectors ', () => {
                       view: [
                         'list'
                       ]
+                    },
+                    related: {
+                      title: 'related',
+                      type: 'string',
+                      relation: 'related_id'
                     }
                   },
                   propertiesOrder: [
                     'name',
-                    'description'
+                    'description',
+                    'related'
                   ]
                 }
               }
@@ -143,11 +150,18 @@ describe('TableSelectors ', () => {
       ).should.deep.equal([{
         id: 'name',
         title: 'title',
-        type: 'string'
+        type: 'string',
+        hasRelation: false
       }, {
         id: 'description',
         title: 'title',
-        type: 'string'
+        type: 'string',
+        hasRelation: false
+      }, {
+        id: 'related',
+        title: 'related',
+        type: 'string',
+        hasRelation: true
       }
       ]);
     });
@@ -189,11 +203,13 @@ describe('TableSelectors ', () => {
       ).should.deep.equal([{
         id: 'name',
         title: 'title',
-        type: 'string'
+        type: 'string',
+        hasRelation: false
       }, {
         id: 'description',
         title: 'title',
-        type: 'string'
+        type: 'string',
+        hasRelation: false
       }
       ]);
     });
