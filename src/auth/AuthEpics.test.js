@@ -90,7 +90,8 @@ describe('AuthEpics', () => {
                     id: '423f19a4ac1e4f48bbb4180756e6eb6c',
                     name: 'admin',
                     password_expires_at: null // eslint-disable-line camelcase
-                  }
+                  },
+                  tenantFilterUseAnyOf: true
                 }
               },
               b: {
@@ -164,6 +165,7 @@ describe('AuthEpics', () => {
                 data: {
                   tokenExpires: '2015-11-06T15:32:17.893769Z',
                   tokenId: 'subjectTokenId',
+                  tenantFilterUseAnyOf: false,
                   user: {
                     domain: {
                       id: 'foo',
@@ -171,7 +173,7 @@ describe('AuthEpics', () => {
                     },
                     id: '423f19a4ac1e4f48bbb4180756e6eb6c',
                     name: 'Bar',
-                    password_expires_at: null // eslint-disable-line camelcase
+                    password_expires_at: null // eslint-disable-line camelcase,
                   }
                 }
               },
@@ -243,6 +245,7 @@ describe('AuthEpics', () => {
                 data: {
                   tokenExpires: '2015-11-06T15:32:17.893769Z',
                   tokenId: 'subjectTokenId',
+                  tenantFilterUseAnyOf: false,
                   user: {
                     domain: {
                       id: 'default',
@@ -338,6 +341,7 @@ describe('AuthEpics', () => {
                 data: {
                   tokenExpires: '2015-11-06T15:32:17.893769Z',
                   tokenId: 'subjectTokenId',
+                  tenantFilterUseAnyOf: false,
                   user: {
                     domain: {
                       id: 'configDomainId',
@@ -496,6 +500,7 @@ describe('AuthEpics', () => {
                 data: {
                   tokenId: 'subjectTokenId',
                   tokenExpires: '2018-12-23T20:20:31.000000Z',
+                  tenantFilterUseAnyOf: true,
                   logoutTimeoutId: 123,
                   roles: [
                     {name: 'admin'},
@@ -571,6 +576,7 @@ describe('AuthEpics', () => {
                   logoutTimeoutId: 123,
                   tokenId: 'subjectTokenId',
                   tokenExpires: '2018-12-23T20:20:31.000000Z',
+                  tenantFilterUseAnyOf: true,
                   roles: [
                     {name: 'admin'},
                   ],

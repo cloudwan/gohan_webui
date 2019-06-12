@@ -19,21 +19,44 @@ describe('AuthActions ', () => {
   });
 
   describe('loginSuccess()', () => {
-    it(`should set unscoped token in session storage and returns ${actionTypes.LOGIN_SUCCESS} action`, () => {
+    it(`should set unscoped token in session storage and returns ${actionTypes.LOGIN_SUCCESS} action, anyOf on`, () => {
       actions.loginSuccess(
         'tokenId',
         '1/2/2017',
         {name: 'user'},
-        'prefix'
+        'prefix',
+        true
       ).should.deep.equal({
         type: actionTypes.LOGIN_SUCCESS,
         data: {
           tokenId: 'tokenId',
           tokenExpires: '1/2/2017',
           user: {name: 'user'},
+          tenantFilterUseAnyOf: true
         }
       });
       sessionStorage['prefixUnscopedToken'].should.equal('tokenId');
+      sessionStorage['prefixTenantFilterUseAnyOf'].should.equal('true');
+    });
+
+    it(`should set unscoped token in session storage and returns ${actionTypes.LOGIN_SUCCESS} action,anyOf off`, () => {
+      actions.loginSuccess(
+        'tokenId',
+        '1/2/2017',
+        {name: 'user'},
+        'prefix',
+        false
+      ).should.deep.equal({
+        type: actionTypes.LOGIN_SUCCESS,
+        data: {
+          tokenId: 'tokenId',
+          tokenExpires: '1/2/2017',
+          user: {name: 'user'},
+          tenantFilterUseAnyOf: false
+        }
+      });
+      sessionStorage['prefixUnscopedToken'].should.equal('tokenId');
+      sessionStorage['prefixTenantFilterUseAnyOf'].should.equal('false');
     });
   });
 
@@ -72,6 +95,7 @@ describe('AuthActions ', () => {
         },
         'prefix',
         123,
+        true
       ).should.deep.equal({
         type: actionTypes.SCOPED_LOGIN_SUCCESS,
         data: {
@@ -87,10 +111,12 @@ describe('AuthActions ', () => {
             }
           },
           logoutTimeoutId: 123,
+          tenantFilterUseAnyOf: true
         }
       });
 
       sessionStorage['prefixScopedToken'].should.equal('fooToken');
+      sessionStorage['prefixTenantFilterUseAnyOf'].should.equal('true');
     });
   });
 
@@ -164,6 +190,7 @@ describe('AuthActions ', () => {
       sessionStorage.setItem('prefixTenantId', 'tenantId');
       sessionStorage.setItem('prefixTenantName', 'tenantName');
       sessionStorage.setItem('prefixTenantFilterStatus', 'false');
+      sessionStorage.setItem('prefixTenantFilterUseAnyOf', 'true');
 
       actions.fetchTokenData('prefix').should.deep.equal({
         type: actionTypes.CHECK_TOKEN,
@@ -174,6 +201,7 @@ describe('AuthActions ', () => {
           name: 'tenantName',
         },
         tenantFilterStatus: false,
+        tenantFilterUseAnyOf: true
       });
     });
   });
@@ -392,6 +420,7 @@ describe('AuthActions ', () => {
         false,
         'prefix',
         123,
+        true
       ));
       store.getActions().should.deep.equal([
         {
@@ -410,6 +439,7 @@ describe('AuthActions ', () => {
               }
             },
             tenantFilterStatus: false,
+            tenantFilterUseAnyOf: true
           }
         }
       ]);

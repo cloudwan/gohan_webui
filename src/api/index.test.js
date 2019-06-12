@@ -83,7 +83,10 @@ describe('API', () => {
           {
             id: 'food',
             prefix: '/v1.0',
-            plural: 'foods'
+            plural: 'foods',
+            schema: {
+              properties: {}
+            }
           }
         ]
       },

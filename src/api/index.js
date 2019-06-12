@@ -8,11 +8,13 @@ import {
   getSchema,
   getCollectionUrl,
   getSingularUrl,
-  hasSchemaProperty
+  hasSchemaProperty,
+  getIsPublicExists
 } from './../schema/SchemaSelectors';
 import {
   isTenantFilterActive,
-  getTenantId
+  getTenantId,
+  getTenantFilterUseAnyOf
 } from './../auth/AuthSelectors';
 import {getGohanUrl} from './../config/ConfigSelectors';
 import {getPageLimit, getPollingInterval, isPolling} from '../config/ConfigSelectors';
@@ -35,14 +37,19 @@ export class GetCollectionObservable extends AjaxObservable {
       'Content-Type': 'application/json',
       'X-Auth-Token': getTokenId(state)
     };
+    const anyOf = getTenantFilterUseAnyOf(state);
+    const isPublic = getIsPublicExists(state, schemaId);
+    const isTenantFilterOn = isTenantFilterActive(state);
 
     super({
       method: 'GET',
       url: `${gohanUrl}${url}?${queryStringify({
         limit: defaultPageLimit,
-        tenant_id: isTenantFilterActive(state) && // eslint-disable-line camelcase
+        tenant_id: isTenantFilterOn && // eslint-disable-line camelcase
           hasSchemaProperty(state, schemaId, 'tenant_id') ?
           getTenantId(state) : undefined,
+        is_public: isTenantFilterOn && isPublic ? isPublic : undefined, // eslint-disable-line camelcase
+        any_of: isTenantFilterOn && isPublic ? anyOf : undefined, // eslint-disable-line camelcase
         ...query
       })}`,
       headers,

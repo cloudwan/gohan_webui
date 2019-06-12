@@ -64,7 +64,7 @@ export const getTokenInfo = (authUrl, token, call = (fn, ...args) => fn(...args)
 
 export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) =>
   action$.ofType(CHECK_TOKEN)
-    .mergeMap(({unscopedToken, tokenId, tenant, tenantFilterStatus}) => {
+    .mergeMap(({unscopedToken, tokenId, tenant, tenantFilterStatus, tenantFilterUseAnyOf}) => {
       const state = store.getState();
       const {
         authUrl,
@@ -109,6 +109,7 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
             tenantFilterStatus,
             storagePrefix,
             logoutTimeoutId,
+            tenantFilterUseAnyOf
           )),
           Observable.of(
           {
@@ -134,6 +135,8 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
       const headers = {
         'Content-Type': 'application/json'
       };
+
+      let tenantFilterUseAnyOf = false;
 
       if (authUrl) {
         const selectedDomainName = (useKeystoneDomain && (domainName || domain)) ?
@@ -183,6 +186,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
 
           if (useKeystoneDomain) {
             if (isCloudAdmin(user, cloudAdmin)) {
+              tenantFilterUseAnyOf = true;
               scope = {
                 project: {
                   name: cloudAdmin.projectName,
@@ -206,6 +210,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
               response.response.token.expires_at,
               response.response.token.user,
               storagePrefix,
+              tenantFilterUseAnyOf
             )),
           ];
 
@@ -267,6 +272,7 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
           const expiresAt = moment(response.response.token.expires_at);
           const timeout = moment.duration(expiresAt.diff(moment()));
           const logoutTimeoutId = setTimeout(() => store.dispatch(logout()), timeout);
+          const tenantFilterUseAnyOf = response.response.token.roles.some(item => item.name === 'admin');
 
           return Observable.concat(
             Observable.of(scopedLoginSuccess(
@@ -276,6 +282,7 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
               scope,
               storagePrefix,
               logoutTimeoutId,
+              tenantFilterUseAnyOf
             )),
             Observable.of({
               type: FETCH_TENANTS,

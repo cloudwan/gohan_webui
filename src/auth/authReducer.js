@@ -28,7 +28,8 @@ export default function authReducer(state = {
   domains: [],
   roles: [],
   scope: {},
-  logoutTimeoutId: -1
+  logoutTimeoutId: -1,
+  tenantFilterUseAnyOf: false
 }, action) {
   switch (action.type) {
     case CLEAR_STORAGE:
@@ -36,7 +37,8 @@ export default function authReducer(state = {
         inProgress: false,
         logged: false,
         showTokenRenewal: false,
-        tenantFilterStatus: false
+        tenantFilterStatus: false,
+        tenantFilterUseAnyOf: false
       };
     case LOGOUT:
       return {
@@ -45,6 +47,7 @@ export default function authReducer(state = {
         showTokenRenewal: false,
         tenantFilterStatus: false,
         logoutTimeoutId: -1,
+        tenantFilterUseAnyOf: false
       };
     case LOGIN_INPROGRESS:
       return {
@@ -60,7 +63,8 @@ export default function authReducer(state = {
         unscopedToken: action.data.tokenId,
         user: action.data.user,
         inProgress: false,
-        showTokenRenewal: false
+        showTokenRenewal: false,
+        tenantFilterUseAnyOf: action.data.tenantFilterUseAnyOf
       };
     case SCOPED_LOGIN:
       return {
@@ -76,7 +80,8 @@ export default function authReducer(state = {
         scope: action.data.scope,
         inProgress: false,
         showTokenRenewal: false,
-        logoutTimeoutId: action.data.logoutTimeoutId
+        logoutTimeoutId: action.data.logoutTimeoutId,
+        tenantFilterUseAnyOf: action.data.tenantFilterUseAnyOf
       };
     case SCOPED_LOGIN_ERROR:
       return {
@@ -100,6 +105,7 @@ export default function authReducer(state = {
         showTokenRenewal: false,
         tenantFilterStatus: action.data.tenantFilterStatus,
         logged: true,
+        tenantFilterUseAnyOf: action.data.tenantFilterUseAnyOf
       };
     case SELECT_TENANT:
       return {
