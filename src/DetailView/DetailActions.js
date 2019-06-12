@@ -3,6 +3,7 @@ import {
   FETCH,
   FETCH_SUCCESS,
   FETCH_FAILURE,
+  FETCH_RELATION_FAILURE,
   FETCH_CANCELLED,
   CLEAR_DATA,
   DELETE_SUCCESS,
@@ -26,6 +27,11 @@ export const fetchSuccess = data => ({
 
 export const fetchError = error => ({
   type: FETCH_FAILURE,
+  error,
+});
+
+export const fetchRelationError = error => ({
+  type: FETCH_RELATION_FAILURE,
   error,
 });
 

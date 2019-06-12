@@ -14,6 +14,7 @@ import {
   fetch,
   fetchSuccess,
   fetchError,
+  fetchRelationError,
   fetchCancelled,
   updateSuccess,
   updateError,
@@ -82,14 +83,30 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
               ...relationProperties
                 .map(({key, id}) => {
                   const relationProperty = getSchema(state, key);
-                  return getRelationData(relationProperty, id, state);
+
+                  if (relationProperty && id) {
+                    return getRelationData(relationProperty, id, state);
+                  }
+
+                  console.error(`Cannot find schema for ${key}`);
+
+                  return new Promise(resolve => {
+                    resolve('Unknown error.');
+                  });
                 })
-            ).map(value => {
+            ).flatMap(value => {
+              const errors = value.filter(v => typeof v === 'string');
+
               relationProperties.forEach(({key}, index) => {
-                payload[key] = value[index];
+                if (typeof value[index] === 'object') {
+                  payload[key] = value[index];
+                }
               });
 
-              return fetchSuccess(payload);
+              return Observable.concat(
+                Observable.of(fetchSuccess(payload)),
+                ...errors.map(error => Observable.of(fetchRelationError(error)))
+              );
             });
           }
         }
