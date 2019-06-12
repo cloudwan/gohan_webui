@@ -18,6 +18,7 @@ describe('authReducer ', () => {
         domains: [],
         roles: [],
         scope: {},
+        tenantFilterUseAnyOf: false
       });
     reducer({}, {}).should.deep.equal({});
   });
@@ -31,6 +32,7 @@ describe('authReducer ', () => {
         user: {
           username: 'Admin'
         },
+        tenantFilterUseAnyOf: true
       }
     }).should.deep.equal(
       {
@@ -47,6 +49,7 @@ describe('authReducer ', () => {
         domains: [],
         roles: [],
         scope: {},
+        tenantFilterUseAnyOf: true
       }
     );
   });
@@ -63,6 +66,7 @@ describe('authReducer ', () => {
       domains: [],
       roles: [],
       scope: {},
+      tenantFilterUseAnyOf: false
     });
   });
 
@@ -74,7 +78,8 @@ describe('authReducer ', () => {
       inProgress: false,
       logged: false,
       logoutTimeoutId: -1,
-      showTokenRenewal: false
+      showTokenRenewal: false,
+      tenantFilterUseAnyOf: false
     });
   });
 
@@ -90,6 +95,7 @@ describe('authReducer ', () => {
       domains: [],
       roles: [],
       scope: {},
+      tenantFilterUseAnyOf: false
     });
   });
 
@@ -116,6 +122,7 @@ describe('authReducer ', () => {
       domains: [],
       roles: [],
       scope: {},
+      tenantFilterUseAnyOf: false
     });
   });
 
@@ -135,8 +142,8 @@ describe('authReducer ', () => {
       inProgress: false,
       logged: false,
       showTokenRenewal: false,
-      tenantFilterStatus: false
-
+      tenantFilterStatus: false,
+      tenantFilterUseAnyOf: false
     });
   });
 });

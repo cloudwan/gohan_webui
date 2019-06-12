@@ -190,3 +190,8 @@ export const getCollectionActions = createSelector(
     return result;
   }, {})
 );
+
+export const getIsPublicExists = createSelector(
+  [schema],
+  schema => schema.schema.properties.is_public !== undefined
+);

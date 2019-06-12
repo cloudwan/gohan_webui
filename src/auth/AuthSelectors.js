@@ -13,6 +13,7 @@ const showTokenRenewal = state => state.authReducer.showTokenRenewal;
 const tenantFilterStatus = state => state.authReducer.tenantFilterStatus;
 const roles = state => state.authReducer.roles || [];
 const domains = state => state.authReducer.domains || [];
+const tenantFilterUseAnyOf = state => state.authReducer.tenantFilterUseAnyOf;
 
 export const getLoggedState = createSelector(
   [isLogged],
@@ -134,4 +135,9 @@ export const getTenantsByDomain = createSelector(
       return result;
     }, {});
   }
+);
+
+export const getTenantFilterUseAnyOf = createSelector(
+  [tenantFilterUseAnyOf],
+  tenantFilterUseAnyOf => tenantFilterUseAnyOf
 );

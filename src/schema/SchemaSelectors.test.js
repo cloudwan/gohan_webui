@@ -585,4 +585,35 @@ describe('SchemaSelectors', () => {
       });
     });
   });
+
+  describe('getIsPublicExists()', () => {
+    const schema = {
+      schemaReducer: {
+        data: [
+          {
+            id: 'foo',
+            schema: {
+              properties: {
+                is_public: {} // eslint-disable-line camelcase
+              }
+            }
+          },
+          {
+            id: 'bar',
+            schema: {
+              properties: {}
+            }
+          }
+        ]
+      }
+    };
+
+    it('should return true when is_public exists', () => {
+      selectors.getIsPublicExists(schema, 'foo').should.equal(true);
+    });
+
+    it('should return false when is_public does not exist', () => {
+      selectors.getIsPublicExists(schema, 'bar').should.equal(false);
+    });
+  });
 });

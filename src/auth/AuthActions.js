@@ -29,8 +29,10 @@ export const loginSuccess = (
   tokenExpires,
   user,
   prefix,
+  tenantFilterUseAnyOf
 ) => {
   sessionStorage.setItem(`${prefix}UnscopedToken`, tokenId);
+  sessionStorage.setItem(`${prefix}TenantFilterUseAnyOf`, tenantFilterUseAnyOf);
 
   return {
     type: LOGIN_SUCCESS,
@@ -38,6 +40,7 @@ export const loginSuccess = (
       tokenId,
       tokenExpires,
       user,
+      tenantFilterUseAnyOf
     },
   };
 };
@@ -66,8 +69,10 @@ export const scopedLoginSuccess = (
   scope,
   prefix,
   logoutTimeoutId,
+  tenantFilterUseAnyOf
 ) => {
   sessionStorage.setItem(`${prefix}ScopedToken`, tokenId);
+  sessionStorage.setItem(`${prefix}TenantFilterUseAnyOf`, tenantFilterUseAnyOf);
 
   return {
     type: SCOPED_LOGIN_SUCCESS,
@@ -76,7 +81,8 @@ export const scopedLoginSuccess = (
       tokenExpires,
       roles,
       scope,
-      logoutTimeoutId
+      logoutTimeoutId,
+      tenantFilterUseAnyOf
     },
   };
 };
@@ -113,6 +119,7 @@ export const fetchTokenData = prefix => {
   const tenantId = sessionStorage.getItem(`${prefix}TenantId`);
   const tenantName = sessionStorage.getItem(`${prefix}TenantName`);
   const tenantFilterStatus = sessionStorage.getItem(`${prefix}TenantFilterStatus`);
+  const tenantFilterUseAnyOf = sessionStorage.getItem(`${prefix}TenantFilterUseAnyOf`);
 
   const tenant = (tenantId && tenantName) ?
     {id: tenantId, name: tenantName} :
@@ -125,6 +132,7 @@ export const fetchTokenData = prefix => {
       unscopedToken,
       tenant,
       tenantFilterStatus: tenantFilterStatus === 'true',
+      tenantFilterUseAnyOf: tenantFilterUseAnyOf === 'true'
     };
   }
 
@@ -142,10 +150,12 @@ export const checkTokenSuccess = (
   tenantFilterStatus,
   prefix,
   logoutTimeoutId,
+  tenantFilterUseAnyOf
 ) => {
   sessionStorage.setItem(`${prefix}ScopedToken`, tokenId);
   sessionStorage.setItem(`${prefix}UnscopedToken`, unscopedToken);
   sessionStorage.setItem(`${prefix}TenantFilterStatus`, tenantFilterStatus);
+  sessionStorage.setItem(`${prefix}TenantFilterUseAnyOf`, tenantFilterUseAnyOf);
 
   return {
     type: CHECK_SUCCESS,
@@ -158,7 +168,8 @@ export const checkTokenSuccess = (
       roles,
       scope,
       tenantFilterStatus,
-      logoutTimeoutId
+      logoutTimeoutId,
+      tenantFilterUseAnyOf
     },
   };
 };
@@ -169,6 +180,7 @@ export const clearStorage = prefix => {
   sessionStorage.removeItem(`${prefix}TenantId`);
   sessionStorage.removeItem(`${prefix}TenantName`);
   sessionStorage.removeItem(`${prefix}TenantFilterStatus`);
+  sessionStorage.removeItem(`${prefix}TenantFilterUseAnyOf`);
 
   return {
     type: CLEAR_STORAGE
