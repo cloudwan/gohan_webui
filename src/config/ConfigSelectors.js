@@ -15,6 +15,7 @@ const appVersion = state => state.configReducer.app;
 const coreVersion = state => state.configReducer.version;
 const storagePrefix = state => state.configReducer.storagePrefix;
 const sidebarChildResources = state => state.configReducer.sidebarChildResources;
+const substringSearchEnabled = state => state.configReducer.substringSearchEnabled;
 
 export const getSidebar = createSelector(
   [sidebar],
@@ -101,4 +102,9 @@ export const getStoragePrefix = createSelector(
 export const getSidebarChildResources = createSelector(
   [sidebarChildResources],
   sidebarChildResources => sidebarChildResources
+);
+
+export const isSubstringSearchEnabled = createSelector(
+  [substringSearchEnabled],
+  substringSearchEnabled => substringSearchEnabled
 );

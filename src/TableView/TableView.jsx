@@ -35,6 +35,7 @@ import {
   hasUpdatePermission,
   hasDeletePermission,
   getCollectionActions,
+  isMetadataSubstringSearchEnabled
 } from './../schema/SchemaSelectors';
 import {
   fetch,
@@ -47,6 +48,9 @@ import {
 import {
   isAnyDialogOpen
 } from '../Dialog/DialogSelectors';
+import {
+  isSubstringSearchEnabled
+} from '../config/ConfigSelectors';
 
 import Dialog from '../Dialog/Dialog';
 
@@ -78,7 +82,12 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
 
     componentDidMount() {
       if (!isChildView) {
-        const query = queryParse(this.props.location.search);
+        const {substringSearchEnabled, metadataSubstringSearchEnabled} = this.props;
+        const queryFormat = substringSearchEnabled ||
+          !metadataSubstringSearchEnabled ?
+          undefined :
+          {arrayFormat: 'bracket'};
+        const query = queryParse(this.props.location.search, queryFormat);
         this.props.updateBreadcrumb([
           {
             title: schemaTitle,
@@ -86,7 +95,13 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
           }
         ]);
 
-        if (query.search_field && Array.isArray(query.search_field) && query.search_field.length !== 0) {
+        if (
+          substringSearchEnabled &&
+          metadataSubstringSearchEnabled &&
+          query.search_field &&
+          Array.isArray(query.search_field) &&
+          query.search_field.length !== 0
+        ) {
           try {
             query.filters = query.search_field.map(searchField => ({
               key: searchField,
@@ -95,11 +110,26 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
           } catch (error) {
             console.error('TableView componentDidMount:', error);
           }
-        } else if (query.search_field && typeof query.search_field === 'string') {
+        } else if (
+          substringSearchEnabled &&
+          metadataSubstringSearchEnabled &&
+          query.search_field &&
+          typeof query.search_field === 'string') {
           query.filters = [{
             key: query.search_field,
             value: query[query.search_field]
           }];
+        } else if (!substringSearchEnabled && query.filters) {
+          try {
+            query.filters = query.filters
+              .map(item => queryParse(item))
+              .map(item => ({
+                key: Object.keys(item)[0],
+                value: item[Object.keys(item)[0]]
+              }));
+          } catch (error) {
+            console.error('TableView componentDidMount:', error);
+          }
         }
         this.props.fetch({...options, ...query});
       } else {
@@ -257,16 +287,33 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     };
 
     handleFilterData = property => {
-      const searchFields = property === undefined ? undefined : Object.keys(property);
+      const {substringSearchEnabled, metadataSubstringSearchEnabled} = this.props;
+      const searchFields = substringSearchEnabled &&
+        property !== undefined ?
+        Object.keys(property) :
+        undefined;
+      const queryFormat = substringSearchEnabled ||
+        !metadataSubstringSearchEnabled ?
+        undefined :
+        {arrayFormat: 'bracket'};
+      const filters = (!substringSearchEnabled || !metadataSubstringSearchEnabled) &&
+        property !== undefined ?
+        [queryStringify(property)] :
+        undefined;
+      const searchProperties = (
+        substringSearchEnabled && metadataSubstringSearchEnabled) ?
+        property :
+        undefined;
 
       if (!isChildView) {
         this.props.history.replace({
           ...this.props.location,
           search: queryStringify({
-            ...queryParse(this.props.location.search),
-            ...property,
-            search_field: searchFields // eslint-disable-line camelcase
-          })
+            ...queryParse(this.props.location.search, queryFormat),
+            ...searchProperties,
+            search_field: searchFields, // eslint-disable-line camelcase
+            filters
+          }, queryFormat)
         });
       }
       this.props.fetch({
@@ -361,6 +408,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
         updatePermission,
         deletePermission,
         actions,
+        substringSearchEnabled,
+        metadataSubstringSearchEnabled
       } = this.props;
       const filterValue = filters && filters[0] ? filters[0].value : '';
       const filterBy = filters && filters[0] ? filters[0].key : '';
@@ -398,7 +447,9 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
             onChange: this.handleFilterData,
             by: filterBy,
             value: filterValue,
-            onlyStringTypes: true
+            onlyStringTypes: true,
+            includeRelations: !substringSearchEnabled || !metadataSubstringSearchEnabled,
+            substringSearchSupport: metadataSubstringSearchEnabled
           },
           onDeleteSelectedClick: this.handleDeleteSelectedClick,
           onAddResourceClick: this.handleOpenCreateDialog,
@@ -482,6 +533,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
     errorMessage: PropTypes.string,
     limit: PropTypes.number,
     actions: PropTypes.object.isRequired,
+    metadataSubstringSearchEnabled: PropTypes.bool,
+    substringSearchEnabled: PropTypes.bool
   };
 
   function mapStateToProps(state, {match}) {
@@ -509,6 +562,8 @@ export const getTableView = (schema, Table = TableComponent, isChildView = false
       actions: getCollectionActions(state, schemaId),
       tenantId: getTenantId(state),
       tenantFilter: isTenantFilterActive(state),
+      substringSearchEnabled: isSubstringSearchEnabled(state),
+      metadataSubstringSearchEnabled: isMetadataSubstringSearchEnabled(state, schemaId)
     };
   }
 

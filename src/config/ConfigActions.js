@@ -1,12 +1,15 @@
-/* global location, document */
+/* global location, document, window */
 import axios from 'axios';
 import {
   FETCH_SUCCESS,
   FETCH_ERROR,
   SET_TITLE,
   FETCH_APP_VERSION_SUCCESS,
-  FETCH_APP_VERSION_FAILURE
+  FETCH_APP_VERSION_FAILURE,
+  SET_SUBSTRING_SEARCH_ENABLED
 } from './ConfigActionTypes';
+
+const {sessionStorage} = window;
 
 function fetchSuccess(data) {
   return dispatch => {
@@ -22,6 +25,12 @@ function fetchSuccess(data) {
 
     if (data.selectDomainFromHost && RegExp(data.selectDomainFromHost).test(location.hostname)) {
         data.domainName = location.hostname.replace(RegExp(data.selectDomainFromHost), '$1').trim();
+    }
+
+    if (data.storagePrefix) {
+      const substringSearchEnabled = JSON.parse(sessionStorage.getItem(`${data.storagePrefix}SubstringSearchEnabled`));
+
+      data.substringSearchEnabled = substringSearchEnabled === true ? substringSearchEnabled : false;
     }
 
     dispatch({data, type: FETCH_SUCCESS});
@@ -84,6 +93,20 @@ export function fetchAppVersion() {
       dispatch(fetchAppVersionSuccess(response.data));
     }).catch(error => {
       dispatch(fetchAppVersionFailure(error.response));
+    });
+  };
+}
+
+export function setSubstringSearchEnabled(enabled) {
+  return (dispatch, getState) => {
+    const state = getState();
+    const {storagePrefix} = state.configReducer;
+
+    sessionStorage.setItem(`${storagePrefix}SubstringSearchEnabled`, enabled);
+
+    dispatch({
+      type: SET_SUBSTRING_SEARCH_ENABLED,
+      data: enabled
     });
   };
 }

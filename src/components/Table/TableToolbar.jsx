@@ -26,7 +26,9 @@ class TableToolbar extends Component {
 
   render() {
     const {filters} = this.props;
-    let currentFilters = filters.properties.filter(item => !item.hasRelation);
+    let currentFilters = !filters.includeRelations ?
+      filters.properties.filter(item => !item.hasRelation) :
+      filters.properties;
 
     if (filters.onlyStringTypes) {
       currentFilters = currentFilters.filter(item => {
@@ -39,6 +41,15 @@ class TableToolbar extends Component {
         }
 
         return false;
+      });
+    }
+
+    if (!currentFilters.some(item => item.id === 'id')) {
+      currentFilters.push({
+        id: 'id',
+        title: 'ID',
+        type: 'string',
+        hasRelation: false
       });
     }
 
@@ -77,6 +88,11 @@ class TableToolbar extends Component {
             </div>
           </div>
         </div>
+        {filters.substringSearchSupport === false && (
+          <div className="row substring-search-no-support text-right">
+            Substring search is not supported for this resource
+          </div>
+        )}
       </div>
     );
   }
@@ -99,7 +115,8 @@ TableToolbar.defaultProps = {
     properties: [],
     onChange: () => {
     },
-    onlyStringTypes: true
+    onlyStringTypes: true,
+    includeRelations: false
   }
 };
 
@@ -118,7 +135,9 @@ TableToolbar.propTypes = {
     value: PropTypes.string,
     properties: PropTypes.array,
     onChange: PropTypes.func,
-    onlyStringTypes: PropTypes.bool
+    onlyStringTypes: PropTypes.bool,
+    substringSearchSupport: PropTypes.bool,
+    includeRelations: PropTypes.bool
   }),
   actions: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,

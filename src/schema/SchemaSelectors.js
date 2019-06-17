@@ -195,3 +195,16 @@ export const getIsPublicExists = createSelector(
   [schema],
   schema => schema.schema.properties.is_public !== undefined
 );
+
+export const isMetadataSubstringSearchEnabled = createSelector(
+  [schema],
+  schema => {
+    /* substr_search_enabled contains only "false" value
+      if key is not present, then substring search is enabled for schema
+    */
+    const isSubstringEnabled = schema.metadata &&
+      schema.metadata.substr_search_enabled;
+
+    return isSubstringEnabled === false ? isSubstringEnabled : true;
+  }
+);

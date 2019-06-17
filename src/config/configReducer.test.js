@@ -8,7 +8,8 @@ chai.should();
 describe('configReducer ', () => {
 
   it('should return initial state', () => {
-    configReducer(undefined, {}).should.deep.equal({});
+    configReducer(undefined, {})
+      .should.deep.equal({substringSearchEnabled: true});
   });
 
   it('should handle FETCH_SUCCESS', () => {
@@ -28,7 +29,8 @@ describe('configReducer ', () => {
       gohan: {
         schema: '/gohan/v0.1/schemas',
         url: 'http://localhost:9091'
-      }
+      },
+      substringSearchEnabled: true
     });
   });
 
@@ -42,7 +44,8 @@ describe('configReducer ', () => {
         }
       }).should.deep.equal({
       app: 'app',
-      version: '1234567890'
+      version: '1234567890',
+      substringSearchEnabled: true
     });
   });
 });
