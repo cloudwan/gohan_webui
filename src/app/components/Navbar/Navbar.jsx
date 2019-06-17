@@ -14,8 +14,14 @@ import {
   getTenantsByDomain,
   isTenantFilterActive,
 } from './../../../auth/AuthSelectors';
+import {
+  setSubstringSearchEnabled
+} from './../../../config/ConfigActions';
 
-import {getUseKeystoneDomainState} from '../../../config/ConfigSelectors';
+import {
+  getUseKeystoneDomainState,
+  isSubstringSearchEnabled
+} from '../../../config/ConfigSelectors';
 
 import NavContainer from './components/NavContainer';
 import NavbarGroup from './components/NavbarGroup';
@@ -57,7 +63,11 @@ export class Navbar extends Component {
 
   handleFilterByTenantClick = () => {
     this.props.changeTenantFilter(!this.props.isTenantFilter);
-  }
+  };
+
+  handleSubstringSearchEnabledClick = () => {
+    this.props.setSubstringSearchEnabled(!this.props.substringSearchEnabled);
+  };
 
   renderMenuItems = () => {
     const {tenantId, tenantsByDomain, isAdmin, isTenantFilter, useDomain} = this.props;
@@ -117,6 +127,7 @@ export class Navbar extends Component {
       tenantName,
       userName,
       brand,
+      substringSearchEnabled
     } = this.props;
 
     return (
@@ -145,6 +156,16 @@ export class Navbar extends Component {
 
           <Popover2 content={
             <Menu>
+              <MenuItem onClick={this.handleSubstringSearchEnabledClick}
+                text={(
+                  <span>
+                    <FontAwesomeIcon className={`faicon tenant-filter${substringSearchEnabled ? ' checked' : ''}`}
+                      icon={substringSearchEnabled ? faCheckSquare : faSquare}
+                    />Substring search
+                  </span>
+                )}
+              />
+              <MenuDivider/>
               <MenuItem text={'Log Out'}
                 onClick={this.handleLogoutClick}
               />
@@ -180,7 +201,9 @@ if (process.env.NODE_ENV !== 'production') {
     tenantsByDomain: PropTypes.object,
     onToggleSidebar: PropTypes.func,
     isSidebarOpen: PropTypes.bool,
-    brand: PropTypes.node.isRequired
+    brand: PropTypes.node.isRequired,
+    substringSearchEnabled: PropTypes.bool.isRequired,
+    setSubstringSearchEnabled: PropTypes.func
   };
 }
 
@@ -193,10 +216,12 @@ export const mapStateToProps = state => ({
   isAdmin: isUserAdmin(state),
   isTenantFilter: isTenantFilterActive(state),
   useDomain: getUseKeystoneDomainState(state),
+  substringSearchEnabled: isSubstringSearchEnabled(state)
 });
 
 export default connect(mapStateToProps, {
   logout,
   selectTenant,
-  changeTenantFilter
+  changeTenantFilter,
+  setSubstringSearchEnabled
 })(Navbar);

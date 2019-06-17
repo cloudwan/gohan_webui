@@ -16,7 +16,8 @@ import {
 import {
   getPageLimit,
   getDefaultSortKey,
-  getDefaultSortOrder
+  getDefaultSortOrder,
+  isSubstringSearchEnabled
 } from './../config/ConfigSelectors';
 import {
   getLimit,
@@ -59,6 +60,7 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
       const defaultSortOrder = getDefaultSortOrder(state);
       const sortOptions = getSortOptions(state, schemaId);
       const filters = getFilters(state, schemaId);
+      const substringSearchEnabled = isSubstringSearchEnabled(state);
 
 
       const query = {
@@ -124,17 +126,23 @@ export const fetchEpic = (action$, store, call = (fn, ...args) => fn(...args)) =
         }
       }
 
-      query['search_field'] = [];
+      if (substringSearchEnabled) {
+        query['search_field'] = [];
+      }
 
       if (options.filters && Array.isArray(options.filters)) {
         options.filters.forEach(filter => {
           query[filter.key] = filter.value;
-          query['search_field'].push(filter.key);
+          if (substringSearchEnabled) {
+            query['search_field'].push(filter.key);
+          }
         });
       } else if (filters && Array.isArray(filters)) {
         filters.forEach(filter => {
           query[filter.key] = filter.value;
-          query['search_field'].push(filter.key);
+          if (substringSearchEnabled) {
+            query['search_field'].push(filter.key);
+          }
         });
       }
 

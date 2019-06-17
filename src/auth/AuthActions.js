@@ -181,6 +181,7 @@ export const clearStorage = prefix => {
   sessionStorage.removeItem(`${prefix}TenantName`);
   sessionStorage.removeItem(`${prefix}TenantFilterStatus`);
   sessionStorage.removeItem(`${prefix}TenantFilterUseAnyOf`);
+  sessionStorage.removeItem(`${prefix}SubstringSearchEnabled`);
 
   return {
     type: CLEAR_STORAGE

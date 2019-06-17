@@ -3,7 +3,6 @@ import {stringify as queryStringify} from 'query-string';
 import {AjaxObservable} from 'rxjs/observable/dom/AjaxObservable';
 import {Observable} from 'rxjs/Rx';
 
-import {getTokenId} from './../auth/AuthSelectors';
 import {
   getSchema,
   getCollectionUrl,
@@ -14,10 +13,15 @@ import {
 import {
   isTenantFilterActive,
   getTenantId,
-  getTenantFilterUseAnyOf
+  getTenantFilterUseAnyOf,
+  getTokenId
 } from './../auth/AuthSelectors';
-import {getGohanUrl} from './../config/ConfigSelectors';
-import {getPageLimit, getPollingInterval, isPolling} from '../config/ConfigSelectors';
+import {
+  getGohanUrl,
+  getPageLimit,
+  getPollingInterval,
+  isPolling
+} from './../config/ConfigSelectors';
 
 export const getPollingTimer = (state, until$) => {
   const pollingInterval = getPollingInterval(state);
@@ -48,8 +52,10 @@ export class GetCollectionObservable extends AjaxObservable {
         tenant_id: isTenantFilterOn && // eslint-disable-line camelcase
           hasSchemaProperty(state, schemaId, 'tenant_id') ?
           getTenantId(state) : undefined,
-        is_public: isTenantFilterOn && isPublic ? isPublic : undefined, // eslint-disable-line camelcase
-        any_of: isTenantFilterOn && isPublic ? anyOf : undefined, // eslint-disable-line camelcase
+        is_public: isTenantFilterOn && // eslint-disable-line camelcase
+          isPublic ? isPublic : undefined,
+        any_of: isTenantFilterOn && // eslint-disable-line camelcase
+          isPublic ? anyOf : undefined,
         ...query
       })}`,
       headers,

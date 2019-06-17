@@ -47,7 +47,9 @@ class TableComponent extends Component {
               onChange: toolbar.filter.onChange,
               by: toolbar.filter.by,
               value: toolbar.filter.value,
-              onlyStringTypes: toolbar.filter.onlyStringTypes
+              onlyStringTypes: toolbar.filter.onlyStringTypes,
+              substringSearchSupport: toolbar.filter.substringSearchSupport,
+              includeRelations: toolbar.filter.includeRelations
             }}
             actions={actions}
             url={url}
@@ -104,7 +106,9 @@ if (process.env.NODE_ENV !== 'production') {
       filter: PropTypes.shape({
         onChange: PropTypes.func,
         by: PropTypes.string,
-        value: PropTypes.string
+        value: PropTypes.string,
+        substringSearchSupport: PropTypes.bool,
+        includeRelations: PropTypes.bool
       })
     }),
     table: PropTypes.shape({
