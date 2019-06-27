@@ -1,5 +1,6 @@
 import {createSelector} from 'reselect';
 import {difference} from 'lodash';
+import {getSidebarChildResources} from './../../../config/ConfigSelectors';
 
 const schemas = state => {
   if (state.schemaReducer && state.schemaReducer.data) {
@@ -33,12 +34,14 @@ const sidebarFavorites = state => {
   return [];
 };
 
-const getSidebarItems = (sidebar, schemas) => {
+const getSidebarItems = (sidebar, schemas, sidebarChildResources) => {
   const sidebarItems = {};
 
   if (schemas !== undefined && Array.isArray(schemas)) {
     schemas
-      .filter(item => (!item.parent && item.metadata.type !== 'metaschema'))
+      .filter(item => (
+        !item.parent && item.metadata.type !== 'metaschema' || sidebarChildResources.includes(item.id)
+      ))
       .forEach(item => {
         sidebarItems[item.id] = {
           title: item.title,
@@ -60,9 +63,9 @@ const getSidebarItems = (sidebar, schemas) => {
 };
 
 export const getSidebarCategories = createSelector(
-  [sidebar, schemas, sidebarCategories, sidebarFavorites],
-  (sidebar, schemas, sidebarCategories, sidebarFavorites) => {
-    const sidebarItems = getSidebarItems(sidebar, schemas);
+  [sidebar, schemas, sidebarCategories, sidebarFavorites, getSidebarChildResources],
+  (sidebar, schemas, sidebarCategories, sidebarFavorites, sidebarChildResources) => {
+    const sidebarItems = getSidebarItems(sidebar, schemas, sidebarChildResources);
     const sidebarItemsIds = Object.keys(sidebarItems);
     const groupedItemsIds = sidebarCategories.reduce((ids, currentCategory) => [...ids, ...currentCategory.items], []);
     const otherItemsIds = difference(sidebarItemsIds, groupedItemsIds);

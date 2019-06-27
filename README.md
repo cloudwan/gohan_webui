@@ -46,3 +46,13 @@ Setup development environment
 ```
     $ npm run build
 ```
+
+Config file
+------------------------------------
+`config.json` file should be located in the same directory as all source files. Sample configuration is included in `config.json.sample` file.
+
+Possible fields in config file:
+
+- `sidebarChildResources` - array of schema IDs of child resources which should be visible in sidebar menu
+
+

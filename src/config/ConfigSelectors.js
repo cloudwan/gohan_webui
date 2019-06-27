@@ -14,6 +14,7 @@ const domainName = state => state.configReducer.domainName;
 const appVersion = state => state.configReducer.app;
 const coreVersion = state => state.configReducer.version;
 const storagePrefix = state => state.configReducer.storagePrefix;
+const sidebarChildResources = state => state.configReducer.sidebarChildResources;
 
 export const getSidebar = createSelector(
   [sidebar],
@@ -95,4 +96,9 @@ export const getCoreVersion = createSelector(
 export const getStoragePrefix = createSelector(
   [storagePrefix],
   storagePrefix => storagePrefix
+);
+
+export const getSidebarChildResources = createSelector(
+  [sidebarChildResources],
+  sidebarChildResources => sidebarChildResources
 );

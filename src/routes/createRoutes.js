@@ -59,7 +59,7 @@ const getNestedRoute = (schema, schemas, components, path) => {
 };
 
 export const createRoutes = (store, components) => {
-  const {routes} = store.getState().configReducer;
+  const {routes, sidebarChildResources = []} = store.getState().configReducer;
   const schemas = store.getState().schemaReducer.data;
 
   const schemaRoutes = schemas.reduce((result, schema) => {
@@ -67,7 +67,7 @@ export const createRoutes = (store, components) => {
       return result;
     }
 
-    if (schema.parent === '' || schema.parent === undefined) {
+    if (sidebarChildResources.includes(schema.id) || schema.parent === '' || schema.parent === undefined) {
       const path = `${schema.prefix}/${schema.plural}`;
 
       if (!routes.find(item => item.path === path)) {
