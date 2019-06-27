@@ -69,5 +69,6 @@
         "username": "admin",
         "domainId": "default",
         "projectName": "admin"
-    }
+    },
+    "sidebarChildResources": ["ese_device"]
 }

@@ -369,5 +369,62 @@ describe('SidebarSelectors', () => {
         },
       ]);
     });
+
+    it('should return child resources', () => {
+      const schemaReducer = {
+        data: [{
+          id: 'foo_parent',
+          parent: '',
+          plural: 'foo_parents',
+          title: 'Foo Parent',
+          schema: {
+            type: 'object'
+          },
+          metadata: {
+            type: 'notmetaschema'
+          },
+          url: 'foo_parent/'
+        }, {
+          id: 'foo_child',
+          parent: 'foo_parent',
+          plural: 'foo_chilren',
+          title: 'Foo child',
+          schema: {
+            type: 'object'
+          },
+          metadata: {
+            type: 'notmetaschema'
+          },
+          url: 'foo_child/'
+        }]
+      };
+
+      const configReducer = {
+        sidebarChildResources: ['foo_child']
+      };
+
+      selectors.getSidebarCategories({
+        schemaReducer,
+        configReducer
+      }).should.deep.equal([
+        {
+          title: 'Favorites',
+          items: []
+        },
+        {
+          title: 'Others',
+          items: [
+            {
+              path: '#foo_parent/',
+              title: 'Foo Parent'
+            },
+            {
+              path: '#foo_child/',
+              title: 'Foo child'
+            }
+          ]
+        }
+      ]);
+    });
   });
 });

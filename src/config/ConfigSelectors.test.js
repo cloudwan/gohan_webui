@@ -150,4 +150,16 @@ describe('ConfigSelectors', () => {
       }).should.deep.equal('foo');
     });
   });
+
+  describe('getSiderbarChildResources()', () => {
+    it('should return array with string items', () => {
+      const configReducer = {
+        sidebarChildResources: ['foo']
+      };
+
+      selectors.getSidebarChildResources({
+        configReducer
+      }).should.deep.equal(['foo']);
+    });
+  });
 });
