@@ -54,5 +54,8 @@ Config file
 Possible fields in config file:
 
 - `sidebarChildResources` - array of schema IDs of child resources which should be visible in sidebar menu
-
-
+- `routes` - config array for routing, must contain objects with following fields:
+  - `path` - URL path to view
+  - `viewClass` - name of React component related to the view (in `src/routes/componentList.js`)
+  - `name` - name of route
+  - `exact` - match path exactly, default `true`

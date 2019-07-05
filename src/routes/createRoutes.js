@@ -96,7 +96,7 @@ export const createRoutes = (store, components) => {
       const component = getComponent(components, route.viewClass, store);
       result.push(
         <Route key={index}
-          exact={true}
+          exact={route.exact !== undefined ? route.exact : true}
           path={`/${route.path}`}
           component={component}
         />
