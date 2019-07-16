@@ -1,15 +1,17 @@
 import axios from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
-import {Observable} from 'rxjs';
 import get from 'lodash/get';
-import {
-  getSingular,
-  getCollection,
-} from './../api';
+
 import {
   getSchema,
-  getSelectedParents,
+  getCollectionUrl,
+  hasSchemaProperty,
 } from './SchemaSelectors';
+import {
+  isTenantFilterActive,
+  getTenantId,
+} from '../auth/AuthSelectors';
+import {getGohanUrl} from '../config/ConfigSelectors';
 
 import {FETCH_SUCCESS, FETCH_ERROR} from './SchemaActionTypes';
 
@@ -55,15 +57,6 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
   return new Promise((resolve, reject) => {
     const result = cloneDeep(schema);
 
-    result.nullable = false;
-
-    if (Array.isArray(schema.type)) {
-      if (schema.type.includes('null')) {
-        result.nullable = true;
-      }
-      result.type = result.type[0];
-    }
-
     if (result.relation !== undefined && result.relation !== null && result.relation !== parentProperty) {
       const relatedSchema = getSchema(state, result.relation);
       if (relatedSchema === undefined || !relatedSchema.schema.permission.includes('read')) {
@@ -71,98 +64,20 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
         result.options = {};
         resolve(result);
       }
-      const query = {
-        limit: undefined,
-        _fields: [
-          'id',
-          'name',
-        ],
-        ...uiSchema['ui:query']
+
+      const gohanUrl = getGohanUrl(state);
+      const url = getCollectionUrl(state, result.relation, {});
+      result.request = {
+        url: `${gohanUrl}${url}`,
+        query: {
+          tenant_id: isTenantFilterActive(state) && // eslint-disable-line camelcase
+          hasSchemaProperty(state, result.relation, 'tenant_id') ?
+          getTenantId(state) : undefined,
+        },
       };
 
-      getCollection(state, result.relation, {}, query)
-        .subscribe(response => {
-          const data = response.payload;
-          const enumValues = [];
-          const options = {};
+      resolve(result);
 
-          if (uiSchema['ui:labelTemplate'] && uiSchema['ui:requiredResource'] && data.length > 0) {
-            const parents = getSelectedParents(state, result.relation, uiSchema['ui:requiredResource'])
-              .reverse()
-              .map(parent => parent.id);
-
-            const makeRequest = (id, schemaId, parentSchemaId) => getSingular(
-              state,
-              schemaId,
-              {[`${schemaId}_id`]: id},
-              {
-                _fields: [
-                  'id',
-                  'name',
-                  ...(parentSchemaId ? [`${parentSchemaId}_id`] : [])
-                ]
-              }
-            );
-
-            let request$;
-            parents.forEach((parent, index) => {
-              const nextParent = parents[index + 1];
-              if (request$ === undefined) {
-                request$ = Observable.zip(
-                  ...data.map(item => makeRequest(
-                    item[`${parent}_id`],
-                    parent,
-                    nextParent,
-                  ))
-                );
-               } else {
-                  request$ = request$.mergeMap(response => {
-                    const ids = response.map(d => d.payload[`${parent}_id`]);
-                    return Observable.zip(
-                      ...ids.map(id => makeRequest(
-                        id,
-                        parent,
-                        nextParent,
-                      ))
-                    );
-                  });
-                }
-              });
-
-              request$.subscribe(response => {
-                data.forEach((value, index) => {
-                  enumValues.push(value.id);
-                  const label = parseLabelTemplate(
-                    uiSchema['ui:labelTemplate'],
-                    {
-                      [uiSchema['ui:requiredResource']]: response[index].payload,
-                      [result.relation]: value,
-                    },
-                    /<%([^%>]+)?%>/g,
-                    /^(<%)|(%>)$/g
-                  );
-                  options[value.id] = label || value.id;
-                });
-
-                result.enum = enumValues;
-                result.options = options;
-                resolve(result);
-              }, error => {
-                reject(error);
-              });
-          } else {
-            data.forEach(value => {
-              enumValues.push(value.id);
-              options[value.id] = value.name || value.id;
-            });
-
-            result.enum = enumValues;
-            result.options = options;
-            resolve(result);
-          }
-        }, error => {
-          reject(error);
-        });
     } else if (result.type === 'array') {
       const promise = toLocalSchema(result.items, state, parentProperty, uiSchema);
 

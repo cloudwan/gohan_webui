@@ -8,7 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const happyThreadPool = HappyPack.ThreadPool({size: 4});
-const devServerPort = 8080;
+const devServerPort = 8000;
 const devServerHostname = 'localhost';
 const sourcePath = path.join(__dirname, '/src');
 const outputPath = path.join(__dirname, '/dist');
@@ -60,6 +60,13 @@ const config = {
         use: [
           MiniCssExtractPlugin.loader,
           'happypack/loader?id=scss'
+        ]
+      },
+      {
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'happypack/loader?id=less'
         ]
       },
       {
@@ -136,6 +143,28 @@ const config = {
           }
         }
       ]
+    }),
+    new HappyPack({
+      id: 'less',
+      threadPool: happyThreadPool,
+      verbose: false,
+      loaders: [
+        {
+          loader: 'css-loader',
+          options: {
+            minimize: false,
+            sourceMap: true,
+          },
+        },
+        {
+          loader: 'less-loader',
+          options: {
+            sourceMap: true,
+            minimize: false,
+            javascriptEnabled: true,
+          },
+        },
+      ],
     }),
     new MiniCssExtractPlugin({
       filename: isDevelopment ? '[name].css' : '[name].[hash].css',

@@ -1,17 +1,19 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import Form from 'react-jsonschema-form';
+import {Form} from 'gohan-jsonschema-form';
 import {Dialog, ProgressBar, Intent, Button} from '@blueprintjs/core';
 import isEqual from 'lodash/isEqual';
 import merge from 'lodash/merge';
+import {stringify as queryStringify} from 'query-string';
 
 import {removeEmpty, toServerData} from './utils';
 import {getSchema, getLoadingState} from './DialogSelectors';
-import widgets from './formComponents/widgets';
-import fields from './formComponents/fields';
-import Template from './formComponents/Template';
-import ErrorListTemplate from './formComponents/ErrorListTemplate';
+import {
+  getTokenId,
+} from '../auth/AuthSelectors';
+
+import '../../css/dialog.scss';
 
 import ErrorToast from './components/ErrorToast';
 
@@ -74,8 +76,9 @@ export class GeneratedDialog extends Component {
    *
    * @param formData
    */
-  handleSubmit = ({formData}) => {
-    this.props.onSubmit(removeEmpty(toServerData(this.props.schema, formData)), this.props.data.id);
+  handleSubmit = values => {
+    console.log('values', values);
+    this.props.onSubmit(removeEmpty(toServerData(this.props.schema, values)), this.props.data.id);
   };
 
   /**
@@ -90,7 +93,7 @@ export class GeneratedDialog extends Component {
       customTitle,
       customButtonLabel,
       schema,
-      data
+      data,
     } = this.props;
     const title = customTitle ? customTitle : `${action[0].toUpperCase() + action.slice(1)}` +
       ` ${this.props.uiSchemaTitle || baseSchema.title}`;
@@ -112,8 +115,6 @@ export class GeneratedDialog extends Component {
 
             const {
               propertiesOrder,
-              properties,
-              required
             } = schema;
 
             return (
@@ -122,54 +123,52 @@ export class GeneratedDialog extends Component {
                   <span className="pt-empty-dialog-text">There are no properties that can be updated.</span>
                 )}
                 {(propertiesOrder.length > 0) && (
-                  <Form ref={c => {this.form = c;}}
-                    schema={schema}
-                    fields={fields} widgets={widgets}
-                    FieldTemplate={Template}
-                    showErrorList={false}
-                    noValidate={true} // workaround for fix ESI-16110
-                    ErrorList={ErrorListTemplate}
-                    formData={
-                      propertiesOrder.reduce(
-                        (result, item) => {
-                          if (data[item] !== undefined) {
-                            result[item] = data[item];
-                          } else if (required.includes(item)) {
-                            result[item] = properties[item].type === 'object' && !properties[item].default ?
-                              {} :
-                              properties[item].default;
-                          } else {
-                            result[item] = undefined;
-                          }
+                  <Form schema={schema}
+                    uiSchema={merge(this.props.jsonUiSchema, this.props.uiSchema)}
+                    onSubmit={this.handleSubmit}
+                    fetcher={async (url, query) => {
 
-                          return result;
-                        }, {}
-                      )}
-                    uiSchema={{
-                      'ui:order': propertiesOrder,
-                      'ui:logic': this.props.jsonUiSchemaLogic,
-                      ...merge(this.props.jsonUiSchema, this.props.uiSchema),
+                      try {
+
+                        const response = await fetch( // eslint-disable-line
+                          `${url}?${queryStringify(query)}`,
+                          {
+                            method: 'GET',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'X-Auth-Token': this.props.tokenId,
+                            },
+                            crossDomain: true,
+                          }
+                        );
+
+                        const responseData = await response.json();
+
+                        return responseData;
+                      } catch (error) {
+                        console.log(error);
+                      }
                     }}
-                    onChange={this.props.onChange}
-                    onSubmit={this.handleSubmit}>
-                    <div/>
-                  </Form>
+                    formData={data || {}}
+                    ActionButtons={() => (
+                      <div className="pt-dialog-footer">
+                        <div className="pt-dialog-footer-actions">
+                          <Button text="Cancel"
+                            onClick={this.props.onClose}
+                          />
+                          <Button text={submitButtonLabel}
+                            intent={Intent.PRIMARY}
+                            type="submit"
+                            disabled={this.props.schema && this.props.schema.propertiesOrder.length === 0}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  />
                 )}
               </div>
             );
           })()}
-        </div>
-        <div className="pt-dialog-footer">
-          <div className="pt-dialog-footer-actions">
-            <Button text="Cancel"
-              onClick={this.props.onClose}
-            />
-            <Button text={submitButtonLabel}
-              intent={Intent.PRIMARY}
-              onClick={event => {this.form.onSubmit(event);}}
-              disabled={this.props.schema && this.props.schema.propertiesOrder.length === 0}
-            />
-          </div>
         </div>
       </Dialog>
     );
@@ -215,6 +214,7 @@ const mapStateToProps = (state, {baseSchema}) => ({
   uiSchemaTitle: getUiSchemaTitle(state, baseSchema.id),
   jsonUiSchemaLogic: getUiSchemaLogic(state, baseSchema.id),
   isLoading: getLoadingState(state),
+  tokenId: getTokenId(state),
 });
 
 export default connect(mapStateToProps, {

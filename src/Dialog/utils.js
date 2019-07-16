@@ -3,7 +3,7 @@ import isEmpty from 'lodash/isEmpty';
 
 export const toServerData = (schema, data) => {
 
-  if (schema.nullable && (data === null || data === '')) {
+  if (schema.type.includes('null') && (data === null || data === '')) {
     return null;
   }
 
@@ -26,7 +26,7 @@ export const toServerData = (schema, data) => {
         result[key] = toServerData(schema.properties[key], data[key]);
       }
     }
-    if (schema.nullable && isEmpty(result)) {
+    if (schema.type.includes('null') && isEmpty(result)) {
       return null;
     }
     return result;
