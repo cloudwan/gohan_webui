@@ -74,3 +74,21 @@ export const removeEmpty = obj => {
       {}
     );
 };
+
+export const prepareFormData = (properties, propertiesOrder, required, data) => (
+  propertiesOrder.reduce(
+    (result, item) => {
+      if (data[item] !== undefined) {
+        result[item] = data[item];
+      } else if (required.includes(item)) {
+        result[item] = properties[item].type === 'object' && !properties[item].default ?
+          {} :
+          properties[item].default;
+      } else {
+        result[item] = undefined;
+      }
+
+      return result;
+    }, {}
+  )
+);

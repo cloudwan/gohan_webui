@@ -106,45 +106,4 @@ describe('dialogReducer ', () => {
       schema: undefined
     });
   });
-
-  it(`should handle ${actionTypes.PREPARE_SUCCESS}`, () => {
-    dialogReducer(
-      undefined, {
-        type: actionTypes.PREPARE_SUCCESS,
-        data: [
-          {
-            path: 'sample1'
-          },
-          {
-            path: 'sample2'
-          }
-        ]
-      }
-    ).should.deep.equal({
-      dialogs: {},
-      isLoading: false,
-      errorMessage: '',
-      schema: [
-        {
-          path: 'sample1'
-        },
-        {
-          path: 'sample2'
-        }
-      ]
-    });
-  });
-
-  it('should handle CLEAR_DATA', () => {
-    dialogReducer(
-      undefined, {
-        type: actionTypes.CLEAR_DATA
-      }
-    ).should.deep.equal({
-      dialogs: {},
-      isLoading: true,
-      errorMessage: '',
-      schema: undefined
-    });
-  });
 });

@@ -12,6 +12,7 @@ import apiRequestReducer from '../apiRequest/ApiRequestReducer';
 import breadcrumbReducer from '../breadcrumb/breadcrumbReducer';
 import tableReducer from '../TableView/tableReducer';
 import detailReducer from '../DetailView/detailReducer';
+import formReducer from '../Form/formReducer';
 
 export const makeRootReducer = asyncReducers => {
   return combineReducers({
@@ -27,6 +28,7 @@ export const makeRootReducer = asyncReducers => {
     successToasterReducer,
     apiRequestReducer,
     breadcrumbReducer,
+    formReducer,
     ...asyncReducers
   });
 };

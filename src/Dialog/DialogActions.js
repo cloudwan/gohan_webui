@@ -2,50 +2,10 @@ import {
   OPEN,
   CLOSE,
   CLOSE_ALL,
-  PREPARE_SUCCESS,
-  PREPARE_FAILURE,
   ERROR,
   CLEAR_ERROR,
-  CLEAR_DATA,
-  OVERWRITE_SCHEMA
+  CLEAR_DATA
 } from './DialogActionTypes';
-
-import {
-  toLocalSchema,
-  filterSchema
-} from '../schema/SchemaActions';
-
-function fetchSuccess(data) {
-  return dispatch => {
-    dispatch({data, type: PREPARE_SUCCESS});
-  };
-}
-
-function fetchError(error) {
-  return dispatch => {
-    if (error.data) {
-      dispatch({type: PREPARE_FAILURE, error: error.data});
-    } else {
-      dispatch({type: PREPARE_FAILURE, error});
-    }
-  };
-}
-
-export function prepareSchema(schema, action, parentProperty, uiSchema = {}) {
-  return async (dispatch, getState) => {
-    const state = getState();
-
-    try {
-      const resultSchema = await toLocalSchema(schema, state, parentProperty, uiSchema);
-
-      dispatch(fetchSuccess(filterSchema(resultSchema, action, parentProperty)));
-    } catch (error) {
-      console.error(error);
-      dispatch(fetchError(error));
-    }
-
-  };
-}
 
 export function clearData() {
   return dispatch => {
@@ -77,9 +37,4 @@ export const clearError = () => dispatch => dispatch(
 export const showError = message => ({
   type: ERROR,
   message
-});
-
-export const overwriteSchema = schema => dispatch => dispatch({
-  type: OVERWRITE_SCHEMA,
-  schema
 });
