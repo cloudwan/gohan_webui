@@ -2,5 +2,6 @@
 --require babel-polyfill
 --require ignore-styles
 --require ./test/helpers/dom.js
+--require ./test/helpers/setup.js
 --require ./test/helpers/babelRegisterConfig.js
 --reporter spec

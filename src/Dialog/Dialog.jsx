@@ -23,9 +23,9 @@ import {
   clearError,
 } from './DialogActions';
 import {
-  getUiSchemaProperties,
   getUiSchemaTitle,
-  getUiSchemaLogic
+  getUiSchemaLogic,
+  getUiSchema
 } from './../uiSchema/UiSchemaSelectors';
 /**
  * Dialog component for creating and editing resources.
@@ -127,7 +127,6 @@ export class GeneratedDialog extends Component {
                     uiSchema={merge(this.props.jsonUiSchema, this.props.uiSchema)}
                     onSubmit={this.handleSubmit}
                     fetcher={async (url, query) => {
-
                       try {
 
                         const response = await fetch( // eslint-disable-line
@@ -210,7 +209,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const mapStateToProps = (state, {baseSchema}) => ({
   schema: getSchema(state),
-  jsonUiSchema: getUiSchemaProperties(state, baseSchema.id),
+  jsonUiSchema: getUiSchema(state, baseSchema.id),
   uiSchemaTitle: getUiSchemaTitle(state, baseSchema.id),
   jsonUiSchemaLogic: getUiSchemaLogic(state, baseSchema.id),
   isLoading: getLoadingState(state),
