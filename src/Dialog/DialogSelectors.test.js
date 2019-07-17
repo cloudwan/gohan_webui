@@ -18,22 +18,6 @@ describe('DialogSelectors', () => {
     });
   });
 
-  describe('getSchema', () => {
-    it('should return appropriate schema', () => {
-      selectors.getSchema(
-        {
-          dialogReducer: {
-            schema: {
-              name: 'test'
-            }
-          }
-        }
-      ).should.deep.equal({
-        name: 'test'
-      });
-    });
-  });
-
   describe('isOpen', () => {
     it('should return appropriate state of dialog, if is hidden', () => {
       selectors.isOpen(

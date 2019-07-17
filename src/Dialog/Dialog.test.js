@@ -6,7 +6,6 @@ import chaiEnzyme from 'chai-enzyme';
 import {shallow} from 'enzyme';
 
 import {Button} from '@blueprintjs/core';
-import {ProgressBar} from '@blueprintjs/core';
 import ConnectedDialog, {GeneratedDialog} from './Dialog';
 
 chai.use(chaiEnzyme());
@@ -36,25 +35,10 @@ describe('< Dialog />', () => {
     test2: 'test2',
     id: 0
   };
-  const schema = {
-    propertiesOrder: ['test1', 'test2'],
-    properties: {
-      test1: {
-        type: 'string'
-      },
-      test2: {
-        type: 'string'
-      }
-    }
-  };
 
   it('should exist', () => {
     const store = mockStore({
       dialogReducer: {
-        schema: {
-          id: '1',
-          propertiesOrder: ['test1', 'test2']
-        },
         isLoading: false
       },
       uiSchemaReducer: {
@@ -70,26 +54,15 @@ describe('< Dialog />', () => {
 
   it('should contain 2 Buttons when passed onClose function', () => {
     const wrapper = shallow(
-      <GeneratedDialog action={action} baseSchema={baseSchema}
-        schema={schema} data={data}
-        prepareSchema={() => {}} isLoading={false}
-        onClose={() => {}} clearData={() => {}}
+      <GeneratedDialog action={action}
+        baseSchema={baseSchema}
+        data={data}
+        isLoading={false}
+        onClose={() => {}}
         isOpen={true}
       />
     );
 
     wrapper.find(Button).should.have.length(2);
-  });
-
-  it('should contain ProgressBar when loading', () => {
-    const wrapper = shallow(
-      <GeneratedDialog action={action} baseSchema={baseSchema}
-        schema={schema} data={data}
-        prepareSchema={() => {}} isLoading={true}
-        clearData={() => {}} isOpen={true}
-      />
-    );
-
-    wrapper.find(ProgressBar).should.have.length(1);
   });
 });
