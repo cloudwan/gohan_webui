@@ -747,12 +747,13 @@ describe('DialogActions ', () => {
       const storeObject = {};
       const store = mockStore(storeObject);
 
-      store.dispatch(actions.openDialog('foo')());
+      store.dispatch(actions.openDialog('foo')({id: 'sampleId'}));
 
       store.getActions().should.deep.equal([
         {
           type: actionTypes.OPEN,
           name: 'foo',
+          additionalProps: {id: 'sampleId'}
         }
       ]);
     });

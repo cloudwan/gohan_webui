@@ -53,10 +53,11 @@ export function clearData() {
   };
 }
 
-export const openDialog = name => () => dispatch => dispatch(
+export const openDialog = name => additionalProps => dispatch => dispatch(
   {
     type: OPEN,
-    name
+    name,
+    additionalProps
   }
 );
 
