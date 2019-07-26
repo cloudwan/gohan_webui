@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {isOpen} from './DialogSelectors';
+import {isOpen, getAdditionalProps} from './DialogSelectors';
 
 const dialog = defaults => {
   const {
@@ -26,7 +26,8 @@ const dialog = defaults => {
 
     const mapStateToProps = state => (
       {
-        isOpen: isOpen(state, name)
+        isOpen: isOpen(state, name),
+        additionalProps: getAdditionalProps(state, name),
       }
     );
 

@@ -50,12 +50,59 @@ describe('DialogSelectors', () => {
         {
           dialogReducer: {
             dialogs: {
-              foo: true
+              foo: {
+                show: true,
+                additionalProps: {id: 'sampleId'}
+              }
             }
           }
         },
         'foo'
       ).should.equal(true);
+    });
+
+    it('should return appropriate state of dialog, if is close', () => {
+      selectors.isOpen(
+        {
+          dialogReducer: {
+            dialogs: {
+              foo: {
+                show: false,
+                additionalProps: {id: 'sampleId'}
+              }
+            }
+          }
+        },
+        'foo'
+      ).should.equal(false);
+    });
+  });
+
+  describe('getAdditionalProps', () => {
+    it('should return empty object for hidden dialog', () => {
+      selectors.getAdditionalProps(
+        {
+          dialogReducer: {
+            dialogs: {}
+          }
+        }
+      ).should.deep.equal({});
+    });
+
+    it('should return appropriate additional props', () => {
+      selectors.getAdditionalProps(
+        {
+          dialogReducer: {
+            dialogs: {
+              foo: {
+                show: true,
+                additionalProps: {id: 'sampleId'}
+              }
+            }
+          }
+        },
+        'foo'
+      ).should.deep.equal({id: 'sampleId'});
     });
   });
 

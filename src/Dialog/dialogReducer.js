@@ -23,7 +23,10 @@ export default function dialogReducer(
       return {
         ...state,
         dialogs: {
-          [action.name]: true
+          [action.name]: {
+            show: true,
+            additionalProps: action.additionalProps
+          }
         },
       };
     case CLOSE:

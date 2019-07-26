@@ -31,11 +31,12 @@ describe('dialogReducer ', () => {
     dialogReducer(
       undefined, {
         type: actionTypes.OPEN,
-        name: 'foo'
+        name: 'foo',
+        additionalProps: {id: 'sampleId'}
       }
     ).should.deep.equal({
       dialogs: {
-        foo: true,
+        foo: {show: true, additionalProps: {id: 'sampleId'}},
       },
       isLoading: true,
       errorMessage: '',

@@ -30,7 +30,11 @@ export const getSchema = createSelector(
 );
 
 export const isOpen = createSelector(
-  [dialog], dialog => Boolean(dialog)
+  [dialog], dialog => dialog ? dialog.show : false
+);
+
+export const getAdditionalProps = createSelector(
+  [dialog], dialog => dialog ? dialog.additionalProps : {}
 );
 
 export const getError = createSelector(
