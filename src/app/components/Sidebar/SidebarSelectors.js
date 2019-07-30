@@ -34,7 +34,7 @@ const sidebarFavorites = state => {
   return [];
 };
 
-const getSidebarItems = (sidebar, schemas, sidebarChildResources) => {
+const getSidebarItems = (sidebar, schemas, sidebarChildResources = []) => {
   const sidebarItems = {};
 
   if (schemas !== undefined && Array.isArray(schemas)) {
