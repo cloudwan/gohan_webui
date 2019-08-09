@@ -55,6 +55,10 @@ export class Form extends Component {
     });
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !isEqual(nextProps, this.props) || !isEqual(nextState, this.state);
+  }
+
   componentWillReceiveProps(nextProps) {
     const {action, formName} = this.props;
 
