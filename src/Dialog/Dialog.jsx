@@ -54,6 +54,7 @@ export class GeneratedDialog extends Component {
     const {
       action,
       baseSchema,
+      uiSchema,
       customTitle,
       customButtonLabel,
       data
@@ -74,6 +75,7 @@ export class GeneratedDialog extends Component {
             onRef={this.createFormWrapperRef}
             action={action}
             baseSchema={baseSchema}
+            uiSchema={uiSchema}
             data={data}
             onSubmit={this.props.onSubmit}
             onChange={this.props.onChange}
