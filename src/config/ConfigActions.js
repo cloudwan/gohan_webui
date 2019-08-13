@@ -30,7 +30,9 @@ function fetchSuccess(data) {
     if (data.storagePrefix) {
       const substringSearchEnabled = JSON.parse(sessionStorage.getItem(`${data.storagePrefix}SubstringSearchEnabled`));
 
-      data.substringSearchEnabled = substringSearchEnabled === true ? substringSearchEnabled : false;
+      data.substringSearchEnabled = substringSearchEnabled === null ? true : substringSearchEnabled;
+    } else {
+      data.substringSearchEnabled = true;
     }
 
     dispatch({data, type: FETCH_SUCCESS});

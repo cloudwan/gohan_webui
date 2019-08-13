@@ -43,7 +43,8 @@ describe('ConfigActions ', () => {
           authUrl: 'http://localhost:9091/v2.0',
           gohan: {
             url: 'http://localhost:9091'
-          }
+          },
+          substringSearchEnabled: true
         }
       }
     ]);
@@ -68,7 +69,8 @@ describe('ConfigActions ', () => {
           authUrl: 'http://192.168.1.11:9091/v2.0',
           gohan: {
             url: 'http://192.168.1.11:9091'
-          }
+          },
+          substringSearchEnabled: true
         }
       }
     ]);
