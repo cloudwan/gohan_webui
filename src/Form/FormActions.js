@@ -30,14 +30,16 @@ export const prepareSchemaFailure = (formName, error) => {
   });
 };
 
-export const prepareSchema = (formName, schema, action, parentProperty, uiSchema = {}) => {
+export const prepareSchema = (formName, schema, action, parentProperty, uiSchema = {}, silent = false) => {
   return async (dispatch, getState) => {
     const state = getState();
 
-    dispatch({
-      type: PREPARE_SCHEMA_START,
-      formName
-    });
+    if (!silent) {
+      dispatch({
+        type: PREPARE_SCHEMA_START,
+        formName
+      });
+    }
 
     try {
       const resultSchema = await toLocalSchema(schema, state, parentProperty, uiSchema);

@@ -79,6 +79,15 @@ describe('FormActions', () => {
       });
     });
 
+    it('shouldn\'t dispatch any action when silent param is true', () => {
+      const storeState = {};
+      const store = mockStore(storeState);
+
+      store.dispatch(actions.prepareSchema('formName', {}, 'create', undefined, {}, true));
+
+      store.getActions().should.deep.equal([]);
+    });
+
     it(`should dispatch ${actionTypes.PREPARE_SCHEMA_SUCCESS}`, async () => {
       const storeState = {
         formReducer: {},
