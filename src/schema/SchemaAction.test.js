@@ -18,7 +18,7 @@ const _get = axios.get;
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 
-describe('SchemaActions ', () => {
+describe('SchemaActions ', (    ) => {
   afterEach(() => {
     axios.get = _get;
   });
