@@ -1,0 +1,84 @@
+name: PR check
+on:
+  push:
+    paths:
+    - '*.js'
+    - '*.jsx'
+    - '*.ts'
+    - '*.tsx'
+    - '*.scss'
+    - '*.less'
+    - '*.json'
+  pull_request:
+    paths:
+    - '*.js'
+    - '*.jsx'
+    - '*.ts'
+    - '*.tsx'
+    - '*.scss'
+    - '*.less'
+    - '*.json'
+jobs:
+  prepare:
+    name: Install dependencies
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm tun tests
+      run: |
+        npm install 
+  test:
+    name: Run unit tests
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm tun tests
+      run: |
+        npm run test-cover 
+  lint:
+    name: Run lint
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm tun tests
+      run: |
+        npm run lint
+  build:
+    name: Run build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install, build, and test
+      run: |
+        npm run build
