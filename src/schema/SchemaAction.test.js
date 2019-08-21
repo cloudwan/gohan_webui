@@ -65,7 +65,7 @@ describe('SchemaActions ', () => {
         type: actionTypes.FETCH_SUCCESS,
         data: [
           {
-            id: 'sample1',
+            id: 'sample2',
             path: 'sample1',
             children: [
               'sample2'
