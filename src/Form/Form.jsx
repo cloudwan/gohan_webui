@@ -65,7 +65,7 @@ export class Form extends Component {
     if (!isEqual(this.props.baseSchema.schema, nextProps.baseSchema.schema)) {
       this.props.prepareSchema(formName, nextProps.baseSchema.schema, action, nextProps.baseSchema.parent, {
         ...merge(this.props.jsonUiSchema, this.props.uiSchema)
-      });
+      }, true);
     }
     if (this.props.updateParentSubmitButtonDisabled !== undefined) {
       if (!isEqual(nextProps.schema, this.props.schema) || Object.keys(nextProps.schema).length > 0) {
