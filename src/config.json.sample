@@ -65,10 +65,5 @@
     "useKeystoneDomain": true,
     "selectDomainFromHost": "^(.*)\\.gohan\\.webui$",
     "domainName": "default",
-    "cloudAdmin": {
-        "username": "admin",
-        "domainId": "default",
-        "projectName": "admin"
-    },
     "sidebarChildResources": ["ese_device"]
 }

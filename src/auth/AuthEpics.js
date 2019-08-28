@@ -38,10 +38,6 @@ const computeOffsetForTokenRenewal = date => {
   return 2000; // Workaround to show token renewal popup
 };
 
-const isCloudAdmin = (user, cloudAdmin) => {
-  return user && cloudAdmin && user.name === cloudAdmin.username && user.domain.id === cloudAdmin.domainId;
-};
-
 export const getTokenInfo = (authUrl, token, call = (fn, ...args) => fn(...args)) =>
   call(
     get,
@@ -121,6 +117,31 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
       });
     });
 
+export const isCloudAdminObservable = (authUrl, tokenId) => {
+  return post(`${authUrl}/auth/tokens`, {
+      'Content-Type': 'application/json'
+    }, {
+      auth: {
+        identity: {
+          methods: ['token'],
+          token: {
+            id: tokenId,
+          }
+        },
+        scope: {
+          project: {
+            name: 'admin',
+            domain: {
+              id: 'default',
+            }
+          }
+        },
+      },
+    }
+  ).map(response => response.response.token.is_admin_project)
+    .catch(() => Observable.of(false));
+};
+
 export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(LOGIN)
     .mergeMap(({username, password, domain, unscopedToken}) => {
@@ -129,7 +150,6 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
         authUrl,
         useKeystoneDomain,
         domainName,
-        cloudAdmin,
         storagePrefix,
       } = state.configReducer;
       const headers = {
@@ -181,45 +201,46 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           data
         )
         .flatMap(response => {
-          const {user} = response.response.token;
-          let scope = {};
+          const tokenId = response.xhr.getResponseHeader('X-Subject-Token');
+          const expiresAt = response.response.token.expires_at;
+          const user = response.response.token.user;
+          return isCloudAdminObservable(authUrl, tokenId)
+            .flatMap(isCloudAdmin => {
+              const actions = [
+                Observable.of(loginSuccess(
+                  tokenId,
+                  expiresAt,
+                  user,
+                  storagePrefix,
+                  tenantFilterUseAnyOf,
+                  isCloudAdmin,
+                )),
+              ];
 
-          if (useKeystoneDomain) {
-            if (isCloudAdmin(user, cloudAdmin)) {
-              tenantFilterUseAnyOf = true;
-              scope = {
-                project: {
-                  name: cloudAdmin.projectName,
-                  domain: {
-                    id: cloudAdmin.domainId,
+              if (useKeystoneDomain && isCloudAdmin) {
+                actions.push(Observable.of({
+                  type: SCOPED_LOGIN, scope: {
+                    project: {
+                      name: 'admin',
+                      domain: {
+                        id: 'default',
+                      }
+                    }
                   }
-                }
-              };
-            } else {
-              scope = {
-                domain: {
-                  id: user.domain.id,
-                }
-              };
-            }
-          }
-
-          const actions = [
-            Observable.of(loginSuccess(
-              response.xhr.getResponseHeader('X-Subject-Token'),
-              response.response.token.expires_at,
-              response.response.token.user,
-              storagePrefix,
-              tenantFilterUseAnyOf
-            )),
-          ];
-
-          if (useKeystoneDomain) {
-            actions.push(Observable.of({type: SCOPED_LOGIN, scope}));
-          } else {
-            actions.push(Observable.of({type: FETCH_TENANTS}));
-          }
-          return Observable.concat(...actions);
+                }));
+              } else if (useKeystoneDomain && !isCloudAdmin) {
+                actions.push(Observable.of({
+                  type: SCOPED_LOGIN, scope: {
+                    domain: {
+                      id: user.domain.id,
+                    }
+                  }
+                }));
+              } else {
+                actions.push(Observable.of({type: FETCH_TENANTS}));
+              }
+              return Observable.concat(...actions);
+            });
         })
         .catch(error => {
           console.error(error);
@@ -314,15 +335,14 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
       const state = store.getState();
       const {
         authUrl,
-        cloudAdmin,
         useKeystoneDomain,
       } = state.configReducer;
       const {
         tokenId,
         unscopedToken,
-        user,
         logged,
         tenant,
+        isCloudAdmin
       } = state.authReducer;
       const headers = {
         'Content-Type': 'application/json',
@@ -331,7 +351,7 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
 
       if (authUrl) {
         const query = (scope && scope.domain) ? `?domain_id=${scope.domain.id}` : '';
-        const isProjectAdmin = isUserAdmin(state) && !scope.domain && !isCloudAdmin(user, cloudAdmin);
+        const isProjectAdmin = isUserAdmin(state) && !scope.domain && !isCloudAdmin;
         const url = useKeystoneDomain && isUserAdmin(state) && !isProjectAdmin ?
           `${authUrl}/projects${query}` :
           `${authUrl}/auth/projects`;
@@ -350,7 +370,7 @@ export const fetchTenants = (action$, store, call = (fn, ...args) => fn(...args)
               )),
             ];
 
-            if (useKeystoneDomain && isCloudAdmin(user, cloudAdmin)) {
+            if (useKeystoneDomain && isCloudAdmin) {
               actions.unshift(Observable.of({type: FETCH_DOMAINS}));
             }
 
