@@ -64,7 +64,8 @@ export default function authReducer(state = {
         user: action.data.user,
         inProgress: false,
         showTokenRenewal: false,
-        tenantFilterUseAnyOf: action.data.tenantFilterUseAnyOf
+        tenantFilterUseAnyOf: action.data.tenantFilterUseAnyOf,
+        isCloudAdmin: action.data.isCloudAdmin,
       };
     case SCOPED_LOGIN:
       return {

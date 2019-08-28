@@ -29,7 +29,8 @@ export const loginSuccess = (
   tokenExpires,
   user,
   prefix,
-  tenantFilterUseAnyOf
+  tenantFilterUseAnyOf,
+  isCloudAdmin = false,
 ) => {
   sessionStorage.setItem(`${prefix}UnscopedToken`, tokenId);
   sessionStorage.setItem(`${prefix}TenantFilterUseAnyOf`, tenantFilterUseAnyOf);
@@ -40,7 +41,8 @@ export const loginSuccess = (
       tokenId,
       tokenExpires,
       user,
-      tenantFilterUseAnyOf
+      tenantFilterUseAnyOf,
+      isCloudAdmin,
     },
   };
 };
