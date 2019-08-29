@@ -204,7 +204,8 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
           const tokenId = response.xhr.getResponseHeader('X-Subject-Token');
           const expiresAt = response.response.token.expires_at;
           const user = response.response.token.user;
-          return isCloudAdminObservable(authUrl, tokenId)
+
+          return call(isCloudAdminObservable, authUrl, tokenId)
             .flatMap(isCloudAdmin => {
               const actions = [
                 Observable.of(loginSuccess(
@@ -213,7 +214,7 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
                   user,
                   storagePrefix,
                   tenantFilterUseAnyOf,
-                  isCloudAdmin,
+                  Boolean(isCloudAdmin), // Unit test purpose
                 )),
               ];
 
