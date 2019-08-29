@@ -32,6 +32,7 @@ describe('authReducer ', () => {
         user: {
           username: 'Admin'
         },
+        isCloudAdmin: true,
         tenantFilterUseAnyOf: true
       }
     }).should.deep.equal(
@@ -49,6 +50,7 @@ describe('authReducer ', () => {
         domains: [],
         roles: [],
         scope: {},
+        isCloudAdmin: true,
         tenantFilterUseAnyOf: true
       }
     );

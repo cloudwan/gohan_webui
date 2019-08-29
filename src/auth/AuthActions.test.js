@@ -32,6 +32,7 @@ describe('AuthActions ', () => {
           tokenId: 'tokenId',
           tokenExpires: '1/2/2017',
           user: {name: 'user'},
+          isCloudAdmin: false,
           tenantFilterUseAnyOf: true
         }
       });
@@ -45,13 +46,15 @@ describe('AuthActions ', () => {
         '1/2/2017',
         {name: 'user'},
         'prefix',
-        false
+        false,
+        true
       ).should.deep.equal({
         type: actionTypes.LOGIN_SUCCESS,
         data: {
           tokenId: 'tokenId',
           tokenExpires: '1/2/2017',
           user: {name: 'user'},
+          isCloudAdmin: true,
           tenantFilterUseAnyOf: false
         }
       });
