@@ -45,6 +45,23 @@ class TableComponent extends Component {
     return data.map(item => item.id);
   };
 
+  parseUrl = (url, template, data) => {
+    if (template) {
+      return template
+        .match(/(\/:)(.*?)(\/)/g)
+        .reduce((result, item) => {
+          const prop = item.substring(
+            item.indexOf(':') + 1,
+            item.lastIndexOf('/')
+          );
+
+            return result.replace(item, `/${data[prop]}/`);
+        }, template);
+    }
+
+    return url;
+  }
+
   handleCheckAllChange = () => {
     const {checkedAll: checkboxValue} = this.state;
     const {checkboxColumn} = this.props;
@@ -97,7 +114,8 @@ class TableComponent extends Component {
       data,
       optionsColumn,
       checkboxColumn,
-      url
+      url,
+      urlTemplate,
     } = this.props;
     const {
       sortKey,
@@ -195,7 +213,8 @@ class TableComponent extends Component {
 
                   if (column.id === 'name') {
                     return (
-                      <TableDataLinkCell url={url} id={item.id}
+                      <TableDataLinkCell id={item.id}
+                        url={this.parseUrl(url, urlTemplate, item)}
                         key={index}>
                         {item[column.id]}
                       </TableDataLinkCell>
@@ -234,7 +253,7 @@ class TableComponent extends Component {
                 {!item.deleting && optionsColumn && (
                   <TableDataCell className="text-right column-action">
                     <Tooltip2 content="Detail" placement="auto">
-                      <Link to={`${url}/${item.id}`}
+                      <Link to={`${this.parseUrl(url, urlTemplate, item)}/${item.id}`}
                         className="action-icon link mr-2">
                         <FontAwesomeIcon className="faicon" icon={faLink} />
                       </Link>
@@ -274,6 +293,7 @@ class TableComponent extends Component {
 }
 
 TableComponent.propTypes = {
+  urlTemplate: PropTypes.string,
   sortOptions: PropTypes.shape({
     sortKey: PropTypes.string,
     sortOrder: PropTypes.string,
