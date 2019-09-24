@@ -27,6 +27,7 @@ class TableComponent extends Component {
       permissions,
       actions,
       id,
+      urlTemplate,
     } = this.props;
 
     return (
@@ -57,6 +58,7 @@ class TableComponent extends Component {
           />
           <Table data={table.data}
             url={url}
+            urlTemplate={urlTemplate}
             columns={headers}
             checkboxColumn={{
               visible: permissions.remove,
@@ -100,6 +102,7 @@ if (process.env.NODE_ENV !== 'production') {
     ),
     title: PropTypes.string,
     url: PropTypes.string,
+    urlTemplate: PropTypes.string,
     toolbar: PropTypes.shape({
       onDeleteSelectedClick: PropTypes.func,
       onAddResourceClick: PropTypes.func,
