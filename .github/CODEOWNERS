@@ -1,8 +1,8 @@
-*       @thayashi @stepek
-*.js    @thayashi @stepek @sealionkat @michal-damiecki
-*.jsx   @thayashi @stepek @sealionkat @michal-damiecki
-*.ts    @thayashi @stepek @sealionkat @michal-damiecki
-*.tsx   @thayashi @stepek @sealionkat @michal-damiecki
-*.css   @thayashi @stepek @sealionkat @michal-damiecki
-*.less  @thayashi @stepek @sealionkat @michal-damiecki
-*.sass  @thayashi @stepek @sealionkat @michal-damiecki
+*       @stepek @sealionkat
+*.js    @stepek @sealionkat @michal-damiecki
+*.jsx   @stepek @sealionkat @michal-damiecki
+*.ts    @stepek @sealionkat @michal-damiecki
+*.tsx   @stepek @sealionkat @michal-damiecki
+*.css   @stepek @sealionkat @michal-damiecki
+*.less  @stepek @sealionkat @michal-damiecki
+*.sass  @stepek @sealionkat @michal-damiecki
