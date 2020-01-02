@@ -1,5 +1,6 @@
 require('mock-local-storage');
 var jsdom = require('jsdom');
+var mockSocket = require('mock-socket');
 
 // setup the simplest document possible
 var doc = jsdom.jsdom('<!doctype html><html><body></body></html>', {url: 'http://localhost/'});
@@ -8,6 +9,7 @@ var win = doc.defaultView;
 // set globals for mocha that make access to document and window feel
 // natural in the test environment
 global.document = doc;
+global.WebSocket = mockSocket.WebSocket;
 global.window = win;
 
 // take all properties of the window object and also attach it to the
@@ -30,4 +32,5 @@ function propagateToGlobal(window) {
   }
   window.sessionStorage = global.sessionStorage;
   window.localStorage = global.localStorage;
+  window.WebSocket = global.WebSocket;
 }
