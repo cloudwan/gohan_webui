@@ -1,3 +1,4 @@
+/* globals document */
 import React, {Component} from 'react';
 
 import Console from '../../components/Console';
@@ -45,13 +46,15 @@ export class WebSocketTerminal extends Component {
   componentDidMount() {
     const {url, authToken} = this.props;
 
-    document.cookie = `Auth-Token=${authToken}; path=/`; // eslint-disable-line no-undef
+    document.cookie = `Auth-Token=${authToken}; path=/`;
 
     this.setConnection(url);
   }
 
   componentWillUnmount() {
     this.closeConnection();
+
+    document.cookie = 'Auth-Token= ; path=/; expires = Thu, 01 Jan 1970 00:00:00 GMT';
   }
 
   setConnection = url => {

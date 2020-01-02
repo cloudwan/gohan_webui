@@ -244,7 +244,7 @@ export const createWebSocket = (url, events = {
     url = url.replace('http', 'ws'); // todo: add ^
   }
 
-  const ws = new WebSocket(url); // eslint-disable-line
+  const ws = new window.WebSocket(url); // eslint-disable-line
 
   ws.addEventListener('open', events.onOpen);
   ws.addEventListener('message', events.onMessage);
