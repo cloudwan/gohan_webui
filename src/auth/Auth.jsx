@@ -15,6 +15,7 @@ import {
 } from './AuthActions';
 import {resetErrorMessage} from './../error/ErrorActions';
 import LoadingIndicator from '../components/LoadingIndicator';
+import Footer from '../components/Footer';
 import Login from './components/Login';
 import SelectTenant from './components/SelectTenant';
 import {Toast} from '@blueprintjs/core';
@@ -36,6 +37,7 @@ import {
   getUseKeystoneDomainState,
   getDomainName,
   getStoragePrefix,
+  getIcpNumber,
 } from './../config/ConfigSelectors';
 
 export class Auth extends Component {
@@ -93,7 +95,7 @@ export class Auth extends Component {
     return null;
   };
 
-  render() {
+  renderLoginStep = () => {
     const {
       Login,
       SelectTenant,
@@ -131,6 +133,19 @@ export class Auth extends Component {
       <Loading key={2} />
     );
   }
+
+  render() {
+    const {icpNumber} = this.props;
+
+    return (
+      <div className="gohan-auth">
+        <div className="gohan-auth-body">
+          {this.renderLoginStep()}
+        </div>
+        <Footer className="gohan-auth-footer">{icpNumber}</Footer>
+      </div>
+    );
+  }
 }
 
 Auth.defaultProps = {
@@ -164,6 +179,7 @@ if (process.env.NODE_ENV !== 'production') {
     domainName: PropTypes.string,
     loggedState: PropTypes.bool,
     storagePrefix: PropTypes.string,
+    icpNumber: PropTypes.string,
   };
 }
 
@@ -182,6 +198,7 @@ function mapStateToProps(state) {
     unscopedToken: getUnscopedToken(state),
     isAdmin: isUserAdmin(state),
     loggedState: getLoggedState(state),
+    icpNumber: getIcpNumber(state),
   };
 }
 

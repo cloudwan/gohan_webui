@@ -175,6 +175,10 @@ body {
   height: 100vh;
 }
 
+.gohan-app {
+  height: 100%;
+}
+
 /*
  * Login
  */
@@ -184,23 +188,37 @@ body {
   padding-top: 2em;
 }
 
-.auth-container {
-  height: 100vh;
-  .auth-box {
-    width: 23rem;
-    margin-top: -4em;
-  }
-  .auth-body {
-    > .pt-toast {
-      margin-top: 0;
-      margin-bottom: 1rem;
+.gohan-auth {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+
+    .auth-box {
+      width: 23rem;
+      margin-top: -4em;
     }
-    .enable-tenant-filter {
-      text-align: center;
-      .pt-control {
-        margin-bottom: 0;
+    .auth-body {
+      > .pt-toast {
+        margin-top: 0;
+        margin-bottom: 1rem;
+      }
+      .enable-tenant-filter {
+        text-align: center;
+        .pt-control {
+          margin-bottom: 0;
+        }
       }
     }
+  }
+
+  &-footer {
+    align-self: center;
   }
 }
 
@@ -230,12 +248,22 @@ body {
 }
 
 .view-content {
+  display: flex;
+  flex-direction: column;
   padding-top: 60px;
   padding-right: 0;
   padding-bottom: 0;
   padding-left: 260px;
-  min-height: 400px;
-  transition: padding-left 250ms ease-in;
+  height: 100%;
+
+  &-body {
+    flex: 1;
+    transition: padding-left 250ms ease-in;
+  }
+
+  &-footer {
+    align-self: center;
+  }
 
   &.sidebar-hidden {
     padding-left: 0;
@@ -503,6 +531,20 @@ table.gohan-table {
       line-height: 20px;
       font-size: 16px;
     }
+  }
+}
+
+/*
+ * Footer component
+ */
+
+.gohan-footer {
+  padding: 20px 0;
+
+  &-text {
+    font-size: smaller;
+    font-weight: bold;
+    color: $gray-500;
   }
 }
 

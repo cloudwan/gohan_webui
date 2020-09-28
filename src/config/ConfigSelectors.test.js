@@ -162,4 +162,14 @@ describe('ConfigSelectors', () => {
       }).should.deep.equal(['foo']);
     });
   });
+
+  describe('getIcpNumber', () => {
+    it('should return ICP number', () => {
+      selectors.getIcpNumber({
+        configReducer: {
+          icpNumber: 'ICP 123',
+        },
+      }).should.equal('ICP 123');
+    });
+  });
 });

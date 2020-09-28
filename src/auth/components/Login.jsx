@@ -25,36 +25,34 @@ export default class Login extends Component {
     const {isDomainEnabled} = this.props;
 
     return (
-      <div className="auth-container d-flex justify-content-center align-items-center">
-        <div className="auth-box">
-          <form className="auth-body" onSubmit={this.handleLoginSubmit}>
-            <h3 className="text-center">Gohan Web UI</h3>
-            <p className="mb-2 text-muted text-center">Web UI for Gohan project</p>
-            {this.props.Error}
+      <div className="auth-box">
+        <form className="auth-body" onSubmit={this.handleLoginSubmit}>
+          <h3 className="text-center">Gohan Web UI</h3>
+          <p className="mb-2 text-muted text-center">Web UI for Gohan project</p>
+          {this.props.Error}
+          <div className="form-group">
+            <input className="form-control" type="text"
+              ref={c => { this.userId = c; }} placeholder="User ID"
+            />
+          </div>
+          {isDomainEnabled && (
             <div className="form-group">
               <input className="form-control" type="text"
-                ref={c => { this.userId = c; }} placeholder="User ID"
+                ref={c => { this.domain = c; }} placeholder="Domain"
               />
             </div>
-            {isDomainEnabled && (
-              <div className="form-group">
-                <input className="form-control" type="text"
-                  ref={c => { this.domain = c; }} placeholder="Domain"
-                />
-              </div>
-            )}
-            <div className="form-group">
-              <input className="form-control" type="password"
-                ref={c => { this.userPass = c; }} placeholder="Password"
-              />
-            </div>
-            <div className="form-group">
-              <button type="submit" className="btn btn-primary btn-block">
-                Login
-              </button>
-            </div>
-          </form>
-        </div>
+          )}
+          <div className="form-group">
+            <input className="form-control" type="password"
+              ref={c => { this.userPass = c; }} placeholder="Password"
+            />
+          </div>
+          <div className="form-group">
+            <button type="submit" className="btn btn-primary btn-block">
+              Login
+            </button>
+          </div>
+        </form>
       </div>
     );
   }

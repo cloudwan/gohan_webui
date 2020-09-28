@@ -94,37 +94,35 @@ export default class SelectTenant extends Component {
 
   render() {
     return (
-      <div className="auth-container d-flex justify-content-center align-items-center">
-        <div className="auth-box">
-          <form className="auth-body" onSubmit={this.handleSelectTenantSubmit}>
-            <h3 className="card-title text-center">{`Hello ${this.props.username}!`}</h3>
-            <p className="card-subtitle mb-2 text-muted text-center">Select a Tenant</p>
-            {this.props.Error}
+      <div className="auth-box">
+        <form className="auth-body" onSubmit={this.handleSelectTenantSubmit}>
+          <h3 className="card-title text-center">{`Hello ${this.props.username}!`}</h3>
+          <p className="card-subtitle mb-2 text-muted text-center">Select a Tenant</p>
+          {this.props.Error}
+          <div className="form-group">
+            <select className="form-control" onChange={this.handleTenantChange}
+              defaultValue={''}>
+              {this.buildSelectOptions()}
+            </select>
+          </div>
+          {!this.props.useDomain && (
             <div className="form-group">
-              <select className="form-control" onChange={this.handleTenantChange}
-                defaultValue={''}>
-                {this.buildSelectOptions()}
-              </select>
-            </div>
-            {!this.props.useDomain && (
-              <div className="form-group">
-                <div className="checkbox enable-tenant-filter">
-                  <label className="pt-control pt-checkbox pt-inline">
-                    <input type="checkbox" onChange={this.handleFilterTenantStatusChange}
-                      checked={this.state.tenantFilter}
-                    />
-                    <span className="pt-control-indicator" />
-                    Filter resources by tenant
-                  </label>
-                  <p className="form-text text-muted">(Modifiable after login too)</p>
-                </div>
+              <div className="checkbox enable-tenant-filter">
+                <label className="pt-control pt-checkbox pt-inline">
+                  <input type="checkbox" onChange={this.handleFilterTenantStatusChange}
+                    checked={this.state.tenantFilter}
+                  />
+                  <span className="pt-control-indicator" />
+                  Filter resources by tenant
+                </label>
+                <p className="form-text text-muted">(Modifiable after login too)</p>
               </div>
-            )}
-            <button type="submit" className="btn btn-primary btn-block">
-              Continue
-            </button>
-          </form>
-        </div>
+            </div>
+          )}
+          <button type="submit" className="btn btn-primary btn-block">
+            Continue
+          </button>
+        </form>
       </div>
     );
   }
