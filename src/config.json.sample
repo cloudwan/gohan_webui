@@ -62,5 +62,6 @@
     "useKeystoneDomain": true,
     "selectDomainFromHost": "^(.*)\\.gohan\\.webui$",
     "domainName": "default",
-    "sidebarChildResources": ["ese_device"]
+    "sidebarChildResources": ["ese_device"],
+    "icpNumber": "京ICP证12345678号"
 }

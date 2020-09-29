@@ -58,7 +58,7 @@ Possible fields in config file:
   - `url` - URL to Gohan server
 - `sidebar` - array of custom sidebar buttons, must contain objects with following fields:
   - `path`
-  - `title` 
+  - `title`
   - `id`
 - `sidebarFavorites` - array of links to views, must contain resources' IDs
 - `sidebarCategories` - array of objects including information about views' categories, must contain objects with following fields:
@@ -85,6 +85,7 @@ Possible fields in config file:
 - `useKeystoneDomain` - flag to enable use domain feature in keystone v3
 - `selectDomainFromHost` - regex to select domain from host (keystone v3)
 - `domainName` - default domain name
+- `icpNumber` - Internet Content Provider (ICP) number
 
 
 UI schema
