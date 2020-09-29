@@ -1,0 +1,35 @@
+version: 2.1
+
+jobs:
+  test:
+    docker:
+      - image: circleci/node:12.9.1-browsers
+
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{checksum "package.json"}}
+            - v1-dependencies-
+      - run:
+          name: install packages
+          command: npm install
+
+      - save_cache:
+          key: v1-dependencies-{{checksum "package.json"}}
+          paths:
+            - node_modules
+            - ~/.npm
+            - ~/.cache
+      - run:
+          name: Run lint
+          command: npm run lint
+      - run:
+          name: Run tests
+          command: npm run test
+
+workflows:
+  test_and_lint:
+    jobs:
+      - test
