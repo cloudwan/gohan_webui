@@ -222,17 +222,22 @@ export function toLocalSchema(schema, state, parentProperty, uiSchema = {}) {
   });
 }
 
-export function filterSchema(schema, action, parentProperty) {
+export function filterSchema(schema, action, parentProperty, removeDeprecated = true) {
   let result = {};
 
   if (schema.enum !== undefined ||
     schema.options !== undefined ||
-    schema.properties === undefined) {
+    schema.properties === undefined
+  ) {
     return schema;
   }
 
   for (let key in schema.properties) {
     const property = schema.properties[key];
+
+    if (removeDeprecated && property.deprecated === true) {
+      continue;
+    }
 
     if (key === 'id' && property.format === 'uuid') {
       continue;
