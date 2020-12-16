@@ -148,3 +148,33 @@ describe('SchemaActions parseLabelTemplate helper function', () => {
     actions.parseLabelTemplate().should.equal(expected);
   });
 });
+
+describe('filterSchema()', () => {
+  it('should filter out deprecated values from schema', () => {
+    const schema = {
+      properties: {
+        deprecatedValue: {
+          deprecated: true,
+          title: 'Deprecated value',
+          type: 'string'
+        },
+        nonDeprecatedValue: {
+          title: 'Nondeprecated value',
+          type: 'string'
+        }
+      }
+    };
+
+    actions.filterSchema(schema, '', '').should.deep.equal({
+      properties: {
+        nonDeprecatedValue: {
+          title: 'Nondeprecated value',
+          type: 'string'
+        }
+      },
+      type: 'object',
+      propertiesOrder: ['nonDeprecatedValue'],
+      required: []
+    });
+  });
+});
