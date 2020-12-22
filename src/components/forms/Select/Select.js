@@ -9,7 +9,8 @@ class Select extends Component {
     disabled: false,
     readonly: false,
     nullable: false,
-    value: undefined
+    value: undefined,
+    enumDisabled: [],
   };
 
   constructor(props) {
@@ -40,7 +41,11 @@ class Select extends Component {
     }
   };
 
-  handleMenuItemClick = value => {
+  handleMenuItemClick = (value, isDisabled = false) => {
+    if (isDisabled) {
+      return;
+    }
+
     if (Array.isArray(this.props.value)) {
       const newValues = this.props.value.slice();
 
@@ -93,7 +98,8 @@ class Select extends Component {
       disabled,
       readonly,
       isInvalid,
-      nullable
+      nullable,
+      enumDisabled,
     } = this.props;
 
     let options = haystack.filter(item => {
@@ -189,25 +195,31 @@ class Select extends Component {
                 }
                 {options.map((item, i) => {
                   if (typeof item === 'object') {
+                    const isDisabled = enumDisabled.includes(item.label);
+
                     return (
                       <li key={i}
-                        onClick={() => this.handleMenuItemClick(item.value)}
+                        onClick={() => this.handleMenuItemClick(item.value, isDisabled)}
                         className={
                           selectedItem && (
                             item.value === value || (Array.isArray(value) && value.includes(item.value))
                           ) ? 'gohan-list selected' : 'gohan-list'
-                        }>
+                        }
+                        disabled={isDisabled}>
                         {item.label}
                       </li>
                     );
                   } else if (typeof item === 'string') {
+                    const isDisabled = enumDisabled.includes(item);
+
                     return (
                       <li key={i}
-                        onClick={() => this.handleMenuItemClick(item)}
+                        onClick={() => this.handleMenuItemClick(item, isDisabled)}
                         className={
                           selectedItem && (item === value || (Array.isArray(value) && value.includes(item))) ?
                             'gohan-list selected' : 'gohan-list'
-                        }>
+                        }
+                        disabled={isDisabled}>
                         {item}
                       </li>
                     );
@@ -249,7 +261,8 @@ if (process.env.NODE_ENV !== 'production') {
       PropTypes.array
     ]),
     readonly: PropTypes.bool,
-    disabled: PropTypes.bool
+    disabled: PropTypes.bool,
+    enumDisabled: PropTypes.array,
   };
 }
 

@@ -363,12 +363,16 @@ export default class ArrayField extends Component {
               const itemIdPrefix = idSchema.$id + '_' + index;
               const itemIdSchema = toIdSchema(itemsSchema, itemIdPrefix, definitions);
 
+              const isDisabled = uiSchema &&
+                Array.isArray(uiSchema['ui:enumDisabled']) &&
+                uiSchema['ui:enumDisabled'].includes(value);
+
               return (
                 <ArraySortableItem key={index} index={index}
                   disabled={!orderable}>
                   <div className="action">
                     <Button className="pt-minimal pt-small"
-                      onClick={this.onDropIndexClick(index)}>
+                      onClick={this.onDropIndexClick(index)} disabled={isDisabled}>
                       <FontAwesomeIcon className="faicon minus" icon={faMinusCircle} />
                     </Button>
                   </div>
@@ -383,7 +387,8 @@ export default class ArrayField extends Component {
                         itemErrorSchema,
                         itemData: items[index],
                         itemUiSchema: uiSchema.items,
-                        autofocus: autofocus && index === 0
+                        autofocus: autofocus && index === 0,
+                        isDisabled,
                       })
                     }
                   </div>
@@ -554,7 +559,8 @@ export default class ArrayField extends Component {
     itemUiSchema,
     itemIdSchema,
     itemErrorSchema,
-    autofocus
+    autofocus,
+    isDisabled,
   }) {
     const {SchemaField} = this.props.registry.fields;
 
@@ -569,7 +575,7 @@ export default class ArrayField extends Component {
             required={this.isItemRequired(itemSchema)}
             onChange={this.onChangeForIndex(index)}
             registry={this.props.registry}
-            disabled={this.props.disabled}
+            disabled={this.props.disabled || isDisabled}
             readonly={this.props.readonly}
             autofocus={autofocus}
           />
