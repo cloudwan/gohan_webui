@@ -1,5 +1,16 @@
 [
   {
+    "id": "ese_physical_port",
+    "properties": {
+      "interface_tags": {
+        "ui:enumDisabled": ["any", "primary", "secondary", "tertiary"],
+        "items": {
+          "ui:enumDisabled": ["any", "primary", "secondary", "tertiary"]
+        }
+      }
+    }
+  },
+  {
     "id": "bgp_config",
     "properties": {
       "global" : {

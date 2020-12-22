@@ -23,7 +23,8 @@ function processValue({type, items}, value) {
 
 class SelectWidget extends Component {
   static defaultProps = {
-    sort: false
+    sort: false,
+    enumDisabled: [],
   };
 
   constructor(props) {
@@ -60,6 +61,7 @@ class SelectWidget extends Component {
       multiple,   // eslint-disable-line
       autofocus,  // eslint-disable-line
       sort,
+      enumDisabled,
     } = this.props;
 
     return (
@@ -73,6 +75,7 @@ class SelectWidget extends Component {
           disabled={disabled}
           onChange={this.handleSelectChange}
           isInvalid={this.state.errors.length > 0}
+          enumDisabled={enumDisabled}
         />
         <Error errors={this.state.errors}/>
       </div>
@@ -93,6 +96,7 @@ if (process.env.NODE_ENV !== 'production') {
     autofocus: PropTypes.bool,
     onChange: PropTypes.func,
     sort: PropTypes.bool,
+    enumDisabled: PropTypes.array,
   };
 }
 

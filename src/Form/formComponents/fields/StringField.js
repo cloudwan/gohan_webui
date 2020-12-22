@@ -33,6 +33,7 @@ function StringField(props) {
   const {formContext} = registry;
   const widget = uiSchema['ui:widget'] || schema.format;
   const placeholder = uiSchema['ui:placeholder'] || '';
+  const enumDisabled = uiSchema['ui:enumDisabled'] || [];
   const commonProps = {
     schema,
     id: idSchema && idSchema.$id,
@@ -58,6 +59,7 @@ function StringField(props) {
     return (
       <SelectWidget options={{enumOptions}}
         sort={true}
+        enumDisabled={enumDisabled}
         {...commonProps}
       />
     );
@@ -70,7 +72,12 @@ function StringField(props) {
       return <Widget {...commonProps} />;
     }
 
-    return <SelectWidget options={{enumOptions}} {...commonProps} />;
+    return (
+      <SelectWidget options={{enumOptions}}
+        enumDisabled={enumDisabled}
+        {...commonProps}
+      />
+    );
   } else if (schema.format === 'text') {
     return <CodeWidget {...commonProps} placeholder={placeholder}/>;
   }
