@@ -1,5 +1,9 @@
 import {createSelector} from 'reselect';
 import groupBy from 'lodash/groupBy';
+import sortBy from 'lodash/sortBy';
+import toPairs from 'lodash/toPairs';
+import fromPairs from 'lodash/fromPairs';
+
 
 const isLogged = state => state.authReducer.logged;
 const tokenId = state => state.authReducer.tokenId;
@@ -117,13 +121,13 @@ export const getTenantsByDomain = createSelector(
 
       return {
         [domainId]: {
-          tenants: tenantsByDomain[domainId],
+          tenants: sortBy(tenantsByDomain[domainId], item => item.name.toLowerCase()),
         }
       };
     }
 
-    return Object.keys(tenantsByDomain).reduce((result, domainId) => {
-      const domainTenants = tenantsByDomain[domainId];
+    const newTenantsByDomain = Object.keys(tenantsByDomain).reduce((result, domainId) => {
+      const domainTenants = sortBy(tenantsByDomain[domainId], item => item.name.toLowerCase());
       if (domainTenants && domainTenants.length > 0) {
         const domain = domains.find(domain => domain.id === domainId);
         result[domainId] = {
@@ -134,6 +138,10 @@ export const getTenantsByDomain = createSelector(
 
       return result;
     }, {});
+
+    const sortedTenantsByDomain = fromPairs(sortBy(toPairs(newTenantsByDomain), item => item[1].name.toLowerCase()));
+
+    return sortedTenantsByDomain;
   }
 );
 

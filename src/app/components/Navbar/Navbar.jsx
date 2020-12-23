@@ -142,7 +142,7 @@ export class Navbar extends Component {
         </NavbarGroup>
         <NavbarGroup isRight={true}>
           <Popover2 content={
-            <Menu>
+            <Menu className="tenant-menu">
               {this.renderMenuItems()}
             </Menu>
           } placement="bottom-end"
