@@ -229,6 +229,11 @@ body {
   }
 }
 
+.tenant-menu {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 .view-content {
   padding-top: 60px;
   padding-right: 0;
