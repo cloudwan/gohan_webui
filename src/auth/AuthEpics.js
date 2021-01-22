@@ -27,10 +27,10 @@ import {
 } from './AuthActions';
 import {isUserAdmin} from './AuthSelectors';
 
-const computeOffsetForTokenRenewal = date => {
+const computeOffsetForTokenRenewal = (expiresAtDate, currentDate = moment()) => {
   const earlyWarningTime = 5 * 60 * 1000; // warn/renew 5 minutes earlier
-  const expiresAt = moment(date);
-  const offset = moment.duration(expiresAt.diff(moment()));
+  const expiresAt = moment(expiresAtDate);
+  const offset = moment.duration(expiresAt.diff(currentDate));
 
   if (offset > earlyWarningTime) {
     return offset - earlyWarningTime;
@@ -48,10 +48,6 @@ export const getTokenInfo = (authUrl, token, call = (fn, ...args) => fn(...args)
       'X-Subject-Token': token,
     }
   )
-    .map(response => ({
-      token: response.xhr.getResponseHeader('X-Subject-Token'),
-      ...response.response.token,
-    }))
     .catch(error => {
       console.error(error);
       return Observable.of(parseXHRError(error));
@@ -70,7 +66,11 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
       return Observable.zip(
         call(getTokenInfo, authUrl, unscopedToken),
         call(getTokenInfo, authUrl, tokenId)
-      ).flatMap(item => {
+      ).flatMap(responses => {
+        const item = responses.map(response => ({
+          token: response.xhr.getResponseHeader('X-Subject-Token'),
+          ...response.response.token,
+        }));
         const selectedTenant = item[1].roles && !item[1].roles.some(role => role.name.toLowerCase() === 'admin') ?
           item[1].project :
           tenant;
@@ -89,9 +89,23 @@ export const checkToken = (action$, store, call = (fn, ...args) => fn(...args)) 
         clearTimeout(state.authReducer.logoutTimeoutId);
 
         const expiresAt = moment(item[1].expires_at);
-        const timeout = moment.duration(expiresAt.diff(moment()));
+        let currentDate = moment();
+
+        try {
+          const date = responses[1].xhr.getResponseHeader('Date');
+
+          if (date && moment(date).isValid()) {
+            currentDate = moment(date);
+          } else {
+            throw new Error('Refused to get header "Date".');
+          }
+        } catch (error) {
+          console.log(error);
+        }
+
+        const timeout = moment.duration(expiresAt.diff(currentDate));
         const logoutTimeoutId = setTimeout(() => store.dispatch(logout()), timeout);
-        const warningOffset = computeOffsetForTokenRenewal(item[1].expires_at);
+        const warningOffset = computeOffsetForTokenRenewal(item[1].expires_at, currentDate);
 
         return Observable.concat(
           Observable.of(checkTokenSuccess(
@@ -287,12 +301,25 @@ export const scopedLogin = (action$, store, call = (fn, ...args) => fn(...args))
           data
         )
         .flatMap(response => {
-          const warningOffset = computeOffsetForTokenRenewal(response.response.token.expires_at);
-
           clearTimeout(state.authReducer.logoutTimeoutId);
 
+          let currentDate = moment();
+
+          try {
+            const date = response.xhr.getResponseHeader('Date');
+
+            if (date && moment(date).isValid()) {
+              currentDate = moment(date);
+            } else {
+              throw new Error('Refused to get header "Date".');
+            }
+          } catch (error) {
+            console.log(error);
+          }
+
+          const warningOffset = computeOffsetForTokenRenewal(response.response.token.expires_at, currentDate);
           const expiresAt = moment(response.response.token.expires_at);
-          const timeout = moment.duration(expiresAt.diff(moment()));
+          const timeout = moment.duration(expiresAt.diff(currentDate));
           const logoutTimeoutId = setTimeout(() => store.dispatch(logout()), timeout);
           const tenantFilterUseAnyOf = response.response.token.roles.some(item => item.name === 'admin');
 
