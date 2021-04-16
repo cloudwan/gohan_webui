@@ -100,7 +100,7 @@
     "mocha-jsdom": "^1.1.0",
     "mocha-junit-reporter": "^1.17.0",
     "mock-local-storage": "^1.0.5",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.14.1",
     "nyan-progress-webpack-plugin": "^1.2.0",
     "process": "^0.11.9",
     "prop-types": "^15.6.1",

@@ -1,9 +1,0 @@
-machine:
-  node:
-    version: 8.4.0
-test:
-  override:
-    - npm run lint -- -f junit -o $CIRCLE_TEST_REPORTS/eslint-results.xml
-    - npm run test-cover -- --reporter mocha-junit-reporter:
-          environment:
-            MOCHA_FILE: $CIRCLE_TEST_REPORTS/test-results.xml

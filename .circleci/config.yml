@@ -1,0 +1,22 @@
+version: 2.1
+
+jobs:
+  test:
+    node:
+      version: 12.0.0
+    steps:
+      - checkout
+      - run:
+          name: install packages
+          command: npm install
+      - run:
+          name: Run lint
+          command: npm run lint
+      - run:
+          name: Run tests
+          command: npm run test
+
+workflows:
+  test_and_lint:
+    jobs:
+      - test
