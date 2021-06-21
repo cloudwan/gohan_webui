@@ -158,7 +158,7 @@ export const isCloudAdminObservable = (authUrl, tokenId) => {
 
 export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
   return action$.ofType(LOGIN)
-    .mergeMap(({username, password, domain, unscopedToken}) => {
+    .mergeMap(({username, password, domain, unscopedToken, mfaCode}) => {
       const state = store.getState();
       const {
         authUrl,
@@ -184,9 +184,9 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
 
         if (username !== undefined && password !== undefined) {
           data.auth.identity = {
-            methods: [
-              'password'
-            ],
+            methods: mfaCode ?
+              ['password', 'totp'] :
+              ['password'],
             password: {
               user: {
                 domain: {
@@ -197,6 +197,18 @@ export const login = (action$, store, call = (fn, ...args) => fn(...args)) => {
               }
             }
           };
+
+          if (mfaCode) {
+            data.auth.identity.totp = {
+              user: {
+                domain: {
+                  name: selectedDomainName,
+                },
+                name: username,
+                passcode: mfaCode,
+              }
+            };
+          }
         } else if (unscopedToken !== undefined) {
           data.auth.identity = {
             methods: [

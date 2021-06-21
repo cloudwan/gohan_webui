@@ -52,11 +52,12 @@ export const loginFailure = error => ({
   error,
 });
 
-export const login = (username, password, domain) => ({
+export const login = (username, password, domain, mfaCode) => ({
   type: LOGIN,
   username,
   password,
   domain,
+  mfaCode,
 });
 
 export const loginByToken = unscopedToken => ({
