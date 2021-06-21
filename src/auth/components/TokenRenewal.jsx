@@ -17,9 +17,10 @@ import {
 class TokenRenewal extends PureComponent {
   handleRenewTokenClick = () => {
     const password = this.pass.value;
+    const mfaCode = this.mfaCode.value;
     const userName = this.props.userName;
 
-    this.props.renewToken(userName, password);
+    this.props.renewToken(userName, password, mfaCode);
   };
 
   render() {
@@ -33,17 +34,31 @@ class TokenRenewal extends PureComponent {
               style={{
                 width: 480
               }}>
-              <div className="form-row align-items-center token-renewal-message-container">
-                <div className="col-6">
-                  <p className="token-renewal-message">The token will expire in less than 5 minutes.
-                  Enter your password for extends token.</p>
+              <div className="token-renewal-message-container">
+                <div className="col-12" style={{marginBottom: '15px'}}>
+                  <p className="token-renewal-message">
+                    The token will expire in less than 5 minutes. Enter your password for extends token.
+                  </p>
                 </div>
-                <div className="col-4">
-                  <input type={'password'} className="form-control form-control-sm"
-                    ref={input => { this.pass = input; }}
+                <div className="col-12" style={{marginBottom: '15px'}}>
+                  <input type={'password'}
+                    placeholder="Password"
+                    className="form-control form-control-sm"
+                    ref={input => {
+                      this.pass = input;
+                    }}
                   />
                 </div>
-                <div className="col-2">
+                <div className="col-12" style={{marginBottom: '15px'}}>
+                  <input type="text"
+                    placeholder="6 digit code"
+                    className="form-control form-control-sm"
+                    ref={input => {
+                      this.mfaCode = input;
+                    }}
+                  />
+                </div>
+                <div className="col-12">
                   <button className={'btn btn-primary btn-sm'}
                     onClick={this.handleRenewTokenClick}>Extend</button>
                 </div>
