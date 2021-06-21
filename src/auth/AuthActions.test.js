@@ -75,12 +75,13 @@ describe('AuthActions ', () => {
 
   describe('login() ', () => {
     it(`should returns ${actionTypes.LOGIN} action`, () => {
-      actions.login('userName', 'password')
+      actions.login('userName', 'password', undefined, '012345')
         .should.deep.equal({
         type: actionTypes.LOGIN,
         username: 'userName',
         password: 'password',
         domain: undefined,
+        mfaCode: '012345'
       });
     });
   });

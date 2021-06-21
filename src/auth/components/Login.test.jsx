@@ -18,10 +18,10 @@ describe('< Login />', function () {
     wrapper.should.not.equal(undefined);
   });
 
-  it('should render 2 inputs', () => {
+  it('should render 3 inputs', () => {
     const wrapper = shallow(<Login onLoginSubmit={() => {}}/>);
 
-    wrapper.find('input').should.have.length(2);
+    wrapper.find('input').should.have.length(3);
   });
 
   it('should call submit after login button click', () => {
@@ -59,4 +59,3 @@ describe('< Login />', function () {
     wrapper.find('form').simulate('submit', {preventDefault: () => {}, stopPropagation: () => {}});
   });
 });
-

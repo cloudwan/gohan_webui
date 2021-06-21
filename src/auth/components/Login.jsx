@@ -16,9 +16,10 @@ export default class Login extends Component {
 
     const userId = this.userId.value;
     const pass = this.userPass.value;
+    const mfaCode = this.mfaCode.value;
     const domain = this.domain ? this.domain.value : undefined;
 
-    this.props.onLoginSubmit(userId, pass, domain);
+    this.props.onLoginSubmit(userId, pass, domain, mfaCode);
   };
 
   render() {
@@ -46,6 +47,11 @@ export default class Login extends Component {
             <div className="form-group">
               <input className="form-control" type="password"
                 ref={c => { this.userPass = c; }} placeholder="Password"
+              />
+            </div>
+            <div className="form-group">
+              <input className="form-control" type="text"
+                ref={c => { this.mfaCode = c; }} placeholder="6 digit code"
               />
             </div>
             <div className="form-group">
