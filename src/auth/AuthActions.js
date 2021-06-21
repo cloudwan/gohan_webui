@@ -254,14 +254,17 @@ export const renewTokenInBackground = () => (dispatch, getState) => {
   });
 };
 
-export const renewToken = (username, password) => (dispatch, getState) => {
+export const renewToken = (username, password, mfaCode) => (dispatch, getState) => {
   const state = getState();
   const {scope, user} = state.authReducer;
   let identity;
 
   if (username !== undefined && password !== undefined) {
     identity = {
-      methods: [
+      methods: mfaCode ? [
+        'password',
+        'totp'
+      ] : [
         'password'
       ],
       password: {
@@ -272,7 +275,18 @@ export const renewToken = (username, password) => (dispatch, getState) => {
           name: username,
           password
         }
-      }
+      },
+      ...(mfaCode ? {
+        totp: {
+          user: {
+            domain: {
+              id: user.domain.id,
+            },
+            name: username,
+            passcode: mfaCode
+          }
+        }
+      } : {})
     };
   }
 
